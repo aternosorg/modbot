@@ -1,7 +1,7 @@
 {
   "auth_token":"AUTHTOKEN",
   "db": {
-      "ip": "localhost",
+      "host": "localhost",
       "user": "modbot",
       "password": "password"
   }

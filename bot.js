@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
-const bot = new Discord.Client();
 const config = require('./config');
 
+const bot = new Discord.Client();
 bot.login(config.auth_token);
 
 //connect to mysql db
@@ -13,9 +13,5 @@ database.connect(function(err) {
   database.query("CREATE DATABASE IF NOT EXISTS modbot", function (err, result) {
     if (err) throw err;
     console.log("Database created");
-  });
-  database.query("USE modbot", function (err, result) {
-    if (err) throw err;
-    console.log("Connected to MySQL Database!");
   });
 });
