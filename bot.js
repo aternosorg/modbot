@@ -10,8 +10,4 @@ const database = mysql.createConnection(config.db);
 database.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
-  database.query("CREATE DATABASE IF NOT EXISTS modbot", function (err, result) {
-    if (err) throw err;
-    console.log("Database created");
-  });
 });
