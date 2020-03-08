@@ -2,5 +2,9 @@
   "auth_token":"AUTHTOKEN",
   "dbip":"localhost",
   "dbuser":"modbot",
-  "dbpassword":"password"
+  "db": {
+      "ip": "localhost",
+      "user": "modbot",
+      "password": "password"
+  }
 }
