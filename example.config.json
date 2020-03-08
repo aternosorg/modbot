@@ -3,6 +3,7 @@
   "db": {
       "host": "localhost",
       "user": "modbot",
-      "password": "password"
+      "password": "password",
+      "database": "modbot"
   }
 }
