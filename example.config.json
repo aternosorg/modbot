@@ -1,0 +1,9 @@
+{
+  "auth_token":"AUTHTOKEN",
+  "db": {
+      "host": "localhost",
+      "user": "modbot",
+      "password": "password",
+      "database": "modbot"
+  }
+}
