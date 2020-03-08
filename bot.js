@@ -6,11 +6,7 @@ bot.login(config.auth_token);
 
 //connect to mysql db
 const mysql = require('mysql');
-const database = mysql.createConnection({
-  host: config.dbip,
-  user: config.dbuser,
-  password: config.dbpassword
-});
+const database = mysql.createConnection(config.db);
 database.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
