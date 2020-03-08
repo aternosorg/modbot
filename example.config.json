@@ -1,0 +1,6 @@
+{
+  "auth_token":"AUTHTOKEN",
+  "dbip":"localhost",
+  "dbuser":"modbot",
+  "dbpassword":"password"
+}
