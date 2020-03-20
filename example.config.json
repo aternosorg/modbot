@@ -5,5 +5,6 @@
       "user": "modbot",
       "password": "password",
       "database": "modbot"
-  }
+  },
+  "prefix":","
 }
