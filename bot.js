@@ -35,7 +35,6 @@ bot.on('message', async  (message) => {
 
   switch(command){
     case "ip":
-      //args[0].toLowerCase()!='require'&&args[0].toLowerCase()!='forbid'
       if(!['require','forbid','off'].includes(args[0])){
         message.channel.send("Subcommands: require, forbid, off");
         return;
