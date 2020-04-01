@@ -30,7 +30,7 @@ exports.command = (message, args, channels, database) => {
     if(channels.get(snowflake)){
       channels.set(snowflake, mode);
       database.query("UPDATE channels SET mode = ? WHERE id =?", [mode, snowflake]);
-      if(mode == 1)
+      if(mode === 1)
         message.channel.send('Updated channel <#'+snowflake+'> to require IPs');
       else
         message.channel.send('Updated channel <#'+snowflake+'> to forbid IPs');
@@ -38,7 +38,7 @@ exports.command = (message, args, channels, database) => {
     else{
       channels.set(snowflake, mode);
       database.query("INSERT INTO channels (id, mode) VALUES (?,?)",[snowflake,mode]);
-      if(mode == 1)
+      if(mode === 1)
         message.channel.send('Set channel <#'+snowflake+'> to require IPs');
       else
         message.channel.send('Set channel <#'+snowflake+'> to forbid IPs');
