@@ -8,13 +8,13 @@ exports.command = (message, args, channels, database) => {
   switch (subCommand) {
     case 'require':
       mode = 1;
-    break;
+      break;
     case 'forbid':
       mode = 2;
-    break;
+      break;
     case 'off':
       mode = 0;
-    break;
+      break;
   }
   if(message.mentions.channels.size<1){
     message.channel.send("Please specify a channel! (#mention)");

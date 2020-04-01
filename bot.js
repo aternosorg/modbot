@@ -37,6 +37,6 @@ bot.on('message', async  (message) => {
   switch(command){
     case "ip":
       ip.command(message, args, channels, database);
-    break;
+      break;
   }
 });
