@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const mysql = require('mysql');
 const config = require('./config');
+const ip = require('./commands/ip.js');
 
 const bot = new Discord.Client();
 bot.login(config.auth_token);
@@ -34,6 +35,8 @@ bot.on('message', async  (message) => {
   const command = args.shift().slice(config.prefix.length).toLowerCase();
 
   switch(command){
-
+    case "ip":
+      ip.command(message, args, channels, database);
+      break;
   }
 });
