@@ -1,13 +1,12 @@
 const Discord = require('discord.js');
 const mysql = require('mysql');
 const config = require('./config');
+const ip = require('./commands/ip.js');
 
 const bot = new Discord.Client();
 bot.login(config.auth_token);
 
 let channels = new Discord.Collection();
-
-const ip = require('./commands/ip.js');
 
 //connect to mysql db
 const database = mysql.createConnection(config.db);
