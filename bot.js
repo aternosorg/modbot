@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const mysql = require('mysql');
 const config = require('./config');
 const ip = require('./commands/ip.js');
+const automod = require('./features/automod.js');
 
 const bot = new Discord.Client();
 bot.login(config.auth_token);
@@ -39,4 +40,9 @@ bot.on('message', async  (message) => {
       ip.command(message, args, channels, database);
       break;
   }
+});
+
+//message triggered features
+bot.on('message', async  (message) => {
+  automod.message(message, channels);
 });
