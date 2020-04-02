@@ -1,6 +1,11 @@
 exports.command = (message, args, channels, database) => {
+  if(!message.member.hasPermission('MANAGE_GUILD')){
+    message.channel.send('You need the "Manage Server" Permission to use this command.')
+    return;
+  }
+
   let subCommand = args[0].toLowerCase();
-  if(!['require','forbid','off'].includes(subCommand){
+  if(!['require','forbid','off'].includes(subCommand)){
     message.channel.send("Subcommands: require, forbid, off");
     return;
   }
