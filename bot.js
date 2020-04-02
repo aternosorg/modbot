@@ -14,7 +14,7 @@ const database = mysql.createConnection(config.db);
 database.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
-  database.query("CREATE TABLE IF NOT EXISTS `channels` (`id` VARCHAR(20) NOT NULL, `mode` TINYINT NOT NULL, PRIMARY KEY (`id`), UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)");
+  database.query("CREATE TABLE IF NOT EXISTS `channels` (`id` VARCHAR(20) NOT NULL, `mode` TINYINT NOT NULL, PRIMARY KEY (`id`))");
   // id => discord channel snowflake
   // mode => 1 = require ips, 2 = forbid ips
 
