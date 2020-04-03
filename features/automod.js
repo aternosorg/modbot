@@ -8,7 +8,7 @@ exports.message = (message, channels) => {
     return;
   }
 
-  if(mode === 1 && !message.content.includes('.aternos.me')){
+  if(mode === 1 && !message.content.toLowerCase().includes('.aternos.me')){
     message.channel.send(`**:no_entry: <@${message.author.id}> your message to this channel must include a valid Aternos IP! :no_entry:**`)
     .then(response =>
       response.delete({timeout: 5000})
@@ -16,7 +16,7 @@ exports.message = (message, channels) => {
     message.delete();
     return;
   }
-  if(mode === 2 && message.content.includes('.aternos.me')){
+  if(mode === 2 && message.content.toLowerCase().includes('.aternos.me')){
     message.channel.send(`**:no_entry: <@${message.author.id}> don't advertise your server here! :no_entry:**`)
     .then(response =>
       response.delete({timeout: 5000})
