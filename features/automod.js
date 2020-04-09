@@ -3,7 +3,7 @@ exports.message = (message, channels) => {
   if(message.member.hasPermission('MANAGE_MESSAGES'))
     return;
 
-  let mode = channels.get(message.channel.id);
+  let mode = channels.get(message.channel.id).mode;
   if(!mode){
     return;
   }
