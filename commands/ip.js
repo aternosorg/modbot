@@ -4,7 +4,7 @@ exports.command = (message, args, channels, database) => {
     return;
   }
 
-  let subCommand = args[0].toLowerCase();
+  let subCommand = args.shift().toLowerCase();
   if(!['require','forbid','off'].includes(subCommand)){
     message.channel.send("Subcommands: require, forbid, off");
     return;
@@ -21,15 +21,24 @@ exports.command = (message, args, channels, database) => {
       mode = 0;
       break;
   }
-  if(message.mentions.channels.size<1){
-    message.channel.send("Please specify a channel! (#mention)");
+
+  if(message.mentions.channels.size<1 && !message.guild.channels.cache.get(args[0])){
+    message.channel.send("Please specify a channel! (#mention) or ID");
     return;
   }
-  let snowflake = message.mentions.channels.first().id;
+
+  let snowflake
+  if (message.mentions.channels.size>0) {
+    snowflake = message.mentions.channels.first().id;
+  }
+  else {
+    snowflake = args[0];
+  }
+
   if(mode === 0){
     channels.delete(snowflake);
     database.query("DELETE FROM channels WHERE id = ?",[snowflake]);
-    message.channel.send('Disabled IP Moderation in this channel!')
+    message.channel.send('Disabled IP Moderation in <#'+snowflake+'>!');
   }
   else{
     if(channels.get(snowflake)){
