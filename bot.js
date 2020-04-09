@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const mysql = require('mysql');
 const config = require('./config');
+const channelConfig = require('./util/channelConfig.js');
 const ip = require('./commands/ip.js');
 const automod = require('./features/automod.js');
 
@@ -22,7 +23,7 @@ database.connect(function(err) {
   database.query("SELECT * FROM channels", function(err, result) {
     if (err) throw err;
     result.forEach( row => {
-      channels.set(row.id, row.mode);
+      channels.set(row.id, new channelConfig(row.id, row.mode));
     });
   });
 });
