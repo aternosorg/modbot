@@ -1,9 +1,14 @@
 const Discord = require('discord.js');
 const mysql = require('mysql');
+
 const config = require('./config');
 const channelConfig = require('./util/channelConfig.js');
+
 const ip = require('./commands/ip.js');
+const ipcooldown = require('./commands/ipcooldown.js');
+
 const automod = require('./features/automod.js');
+const cooldown = require('./features/cooldown.js');
 
 const bot = new Discord.Client();
 bot.login(config.auth_token);
@@ -15,15 +20,19 @@ const database = mysql.createConnection(config.db);
 database.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
-  database.query("CREATE TABLE IF NOT EXISTS `channels` (`id` VARCHAR(20) NOT NULL, `mode` TINYINT NOT NULL, PRIMARY KEY (`id`))");
-  // id => discord channel snowflake
-  // mode => 1 = require ips, 2 = forbid ips
 
+  database.query('CREATE TABLE IF NOT EXISTS `channels` (`id` VARCHAR(20) NOT NULL, `mode` TINYINT unsigned DEFAULT 0, `cooldown` INT unsigned DEFAULT 0, PRIMARY KEY (`id`))');
+  /*  id => discord channel snowflake
+      mode => 1 = require ips, 2 = forbid ips
+      cooldown => cooldown time in seconds        */
+  database.query('CREATE TABLE IF NOT EXISTS `servers` (`ip` varchar(20) NOT NULL, `timestamp` varchar(20) NOT NULL, PRIMARY KEY (`ip`))');
+  /*  ip => unique part of the server IPs
+      timestamp => Unix Time                      */
   //load channels
   database.query("SELECT * FROM channels", function(err, result) {
     if (err) throw err;
     result.forEach( row => {
-      channels.set(row.id, new channelConfig(row.id, row.mode));
+      channels.set(row.id, new channelConfig(row.id, row.mode, row.cooldown));
     });
   });
 });
@@ -40,10 +49,14 @@ bot.on('message', async  (message) => {
     case "ip":
       ip.command(message, args, channels, database);
       break;
+    case "ipcooldown":
+      ipcooldown.command(message, args, channels, database);
+      break;
   }
 });
 
 //message triggered features
 bot.on('message', async  (message) => {
   automod.message(message, channels);
+  cooldown.message(message, channels, database);
 });

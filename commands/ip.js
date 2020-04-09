@@ -40,26 +40,29 @@ exports.command = (message, args, channels, database) => {
   }
 
   if (mode === 0) {
-    channels.delete(snowflake);
+    channels.get(snowflake).mode = 0;
+    if (channels.get(snowflake).cooldown===0) {
+      channels.delete(snowflake);
+    }
     database.query("DELETE FROM channels WHERE id = ?",[snowflake]);
-    message.channel.send('Disabled IP Moderation in <#'+snowflake+'>!');
+    message.channel.send(`Disabled IP Moderation in <#${snowflake}>!`);
   }
   else {
     if (channels.has(snowflake)) {
       channels.get(snowflake).mode = mode;
       database.query("UPDATE channels SET mode = ? WHERE id =?", [mode, snowflake]);
       if (mode === 1)
-        message.channel.send('Updated channel <#'+snowflake+'> to require IPs');
+        message.channel.send(`Updated channel <#${snowflake}> to require IPs`);
       else
-        message.channel.send('Updated channel <#'+snowflake+'> to forbid IPs');
+        message.channel.send(`Updated channel <#${snowflake}> to forbid IPs`);
     }
     else {
       channels.get(snowflake).mode = mode;
       database.query("INSERT INTO channels (id, mode) VALUES (?,?)",[snowflake,mode]);
       if (mode === 1)
-        message.channel.send('Set channel <#'+snowflake+'> to require IPs');
+        message.channel.send(`Set channel <#${snowflake}> to require IPs`);
       else
-        message.channel.send('Set channel <#'+snowflake+'> to forbid IPs');
+        message.channel.send(`Set channel <#${snowflake}> to forbid IPs`);
     }
   }
 }
