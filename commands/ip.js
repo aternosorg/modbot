@@ -45,8 +45,8 @@ exports.command = (message, args, channels, database) => {
     message.channel.send('Disabled IP Moderation in <#'+snowflake+'>!');
   }
   else {
-    if (channels.get(snowflake)) {
-      channels.set(snowflake, mode);
+    if (channels.has(snowflake)) {
+      channels.get(snowflake).mode = mode;
       database.query("UPDATE channels SET mode = ? WHERE id =?", [mode, snowflake]);
       if (mode === 1)
         message.channel.send('Updated channel <#'+snowflake+'> to require IPs');
@@ -54,7 +54,7 @@ exports.command = (message, args, channels, database) => {
         message.channel.send('Updated channel <#'+snowflake+'> to forbid IPs');
     }
     else {
-      channels.set(snowflake, mode);
+      channels.get(snowflake).mode = mode;
       database.query("INSERT INTO channels (id, mode) VALUES (?,?)",[snowflake,mode]);
       if (mode === 1)
         message.channel.send('Set channel <#'+snowflake+'> to require IPs');
