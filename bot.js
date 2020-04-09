@@ -19,8 +19,8 @@ database.connect(function(err) {
   // mode => 1 = require ips, 2 = forbid ips
 
   //load channels
-  database.query("SELECT * FROM channels", function(err, result){
-    if(err) throw err;
+  database.query("SELECT * FROM channels", function(err, result) {
+    if (err) throw err;
     result.forEach( row => {
       channels.set(row.id, row.mode);
     });
@@ -29,13 +29,13 @@ database.connect(function(err) {
 
 //bot commands
 bot.on('message', async  (message) => {
-  if(!message.guild || message.author.bot) return;
-  if(!message.content.toLowerCase().startsWith(config.prefix.toLowerCase())) return;
+  if (!message.guild || message.author.bot) return;
+  if (!message.content.toLowerCase().startsWith(config.prefix.toLowerCase())) return;
 
   const args = message.content.split(/\s+/g);
   const command = args.shift().slice(config.prefix.length).toLowerCase();
 
-  switch(command){
+  switch(command) {
     case "ip":
       ip.command(message, args, channels, database);
       break;
