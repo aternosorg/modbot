@@ -61,8 +61,10 @@ exports.clean = (database, channels, bot) => {
     let relevant = Math.floor(Date.now()/1000) - channel.cooldown;
     database.query('DELETE FROM servers WHERE channelid = ? AND timestamp <= ?', [channel.id, relevant])
   });
+  //stats on servers size
   database.query('SELECT * FROM servers', function(err,result) {
-    console.log(`There are currently ${result.length} servers in the Database!`);
+    date = new Date();
+    console.log(`[${date.getUTCHours()}:${date.getUTCMinutes()}] There are currently ${result.length} servers in the Database!`);
     bot.user.setActivity(`${result.length} servers`, {type: 'WATCHING'});
     setTimeout(() => {bot.user.setActivity('https://git.io/Jvhfg', {type: 'WATCHING'});}, 900000);
   })
