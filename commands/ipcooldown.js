@@ -34,21 +34,21 @@ exports.command = (message, args, channels, database) => {
 
   let time = 0;
   args[1].split(' ').forEach(word => {
-    if(word.endsWith('s')){
+    if (word.endsWith('s')) {
       time += parseInt(word,10);
     }
-    if(word.endsWith('m')){
+    if (word.endsWith('m')) {
       time += parseInt(word,10)*60;
     }
-    if(word.endsWith('h')){
+    if (word.endsWith('h')) {
       time += parseInt(word,10)*60*60;
     }
-    if(word.endsWith('d')){
+    if (word.endsWith('d')) {
       time += parseInt(word,10)*60*60*24;
     }
   });
-  if(!time){
-    message.channel.send('Please enter a valid time');
+  if (time<60) {
+    message.channel.send('Please enter a valid Cooldown time (Min: 60s).');
     return;
   }
 
