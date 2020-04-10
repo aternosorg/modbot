@@ -53,3 +53,17 @@ exports.message = (message, channels, database) => {
     }
   }
 }
+
+//delete unneccessary servers
+exports.clean = (database, channels, bot) => {
+  channels.forEach(channel => {
+    //IPs with a smaller timestamp can already be advertised again
+    let relevant = Math.floor(Date.now()/1000) - channel.cooldown;
+    database.query('DELETE FROM servers WHERE channelid = ? AND timestamp <= ?', [channel.id, relevant])
+  });
+  database.query('SELECT * FROM servers', function(err,result) {
+    console.log(`There are currently ${result.length} servers in the Database!`);
+    bot.user.setActivity(`${result.length} servers`, {type: 'WATCHING'});
+    setTimeout(() => {bot.user.setActivity('https://git.io/Jvhfg', {type: 'WATCHING'});}, 900000);
+  })
+}
