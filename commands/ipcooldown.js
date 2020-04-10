@@ -1,10 +1,12 @@
 const channelConfig = require('../util/channelConfig.js');
 exports.command = (message, args, channels, database) => {
+  //Permission check
   if (!message.member.hasPermission('MANAGE_GUILD')) {
     message.channel.send('You need the "Manage Server" Permission to use this command.')
     return;
   }
 
+  //Get channel
   if (message.mentions.channels.size<1 && !message.guild.channels.cache.get(args[0])) {
     message.channel.send("Please specify a channel! (#mention) or ID");
     return;
@@ -22,6 +24,7 @@ exports.command = (message, args, channels, database) => {
     snowflake = args[0];
   }
 
+  //Disabling cooldown
   if (args[1]===0||args[1]==='0s') {
     channels.get(snowflake).cooldown = 0;
     if (channels.get(snowflake).mode===0) {
@@ -32,6 +35,7 @@ exports.command = (message, args, channels, database) => {
     return;
   }
 
+  //Convert time to s
   let time = 0;
   args[1].split(' ').forEach(word => {
     if (word.endsWith('s')) {
@@ -47,6 +51,8 @@ exports.command = (message, args, channels, database) => {
       time += parseInt(word,10)*60*60*24;
     }
   });
+
+  //check time
   if (time<60) {
     message.channel.send('Please enter a valid Cooldown time (Min: 60s).');
     return;
@@ -54,11 +60,18 @@ exports.command = (message, args, channels, database) => {
 
 
   if(channels.has(snowflake)){
+    //Update Channel
+    if (channels.get(snowflake).cooldown) {
+      message.channel.send(`Updated IP cooldown of <#${snowflake}> to ${args[1]}`);
+    }
+    else {
+        message.channel.send(`Set IP cooldown of <#${snowflake}> to ${args[1]}`);
+    }
     channels.get(snowflake).cooldown = time;
     database.query("UPDATE channels SET cooldown = ? WHERE id =?", [time, snowflake]);
-    message.channel.send(`Updated IP cooldown of <#${snowflake}> to ${args[1]}`);
   }
   else{
+    //Add Channel
     channels.set(snowflake,new channelConfig(snowflake, 0, time));
     database.query("INSERT INTO channels (id, cooldown) VALUES (?,?)",[snowflake,time]);
     message.channel.send(`Set IP cooldown of <#${snowflake}> to ${args[1]}`);
