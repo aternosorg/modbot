@@ -13,6 +13,10 @@ const cooldown = require('./features/cooldown.js');
 const bot = new Discord.Client();
 bot.login(config.auth_token);
 
+bot.on('ready', ()=> {
+  bot.user.setActivity('https://git.io/Jvhfg', {type: 'WATCHING'});
+});
+
 let channels = new Discord.Collection();
 
 //connect to mysql db
