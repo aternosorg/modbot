@@ -12,7 +12,8 @@ exports.message = (message, channels, database) => {
       let ips = words.filter(word => word.includes('.aternos.me'));
 
       ips.forEach( ip => {
-        database.query('SELECT * FROM servers WHERE ip = ?', [ip], function(err, result) {
+        let server = ip.replace('.aternos.me', '');
+        database.query('SELECT * FROM servers WHERE channelid = ? AND ip = ?', [message.channel.id, server], function(err, result) {
           if(result[0]){
             let data = result[0];
 
@@ -40,12 +41,12 @@ exports.message = (message, channels, database) => {
             }
             else {
               //Update time in database
-              database.query('UPDATE servers SET timestamp = ? WHERE ip = ?',[(Math.floor(Date.now()/1000)), ip]);
+              database.query('UPDATE servers SET timestamp = ? WHERE channelid = ? AND ip = ?',[(Math.floor(Date.now()/1000)), message.channel.id, server]);
             }
           }
           else {
             //add ip and time to database
-            database.query('INSERT INTO servers (ip,timestamp) VALUES (?,?)', [ip,(Math.floor(Date.now()/1000))])
+            database.query('INSERT INTO servers (channelid, ip, timestamp) VALUES (?,?,?)', [message.channel.id, server, (Math.floor(Date.now()/1000))])
           }
         });
       });

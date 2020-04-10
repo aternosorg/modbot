@@ -29,7 +29,7 @@ database.connect(function(err) {
   /*  id => discord channel snowflake
       mode => 1 = require ips, 2 = forbid ips
       cooldown => cooldown time in seconds        */
-  database.query('CREATE TABLE IF NOT EXISTS `servers` (`ip` varchar(20) NOT NULL, `timestamp` varchar(20) NOT NULL, PRIMARY KEY (`ip`))');
+  database.query('CREATE TABLE IF NOT EXISTS `servers` (`channelid` VARCHAR(20) NOT NULL, `ip` varchar(20) NOT NULL, `timestamp` varchar(20) NOT NULL, PRIMARY KEY (`ip`,`channelid`))');
   /*  ip => unique part of the server IPs
       timestamp => Unix Time                      */
   //load channels
