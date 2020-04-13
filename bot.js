@@ -28,7 +28,7 @@ database.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
 
-  database.query('CREATE TABLE IF NOT EXISTS `channels` (`id` VARCHAR(20) NOT NULL, `mode` TINYINT unsigned DEFAULT 0, `cooldown` INT unsigned DEFAULT 0, PRIMARY KEY (`id`))');
+  database.query('CREATE TABLE IF NOT EXISTS `channels` (`id` VARCHAR(20) NOT NULL, `config` TEXT NOT NULL, PRIMARY KEY (`id`))');
   /*  id => discord channel snowflake
       mode => 1 = require ips, 2 = forbid ips
       cooldown => cooldown time in seconds        */
@@ -39,7 +39,7 @@ database.connect(function(err) {
   database.query("SELECT * FROM channels", function(err, result) {
     if (err) throw err;
     result.forEach( row => {
-      channels.set(row.id, new channelConfig(row.id, row.mode, row.cooldown));
+      channels.set(row.id, JSON.parse(row.config));
     });
   });
 });

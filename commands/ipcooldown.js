@@ -25,14 +25,23 @@ exports.command = (message, args, channels, database) => {
   }
 
   //Disabling cooldown
-  if (args[1]===0||args[1]==='0s') {
-    channels.get(snowflake).cooldown = 0;
-    if (channels.get(snowflake).mode===0) {
-      channels.delete(snowflake);
+  if (args[1]==='0'||args[1]==='0s') {
+    if (channels.has(snowflake)) {
+      channels.get(snowflake).cooldown = 0;
+      if (channels.get(snowflake).mode===0) {
+        channels.delete(snowflake);
+        database.query("DELETE FROM channels WHERE id = ?",[snowflake]);
+      }
+      else {
+        database.query("UPDATE channels WHERE SET config = ? WHERE id = ?",[JSON.stringify(channels.get(snowflake)),snowflake]);
+      }
+      message.channel.send(`Disabled IP cooldown <#${snowflake}>!`);
+      return;
     }
-    database.query("DELETE FROM channels WHERE id = ?",[snowflake]);
-    message.channel.send(`Disabled IP cooldown <#${snowflake}>!`);
-    return;
+    else {
+      message.channel.send(`IP cooldown in <#${snowflake}> is already disabled!`);
+      return;
+    }
   }
 
   //Convert time to s
@@ -68,12 +77,12 @@ exports.command = (message, args, channels, database) => {
         message.channel.send(`Set IP cooldown of <#${snowflake}> to ${args[1]}`);
     }
     channels.get(snowflake).cooldown = time;
-    database.query("UPDATE channels SET cooldown = ? WHERE id =?", [time, snowflake]);
+    database.query("UPDATE channels SET config = ? WHERE id =?", [JSON.stringify(channels.get(snowflake)), snowflake]);
   }
   else{
     //Add Channel
     channels.set(snowflake,new channelConfig(snowflake, 0, time));
-    database.query("INSERT INTO channels (id, cooldown) VALUES (?,?)",[snowflake,time]);
-    message.channel.send(`Set IP cooldown of <#${snowflake}> to ${args[1]}`);
+    database.query("INSERT INTO channels (id, config) VALUES (?,?)",[snowflake,JSON.stringify(channels.get(snowflake))]);
+    message.channel.send(`Set IP cooldown of <#${snowflake}> to ${args[1]}.`);
   }
 }
