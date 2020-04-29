@@ -56,7 +56,6 @@ exports.command = (message, args, channels, database) => {
     message.channel.send(`Disabled IP Moderation in <#${snowflake}>!`);
   }
   else {
-    console.log(channels.has(snowflake));
     if (channels.has(snowflake)) {
       //Update Moderation
       if (channels.get(snowflake).mode) {
