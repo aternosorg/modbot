@@ -9,18 +9,46 @@ exports.message = (message, channels) => {
       //delete non IP messages in IP only channels
       message.channel.send(`**:no_entry: <@${message.author.id}> your message to this channel must include a valid Aternos IP! :no_entry:**`)
       .then(response =>
-        response.delete({timeout: 5000}).catch(error => console.error("Failed to delete a Message! ",error))
+        for(let i = 0;i < 10; i++){
+          try{
+            await response.delete({timeout: 5000});
+          }catch (e) {
+            continue;
+          }
+          break;
+        }
       );
-      message.delete().catch(error => console.error("Failed to delete a Message! ",error));
+      for(let i = 0;i < 10; i++){
+        try{
+          await message.delete();
+        }catch (e) {
+          continue;
+        }
+        break;
+      }
       return;
     }
     if(mode === 2 && message.content.toLowerCase().includes('.aternos.me')){
       //Delete IPs in no IP channels
       message.channel.send(`**:no_entry: <@${message.author.id}> don't advertise your server here! :no_entry:**`)
       .then(response =>
-        response.delete({timeout: 5000}).catch(error => console.error("Failed to delete a Message! ",error))
+        for(let i = 0;i < 10; i++){
+          try{
+            await response.delete({timeout: 5000});
+          }catch (e) {
+            continue;
+          }
+          break;
+        }
       );
-      message.delete().catch(error => console.error("Failed to delete a Message! ",error));
+      for(let i = 0;i < 10; i++){
+        try{
+          await message.delete();
+        }catch (e) {
+          continue;
+        }
+        break;
+      }
       return;
     }
   }

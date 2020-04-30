@@ -34,9 +34,23 @@ exports.message = (message, channels, database) => {
 
               message.channel.send(`You can advertise again in ${remaining}!`)
               .then(response =>
-                response.delete({timeout: 5000}).catch(error => console.error("Failed to delete a Message! ",error))
+                for(let i = 0;i < 10; i++){
+                  try{
+                    await response.delete({timeout: 5000});
+                  } catch (e) {
+                    continue;
+                  }
+                  break;
+                }
               );
-              message.delete().catch(error => console.error("Failed to delete a Message! ",error));
+              for(let i = 0;i < 10; i++){
+                try{
+                  await message.delete();
+                }catch (e) {
+                  continue;
+                }
+                break;
+              }
               return;
             }
             else {
