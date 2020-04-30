@@ -65,7 +65,5 @@ exports.clean = (database, channels, bot) => {
   database.query('SELECT * FROM servers', function(err,result) {
     date = new Date();
     console.log(`[${date.getUTCHours()}:${date.getUTCMinutes()}] There are currently ${result.length} servers in the Database!`);
-    bot.user.setActivity(`${result.length} servers`, {type: 'WATCHING'});
-    setTimeout(() => {bot.user.setActivity('https://git.io/Jvhfg', {type: 'WATCHING'});}, 900000);
   })
 }

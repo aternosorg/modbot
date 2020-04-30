@@ -14,7 +14,6 @@ const bot = new Discord.Client();
 bot.login(config.auth_token);
 
 bot.on('ready', ()=> {
-  bot.user.setActivity('https://git.io/Jvhfg', {type: 'WATCHING'});
   //clean servers every 1h
   cooldown.clean(database, channels, bot);
   setInterval(() => { cooldown.clean(database, channels, bot)},3600000);
