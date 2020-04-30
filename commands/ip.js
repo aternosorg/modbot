@@ -31,15 +31,10 @@ exports.command = async (message, args, channels, database) => {
         await message.channel.send("Please specify a channel! (#mention) or ID");
         return;
     }
-    let snowflake
-    if (message.mentions.channels.size > 0) {
-        snowflake = message.mentions.channels.first().id;
-        if (!message.guild.channels.cache.get(snowflake)) {
-            await message.channel.send('This is not a channel on this server!');
-            return;
-        }
-    } else {
-        snowflake = args[0];
+    let snowflake = message.mentions.channels.size ? message.mentions.channels.first().id : args[0];
+    if (!message.guild.channels.cache.get(snowflake)) {
+        await message.channel.send('This is not a channel on this server!');
+        return;
     }
 
     if (mode === 0) {
