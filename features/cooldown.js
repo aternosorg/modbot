@@ -54,6 +54,9 @@ exports.message = async (message, channels, database) => {
 
 exports.init = async (database, channels, bot) => {
     await clean(database, channels, bot);
+    setInterval(async () => {
+        await clean(database, channels, bot);
+    }, 60 * 60 * 1000)
 }
 
 async function clean(database, channels, bot) {
