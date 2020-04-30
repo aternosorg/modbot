@@ -1,10 +1,10 @@
 {
-  "auth_token":"AUTHTOKEN",
+  "auth_token": "AUTHTOKEN",
   "db": {
-      "host": "localhost",
-      "user": "modbot",
-      "password": "password",
-      "database": "modbot"
+    "host": "localhost",
+    "user": "modbot",
+    "password": "password",
+    "database": "modbot"
   },
-  "prefix":","
+  "prefix": ","
 }
