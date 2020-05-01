@@ -7,16 +7,6 @@ const config = require('./config');
 const channelConfig = require('./util/channelConfig.js');
 
 const bot = new Discord.Client();
-<<<<<<< HEAD
-bot.login(config.auth_token);
-
-bot.on('ready', ()=> {
-  //clean servers every 1h
-  cooldown.clean(database, channels, bot);
-  setInterval(() => { cooldown.clean(database, channels, bot)},3600000);
-});
-=======
->>>>>>> b6af85d8c96e936c15943271321cbaabdc7e1364
 
 let channels = new Discord.Collection();
 
@@ -87,4 +77,3 @@ const database = new Database(config.db);
         }
     });
 })();
-

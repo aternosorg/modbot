@@ -31,32 +31,10 @@ exports.command = async (message, args, channels, database) => {
         await message.channel.send("Please specify a channel! (#mention) or ID");
         return;
     }
-<<<<<<< HEAD
-    message.channel.send(`Disabled IP Moderation in <#${snowflake}>!`);
-  }
-  else {
-    if (channels.has(snowflake)) {
-      //Update Moderation
-      if (channels.get(snowflake).mode) {
-        if (mode === 1)
-          message.channel.send(`Updated channel <#${snowflake}> to require IPs.`);
-        else
-          message.channel.send(`Updated channel <#${snowflake}> to forbid IPs.`);
-      }
-      else {
-        if (mode === 1)
-          message.channel.send(`Set channel <#${snowflake}> to require IPs.`);
-        else
-          message.channel.send(`Set channel <#${snowflake}> to forbid IPs.`);
-      }
-      channels.get(snowflake).mode = mode;
-      database.query("UPDATE channels SET config = ? WHERE id =?", [JSON.stringify(channels.get(snowflake)), snowflake]);
-=======
     let snowflake = message.mentions.channels.size ? message.mentions.channels.first().id : args[0];
     if (!message.guild.channels.cache.get(snowflake)) {
         await message.channel.send('This is not a channel on this server!');
         return;
->>>>>>> b6af85d8c96e936c15943271321cbaabdc7e1364
     }
 
     if (mode === 0) {

@@ -22,32 +22,6 @@ exports.message = async (message, channels, database) => {
                     continue;
                 }
 
-<<<<<<< HEAD
-              message.channel.send(`You can advertise again in ${remaining}!`)
-              .then(response =>
-                for(let i = 0;i < 10; i++){
-                  try{
-                    await response.delete({timeout: 5000});
-                  } catch (e) {
-                    continue;
-                  }
-                  break;
-                }
-              );
-              for(let i = 0;i < 10; i++){
-                try{
-                  await message.delete();
-                }catch (e) {
-                  continue;
-                }
-                break;
-              }
-              return;
-            }
-            else {
-              //Update time in database
-              database.query('UPDATE servers SET timestamp = ? WHERE channelid = ? AND ip = ?',[(Math.floor(Date.now()/1000)), message.channel.id, server]);
-=======
                 let difference = parseInt(data.timestamp, 10) + cooldown - Math.floor(Date.now() / 1000);
                 if (difference <= 60) {
                     await database.query('UPDATE servers SET `timestamp` = ? WHERE channelid = ? AND ip = ?', [(Math.floor(Date.now() / 1000)), message.channel.id, server]);
@@ -73,26 +47,11 @@ exports.message = async (message, channels, database) => {
                     console.error('Failed to delete message', e);
                 }
                 break;
->>>>>>> b6af85d8c96e936c15943271321cbaabdc7e1364
             }
         }
     }
 }
 
-<<<<<<< HEAD
-//delete unneccessary servers
-exports.clean = (database, channels, bot) => {
-  channels.forEach(channel => {
-    //IPs with a smaller timestamp can already be advertised again
-    let relevant = Math.floor(Date.now()/1000) - channel.cooldown;
-    database.query('DELETE FROM servers WHERE channelid = ? AND timestamp <= ?', [channel.id, relevant])
-  });
-  //stats on servers size
-  database.query('SELECT * FROM servers', function(err,result) {
-    date = new Date();
-    console.log(`[${date.getUTCHours()}:${date.getUTCMinutes()}] There are currently ${result.length} servers in the Database!`);
-  })
-=======
 exports.init = async (database, channels, bot) => {
     await clean(database, channels, bot);
     setInterval(async () => {
@@ -109,5 +68,4 @@ async function clean(database, channels, bot) {
     let result = await database.query("SELECT COUNT(*) as c FROM servers");
     let date = new Date();
     console.log(`[${date.getUTCHours()}:${date.getUTCMinutes()}] There are currently ${result['c']} servers in the Database!`);
->>>>>>> b6af85d8c96e936c15943271321cbaabdc7e1364
 }
