@@ -22,7 +22,7 @@ exports.message = async (message, channels, database) => {
             }
 
             for (let ip of uniqueIps) {
-                let server = word.split(".")[0];
+                let server = ip.split(".")[0];
                 let data = await database.query('SELECT * FROM servers WHERE channelid = ? AND ip = ? ORDER BY `timestamp` DESC;', [message.channel.id, server]);
 
                 if (!data) {
