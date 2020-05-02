@@ -15,8 +15,8 @@ exports.message = async (message, channels, database) => {
 
             let uniqueIps = [];
             for (let ip of ips){
-              if(!uniqueIps.includes(ip)){
-                uniqueIps.push(ip);
+              if(!uniqueIps.includes(ip.toLowerCase())){
+                uniqueIps.push(ip.toLowerCase());
               }
             }
 
