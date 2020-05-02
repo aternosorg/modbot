@@ -13,7 +13,15 @@ exports.message = async (message, channels, database) => {
             let words = message.content.replace(/[^0-9a-z .]/gi, ' ').split(' ');
             let ips = words.filter(word => word.includes('.aternos.me'));
 
-            for (let ip of ips) {
+            let uniqueIps = [];
+            for (let ip of ips){
+              ip = ip.toLowerCase()
+              if(!uniqueIps.includes(ip)){
+                uniqueIps.push(ip);
+              }
+            }
+
+            for (let ip of uniqueIps) {
                 let server = ip.replace('.aternos.me', '');
                 let data = await database.query('SELECT * FROM servers WHERE channelid = ? AND ip = ? ORDER BY `timestamp` DESC;', [message.channel.id, server]);
 

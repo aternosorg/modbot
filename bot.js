@@ -77,4 +77,3 @@ const database = new Database(config.db);
         }
     });
 })();
-
