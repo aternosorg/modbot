@@ -10,7 +10,7 @@ exports.message = async (message, channels, database) => {
         if (message.content.includes('.aternos.me')) {
 
             //get all IPs
-            let words = message.content.replace(/[^0-9a-z .]/gi, ' ').split(' ');
+            let words = message.content.replace(/[^0-9a-z ._]/gi, ' ').split(' ');
             let ips = words.filter(word => word.toLowerCase().includes('.aternos.me'));
 
             let uniqueIps = [];
