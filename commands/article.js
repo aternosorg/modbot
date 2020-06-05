@@ -1,4 +1,5 @@
 const config = require('../config.json');
+const axios = require('axios');
 
 exports.command = async (message, args, channels, database) => {
 
@@ -8,7 +9,6 @@ exports.command = async (message, args, channels, database) => {
     await message.channel.send('Please provide a search query');
     return ;
   }
-  const axios = require('axios');
 
   let response = await axios.get('https://aternos.zendesk.com/api/v2/help_center/articles/search.json?query='+query)
 
