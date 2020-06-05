@@ -18,6 +18,7 @@
   "homepage": "https://github.com/aternosorg/modbot#readme",
   "dependencies": {
     "discord.js": "^12.1.1",
+    "googleapis": "^52.1.0",
     "mysql": "^2.18.1"
   }
 }
