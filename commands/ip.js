@@ -7,6 +7,11 @@ exports.command = async (message, args, channels, database) => {
         return;
     }
 
+    if(!args[0]){
+      message.channel.send("Subcommands: require, forbid, off");
+      return;
+    }
+
     //convert sub command to mode
     let subCommand = args.shift().toLowerCase();
     if (!['require', 'forbid', 'off'].includes(subCommand)) {
