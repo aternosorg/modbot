@@ -10,7 +10,7 @@ exports.command = async (message, args, channels, database) => {
     return ;
   }
 
-  let response = await axios.get('https://aternos.zendesk.com/api/v2/help_center/articles/search.json?query='+query)
+  let response = await axios.get('https://aternos.zendesk.com/api/v2/help_center/articles/search.json?query='+encodeURIComponent(query))
 
   if(response.data.results[0]){
     await message.channel.send(response.data.results[0].html_url);
