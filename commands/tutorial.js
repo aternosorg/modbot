@@ -4,7 +4,7 @@ let videos;
 
 exports.command = async (message, args, channels, database) => {
 
-  let query = args.join(' ').toLowerCase();
+  let query = args.join(' ').toLowerCase().replace(/[^\w]/g,"");
 
   if(!query){
     await message.channel.send('Please provide a search query');
@@ -28,7 +28,7 @@ exports.command = async (message, args, channels, database) => {
   }
 
   for(video of videos){
-    if(video.snippet.title.toLowerCase().includes(query)){
+    if(video.snippet.title.replace(/[^\w]/g,"").toLowerCase().includes(query)){
       await message.channel.send('https://youtu.be/'+video.snippet.resourceId.videoId);
       return;
     }
