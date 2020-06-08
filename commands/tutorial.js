@@ -42,4 +42,4 @@ exports.command = async (message, args, channels, database) => {
   }
 }
 
-exports.name = 'tutorial';
+exports.names = ['tutorial','video'];

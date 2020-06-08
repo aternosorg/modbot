@@ -20,4 +20,4 @@ exports.command = async (message, args, channels, database) => {
   }
 }
 
-exports.name = 'article';
+exports.names = ['article'];
