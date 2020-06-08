@@ -19,6 +19,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "discord.js": "^12.1.1",
+    "fuse.js": "^6.0.4",
     "googleapis": "^52.1.0",
     "mysql": "^2.18.1"
   }
