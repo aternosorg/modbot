@@ -1,5 +1,6 @@
 const config = require('../config.json');
 const {google} = require('googleapis');
+const Fuse = require('fuse.js');
 let videos;
 
 exports.command = async (message, args, channels, database) => {
@@ -27,13 +28,18 @@ exports.command = async (message, args, channels, database) => {
     }, 10*60*1000);
   }
 
-  for(video of videos){
-    if(video.snippet.title.toLowerCase().includes(query)){
-      await message.channel.send('https://youtu.be/'+video.snippet.resourceId.videoId);
-      return;
-    }
+  const fuse = new Fuse(videos, {
+    keys: ['snippet.title']
+  })
+
+  let video = fuse.search(query)[0];
+
+  if (video) {
+    await message.channel.send('https://youtu.be/'+video.item.snippet.resourceId.videoId);
   }
-  await message.channel.send('No video found!');
+  else {
+    await message.channel.send('No video found!');
+  }
 }
 
 exports.name = 'tutorial';
