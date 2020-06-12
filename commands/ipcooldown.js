@@ -77,4 +77,4 @@ exports.command = async (message, args, channels, database) => {
     }
 }
 
-exports.name = 'ipcooldown';
+exports.names = ['ipcooldown'];

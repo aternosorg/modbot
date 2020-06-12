@@ -65,7 +65,7 @@ const database = new Database(config.db);
         const cmd = args.shift().slice(config.prefix.length).toLowerCase();
 
         for (let command of commands) {
-            if (command.name === cmd) {
+            if (command.names.includes(cmd)) {
                 await Promise.resolve(command.command(message, args, channels, database));
                 break;
             }

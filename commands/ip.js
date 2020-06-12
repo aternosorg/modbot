@@ -80,4 +80,4 @@ exports.command = async (message, args, channels, database) => {
     }
 }
 
-exports.name = 'ip';
+exports.names = ['ip'];
