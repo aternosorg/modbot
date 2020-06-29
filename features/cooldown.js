@@ -2,7 +2,7 @@ const util = require('../lib/util');
 
 //cooldown automod
 exports.message = async (message, channels, database) => {
-    if (!message.guild || message.author.bot || message.member.hasPermission('MANAGE_MESSAGES'))
+    if (!message.guild || message.author.bot)
         return;
 
     if (channels.get(message.channel.id) && channels.get(message.channel.id).cooldown) {
@@ -64,11 +64,11 @@ exports.init = async (database, channels, bot) => {
     await clean(database, channels, bot);
     setInterval(async () => {
         await clean(database, channels, bot);
-    }, 60 * 60 * 1000)
+    }, 60 * 1000)
 }
 
 async function clean(database, channels, bot) {
-    for (let channel of channels) {
+    for (let [key,channel] of channels) {
         let relevant = Math.floor(Date.now() / 1000) - (isNaN(channel.cooldown) ? 0 : channel.cooldown);
         await database.query("DELETE FROM servers WHERE channelid = ? AND timestamp <= ?", [channel.id, relevant]);
     }
