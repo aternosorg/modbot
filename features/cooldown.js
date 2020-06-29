@@ -2,7 +2,7 @@ const util = require('../lib/util');
 
 //cooldown automod
 exports.message = async (message, channels, database) => {
-    if (!message.guild || message.author.bot)
+    if (!message.guild || message.author.bot || message.member.hasPermission('MANAGE_MESSAGES'))
         return;
 
     if (channels.get(message.channel.id) && channels.get(message.channel.id).cooldown) {
