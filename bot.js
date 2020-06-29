@@ -76,4 +76,7 @@ const database = new Database(config.db);
             await Promise.resolve(feature.message(message, channels, database));
         }
     });
+    bot.on('error', async (error) => {
+      console.error('An error occured',error;);;
+    })
 })();
