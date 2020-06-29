@@ -77,6 +77,6 @@ const database = new Database(config.db);
         }
     });
     bot.on('error', async (error) => {
-      console.error('An error occured',error;);;
-    })
+      console.error('An error occured',error);
+    });
 })();
