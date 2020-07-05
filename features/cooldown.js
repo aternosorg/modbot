@@ -7,7 +7,7 @@ exports.message = async (message, channels, database) => {
 
     if (channels.get(message.channel.id) && channels.get(message.channel.id).cooldown) {
         let cooldown = channels.get(message.channel.id).cooldown;
-        if (message.content.includes('.aternos.me')) {
+        if (message.content.toLowerCase().includes('.aternos.me')) {
 
             //get all IPs
             let words = message.content.replace(/[^\w.]/gi, ' ').split(' ');
