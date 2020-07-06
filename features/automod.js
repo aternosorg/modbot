@@ -12,9 +12,13 @@ exports.message = async (message, channels) => {
             let response = await message.channel.send(`**:no_entry: <@${message.author.id}> your message to this channel must include a valid Aternos IP! :no_entry:**`);
             try {
                 await util.retry(message.delete, message);
-                await util.retry(response.delete, response, [{timeout: 5000}]);
             } catch (e) {
                 console.error('Failed to delete message', e);
+            }
+            try {
+                await util.retry(response.delete, response, [{timeout: 5000}]);
+            } catch (e) {
+                console.error('Failed to delete response', e);
             }
             return;
         }
@@ -23,9 +27,13 @@ exports.message = async (message, channels) => {
             let response = await message.channel.send(`**:no_entry: <@${message.author.id}> don't advertise your server here! :no_entry:**`);
             try {
                 await util.retry(message.delete, message);
-                await util.retry(response.delete, response, [{timeout: 5000}]);
             } catch (e) {
                 console.error('Failed to delete message', e);
+            }
+            try {
+                await util.retry(response.delete, response, [{timeout: 5000}]);
+            } catch (e) {
+                console.error('Failed to delete response', e);
             }
         }
     }
