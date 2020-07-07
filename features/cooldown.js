@@ -50,6 +50,10 @@ exports.message = async (message, channels, database) => {
                 let response = await message.channel.send(`You can advertise again in ${remaining}!`);
                 try {
                     await util.retry(message.delete, message);
+                } catch (e) {
+                    console.error('Failed to delete message', e);
+                }
+                try {
                     await util.retry(response.delete, response, [{timeout: 5000}]);
                 } catch (e) {
                     console.error('Failed to delete message', e);
