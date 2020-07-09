@@ -33,12 +33,10 @@ exports.command = async (message, args, channels, database) => {
         }
     }
 
-    let sec = await util.timeToSec(message, args.join(' '));
+    let sec = util.timeToSec(args.join(' '));
 
-    if (sec == -1)
-      return;
     if (sec < 60){
-      await message.channel.send('Timers below 60s will be ignored!');
+      await message.channel.send('Please provide a valid time (Min: 60s)!');
       return;
     }
 
