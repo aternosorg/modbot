@@ -36,16 +36,7 @@ exports.message = async (message, channels, database) => {
                     continue;
                 }
 
-                let remaining = '';
-                if (Math.floor(difference / (60 * 60 * 24)) !== 0) {
-                    remaining += Math.floor(difference / (60 * 60 * 24)) + 'd ';
-                }
-                if (Math.floor(difference / (60 * 60)) !== 0) {
-                    remaining += Math.floor(difference % (60 * 60 * 24) / (60 * 60)) + 'h ';
-                }
-                if (Math.floor(difference / 60) !== 0) {
-                    remaining += Math.floor(difference % (60 * 60) / 60) + 'm ';
-                }
+                let remaining = util.secToTime(difference);
 
                 let response = await message.channel.send(`You can advertise again in ${remaining}!`);
                 try {
