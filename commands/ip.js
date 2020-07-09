@@ -1,4 +1,5 @@
 const channelConfig = require('../util/channelConfig.js');
+const util = require('../lib/util.js');
 
 exports.command = async (message, args, channels, database) => {
     //Permission check
@@ -31,51 +32,47 @@ exports.command = async (message, args, channels, database) => {
         return;
     }
 
-    //get channel
-    if (message.mentions.channels.size < 1 && !message.guild.channels.cache.get(args[0])) {
-        await message.channel.send("Please specify a channel! (#mention) or ID");
-        return;
-    }
-    let snowflake = message.mentions.channels.size ? message.mentions.channels.first().id : args[0];
-    if (!message.guild.channels.cache.get(snowflake)) {
-        await message.channel.send('This is not a channel on this server!');
+    //Get channel
+    let channelId = util.channelMentionToId(args.shift());
+    if (!message.guild.channels.cache.get(channelId)) {
+        await message.channel.send("Please specify a channel on this guild! (#mention) or ID");
         return;
     }
 
     if (mode === 0) {
         //Disable Moderation
-        channels.get(snowflake).mode = 0;
-        if (channels.get(snowflake).cooldown === 0) {
-            channels.delete(snowflake);
-            await database.query("DELETE FROM channels WHERE id = ?", [snowflake]);
+        channels.get(channelId).mode = 0;
+        if (channels.get(channelId).cooldown === 0) {
+            channels.delete(channelId);
+            await database.query("DELETE FROM channels WHERE id = ?", [channelId]);
         } else {
-            await database.query("UPDATE channels SET config = ? WHERE id = ?", [JSON.stringify(channels.get(snowflake)), snowflake]);
+            await database.query("UPDATE channels SET config = ? WHERE id = ?", [JSON.stringify(channels.get(channelId)), channelId]);
         }
-        await message.channel.send(`Disabled IP Moderation in <#${snowflake}>!`);
+        await message.channel.send(`Disabled IP Moderation in <#${channelId}>!`);
     } else {
-        if (channels.has(snowflake)) {
+        if (channels.has(channelId)) {
             //Update Moderation
-            if (channels.get(snowflake).mode) {
+            if (channels.get(channelId).mode) {
                 if (mode === 1)
-                    await message.channel.send(`Updated channel <#${snowflake}> to require IPs.`);
+                    await message.channel.send(`Updated channel <#${channelId}> to require IPs.`);
                 else
-                    await message.channel.send(`Updated channel <#${snowflake}> to forbid IPs.`);
+                    await message.channel.send(`Updated channel <#${channelId}> to forbid IPs.`);
             } else {
                 if (mode === 1)
-                    await message.channel.send(`Set channel <#${snowflake}> to require IPs.`);
+                    await message.channel.send(`Set channel <#${channelId}> to require IPs.`);
                 else
-                    await message.channel.send(`Set channel <#${snowflake}> to forbid IPs.`);
+                    await message.channel.send(`Set channel <#${channelId}> to forbid IPs.`);
             }
-            channels.get(snowflake).mode = mode;
-            await database.query("UPDATE channels SET config = ? WHERE id =?", [JSON.stringify(channels.get(snowflake)), snowflake]);
+            channels.get(channelId).mode = mode;
+            await database.query("UPDATE channels SET config = ? WHERE id =?", [JSON.stringify(channels.get(channelId)), channelId]);
         } else {
             //Add Moderation
-            channels.set(snowflake, new channelConfig(snowflake, mode, 0));
-            await database.query("INSERT INTO channels (id, config) VALUES (?,?)", [snowflake, JSON.stringify(channels.get(snowflake))]);
+            channels.set(channelId, new channelConfig(channelId, mode, 0));
+            await database.query("INSERT INTO channels (id, config) VALUES (?,?)", [channelId, JSON.stringify(channels.get(channelId))]);
             if (mode === 1)
-                await message.channel.send(`Set channel <#${snowflake}> to require IPs.`);
+                await message.channel.send(`Set channel <#${channelId}> to require IPs.`);
             else
-                await message.channel.send(`Set channel <#${snowflake}> to forbid IPs.`);
+                await message.channel.send(`Set channel <#${channelId}> to forbid IPs.`);
         }
     }
 }

@@ -1,4 +1,6 @@
 const channelConfig = require('../util/channelConfig.js');
+const util = require('../lib/util.js');
+
 exports.command = async (message, args, channels, database) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
@@ -7,73 +9,53 @@ exports.command = async (message, args, channels, database) => {
     }
 
     //Get channel
-    if (message.mentions.channels.size < 1 && !message.guild.channels.cache.get(args[0])) {
-        await message.channel.send("Please specify a channel! (#mention) or ID");
-        return;
-    }
-
-    let snowflake = message.mentions.channels.size ? message.mentions.channels.first().id : args[0];
-    if (!message.guild.channels.cache.get(snowflake)) {
-        await message.channel.send('This is not a channel on this server!');
+    let channelId = util.channelMentionToId(args.shift());
+    if (!message.guild.channels.cache.get(channelId)) {
+        await message.channel.send("Please specify a channel on this guild! (#mention) or ID");
         return;
     }
 
     //Disabling cooldown
-    if (args[1] === '0' || args[1] === '0s') {
-        if (channels.has(snowflake)) {
-            channels.get(snowflake).cooldown = 0;
-            if (channels.get(snowflake).mode === 0) {
-                await channels.delete(snowflake);
-                await database.query("DELETE FROM channels WHERE id = ?", [snowflake]);
+    if (args[0] === '0' || args[0] === '0s') {
+        if (channels.has(channelId)) {
+            channels.get(channelId).cooldown = 0;
+            if (channels.get(channelId).mode === 0) {
+                await channels.delete(channelId);
+                await database.query("DELETE FROM channels WHERE id = ?", [channelId]);
             } else {
-                await database.query("UPDATE channels WHERE SET config = ? WHERE id = ?", [JSON.stringify(channels.get(snowflake)), snowflake]);
+                await database.query("UPDATE channels WHERE SET config = ? WHERE id = ?", [JSON.stringify(channels.get(channelId)), channelId]);
             }
-            await message.channel.send(`Disabled IP cooldown <#${snowflake}>!`);
+            await message.channel.send(`Disabled IP cooldown <#${channelId}>!`);
             return;
         } else {
-            await message.channel.send(`IP cooldown in <#${snowflake}> is already disabled!`);
+            await message.channel.send(`IP cooldown in <#${channelId}> is already disabled!`);
             return;
         }
     }
 
-    //Convert time to s
-    let time = 0;
-    args[1].split(' ').forEach(word => {
-        if (word.endsWith('s')) {
-            time += parseInt(word, 10);
-        }
-        if (word.endsWith('m')) {
-            time += parseInt(word, 10) * 60;
-        }
-        if (word.endsWith('h')) {
-            time += parseInt(word, 10) * 60 * 60;
-        }
-        if (word.endsWith('d')) {
-            time += parseInt(word, 10) * 60 * 60 * 24;
-        }
-    });
+    let sec = util.timeToSec(args.join(' '));
 
-    //check time
-    if (time < 60) {
-        await message.channel.send('Please enter a valid Cooldown time (Min: 60s).');
-        return;
+    if (sec < 60){
+      await message.channel.send('Please provide a valid time (Min: 60s)!');
+      return;
     }
 
+    let time = util.secToTime(sec);
 
-    if (channels.has(snowflake)) {
+    if (channels.has(channelId)) {
         //Update Channel
-        if (channels.get(snowflake).cooldown) {
-            await message.channel.send(`Updated IP cooldown of <#${snowflake}> to ${args[1]}`);
+        if (channels.get(channelId).cooldown) {
+            await message.channel.send(`Updated IP cooldown of <#${channelId}> to ${time}.`);
         } else {
-            await message.channel.send(`Set IP cooldown of <#${snowflake}> to ${args[1]}`);
+            await message.channel.send(`Set IP cooldown of <#${channelId}> to ${time}.`);
         }
-        channels.get(snowflake).cooldown = time;
-        await database.query("UPDATE channels SET config = ? WHERE id =?", [JSON.stringify(channels.get(snowflake)), snowflake]);
+        channels.get(channelId).cooldown = sec;
+        await database.query("UPDATE channels SET config = ? WHERE id =?", [JSON.stringify(channels.get(channelId)), channelId]);
     } else {
         //Add Channel
-        channels.set(snowflake, new channelConfig(snowflake, 0, time));
-        await database.query("INSERT INTO channels (id, config) VALUES (?,?)", [snowflake, JSON.stringify(channels.get(snowflake))]);
-        await message.channel.send(`Set IP cooldown of <#${snowflake}> to ${args[1]}.`);
+        channels.set(channelId, new channelConfig(channelId, 0, sec));
+        await database.query("INSERT INTO channels (id, config) VALUES (?,?)", [channelId, JSON.stringify(channels.get(channelId))]);
+        await message.channel.send(`Set IP cooldown of <#${channelId}> to ${time}.`);
     }
 }
 
