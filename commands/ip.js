@@ -4,7 +4,7 @@ const util = require('../lib/util.js');
 exports.command = async (message, args, channels, database) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
-        message.channel.send('You need the "Manage Server" Permission to use this command.')
+        message.channel.send('You need the "Manage Server" Permission to use this command.');
         return;
     }
 
