@@ -3,6 +3,9 @@ class channelConfig {
     constructor(id, logChannel) {
         //guild ID
         this.id = id;
+
+        //log channel
+        this.logChannel = logChannel;
     }
 }
 
