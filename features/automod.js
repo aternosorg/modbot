@@ -18,22 +18,26 @@ exports.message = async (message, guilds, channels, database) => {
             let response = await message.channel.send(`**:no_entry: <@${message.author.id}> your message to this channel must include a valid Aternos IP! :no_entry:**`);
             try {
                 await util.retry(message.delete, message);
-                if (log)
-                  await log.send(`Message  in <#${message.channel.id}> deleted`, new Discord.MessageEmbed({
-                    footer: {
-                      text: `${message.author.username}#${message.author.discriminator}`,
-                      iconURL: message.author.avatarURL()
-                    },
-                    color: 'ORANGE',
-                    fields: [{
-                      name: 'Message',
-                      value: message.content
-                    },
-                    {
-                      name:'Reason',
-                      value: `IPs are required here`
-                    }]
-                  }));
+                try {
+                  if (log)
+                    await log.send(`Message  in <#${message.channel.id}> deleted`, new Discord.MessageEmbed({
+                      footer: {
+                        text: `${message.author.username}#${message.author.discriminator}`,
+                        iconURL: message.author.avatarURL()
+                      },
+                      color: 'ORANGE',
+                      fields: [{
+                        name: 'Message',
+                        value: message.content
+                      },
+                      {
+                        name:'Reason',
+                        value: `IPs are required here`
+                      }]
+                    }));
+                } catch (e) {
+                  console.error('Failed to log message deletion', e);
+                }
             } catch (e) {
                 console.error('Failed to delete message', e);
             }
