@@ -11,7 +11,7 @@ exports.command = async (message, args, guilds, channels, database) => {
     //Get channel
     let channelId = util.channelMentionToId(args.shift());
     if (!message.guild.channels.cache.get(channelId)) {
-        await message.channel.send("Please specify a channel on this guild! (#mention) or ID");
+        await message.channel.send("Please specify a channel! (#mention or ID)");
         return;
     }
 
