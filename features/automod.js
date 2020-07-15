@@ -1,4 +1,3 @@
-const Discord = require('discord.js');
 const util = require('../lib/util');
 
 //removes messages with(out) IPs in specific channels
@@ -8,36 +7,27 @@ exports.message = async (message, guilds, channels, database) => {
 
     if (channels.get(message.channel.id) && channels.get(message.channel.id).mode) {
 
-        let log = null;
-        if(guilds.get(message.guild.id))
-          log = message.guild.channels.cache.get(guilds.get(message.guild.id).logChannel);
-
         let mode = channels.get(message.channel.id).mode;
         if (mode === 1 && !message.content.toLowerCase().includes('.aternos.me')) {
             //delete non IP messages in IP only channels
             let response = await message.channel.send(`**:no_entry: <@${message.author.id}> your message to this channel must include a valid Aternos IP! :no_entry:**`);
             try {
                 await util.retry(message.delete, message);
-                try {
-                  if (log)
-                    await log.send(`Message  in <#${message.channel.id}> deleted`, new Discord.MessageEmbed({
-                      footer: {
-                        text: `${message.author.username}#${message.author.discriminator}`,
-                        iconURL: message.author.avatarURL()
-                      },
-                      color: 'ORANGE',
-                      fields: [{
-                        name: 'Message',
-                        value: message.content
-                      },
-                      {
-                        name:'Reason',
-                        value: `IPs are required here`
-                      }]
-                    }));
-                } catch (e) {
-                  console.error('Failed to log message deletion', e);
-                }
+                await util.log(message, `Message  in <#${message.channel.id}> deleted`, {
+                  footer: {
+                    text: `${message.author.username}#${message.author.discriminator}`,
+                    iconURL: message.author.avatarURL()
+                  },
+                  color: 'ORANGE',
+                  fields: [{
+                    name: 'Message',
+                    value: message.content
+                  },
+                  {
+                    name:'Reason',
+                    value: `IPs are required here`
+                  }]
+                });
             } catch (e) {
                 console.error('Failed to delete message', e);
             }
@@ -53,8 +43,7 @@ exports.message = async (message, guilds, channels, database) => {
             let response = await message.channel.send(`**:no_entry: <@${message.author.id}> don't advertise your server here! :no_entry:**`);
             try {
                 await util.retry(message.delete, message);
-                if (log)
-                  await log.send(`Message  in <#${message.channel.id}> deleted`, new Discord.MessageEmbed({
+                await util.log(message, `Message  in <#${message.channel.id}> deleted`, {
                     footer: {
                       text: `${message.author.username}#${message.author.discriminator}`,
                       iconURL: message.author.avatarURL()
@@ -68,7 +57,7 @@ exports.message = async (message, guilds, channels, database) => {
                       name:'Reason',
                       value: `IPs are not allowed here`
                     }]
-                  }));
+                  });
             } catch (e) {
                 console.error('Failed to delete message', e);
             }
