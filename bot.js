@@ -9,7 +9,6 @@ const config = require('./config');
 const bot = new Discord.Client();
 
 let channels = new Discord.Collection();
-let guilds = new Discord.Collection();
 
 //connect to mysql db
 const database = new Database(config.db);
@@ -70,14 +69,14 @@ const database = new Database(config.db);
 
         for (let command of commands) {
             if (command.names.includes(cmd)) {
-                await Promise.resolve(command.command(message, args, guilds, channels, database));
+                await Promise.resolve(command.command(message, args, channels, database));
                 break;
             }
         }
     });
     bot.on('message', async (message) => {
         for (let feature of features) {
-            await Promise.resolve(feature.message(message, guilds, channels, database));
+            await Promise.resolve(feature.message(message, channels, database));
         }
     });
     bot.on('error', async (error) => {

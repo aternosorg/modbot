@@ -1,7 +1,7 @@
 const config = require('../config.json');
 const axios = require('axios');
 
-exports.command = async (message, args, guilds, channels, database) => {
+exports.command = async (message, args, channels, database) => {
 
   let query = args.join(' ').toLowerCase();
 

@@ -1,7 +1,7 @@
 const util = require('../lib/util');
 
 //cooldown automod
-exports.message = async (message, guilds, channels, database) => {
+exports.message = async (message, channels, database) => {
     if (!message.guild || message.author.bot || message.member.hasPermission('MANAGE_MESSAGES'))
         return;
 
