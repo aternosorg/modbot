@@ -13,7 +13,7 @@ exports.message = async (message, channels, database) => {
             let response = await message.channel.send(`**:no_entry: <@${message.author.id}> your message to this channel must include a valid Aternos IP! :no_entry:**`);
             try {
                 await util.retry(message.delete, message);
-                await util.log(message, `Message  in <#${message.channel.id}> deleted`, {
+                await util.log(message, `Message in <#${message.channel.id}> deleted`, {
                   footer: {
                     text: `${message.author.username}#${message.author.discriminator}`,
                     iconURL: message.author.avatarURL()
@@ -43,7 +43,7 @@ exports.message = async (message, channels, database) => {
             let response = await message.channel.send(`**:no_entry: <@${message.author.id}> don't advertise your server here! :no_entry:**`);
             try {
                 await util.retry(message.delete, message);
-                await util.log(message, `Message  in <#${message.channel.id}> deleted`, {
+                await util.log(message, `Message in <#${message.channel.id}> deleted`, {
                     footer: {
                       text: `${message.author.username}#${message.author.discriminator}`,
                       iconURL: message.author.avatarURL()
