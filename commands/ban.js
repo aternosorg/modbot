@@ -18,14 +18,15 @@ exports.command = async (message, args, database, bot) => {
 
   //highest role check
   if(message.guild.members.resolve(user)) {
-    if(message.member.roles.highest.comparPositionTo(message.members.resolve(user).roles.highest) <= 0)
+    if(message.member.roles.highest.comparePositionTo(message.guild.members.resolve(user).roles.highest) <= 0) {
       message.react('🛑');
       message.channel.send("You dont have the Permission to ban that Member!")
       return;
+    }
   }
 
   let duration = util.timeToSec(args.join(' '));
-  let reason = (args.join(' ') || 'No reason provided.')
+  let reason = (args.join(' ') || 'No reason provided.');
   let now = Math.floor(Date.now()/1000);
   if (duration) {
     let time = util.secToTime(duration);
@@ -54,14 +55,14 @@ exports.command = async (message, args, database, bot) => {
     //check user was already banned
     let ban = await database.query("SELECT action FROM moderations WHERE guildid = ? AND userid = ? AND action = 'ban'", [message.guild.id, userId])
     if (ban) {
-      database.query("UPDATE moderations SET value = 0, tocheck = false, lastChanged = ?, reason = ?, moderator = ? WHERE guildid = ? AND userid = ? AND action = 'ban'",[now, reason, message.author.id, message.guild.id, userId]);
+      database.query("UPDATE moderations SET value = 0, tocheck = 0, lastChanged = ?, reason = ?, moderator = ? WHERE guildid = ? AND userid = ? AND action = 'ban'",[now, reason, message.author.id, message.guild.id, userId]);
     }
     else {
-      database.query("INSERT INTO moderations (action, value, tocheck, guildid, userid, lastChanged, reason, moderator) VALUES ('ban',0,false,?,?,?,?,?)",[message.guild.id, userId, now, reason,message.author.id]);
+      database.query("INSERT INTO moderations (action, value, tocheck, guildid, userid, lastChanged, reason, moderator) VALUES ('ban',0,0,?,?,?,?,?)",[message.guild.id, userId, now, reason,message.author.id]);
     }
 
     util.log(message, `Banned \`${user.username}#${user.discriminator}\`: ${reason}`);
-    message.channel.send(`Banned \`${user.username}#${user.discriminator}\`: ${reason}`);
+    message.channel.send(`${message.author.username} banned \`${user.username}#${user.discriminator}\`: ${reason}`);
   }
 }
 
