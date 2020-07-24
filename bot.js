@@ -8,8 +8,6 @@ const config = require('./config');
 
 const bot = new Discord.Client();
 
-let channels = new Discord.Collection();
-
 //connect to mysql db
 const database = new Database(config.db);
 
@@ -23,11 +21,6 @@ const database = new Database(config.db);
     await database.query("CREATE TABLE IF NOT EXISTS `moderations` (`guildid` VARCHAR(20) NOT NULL, `userid` VARCHAR(20) NOT NULL, `action` VARCHAR(10) NOT NULL,`lastChanged` int NOT NULL, `value` int NOT NULL, `reason` TEXT, PRIMARY KEY (`guildid`, `userid`, `action`))")
 
     util.init(database);
-
-    let result = await database.queryAll("SELECT * FROM channels");
-    for (let row of result) {
-        channels.set(row.id, JSON.parse(row.config));
-    }
 
     await bot.login(config.auth_token);
 
@@ -54,7 +47,6 @@ const database = new Database(config.db);
         }
         try {
             let feature = require(path);
-            await feature.init(database, channels, bot);
             features.push(feature);
         } catch (e) {
             console.error(`Failed to load feature '${file}'`, e);
@@ -84,14 +76,14 @@ const database = new Database(config.db);
 
         for (let command of commands) {
             if (command.names.includes(cmd)) {
-                await Promise.resolve(command.command(message, args, channels, database, bot));
+                await Promise.resolve(command.command(message, args, database, bot));
                 break;
             }
         }
     });
     bot.on('message', async (message) => {
         for (let feature of features) {
-            await Promise.resolve(feature.message(message, channels, database));
+            await Promise.resolve(feature.message(message, database));
         }
     });
     bot.on('error', async (error) => {

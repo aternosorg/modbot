@@ -1,12 +1,14 @@
 const util = require('../lib/util');
 
 //cooldown automod
-exports.message = async (message, channels, database) => {
+exports.message = async (message, database) => {
     if (!message.guild || message.author.bot || message.member.hasPermission('MANAGE_MESSAGES'))
         return;
 
-    if (channels.get(message.channel.id) && channels.get(message.channel.id).cooldown) {
-        let cooldown = channels.get(message.channel.id).cooldown;
+    let channel = await util.getChannelConfig(message.channel.id)
+
+    if (channel && channel.cooldown) {
+        let cooldown = channel.cooldown;
         if (message.content.toLowerCase().includes('.aternos.me')) {
 
             //get all IPs
@@ -68,22 +70,4 @@ exports.message = async (message, channels, database) => {
             }
         }
     }
-}
-
-exports.init = async (database, channels, bot) => {
-    await clean(database, channels, bot);
-    setInterval(async () => {
-        await clean(database, channels, bot);
-    }, 60 * 1000)
-}
-
-async function clean(database, channels, bot) {
-    for (let [key,channel] of channels) {
-        let relevant = Math.floor(Date.now() / 1000) - (isNaN(channel.cooldown) ? 0 : channel.cooldown);
-        await database.query("DELETE FROM servers WHERE channelid = ? AND timestamp <= ?", [channel.id, relevant]);
-    }
-    //stats on servers size
-    let result = await database.query("SELECT COUNT(*) as c FROM servers");
-    let date = new Date();
-    console.log(`[${date.getUTCHours()}:${date.getUTCMinutes()}] There are currently ${result['c']} servers in the Database!`);
 }

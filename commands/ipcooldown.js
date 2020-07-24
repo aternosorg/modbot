@@ -1,7 +1,7 @@
 const channelConfig = require('../util/channelConfig.js');
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, channels, database) => {
+exports.command = async (message, args, database) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         await message.channel.send('You need the "Manage Server" Permission to use this command.');
@@ -15,22 +15,23 @@ exports.command = async (message, args, channels, database) => {
         return;
     }
 
+    let channel = await util.getChannelConfig(channelId);
+
     //Disabling cooldown
     if (args[0] === '0' || args[0] === '0s') {
-        if (channels.has(channelId)) {
-            channels.get(channelId).cooldown = 0;
-            if (channels.get(channelId).mode === 0) {
-                await channels.delete(channelId);
+        if (channel) {
+            channel.cooldown = 0;
+            if (channel.mode === 0) {
                 await database.query("DELETE FROM channels WHERE id = ?", [channelId]);
             } else {
-                await database.query("UPDATE channels WHERE SET config = ? WHERE id = ?", [JSON.stringify(channels.get(channelId)), channelId]);
+                await database.query("UPDATE channels WHERE SET config = ? WHERE id = ?", [JSON.stringify(channel), channelId]);
             }
             await message.channel.send(`Disabled IP cooldown <#${channelId}>!`);
-            return;
         } else {
             await message.channel.send(`IP cooldown in <#${channelId}> is already disabled!`);
-            return;
         }
+        util.refreshChannelConfig(channelId);
+        return;
     }
 
     let sec = util.timeToSec(args.join(' '));
@@ -42,21 +43,23 @@ exports.command = async (message, args, channels, database) => {
 
     let time = util.secToTime(sec);
 
-    if (channels.has(channelId)) {
+    if (channel) {
         //Update Channel
-        if (channels.get(channelId).cooldown) {
+        if (channel.cooldown) {
             await message.channel.send(`Updated IP cooldown of <#${channelId}> to ${time}.`);
         } else {
             await message.channel.send(`Set IP cooldown of <#${channelId}> to ${time}.`);
         }
-        channels.get(channelId).cooldown = sec;
-        await database.query("UPDATE channels SET config = ? WHERE id =?", [JSON.stringify(channels.get(channelId)), channelId]);
+        channel.cooldown = sec;
+        await database.query("UPDATE channels SET config = ? WHERE id =?", [JSON.stringify(channel), channelId]);
     } else {
         //Add Channel
-        channels.set(channelId, new channelConfig(channelId, 0, sec));
-        await database.query("INSERT INTO channels (id, config) VALUES (?,?)", [channelId, JSON.stringify(channels.get(channelId))]);
+        channel= new channelConfig(channelId, 0, sec);
+        await database.query("INSERT INTO channels (id, config) VALUES (?,?)", [channelId, JSON.stringify(channel)]);
         await message.channel.send(`Set IP cooldown of <#${channelId}> to ${time}.`);
     }
+
+    await util.refreshChannelConfig(channelId);
 }
 
 exports.names = ['ipcooldown'];

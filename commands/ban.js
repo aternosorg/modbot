@@ -1,7 +1,7 @@
 const util = require('../lib/util.js');
 const Discord = require('discord.js');
 
-exports.command = async (message, args, channels, database, bot) => {
+exports.command = async (message, args, database, bot) => {
   if(!message.member.hasPermission('BAN_MEMBERS')) {
     message.react('🛑');
     return;
@@ -14,7 +14,7 @@ exports.command = async (message, args, channels, database, bot) => {
     message.channel.send("User not found!");
     return;
   }
-  
+
   //highest role check
 
   let duration = util.timeToSec(args.join(' '));

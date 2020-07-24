@@ -1,13 +1,15 @@
 const util = require('../lib/util');
 
 //removes messages with(out) IPs in specific channels
-exports.message = async (message, channels, database) => {
+exports.message = async (message, database) => {
     if (!message.guild || message.author.bot || message.member.hasPermission('MANAGE_MESSAGES'))
         return;
 
-    if (channels.get(message.channel.id) && channels.get(message.channel.id).mode) {
+    let channel = await util.getChannelConfig(message.channel.id)
 
-        let mode = channels.get(message.channel.id).mode;
+    if (channel && channel.mode) {
+
+        let mode = channel.mode;
         if (mode === 1 && !message.content.toLowerCase().includes('.aternos.me')) {
             //delete non IP messages in IP only channels
             let response = await message.channel.send(`**:no_entry: <@${message.author.id}> your message to this channel must include a valid Aternos IP! :no_entry:**`);
@@ -68,7 +70,4 @@ exports.message = async (message, channels, database) => {
             }
         }
     }
-}
-
-exports.init = async (database, channels, bot) => {
 }

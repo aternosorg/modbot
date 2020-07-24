@@ -3,7 +3,7 @@ const {google} = require('googleapis');
 const Fuse = require('fuse.js');
 let videos;
 
-exports.command = async (message, args, channels, database) => {
+exports.command = async (message, args, database) => {
 
   let query = args.join(' ').toLowerCase();
 
