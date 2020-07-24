@@ -1,7 +1,7 @@
 const guildConfig = require('../util/guildConfig.js');
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, database) => {
+exports.command = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         message.channel.send('You need the "Manage Server" Permission to use this command.');
