@@ -10,7 +10,7 @@ exports.command = async (message, args, database, bot) => {
 
     //Get channel
     let channelId = util.channelMentionToId(args.shift());
-    if (channelId && !message.guild.channels.cache.get(channelId)) {
+    if (channelId && !message.guild.channels.resolve(channelId)) {
         await message.channel.send("Please specify a channel! (#mention or ID)");
         return;
     }
@@ -28,7 +28,13 @@ exports.command = async (message, args, database, bot) => {
       }
     }
     else{
+      if (roleId) {
       await database.query("INSERT INTO guilds (config,id) VALUES (?,?)",[JSON.stringify(new guildConfig(guildId,channelId)),guildId]);
+      }
+      else {
+        await message.channel.send(`Log already disabled!`);
+        return;
+      }
     }
 
     await util.refreshGuildConfig(guildId);
