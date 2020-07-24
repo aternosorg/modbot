@@ -1,5 +1,4 @@
 const util = require('../lib/util.js');
-const Discord = require('discord.js');
 
 exports.command = async (message, args, database, bot) => {
   if(!message.member.hasPermission('BAN_MEMBERS')) {
