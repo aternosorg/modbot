@@ -18,9 +18,9 @@ const database = new Database(config.db);
     await database.query("CREATE TABLE IF NOT EXISTS `channels` (`id` VARCHAR(20) NOT NULL, `config` TEXT NOT NULL, PRIMARY KEY (`id`))");
     await database.query("CREATE TABLE IF NOT EXISTS `guilds` (`id` VARCHAR(20) NOT NULL, `config` TEXT NOT NULL, PRIMARY KEY (`id`))");
     await database.query("CREATE TABLE IF NOT EXISTS `servers` (`channelid` VARCHAR(20) NOT NULL, `ip` VARCHAR(20) NOT NULL, `timestamp` int NOT NULL, PRIMARY KEY (`ip`,`channelid`))");
-    await database.query("CREATE TABLE IF NOT EXISTS `moderations` (`guildid` VARCHAR(20) NOT NULL, `userid` VARCHAR(20) NOT NULL, `action` VARCHAR(10) NOT NULL,`lastChanged` int NOT NULL, `value` int NOT NULL, `reason` TEXT, PRIMARY KEY (`guildid`, `userid`, `action`))")
+    await database.query("CREATE TABLE IF NOT EXISTS `moderations` (`guildid` VARCHAR(20) NOT NULL, `userid` VARCHAR(20) NOT NULL, `action` VARCHAR(10) NOT NULL,`lastChanged` int NOT NULL, `value` int NOT NULL, `reason` TEXT,`tocheck` BOOLEAN DEFAULT true, PRIMARY KEY (`guildid`, `userid`, `action`))")
 
-    util.init(database);
+    util.init(database, bot);
 
     await bot.login(config.auth_token);
 
