@@ -1,18 +1,13 @@
-const Discord = require('discord.js');
 const util = require('../lib/util');
 
 //cooldown automod
-exports.message = async (message, guilds, channels, database) => {
+exports.message = async (message, channels, database) => {
     if (!message.guild || message.author.bot || message.member.hasPermission('MANAGE_MESSAGES'))
         return;
 
     if (channels.get(message.channel.id) && channels.get(message.channel.id).cooldown) {
         let cooldown = channels.get(message.channel.id).cooldown;
         if (message.content.toLowerCase().includes('.aternos.me')) {
-
-            let log = null;
-            if(guilds.get(message.guild.id))
-              log = message.guild.channels.cache.get(guilds.get(message.guild.id).logChannel);
 
             //get all IPs
             let words = message.content.replace(/[^\w.]/gi, ' ').split(' ');
@@ -45,23 +40,22 @@ exports.message = async (message, guilds, channels, database) => {
 
                 let response = await message.channel.send(`You can advertise again in ${remaining}!`);
                 try {
-                    await util.retry(message.delete, message);
-                    if (log)
-                      await log.send(`Message  in <#${message.channel.id}> deleted`, new Discord.MessageEmbed({
-                        footer: {
-                          text: `${message.author.username}#${message.author.discriminator}`,
-                          iconURL: message.author.avatarURL()
-                        },
-                        color: 'ORANGE',
-                        fields: [{
-                          name: 'Message',
-                          value: message.content
-                        },
-                        {
-                          name:'Reason',
-                          value: `${ip}'s cooldown has ${remaining} remaining.`
-                        }]
-                      }));
+                  await util.retry(message.delete, message);
+                  await util.log(message, `Message in <#${message.channel.id}> deleted`, {
+                    footer: {
+                      text: `${message.author.username}#${message.author.discriminator}`,
+                      iconURL: message.author.avatarURL()
+                    },
+                    color: 'ORANGE',
+                    fields: [{
+                      name: 'Message',
+                      value: message.content
+                    },
+                    {
+                      name:'Reason',
+                      value: `${ip}'s cooldown has ${remaining} remaining.`
+                    }]
+                  });
                 } catch (e) {
                     console.error('Failed to delete message', e);
                 }

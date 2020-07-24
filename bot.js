@@ -1,15 +1,14 @@
 const Discord = require('discord.js');
 const Database = require('./lib/Database');
+const util = require('./lib/util')
 
 const fs = require('fs').promises;
 
 const config = require('./config');
-const channelConfig = require('./util/channelConfig.js');
 
 const bot = new Discord.Client();
 
 let channels = new Discord.Collection();
-let guilds = new Discord.Collection();
 
 //connect to mysql db
 const database = new Database(config.db);
@@ -22,14 +21,11 @@ const database = new Database(config.db);
     await database.query("CREATE TABLE IF NOT EXISTS `guilds` (`id` VARCHAR(20) NOT NULL, `config` TEXT NOT NULL, PRIMARY KEY (`id`))");
     await database.query("CREATE TABLE IF NOT EXISTS `servers` (`channelid` VARCHAR(20) NOT NULL, `ip` varchar(20) NOT NULL, `timestamp` int NOT NULL, PRIMARY KEY (`ip`,`channelid`))");
 
+    util.init(database);
+
     let result = await database.queryAll("SELECT * FROM channels");
     for (let row of result) {
         channels.set(row.id, JSON.parse(row.config));
-    }
-
-    result = await database.queryAll("SELECT * FROM guilds");
-    for (let row of result) {
-        guilds.set(row.id, JSON.parse(row.config));
     }
 
     await bot.login(config.auth_token);
@@ -73,14 +69,14 @@ const database = new Database(config.db);
 
         for (let command of commands) {
             if (command.names.includes(cmd)) {
-                await Promise.resolve(command.command(message, args, guilds, channels, database));
+                await Promise.resolve(command.command(message, args, channels, database));
                 break;
             }
         }
     });
     bot.on('message', async (message) => {
         for (let feature of features) {
-            await Promise.resolve(feature.message(message, guilds, channels, database));
+            await Promise.resolve(feature.message(message, channels, database));
         }
     });
     bot.on('error', async (error) => {
