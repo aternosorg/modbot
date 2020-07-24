@@ -19,7 +19,8 @@ const database = new Database(config.db);
 
     await database.query("CREATE TABLE IF NOT EXISTS `channels` (`id` VARCHAR(20) NOT NULL, `config` TEXT NOT NULL, PRIMARY KEY (`id`))");
     await database.query("CREATE TABLE IF NOT EXISTS `guilds` (`id` VARCHAR(20) NOT NULL, `config` TEXT NOT NULL, PRIMARY KEY (`id`))");
-    await database.query("CREATE TABLE IF NOT EXISTS `servers` (`channelid` VARCHAR(20) NOT NULL, `ip` varchar(20) NOT NULL, `timestamp` int NOT NULL, PRIMARY KEY (`ip`,`channelid`))");
+    await database.query("CREATE TABLE IF NOT EXISTS `servers` (`channelid` VARCHAR(20) NOT NULL, `ip` VARCHAR(20) NOT NULL, `timestamp` int NOT NULL, PRIMARY KEY (`ip`,`channelid`))");
+    await database.query("CREATE TABLE IF NOT EXISTS `moderations` (`guildid` VARCHAR(20) NOT NULL, `userid` VARCHAR(20) NOT NULL, `action` VARCHAR(10) NOT NULL,`lastChanged` int NOT NULL, `value` int NOT NULL, `reason` TEXT, PRIMARY KEY (`guildid`, `userid`, `action`))")
 
     util.init(database);
 
@@ -59,6 +60,20 @@ const database = new Database(config.db);
             console.error(`Failed to load feature '${file}'`, e);
         }
     }
+    // load checks
+    for (let file of await fs.readdir(`${__dirname}/checks`)) {
+        let path = `${__dirname}/checks/${file}`;
+        if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
+            continue;
+        }
+        try {
+            let check = require(path);
+            check.check(database, bot);
+            setInterval(check.check, check.interval * 1000, database, bot);
+        } catch (e) {
+            console.error(`Failed to load feature '${file}'`, e);
+        }
+    }
 
     bot.on('message', async (message) => {
         if (!message.guild || message.author.bot) return;
@@ -69,7 +84,7 @@ const database = new Database(config.db);
 
         for (let command of commands) {
             if (command.names.includes(cmd)) {
-                await Promise.resolve(command.command(message, args, channels, database));
+                await Promise.resolve(command.command(message, args, channels, database, bot));
                 break;
             }
         }
