@@ -38,8 +38,7 @@ exports.command = async (message, args, database, bot) => {
     message.guild.members.ban(userId, {days: 7, reason: `duaration: ${time} reason:` + reason});
 
     //check user was already banned
-    let ban = await database.query("SELECT action FROM moderations WHERE guildid = ? AND userid = ? AND action = 'ban'", [message.guild.id, userId])
-    if (ban) {
+    if (await database.query("SELECT action FROM moderations WHERE guildid = ? AND userid = ? AND action = 'ban'", [message.guild.id, userId])) {
       database.query("UPDATE moderations SET lastChanged = ?, value = ?, reason = ?, moderator = ? WHERE guildid = ? AND userid = ? AND action = 'ban'",[now, endsAt, reason, message.author.id, message.guild.id, userId]);
     }
     else {
@@ -61,8 +60,8 @@ exports.command = async (message, args, database, bot) => {
       database.query("INSERT INTO moderations (action, value, tocheck, guildid, userid, lastChanged, reason, moderator) VALUES ('ban',0,0,?,?,?,?,?)",[message.guild.id, userId, now, reason,message.author.id]);
     }
 
-    util.log(message, `Banned \`${user.username}#${user.discriminator}\`: ${reason}`);
-    message.channel.send(`${message.author.username} banned \`${user.username}#${user.discriminator}\`: ${reason}`);
+    message.channel.send(`Banned \`${user.username}#${user.discriminator}\`: ${reason}`);
+    util.log(message, `${message.author.username} banned \`${user.username}#${user.discriminator}\`: ${reason}`);
   }
 }
 

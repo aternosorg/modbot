@@ -10,7 +10,7 @@ exports.check = async (database, bot) => {
 
       util.log(result.guildid, `Unbanned \`${user.username}#${user.discriminator}\`: Temporary ban completed!`);
 
-      database.query("UPDATE moderations SET tocheck = 0 WHERE action = 'ban' AND userid = ? AND guildid = ?",[result.userid,result.guildid])
+      database.query("UPDATE moderations SET tocheck = 0 WHERE action = 'ban' AND userid = ? AND guildid = ?",[result.userid,result.guildid]);
     } catch (e) {
       console.error(`Couldn't unban user ${result.userid} in ${result.guildid}`, e);
     }

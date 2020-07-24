@@ -25,12 +25,12 @@ exports.command = async (message, args, database, bot) => {
   let reason = (args.join(' ') || 'No reason provided.');
   let now = Math.floor(Date.now()/1000);
 
-  database.query("INSERT INTO moderations (guildid, userid, action, lastChanged, reason, moderator, tocheck) VALUES (?,?,'kick',?,?,?,FALSE)",[message.guild.id, userId, now, reason, message.author.id]);
+  database.query("INSERT INTO moderations (guildid, userid, action, lastChanged, reason, moderator) VALUES (?,?,'kick',?,?,?)",[message.guild.id, userId, now, reason, message.author.id]);
 
   member.kick(reason);
 
-  util.log(message, `Kicked \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
-  message.channel.send(`${message.author.username} kicked \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
+  message.channel.send(`Kicked \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
+  util.log(message, `${message.author.username} kicked \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
 }
 
 exports.names = ['kick'];
