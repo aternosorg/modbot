@@ -1,7 +1,7 @@
 const util = require('../lib/util.js');
 
 exports.command = async (message, args, database, bot) => {
-  if(!message.member.hasPermission('BAN_MEMBERS')) {
+  if(!util.isMod(message.member) || message.member.hasPermission('BAN_MEMBERS')) {
     message.react('🛑');
     return;
   }
@@ -30,7 +30,8 @@ exports.command = async (message, args, database, bot) => {
   let now = Math.floor(Date.now()/1000);
 
   if (message.guild.members.resolve(userId)) {
-    message.guild.members.resolve(userId).roles.remove([await util.mutedRole(message.guild.id)], `${message.author.username}#${message.author.discriminator}: ` + reason);
+    let guildConfig = await util.getGuildConfig(message);
+    message.guild.members.resolve(userId).roles.remove([guildConfig.mutedRole], `${message.author.username}#${message.author.discriminator}: ` + reason);
   }
   database.query("INSERT INTO inactiveModerations (guildid, userid, action, created, value, reason, moderator) VALUES (?,?,'mute',?,?,?,?)",[mute.guildid,mute.userid,mute.created,mute.value,mute.reason,mute.moderator]);
   database.query("DELETE FROM activeModerations WHERE action = 'mute' AND userid = ? AND guildid = ?",[mute.userid,mute.guildid]);

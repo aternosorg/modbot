@@ -23,7 +23,7 @@ exports.command = async (message, args, database, bot) => {
       //Get role
       roleId = util.roleMentionToId(args.shift());;
       if (roleId && !message.guild.roles.resolve(roleId)) {
-        await message.channel.send("Please specify a role! (@mention or ID)");
+        await message.channel.send("Please specify a role(@mention or ID) or use 'new' to create one!");
         return;
       }
     }
@@ -31,43 +31,18 @@ exports.command = async (message, args, database, bot) => {
 
     let guildId = message.guild.id;
 
-    let result = await database.query("SELECT * FROM guilds WHERE id = ?",[guildId]);
-    if(result){
-      let config = JSON.parse(result.config);
-      if (roleId) {
-        config.mutedRole = roleId;
-        await database.query("UPDATE guilds SET config = ? WHERE id = ?",[JSON.stringify(config),guildId]);
-      } else {
-        if (!config.logChannel)
-          await database.query("DELETE FROM guilds WHERE id = ?",[guildId]);
-        else{
-          config.mutedRole = roleId;
-          await database.query("UPDATE guilds SET config = ? WHERE id = ?",[JSON.stringify(config),guildId]);
-        }
-
-      }
-    }
-    else {
-      if (roleId) {
-        await database.query("INSERT INTO guilds (config,id) VALUES (?,?)",[JSON.stringify(new guildConfig(guildId, undefined, roleId)),guildId]);
-      }
-      else {
-        await message.channel.send(`Muted Role already disabled!`);
-        return;
-      }
-    }
-
-    await util.refreshGuildConfig(guildId);
-
-    for ([key, channel] of message.guild.channels.cache) {
-      channel.overwritePermissions([{
-        id: roleId,
-        deny: ['SEND_MESSAGES','SPEAK']
-      }]);
-    }
+    let config = await util.getGuildConfig(message);
+    config.mutedRole = roleId;
+    util.saveGuildConfig(config);
 
     if (roleId) {
       await message.channel.send(`Set muted role to <@&${roleId}>!`);
+      for ([key, channel] of message.guild.channels.cache) {
+        channel.overwritePermissions([{
+          id: roleId,
+          deny: ['SEND_MESSAGES','SPEAK']
+        }]);
+      }
     }
     else {
       await message.channel.send(`Disabled muted role!`);

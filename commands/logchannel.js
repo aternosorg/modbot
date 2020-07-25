@@ -17,27 +17,9 @@ exports.command = async (message, args, database, bot) => {
 
     let guildId = message.guild.id;
 
-    let result = await database.query("SELECT * FROM guilds WHERE id = ?",[guildId]);
-    if(result){
-      if (channelId) {
-        let config = JSON.parse(result.config);
-        config.logChannel = channelId;
-        await database.query("UPDATE guilds SET config = ? WHERE id = ?",[JSON.stringify(config),guildId]);
-      } else {
-        await database.query("DELETE FROM guilds WHERE id = ?",[guildId]);
-      }
-    }
-    else{
-      if (roleId) {
-      await database.query("INSERT INTO guilds (config,id) VALUES (?,?)",[JSON.stringify(new guildConfig(guildId,channelId)),guildId]);
-      }
-      else {
-        await message.channel.send(`Log already disabled!`);
-        return;
-      }
-    }
-
-    await util.refreshGuildConfig(guildId);
+    let config = await util.getGuildConfig(message);
+    config.logChannel = channelId;
+    util.saveGuildConfig(config);
 
     if (channelId) {
       await message.channel.send(`Set log channel to <#${channelId}>!`);

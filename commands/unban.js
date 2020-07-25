@@ -1,7 +1,7 @@
 const util = require('../lib/util.js');
 
 exports.command = async (message, args, database, bot) => {
-  if(!message.member.hasPermission('BAN_MEMBERS')) {
+  if(!util.isMod(message.member) || message.member.hasPermission('BAN_MEMBERS')) {
     message.react('🛑');
     return;
   }
@@ -14,14 +14,12 @@ exports.command = async (message, args, database, bot) => {
   let user = await bot.users.fetch(userId);
 
   if (!user) {
-    message.react('🛑');
     message.channel.send("User not found!");
     return;
   }
 
   let ban = await database.query("SELECT * FROM activeModerations WHERE guildid = ? AND userid = ? AND action = 'ban'", [message.guild.id, userId]);
   if(!ban) {
-    message.react('🛑');
     message.channel.send("User isn't banned here!");
     return;
   }

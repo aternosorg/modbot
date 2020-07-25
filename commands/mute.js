@@ -1,7 +1,7 @@
 const util = require('../lib/util.js');
 
 exports.command = async (message, args, database, bot) => {
-  if(!message.member.hasPermission('BAN_MEMBERS')) {
+  if(!util.isMod(message.member) || message.member.hasPermission('BAN_MEMBERS')) {
     message.react('🛑');
     return;
   }
@@ -14,19 +14,24 @@ exports.command = async (message, args, database, bot) => {
   let member = await message.guild.members.resolve(userId);
 
   if (!member) {
-    message.react('🛑');
     message.channel.send("User not found!");
     return;
   }
 
   //highest role check
-  if(message.member.roles.highest.comparePositionTo(message.guild.members.resolve(userId).roles.highest) <= 0) {
+  if(message.member.roles.highest.comparePositionTo(message.guild.members.resolve(userId).roles.highest) <= 0 || util.isMod(member)) {
     message.react('🛑');
     message.channel.send("You dont have the Permission to mute that Member!");
     return;
   }
 
-  let mutedRole = await util.mutedRole(message.guild.id);
+  let config = await util.getGuildConfig(message.guild.id);
+  let mutedRole = config.mutedRole;
+  if (!mutedRole) {
+      message.channel.send("No muted role specified!");
+      return;
+  }
+
   let duration = util.timeToSec(args.join(' '));
   while (util.isTime(args[0]))
     args.shift();
