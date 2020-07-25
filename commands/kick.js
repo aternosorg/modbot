@@ -7,6 +7,10 @@ exports.command = async (message, args, database, bot) => {
   }
 
   let userId = util.userMentionToId(args.shift());
+  if (!userId) {
+    message.channel.send("Please provide a user (@Mention or ID)!");
+    return;
+  }
   let member = await message.guild.members.resolve(userId);
 
   if (!member) {
