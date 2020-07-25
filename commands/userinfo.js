@@ -15,9 +15,10 @@ exports.command = async (message, args, database, bot) => {
   let member = await message.guild.members.resolve(userId);
 
   let embed = new Discord.MessageEmbed({
-      title: `Userinfo for ${user.username}#${user.discriminator}`,
       description: ``
   });
+
+  embed.setAuthor(`Userinfo for ${user.username}#${user.discriminator}`,user.avatarURL());
 
   embed.setDescription(embed.description + `ID: ${userId} \n`);
   embed.setDescription(embed.description + `Created Account: ${user.createdAt.toDateString()} \n`);
@@ -63,7 +64,7 @@ exports.command = async (message, args, database, bot) => {
       embed.setDescription(embed.description + `Banned: ❌`);
     }
   }
-  message.channel.send(embed)
+  message.channel.send(embed);
 }
 
 exports.names = ['userinfo','user','check'];
