@@ -4,9 +4,11 @@ exports.check = async (database, bot) => {
   let results = await database.queryAll("SELECT * FROM activeModerations WHERE action = 'mute' AND timed = 1 AND value <= ?", [Math.floor(Date.now()/1000)]);
   for (let result of results) {
     try {
-      bot.guilds.resolve(result.guildid).members.resolve(result.userid).roles.remove([await util.mutedRole(result.guildid)], "Temporary mute completed!");
+      if (bot.guilds.resolve(result.guildid).members.resolve(result.userid)) {
+        bot.guilds.resolve(result.guildid).members.resolve(result.userid).roles.remove([await util.mutedRole(result.guildid)], "Temporary mute completed!");
+      }
 
-      let user = await bot.users.resolve(result.userid);
+      let user = await bot.users.fetch(result.userid);
 
       util.log(result.guildid, `Unmuted \`${user.username}#${user.discriminator}\`: Temporary mute completed!`);
 

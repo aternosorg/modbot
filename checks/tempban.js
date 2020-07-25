@@ -6,7 +6,7 @@ exports.check = async (database, bot) => {
     try {
       bot.guilds.resolve(result.guildid).members.unban(result.userid, "Temporary ban completed!");
 
-      let user = await bot.users.resolve(result.userid);
+      let user = await bot.users.fetch(result.userid);
 
       util.log(result.guildid, `Unbanned \`${user.username}#${user.discriminator}\`: Temporary ban completed!`);
 
