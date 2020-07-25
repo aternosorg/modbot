@@ -41,18 +41,18 @@ exports.command = async (message, args, database, bot) => {
 
     let endsAt = now + duration;
 
-    member.roles.add(mutedRole, `duaration: ${time} reason:` + reason);
+    member.roles.add(mutedRole, `moderator: ${message.author.username}#${message.author.discriminator} duaration: ${time} reason: ` + reason);
     database.query("INSERT INTO activeModerations (guildid, userid, action, created, value, reason, moderator) VALUES (?,?,'mute',?,?,?,?)",[message.guild.id, userId, now, endsAt, reason, message.author.id]);
 
-    util.log(message, `Muted \`${member.user.username}#${member.user.discriminator}\` for ${time}: ${reason}`);
-    message.channel.send(`${message.author.username} muted \`${member.user.username}#${member.user.discriminator}\` for ${time}: ${reason}`);
+    message.channel.send(`Muted \`${member.user.username}#${member.user.discriminator}\` for ${time}: ${reason}`);
+    util.log(message, `\`${message.author.username}#${message.author.discriminator}\` muted \`${member.user.username}#${member.user.discriminator}\` for ${time}: ${reason}`);
   }
   else {
-    member.roles.add(mutedRole, reason);
+    member.roles.add(mutedRole, `${message.author.username}#${message.author.discriminator}: `+reason);
     database.query("INSERT INTO activeModerations (action, value, timed, guildid, userid, created, reason, moderator) VALUES ('mute',0,0,?,?,?,?,?)",[message.guild.id, userId, now, reason,message.author.id]);
 
     message.channel.send(`Muted \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
-    util.log(message, `${message.author.username} muted \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
+    util.log(message, `\`${message.author.username}#${message.author.discriminator}\` muted \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
   }
 }
 

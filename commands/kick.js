@@ -27,10 +27,10 @@ exports.command = async (message, args, database, bot) => {
 
   database.query("INSERT INTO inactiveModerations (guildid, userid, action, created, reason, moderator) VALUES (?,?,'kick',?,?,?)",[message.guild.id, userId, now, reason, message.author.id]);
 
-  member.kick(reason);
+  member.kick(`${message.author.username}#${message.author.discriminator}: `+reason);
 
   message.channel.send(`Kicked \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
-  util.log(message, `${message.author.username} kicked \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
+  util.log(message, `\`${message.author.username}#${message.author.discriminator}\` kicked \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
 }
 
 exports.names = ['kick'];

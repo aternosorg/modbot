@@ -46,16 +46,16 @@ exports.command = async (message, args, database, bot) => {
 
     database.query("INSERT INTO activeModerations (guildid, userid, action, created, value, reason, moderator) VALUES (?,?,'ban',?,?,?,?)",[message.guild.id, userId, now, endsAt, reason, message.author.id]);
 
-    util.log(message, `Banned \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
-    message.channel.send(`${message.author.username} banned \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
+    message.channel.send(`Banned \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
+    util.log(message, `\`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
   }
   else {
-    message.guild.members.ban(userId, {days: 7, reason: reason});
+    message.guild.members.ban(userId, {days: 7, reason: `#${message.author.username}#${message.author.discriminator}: ` + reason});
 
     database.query("INSERT INTO activeModerations (action, value, timed, guildid, userid, created, reason, moderator) VALUES ('ban',0,0,?,?,?,?,?)",[message.guild.id, userId, now, reason,message.author.id]);
 
     message.channel.send(`Banned \`${user.username}#${user.discriminator}\`: ${reason}`);
-    util.log(message, `${message.author.username} banned \`${user.username}#${user.discriminator}\`: ${reason}`);
+    util.log(message, `\`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\`: ${reason}`);
   }
 }
 
