@@ -15,7 +15,8 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  if(!await database.query("SELECT action FROM moderations WHERE guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId])) {
+  let mute = await database.query("SELECT * FROM activeModerations WHERE guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId]);
+  if(!mute) {
     message.react('🛑');
     message.channel.send("User isn't muted here!");
     return;
@@ -27,9 +28,9 @@ exports.command = async (message, args, database, bot) => {
   if (message.guild.members.resolve(userId)) {
     message.guild.members.resolve(userId).roles.remove([await util.mutedRole(message.guild.id)], "Temporary mute completed!");
   }
-
-  database.query("UPDATE moderations SET tocheck = 0 WHERE action = 'mute' AND userid = ? AND guildid = ?",[userId,message.guild.id]);
-  database.query("INSERT INTO moderations (guildid, userid, action, lastChanged, reason, moderator) VALUES (?,?,'unmute',?,?,?)",[message.guild.id, userId, now, reason, message.author.id]);
+  database.query("INSERT INTO inactiveModerations (guildid, userid, action, created, value, reason, moderator) VALUES (?,?,'mute',?,?,?,?)",[mute.guildid,mute.userid,mute.created,mute.value,mute.reason,mute.moderator]);
+  database.query("DELETE FROM activeModerations WHERE action = 'mute' AND userid = ? AND guildid = ?",[mute.userid,mute.guildid]);
+  database.query("INSERT INTO activeModerations (guildid, userid, action, created, reason, moderator) VALUES (?,?,'unmute',?,?,?)",[message.guild.id, userId, now, reason, message.author.id]);
 
   util.log(message, `${message.author.username} unmuted \`${user.username}#${user.discriminator}\`: ${reason}`);
   message.channel.send(`Unmuted \`${user.username}#${user.discriminator}\`: ${reason}`);

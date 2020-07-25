@@ -18,7 +18,8 @@ const database = new Database(config.db);
     await database.query("CREATE TABLE IF NOT EXISTS `channels` (`id` VARCHAR(20) NOT NULL, `config` TEXT NOT NULL, PRIMARY KEY (`id`))");
     await database.query("CREATE TABLE IF NOT EXISTS `guilds` (`id` VARCHAR(20) NOT NULL, `config` TEXT NOT NULL, PRIMARY KEY (`id`))");
     await database.query("CREATE TABLE IF NOT EXISTS `servers` (`channelid` VARCHAR(20) NOT NULL, `ip` VARCHAR(20) NOT NULL, `timestamp` int NOT NULL, PRIMARY KEY (`ip`,`channelid`))");
-    await database.query("CREATE TABLE IF NOT EXISTS `moderations` (`guildid` VARCHAR(20) NOT NULL, `userid` VARCHAR(20) NOT NULL, `action` VARCHAR(10) NOT NULL,`lastChanged` int NOT NULL, `value` int DEFAULT 0, `reason` TEXT,`moderator` VARCHAR(20) NOT NULL, `tocheck` BOOLEAN DEFAULT true, PRIMARY KEY (`guildid`, `userid`, `lastChanged`))")
+    await database.query("CREATE TABLE IF NOT EXISTS `activeModerations` (`guildid` VARCHAR(20) NOT NULL, `userid` VARCHAR(20) NOT NULL, `action` VARCHAR(10) NOT NULL,`created` int NOT NULL, `value` int DEFAULT 0, `reason` TEXT,`moderator` VARCHAR(20) NOT NULL, `timed` BOOLEAN DEFAULT true, PRIMARY KEY (`guildid`, `userid`, `created`))")
+    await database.query("CREATE TABLE IF NOT EXISTS `inactiveModerations` (`guildid` VARCHAR(20) NOT NULL, `userid` VARCHAR(20) NOT NULL, `action` VARCHAR(10) NOT NULL,`created` int NOT NULL, `value` int DEFAULT 0, `reason` TEXT,`moderator` VARCHAR(20) NOT NULL, `timed` BOOLEAN DEFAULT true, PRIMARY KEY (`guildid`, `userid`, `created`))")
 
     util.init(database, bot);
 

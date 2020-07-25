@@ -7,7 +7,7 @@ exports.command = async (message, args, database, bot) => {
   }
 
   let userId = util.userMentionToId(args.shift());
-  let member = await message.guild.members.fetch(userId);
+  let member = await message.guild.members.resolve(userId);
 
   if (!member) {
     message.react('🛑');
@@ -25,7 +25,7 @@ exports.command = async (message, args, database, bot) => {
   let reason = (args.join(' ') || 'No reason provided.');
   let now = Math.floor(Date.now()/1000);
 
-  database.query("INSERT INTO moderations (guildid, userid, action, lastChanged, reason, moderator) VALUES (?,?,'kick',?,?,?)",[message.guild.id, userId, now, reason, message.author.id]);
+  database.query("INSERT INTO inactiveModerations (guildid, userid, action, created, reason, moderator) VALUES (?,?,'kick',?,?,?)",[message.guild.id, userId, now, reason, message.author.id]);
 
   member.kick(reason);
 
