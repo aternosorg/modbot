@@ -30,7 +30,7 @@ exports.command = async (message, args, database, bot) => {
         } else {
             await message.channel.send(`IP cooldown in <#${channelId}> is already disabled!`);
         }
-        util.refreshChannelConfig(channelId);
+        await util.refreshChannelConfig(channelId);
         return;
     }
 
