@@ -1,4 +1,4 @@
-const util = require('../lib/util');
+const util = require('../../lib/util');
 
 //cooldown automod
 exports.message = async (message, database) => {
