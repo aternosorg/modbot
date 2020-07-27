@@ -20,19 +20,24 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  let ban = await database.query("SELECT * FROM moderations WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'ban'", [message.guild.id, userId]);
-  if(!ban) {
+  let ban;
+  try {
+    ban = await message.guild.fetchBan(userId);
+  } catch (e) {
+
+  }
+  if(!await database.query("SELECT * FROM moderations WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'ban'", [message.guild.id, userId]) && !ban) {
     message.react(util.icons.error);
     message.channel.send("User isn't banned here!");
     return;
   }
 
-  let reason = (args.join(' ') || 'No reason provided.');
+  let reason = args.join(' ') || 'No reason provided.';
   let now = Math.floor(Date.now()/1000);
 
   message.guild.members.unban(userId, `${message.author.username}#${message.author.discriminator}: ` + reason);
 
-  database.query("UPDATE moderations SET active = FALSE WHERE action = 'ban' AND userid = ? AND guildid = ?",[ban.userid,ban.guildid]);
+  database.query("UPDATE moderations SET active = FALSE WHERE action = 'ban' AND userid = ? AND guildid = ?",[userId,message.guild.guildid]);
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId, 'unban', now, reason, message.author.id]);
 
   message.channel.send(`Unbanned \`${user.username}#${user.discriminator}\`: ${reason}`);

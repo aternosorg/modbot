@@ -12,7 +12,10 @@ exports.command = async (message, args, database, bot) => {
     message.channel.send("Please provide a user (@Mention or ID)!");
     return;
   }
+
   let user = await bot.users.fetch(userId);
+  let member = await message.guild.members.resolve(userId);
+  let guildConfig = await util.getGuildConfig(message);
 
   if (!user) {
     message.react(util.icons.error);
@@ -20,19 +23,17 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  let mute = await database.query("SELECT * FROM moderations WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId]);
-  if(!mute) {
+  if(!await database.query("SELECT * FROM moderations WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId]) && (member && !member.roles.cache.has(guildConfig.mutedRole))) {
     message.react(util.icons.error);
     message.channel.send("User isn't muted here!");
     return;
   }
 
-  let reason = (args.join(' ') || 'No reason provided.');
+  let reason = args.join(' ') || 'No reason provided.';
   let now = Math.floor(Date.now()/1000);
 
-  if (message.guild.members.resolve(userId)) {
-    let guildConfig = await util.getGuildConfig(message);
-    message.guild.members.resolve(userId).roles.remove([guildConfig.mutedRole], `${message.author.username}#${message.author.discriminator}: ` + reason);
+  if (member) {
+    member.roles.remove([guildConfig.mutedRole], `${message.author.username}#${message.author.discriminator}: ` + reason);
   }
   database.query("UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId])
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId,'unmute', now, reason, message.author.id]);
