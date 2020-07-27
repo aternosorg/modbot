@@ -53,6 +53,7 @@ exports.command = async (message, args, database, bot) => {
     member.roles.add(mutedRole, `moderator: ${message.author.username}#${message.author.discriminator} duaration: ${time} reason: ` + reason);
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'mute', now, endsAt, reason, message.author.id]);
 
+    member.send(`You were muted in \`${message.guild.name}\` for ${time}: ${reason}`);
     message.channel.send(`Muted \`${member.user.username}#${member.user.discriminator}\` for ${time}: ${reason}`);
     util.log(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${member.user.username}#${member.user.discriminator}\` for ${time}: ${reason}`);
   }
@@ -60,6 +61,7 @@ exports.command = async (message, args, database, bot) => {
     member.roles.add(mutedRole, `${message.author.username}#${message.author.discriminator}: `+reason);
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId, 'mute', now, reason, message.author.id]);
 
+    member.send(`You were permanently muted in \`${message.guild.name}\`: ${reason}`);
     message.channel.send(`Muted \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
     util.log(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
   }

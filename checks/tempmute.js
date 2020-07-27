@@ -5,8 +5,10 @@ exports.check = async (database, bot) => {
   for (let result of results) {
     try {
       if (bot.guilds.resolve(result.guildid).members.resolve(result.userid)) {
+        let member = bot.guilds.resolve(result.guildid).members.resolve(result.userid);
         let guildConfig = util.getGuildConfig(result.guildid)
-        bot.guilds.resolve(result.guildid).members.resolve(result.userid).roles.remove([guildConfig.mutedRole], "Temporary mute completed!");
+        member.roles.remove([guildConfig.mutedRole], "Temporary mute completed!");
+        member.send(`You were unmuted in \`${message.guild.name}\`: Temporary mute completed!`);
       }
 
       let user = await bot.users.fetch(result.userid);

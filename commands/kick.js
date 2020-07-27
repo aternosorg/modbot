@@ -32,6 +32,7 @@ exports.command = async (message, args, database, bot) => {
 
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'kick', now, reason, message.author.id,false]);
 
+  await member.send(`You were kicked from \`${message.guild.name}\`: ${reason}`);
   member.kick(`${message.author.username}#${message.author.discriminator}: `+reason);
 
   message.channel.send(`Kicked \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);

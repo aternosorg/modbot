@@ -47,6 +47,7 @@ exports.command = async (message, args, database, bot) => {
 
     let endsAt = now + duration;
 
+    await member.send(`You were banned from \`${message.guild.name}\` for ${time}: ${reason}`);
     message.guild.members.ban(userId, {days: 7, reason: `duaration: ${time} reason:` + reason});
 
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'ban', now, endsAt, reason, message.author.id]);
@@ -55,6 +56,7 @@ exports.command = async (message, args, database, bot) => {
     util.log(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
   }
   else {
+    await member.send(`You were permanently banned from \`${message.guild.name}\`: ${reason}`);
     message.guild.members.ban(userId, {days: 7, reason: `#${message.author.username}#${message.author.discriminator}: ` + reason});
 
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId, 'ban', now, reason, message.author.id]);
