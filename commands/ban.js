@@ -56,23 +56,23 @@ exports.command = async (message, args, database, bot) => {
     if (member) {
       await member.send(`You were banned from \`${message.guild.name}\` for ${time}: ${reason}`);
     }
-    await message.guild.members.ban(userId, {days: 7, reason: `duaration: ${time} reason:` + reason});
+    await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator} (${time}), Reason:` + reason});
 
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'ban', now, endsAt, reason, message.author.id]);
 
     await message.channel.send(`Banned \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
-    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
+    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\` (ID: ${user.id})\nDuration: **${time}**\nReason: **${reason}**`);
   }
   else {
     if (member) {
       await member.send(`You were permanently banned from \`${message.guild.name}\`: ${reason}`);
     }
-    await message.guild.members.ban(userId, {days: 7, reason: `#${message.author.username}#${message.author.discriminator}: ` + reason});
+    await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator}, Reason: ` + reason});
 
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId, 'ban', now, reason, message.author.id]);
 
     await message.channel.send(`Banned \`${user.username}#${user.discriminator}\`: ${reason}`);
-    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\`: ${reason}`);
+    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\` (ID: ${user.id})\nReason: **${reason}**`);
   }
 }
 
