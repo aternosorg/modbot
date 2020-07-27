@@ -2,6 +2,10 @@ const util = require('../lib/util.js');
 const Discord = require('discord.js');
 
 exports.command = async (message, args, database, bot) => {
+  if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
+    message.react(util.icons.error);
+    return;
+  }
 
   let userId = util.userMentionToId(args.shift());
   if (!userId) {
@@ -36,6 +40,7 @@ exports.command = async (message, args, database, bot) => {
   moderations = parseInt(moderations.count);
   embed.setDescription(embed.description + `**Moderations:** ${moderations} \n`);
 
+  let guildConfig = await util.getGuildConfig(message);
   let muteInfo = await database.query("SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = 'mute'",[userId,message.guild.id]);
   if (muteInfo) {
     if(muteInfo.expireTime)
@@ -43,7 +48,7 @@ exports.command = async (message, args, database, bot) => {
     else
       muteInfo = `${util.icons.yes} - ${muteInfo.reason}`;
   }
-  else if (member && member.roles.cache.get(util.mutedRole(message))) {
+  else if (member && member.roles.cache.get(guildConfig.mutedRole)) {
     muteInfo = `${util.icons.yes} - unknown Reason and Timer`;
   }
   else {

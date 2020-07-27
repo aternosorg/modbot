@@ -1,7 +1,7 @@
 const util = require('../lib/util.js');
 
 exports.command = async (message, args, database, bot) => {
-  if(!message.member.hasPermission('BAN_MEMBERS')) {
+  if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     message.react(util.icons.error);
     return;
   }
@@ -20,9 +20,10 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  //highest role check
+  //highest role & mod check
   if(message.guild.members.resolve(user)) {
-    if(message.member.roles.highest.comparePositionTo(message.guild.members.resolve(user).roles.highest) <= 0) {
+    let member = await message.guild.members.resolve(user);
+    if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)) {
       message.react(util.icons.error);
       message.channel.send("You dont have the Permission to ban that Member!")
       return;

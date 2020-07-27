@@ -5,7 +5,8 @@ exports.check = async (database, bot) => {
   for (let result of results) {
     try {
       if (bot.guilds.resolve(result.guildid).members.resolve(result.userid)) {
-        bot.guilds.resolve(result.guildid).members.resolve(result.userid).roles.remove([await util.mutedRole(result.guildid)], "Temporary mute completed!");
+        let guildConfig = util.getGuildConfig(result.guildid)
+        bot.guilds.resolve(result.guildid).members.resolve(result.userid).roles.remove([guildConfig.mutedRole], "Temporary mute completed!");
       }
 
       let user = await bot.users.fetch(result.userid);

@@ -1,7 +1,7 @@
 const util = require('../lib/util.js');
 
 exports.command = async (message, args, database, bot) => {
-  if(!message.member.hasPermission('BAN_MEMBERS')) {
+  if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     message.react(util.icons.error);
     return;
   }
