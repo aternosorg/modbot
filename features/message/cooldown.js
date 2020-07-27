@@ -6,7 +6,6 @@ exports.message = async (message, database) => {
         return;
 
     let channel = await util.getChannelConfig(message.channel.id)
-
     if (channel && channel.cooldown) {
         let cooldown = channel.cooldown;
         if (message.content.toLowerCase().includes('.aternos.me')) {
@@ -25,8 +24,9 @@ exports.message = async (message, database) => {
 
             for (let ip of uniqueIps) {
                 let server = ip.split(".")[0];
-                let data = await database.query('SELECT * FROM servers WHERE channelid = ? AND ip = ? ORDER BY `timestamp` DESC;', [message.channel.id, server]);
+                server = server.subString(0,20);
 
+                let data = await database.query('SELECT * FROM servers WHERE channelid = ? AND ip = ? ORDER BY `timestamp` DESC;', [message.channel.id, server]);
                 if (!data) {
                     await database.query('INSERT INTO servers (channelid, ip, `timestamp`) VALUES (?,?,?)', [message.channel.id, server, (Math.floor(Date.now() / 1000))]);
                     continue;
@@ -39,25 +39,10 @@ exports.message = async (message, database) => {
                 }
 
                 let remaining = util.secToTime(difference);
-
                 let response = await message.channel.send(`${util.icons.forbidden} You can advertise again in ${remaining}!`);
                 try {
                   await util.retry(message.delete, message);
-                  await util.log(message, `Message in <#${message.channel.id}> deleted`, {
-                    footer: {
-                      text: `${message.author.username}#${message.author.discriminator}`,
-                      iconURL: message.author.avatarURL()
-                    },
-                    color: 'ORANGE',
-                    fields: [{
-                      name: 'Message',
-                      value: message.content
-                    },
-                    {
-                      name:'Reason',
-                      value: `${ip}'s cooldown has ${remaining} remaining.`
-                    }]
-                  });
+                  await util.logMessageDeletion(message, `${ip}'s cooldown has ${remaining} remaining.`);
                 } catch (e) {
                     console.error('Failed to delete message', e);
                 }

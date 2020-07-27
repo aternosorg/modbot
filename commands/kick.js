@@ -36,7 +36,7 @@ exports.command = async (message, args, database, bot) => {
   member.kick(`${message.author.username}#${message.author.discriminator}: `+reason);
 
   message.channel.send(`Kicked \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
-  util.log(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` kicked \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
+  util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` kicked \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
 }
 
 exports.names = ['kick'];

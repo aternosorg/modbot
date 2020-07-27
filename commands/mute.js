@@ -55,7 +55,7 @@ exports.command = async (message, args, database, bot) => {
 
     member.send(`You were muted in \`${message.guild.name}\` for ${time}: ${reason}`);
     message.channel.send(`Muted \`${member.user.username}#${member.user.discriminator}\` for ${time}: ${reason}`);
-    util.log(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${member.user.username}#${member.user.discriminator}\` for ${time}: ${reason}`);
+    util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${member.user.username}#${member.user.discriminator}\` for ${time}: ${reason}`);
   }
   else {
     member.roles.add(mutedRole, `${message.author.username}#${message.author.discriminator}: `+reason);
@@ -63,7 +63,7 @@ exports.command = async (message, args, database, bot) => {
 
     member.send(`You were permanently muted in \`${message.guild.name}\`: ${reason}`);
     message.channel.send(`Muted \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
-    util.log(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
+    util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
   }
 }
 

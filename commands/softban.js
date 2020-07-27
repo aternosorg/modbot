@@ -31,7 +31,7 @@ exports.command = async (message, args, database, bot) => {
   message.guild.members.unban(userId,`softban`);
 
   message.channel.send(`Softbanned \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
-  util.log(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` softbanned \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
+  util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` softbanned \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
 }
 
 exports.names = ['softban'];

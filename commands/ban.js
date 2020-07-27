@@ -20,9 +20,10 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
+  let member
   //highest role & mod check
   if(message.guild.members.resolve(user)) {
-    let member = await message.guild.members.resolve(user);
+    member = await message.guild.members.resolve(user);
     if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)) {
       message.react(util.icons.error);
       message.channel.send("You dont have the Permission to ban that Member!")
@@ -44,25 +45,28 @@ exports.command = async (message, args, database, bot) => {
 
   if (duration) {
     let time = util.secToTime(duration);
-
     let endsAt = now + duration;
 
-    await member.send(`You were banned from \`${message.guild.name}\` for ${time}: ${reason}`);
+    if (member) {
+      await member.send(`You were banned from \`${message.guild.name}\` for ${time}: ${reason}`);
+    }
     message.guild.members.ban(userId, {days: 7, reason: `duaration: ${time} reason:` + reason});
 
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'ban', now, endsAt, reason, message.author.id]);
 
     message.channel.send(`Banned \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
-    util.log(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
+    util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
   }
   else {
-    await member.send(`You were permanently banned from \`${message.guild.name}\`: ${reason}`);
+    if (member) {
+      await member.send(`You were permanently banned from \`${message.guild.name}\`: ${reason}`);
+    }
     message.guild.members.ban(userId, {days: 7, reason: `#${message.author.username}#${message.author.discriminator}: ` + reason});
 
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId, 'ban', now, reason, message.author.id]);
 
     message.channel.send(`Banned \`${user.username}#${user.discriminator}\`: ${reason}`);
-    util.log(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\`: ${reason}`);
+    util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\`: ${reason}`);
   }
 }
 

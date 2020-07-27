@@ -15,21 +15,7 @@ exports.message = async (message, database) => {
             let response = await message.channel.send(`**${util.icons.forbidden} <@${message.author.id}> your message to this channel must include a valid Aternos IP! ${util.icons.forbidden}**`);
             try {
                 await util.retry(message.delete, message);
-                await util.log(message, `Message in <#${message.channel.id}> deleted`, {
-                  footer: {
-                    text: `${message.author.username}#${message.author.discriminator}`,
-                    iconURL: message.author.avatarURL()
-                  },
-                  color: 'ORANGE',
-                  fields: [{
-                    name: 'Message',
-                    value: message.content
-                  },
-                  {
-                    name:'Reason',
-                    value: `IPs are required here`
-                  }]
-                });
+                await util.logMessageDeletion(message, `IPs are required here`);
             } catch (e) {
                 console.error('Failed to delete message', e);
             }
@@ -45,21 +31,7 @@ exports.message = async (message, database) => {
             let response = await message.channel.send(`**${util.icons.forbidden} <@${message.author.id}> don't advertise your server here! ${util.icons.forbidden}**`);
             try {
                 await util.retry(message.delete, message);
-                await util.log(message, `Message in <#${message.channel.id}> deleted`, {
-                    footer: {
-                      text: `${message.author.username}#${message.author.discriminator}`,
-                      iconURL: message.author.avatarURL()
-                    },
-                    color: 'ORANGE',
-                    fields: [{
-                      name: 'Message',
-                      value: message.content
-                    },
-                    {
-                      name:'Reason',
-                      value: `IPs are not allowed here`
-                    }]
-                  });
+                await util.logMessageDeletion(message, `IPs are not allowed here`);
             } catch (e) {
                 console.error('Failed to delete message', e);
             }

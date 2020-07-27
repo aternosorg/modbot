@@ -40,7 +40,7 @@ exports.command = async (message, args, database, bot) => {
 
   member.send(`You were unmuted in \`${message.guild.name}\`: ${reason}`);
   message.channel.send(`Unmuted \`${user.username}#${user.discriminator}\`: ${reason}`);
-  util.log(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` unmuted \`${user.username}#${user.discriminator}\`: ${reason}`);
+  util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` unmuted \`${user.username}#${user.discriminator}\`: ${reason}`);
 }
 
 exports.names = ['unmute'];
