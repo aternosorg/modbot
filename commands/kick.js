@@ -27,7 +27,7 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  let reason = (args.join(' ') || 'No reason provided.');
+  let reason = args.join(' ') || 'No reason provided.';
   let now = Math.floor(Date.now()/1000);
 
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'kick', now, reason, message.author.id,false]);

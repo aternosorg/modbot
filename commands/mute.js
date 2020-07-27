@@ -37,7 +37,7 @@ exports.command = async (message, args, database, bot) => {
   let duration = util.timeToSec(args.join(' '));
   while (util.isTime(args[0]))
     args.shift();
-  let reason = (args.join(' ') || 'No reason provided.');
+  let reason = args.join(' ') || 'No reason provided.';
   let now = Math.floor(Date.now()/1000);
 
   let mute = await database.query("SELECT * FROM moderations WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId]);
