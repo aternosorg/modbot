@@ -20,6 +20,12 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
+  if (user.bot) {
+    await message.react(util.icons.error);
+    await message.channel.send("You cant interact with bots!");
+    return;
+  }
+
   let ban;
   try {
     ban = await message.guild.fetchBan(userId);

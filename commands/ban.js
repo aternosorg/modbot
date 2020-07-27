@@ -12,11 +12,17 @@ exports.command = async (message, args, database, bot) => {
     await message.channel.send("Please provide a user (@Mention or ID)!");
     return;
   }
-  let user = await bot.users.fetch(userId);
 
+  let user = await bot.users.fetch(userId);
   if (!user) {
     await message.react(util.icons.error);
     await message.channel.send("User not found!");
+    return;
+  }
+
+  if (user.bot) {
+    await message.react(util.icons.error);
+    await message.channel.send("You cant interact with bots!");
     return;
   }
 

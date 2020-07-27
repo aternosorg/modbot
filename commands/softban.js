@@ -14,6 +14,18 @@ exports.command = async (message, args, database, bot) => {
   }
   let member = await message.guild.members.resolve(userId);
 
+  if (!member) {
+    await message.react(util.icons.error);
+    await message.channel.send("User not found or not in guild!");
+    return;
+  }
+
+  if (member.user.bot) {
+    await message.react(util.icons.error);
+    await message.channel.send("You cant interact with bots!");
+    return;
+  }
+
   //highest role check
   if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
     await message.react(util.icons.error);
