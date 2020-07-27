@@ -12,18 +12,24 @@ exports.command = async (message, args, database, bot) => {
     await message.channel.send("Please provide a user (@Mention or ID)!");
     return;
   }
-  let member = await message.guild.members.resolve(userId);
 
-  if (!member) {
+  let user = await bot.users.fetch(userId);
+  if (!user) {
     await message.react(util.icons.error);
     await message.channel.send("User not found!");
     return;
   }
+  if (user.bot) {
+    await message.react(util.icons.error);
+    await message.channel.send("You cant interact with bots!");
+    return;
+  }
+  let member = await message.guild.members.resolve(userId);
 
   //highest role check
-  if(message.member.roles.highest.comparePositionTo(message.guild.members.resolve(userId).roles.highest) <= 0 || await util.isMod(member)) {
+  if(member && message.member.roles.highest.comparePositionTo(message.guild.members.resolve(userId).roles.highest) <= 0 || await util.isMod(member)) {
     await message.react(util.icons.error);
-    await message.channel.send("You dont have the Permission to mute that Member!");
+    await message.channel.send("You dont have the permission to mute that member!");
     return;
   }
 
@@ -49,21 +55,26 @@ exports.command = async (message, args, database, bot) => {
   if (duration) {
     let time = util.secToTime(duration);
     let endsAt = now + duration;
-
-    await member.roles.add(mutedRole, `moderator: ${message.author.username}#${message.author.discriminator} duaration: ${time} reason: ` + reason);
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'mute', now, endsAt, reason, message.author.id]);
 
-    await member.send(`You were muted in \`${message.guild.name}\` for ${time}: ${reason}`);
-    await message.channel.send(`Muted \`${member.user.username}#${member.user.discriminator}\` for ${time}: ${reason}`);
-    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${member.user.username}#${member.user.discriminator}\` for ${time}: ${reason}`);
+    if(member) {
+      await member.roles.add(mutedRole, `moderator: ${message.author.username}#${message.author.discriminator} duaration: ${time} reason: ` + reason);
+      await member.send(`You were muted in \`${message.guild.name}\` for ${time}: ${reason}`);
+    }
+
+    await message.channel.send(`Muted \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
+    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
   }
   else {
-    await member.roles.add(mutedRole, `${message.author.username}#${message.author.discriminator}: `+reason);
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId, 'mute', now, reason, message.author.id]);
 
-    await member.send(`You were permanently muted in \`${message.guild.name}\`: ${reason}`);
-    await message.channel.send(`Muted \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
-    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
+    if (member) {
+      await member.roles.add(mutedRole, `${message.author.username}#${message.author.discriminator}: `+reason);
+      await member.send(`You were permanently muted in \`${message.guild.name}\`: ${reason}`);
+    }
+
+    await message.channel.send(`Muted \`${user.username}#${user.discriminator}\`: ${reason}`);
+    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${user.username}#${user.discriminator}\`: ${reason}`);
   }
 }
 

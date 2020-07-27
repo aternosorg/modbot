@@ -22,6 +22,11 @@ exports.command = async (message, args, database, bot) => {
     await message.channel.send("User not found!");
     return;
   }
+  if (user.bot) {
+    await message.react(util.icons.error);
+    await message.channel.send("You cant interact with bots!");
+    return;
+  }
 
   if(!await database.query("SELECT * FROM moderations WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId]) && (member && !member.roles.cache.has(guildConfig.mutedRole))) {
     await message.react(util.icons.error);
