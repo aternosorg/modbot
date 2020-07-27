@@ -38,8 +38,8 @@ exports.command = async (message, args, database, bot) => {
         }
 
         config.removeModRole(roleId);
-        util.saveGuildConfig(config);
-        message.channel.send(`Removed <@&${roleId}> from moderator roles!`);
+        await util.saveGuildConfig(config);
+        await message.channel.send(`Removed <@&${roleId}> from moderator roles!`);
         break;
 
       case 'list':

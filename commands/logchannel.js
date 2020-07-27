@@ -19,7 +19,7 @@ exports.command = async (message, args, database, bot) => {
 
     let config = await util.getGuildConfig(message);
     config.logChannel = channelId;
-    util.saveGuildConfig(config);
+    await util.saveGuildConfig(config);
 
     if (channelId) {
       await message.channel.send(`Set log channel to <#${channelId}>!`);

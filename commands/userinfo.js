@@ -3,22 +3,22 @@ const Discord = require('discord.js');
 
 exports.command = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
-    message.react(util.icons.error);
+    await message.react(util.icons.error);
     return;
   }
 
   let userId = util.userMentionToId(args.shift());
   if (!userId) {
-    message.react(util.icons.error);
-    message.channel.send("Please provide a user (@Mention or ID)!");
+    await message.react(util.icons.error);
+    await message.channel.send("Please provide a user (@Mention or ID)!");
     return;
   }
 
   let user = await bot.users.fetch(userId);
 
   if (!user) {
-    message.react(util.icons.error);
-    message.channel.send("User not found!");
+    await message.react(util.icons.error);
+    await message.channel.send("User not found!");
     return;
   }
 
@@ -74,7 +74,7 @@ exports.command = async (message, args, database, bot) => {
       embed.setDescription(embed.description + `**Banned:** ${util.icons.no}`);
     }
   }
-  message.channel.send(embed);
+  await message.channel.send(embed);
 }
 
 exports.names = ['userinfo','user','check'];

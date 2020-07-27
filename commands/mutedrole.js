@@ -4,7 +4,7 @@ const util = require('../lib/util.js');
 exports.command = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
-        message.channel.send('You need the "Manage Server" Permission to use this command.');
+        await message.channel.send('You need the "Manage Server" Permission to use this command.');
         return;
     }
 
@@ -33,7 +33,7 @@ exports.command = async (message, args, database, bot) => {
 
     let config = await util.getGuildConfig(message);
     config.mutedRole = roleId;
-    util.saveGuildConfig(config);
+    await util.saveGuildConfig(config);
 
     if (roleId) {
       await message.channel.send(`Set muted role to <@&${roleId}>!`);
