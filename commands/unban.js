@@ -22,7 +22,7 @@ exports.command = async (message, args, database, bot) => {
 
   let ban;
   try {
-    await ban = await message.guild.fetchBan(userId);
+    ban = await message.guild.fetchBan(userId);
   } catch (e) {
 
   }
