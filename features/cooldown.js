@@ -40,7 +40,7 @@ exports.message = async (message, database) => {
 
                 let remaining = util.secToTime(difference);
 
-                let response = await message.channel.send(`You can advertise again in ${remaining}!`);
+                let response = await message.channel.send(`${util.icons.forbidden} You can advertise again in ${remaining}!`);
                 try {
                   await util.retry(message.delete, message);
                   await util.log(message, `Message in <#${message.channel.id}> deleted`, {

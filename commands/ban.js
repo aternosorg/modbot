@@ -2,19 +2,20 @@ const util = require('../lib/util.js');
 
 exports.command = async (message, args, database, bot) => {
   if(!message.member.hasPermission('BAN_MEMBERS')) {
-    message.react('🛑');
+    message.react(util.icons.error);
     return;
   }
 
   let userId = util.userMentionToId(args.shift());
   if (!userId) {
+    message.react(util.icons.error);
     message.channel.send("Please provide a user (@Mention or ID)!");
     return;
   }
   let user = await bot.users.fetch(userId);
 
   if (!user) {
-    message.react('🛑');
+    message.react(util.icons.error);
     message.channel.send("User not found!");
     return;
   }
@@ -22,7 +23,7 @@ exports.command = async (message, args, database, bot) => {
   //highest role check
   if(message.guild.members.resolve(user)) {
     if(message.member.roles.highest.comparePositionTo(message.guild.members.resolve(user).roles.highest) <= 0) {
-      message.react('🛑');
+      message.react(util.icons.error);
       message.channel.send("You dont have the Permission to ban that Member!")
       return;
     }
@@ -34,11 +35,10 @@ exports.command = async (message, args, database, bot) => {
   let reason = (args.join(' ') || 'No reason provided.');
   let now = Math.floor(Date.now()/1000);
 
-  let ban = await database.query("SELECT * FROM activeModerations WHERE guildid = ? AND userid = ? AND action = 'ban'", [message.guild.id, userId]);
+  let ban = await database.query("SELECT * FROM moderations WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'ban'", [message.guild.id, userId]);
   //check user was already banned
   if (ban) {
-    database.query("INSERT INTO inactiveModerations (guildid, userid, action, created, value, reason, moderator) VALUES (?,?,'ban',?,?,?,?)",[ban.guildid,ban.userid,ban.created,ban.value,ban.reason,ban.moderator]);
-    database.query("DELETE FROM activeModerations WHERE action = 'ban' AND userid = ? AND guildid = ?",[ban.userid,ban.guildid]);
+    database.query("UPDATE moderations SET active = FALSE WHERE guildid = ? AND userid = ? AND action = 'ban'", [message.guild.id, userId])
   }
 
   if (duration) {
@@ -48,18 +48,18 @@ exports.command = async (message, args, database, bot) => {
 
     message.guild.members.ban(userId, {days: 7, reason: `duaration: ${time} reason:` + reason});
 
-    database.query("INSERT INTO activeModerations (guildid, userid, action, created, value, reason, moderator) VALUES (?,?,'ban',?,?,?,?)",[message.guild.id, userId, now, endsAt, reason, message.author.id]);
+    let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'ban', now, endsAt, reason, message.author.id]);
 
     message.channel.send(`Banned \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
-    util.log(message, `\`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
+    util.log(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
   }
   else {
     message.guild.members.ban(userId, {days: 7, reason: `#${message.author.username}#${message.author.discriminator}: ` + reason});
 
-    database.query("INSERT INTO activeModerations (action, value, timed, guildid, userid, created, reason, moderator) VALUES ('ban',0,0,?,?,?,?,?)",[message.guild.id, userId, now, reason,message.author.id]);
+    let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId, 'ban', now, reason, message.author.id]);
 
     message.channel.send(`Banned \`${user.username}#${user.discriminator}\`: ${reason}`);
-    util.log(message, `\`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\`: ${reason}`);
+    util.log(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\`: ${reason}`);
   }
 }
 
