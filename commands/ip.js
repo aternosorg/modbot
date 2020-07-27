@@ -1,7 +1,7 @@
 const channelConfig = require('../util/channelConfig.js');
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, channels, database) => {
+exports.command = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         message.channel.send('You need the "Manage Server" Permission to use this command.');
@@ -39,20 +39,21 @@ exports.command = async (message, args, channels, database) => {
         return;
     }
 
+    let channel = await util.getChannelConfig(channelId);
+
     if (mode === 0) {
         //Disable Moderation
-        channels.get(channelId).mode = 0;
-        if (channels.get(channelId).cooldown === 0) {
-            channels.delete(channelId);
+        channel.mode = 0;
+        if (channel.cooldown === 0) {
             await database.query("DELETE FROM channels WHERE id = ?", [channelId]);
         } else {
-            await database.query("UPDATE channels SET config = ? WHERE id = ?", [JSON.stringify(channels.get(channelId)), channelId]);
+            await database.query("UPDATE channels SET config = ? WHERE id = ?", [JSON.stringify(channel), channelId]);
         }
         await message.channel.send(`Disabled IP Moderation in <#${channelId}>!`);
     } else {
-        if (channels.has(channelId)) {
+        if (channel) {
             //Update Moderation
-            if (channels.get(channelId).mode) {
+            if (channel.mode) {
                 if (mode === 1)
                     await message.channel.send(`Updated channel <#${channelId}> to require IPs.`);
                 else
@@ -63,18 +64,19 @@ exports.command = async (message, args, channels, database) => {
                 else
                     await message.channel.send(`Set channel <#${channelId}> to forbid IPs.`);
             }
-            channels.get(channelId).mode = mode;
-            await database.query("UPDATE channels SET config = ? WHERE id =?", [JSON.stringify(channels.get(channelId)), channelId]);
+            channel.mode = mode;
+            await database.query("UPDATE channels SET config = ? WHERE id =?", [JSON.stringify(channel), channelId]);
         } else {
             //Add Moderation
-            channels.set(channelId, new channelConfig(channelId, mode, 0));
-            await database.query("INSERT INTO channels (id, config) VALUES (?,?)", [channelId, JSON.stringify(channels.get(channelId))]);
+            channel = new channelConfig(channelId, mode, 0);
+            await database.query("INSERT INTO channels (id, config) VALUES (?,?)", [channelId, JSON.stringify(channel)]);
             if (mode === 1)
                 await message.channel.send(`Set channel <#${channelId}> to require IPs.`);
             else
                 await message.channel.send(`Set channel <#${channelId}> to forbid IPs.`);
         }
     }
+    await util.refreshChannelConfig(channelId);
 }
 
 exports.names = ['ip'];

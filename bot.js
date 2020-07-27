@@ -8,8 +8,6 @@ const config = require('./config');
 
 const bot = new Discord.Client();
 
-let channels = new Discord.Collection();
-
 //connect to mysql db
 const database = new Database(config.db);
 
@@ -19,14 +17,10 @@ const database = new Database(config.db);
 
     await database.query("CREATE TABLE IF NOT EXISTS `channels` (`id` VARCHAR(20) NOT NULL, `config` TEXT NOT NULL, PRIMARY KEY (`id`))");
     await database.query("CREATE TABLE IF NOT EXISTS `guilds` (`id` VARCHAR(20) NOT NULL, `config` TEXT NOT NULL, PRIMARY KEY (`id`))");
-    await database.query("CREATE TABLE IF NOT EXISTS `servers` (`channelid` VARCHAR(20) NOT NULL, `ip` varchar(20) NOT NULL, `timestamp` int NOT NULL, PRIMARY KEY (`ip`,`channelid`))");
+    await database.query("CREATE TABLE IF NOT EXISTS `servers` (`channelid` VARCHAR(20) NOT NULL, `ip` VARCHAR(20) NOT NULL, `timestamp` int NOT NULL, PRIMARY KEY (`ip`,`channelid`))");
+    await database.query("CREATE TABLE IF NOT EXISTS `moderations` (`id` int PRIMARY KEY AUTO_INCREMENT, `guildid` VARCHAR(20) NOT NULL, `userid` VARCHAR(20) NOT NULL, `action` VARCHAR(10) NOT NULL,`created` int NOT NULL, `value` int DEFAULT 0,`expireTime` int NULL DEFAULT NULL, `reason` TEXT,`moderator` VARCHAR(20) NULL DEFAULT NULL, `active` BOOLEAN DEFAULT TRUE)")
 
-    util.init(database);
-
-    let result = await database.queryAll("SELECT * FROM channels");
-    for (let row of result) {
-        channels.set(row.id, JSON.parse(row.config));
-    }
+    util.init(database, bot);
 
     await bot.login(config.auth_token);
 
@@ -44,22 +38,52 @@ const database = new Database(config.db);
         }
     }
 
-    // load features
-    const features = [];
-    for (let file of await fs.readdir(`${__dirname}/features`)) {
-        let path = `${__dirname}/features/${file}`;
+    // FEATURES
+    // message
+    const messages = [];
+    for (let file of await fs.readdir(`${__dirname}/features/message`)) {
+        let path = `${__dirname}/features/message/${file}`;
         if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
             continue;
         }
         try {
             let feature = require(path);
-            await feature.init(database, channels, bot);
-            features.push(feature);
+            messages.push(feature);
+        } catch (e) {
+            console.error(`Failed to load message feature '${file}'`, e);
+        }
+    }
+    // guildMemberAdd
+    const guildMemberAdds = [];
+    for (let file of await fs.readdir(`${__dirname}/features/guildMemberAdd`)) {
+        let path = `${__dirname}/features/guildMemberAdd/${file}`;
+        if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
+            continue;
+        }
+        try {
+            let feature = require(path);
+            guildMemberAdds.push(feature);
+        } catch (e) {
+            console.error(`Failed to load message feature '${file}'`, e);
+        }
+    }
+
+    // load checks
+    for (let file of await fs.readdir(`${__dirname}/checks`)) {
+        let path = `${__dirname}/checks/${file}`;
+        if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
+            continue;
+        }
+        try {
+            let check = require(path);
+            check.check(database, bot);
+            setInterval(check.check, check.interval * 1000, database, bot);
         } catch (e) {
             console.error(`Failed to load feature '${file}'`, e);
         }
     }
 
+    // commands
     bot.on('message', async (message) => {
         if (!message.guild || message.author.bot) return;
         if (!message.content.toLowerCase().startsWith(config.prefix.toLowerCase())) return;
@@ -69,16 +93,27 @@ const database = new Database(config.db);
 
         for (let command of commands) {
             if (command.names.includes(cmd)) {
-                await Promise.resolve(command.command(message, args, channels, database));
+                await Promise.resolve(command.command(message, args, database, bot));
                 break;
             }
         }
     });
+
+    //FEATURES
+    // message
     bot.on('message', async (message) => {
-        for (let feature of features) {
-            await Promise.resolve(feature.message(message, channels, database));
+        for (let feature of messages) {
+            await Promise.resolve(feature.message(message, database));
         }
     });
+    // guildMemberAdd features
+    bot.on('guildMemberAdd', async (member) => {
+        for (let feature of guildMemberAdds) {
+            await Promise.resolve(feature.message(member, database));
+        }
+    });
+
+    // errors
     bot.on('error', async (error) => {
       console.error('An error occured',error);
     });
