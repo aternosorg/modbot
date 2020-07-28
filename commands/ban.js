@@ -59,9 +59,21 @@ exports.command = async (message, args, database, bot) => {
     await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator} (${time}), Reason:` + reason});
 
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'ban', now, endsAt, reason, message.author.id]);
-
-    await message.channel.send(`Banned \`${user.username}#${user.discriminator}\` for ${time} | ${reason}`);
-    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\` (ID: ${user.id})\nDuration: **${time}**\nReason: **${reason}**`);
+    const responseEmbed = new Discord.MessageEmbed()
+    .setDescription(`**${user.username}#${user.discriminator} has been banned for ${time} | ${reason}**`)
+    .setColor(0x1FD78D)
+    await message.channel.send(responseEmbed);
+    const embed = new Discord.MessageEmbed()
+    .setColor(0xF62451)
+    .setAuthor(`Case ${insert.insertId} | Ban | ${user.username}#${user.discriminator}`, user.avatarURL())
+    .addFields(
+      { name: "User", value: `<@${user.id}>`, inline: true},
+      { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
+      { name: "Reason", value: reason, inline: true},
+      { name: "Duration", value: `${time}`, inline: true}
+    )
+    .setFooter(`ID: ${user.id}`)
+    await util.logMessageEmbed(message, "", embed);
   }
   else {
     if (member) {
@@ -71,8 +83,20 @@ exports.command = async (message, args, database, bot) => {
 
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId, 'ban', now, reason, message.author.id]);
 
-    await message.channel.send(`Banned \`${user.username}#${user.discriminator}\` | ${reason}`);
-    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\` (ID: ${user.id})\nReason: **${reason}**`);
+    const responseEmbed = new Discord.MessageEmbed()
+    .setDescription(`**${user.username}#${user.discriminator} has been banned | ${reason}**`)
+    .setColor(0x1FD78D)
+    await message.channel.send(responseEmbed);
+    const embed = new Discord.MessageEmbed()
+    .setColor(0xF62451)
+    .setAuthor(`Case ${insert.insertId} | Ban | ${user.username}#${user.discriminator}`, user.avatarURL())
+    .addFields(
+      { name: "User", value: `<@${user.id}>`, inline: true},
+      { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
+      { name: "Reason", value: reason, inline: true}
+    )
+    .setFooter(`ID: ${user.id}`)
+    await util.logMessageEmbed(message, "", embed);
   }
 }
 

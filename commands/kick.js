@@ -22,7 +22,7 @@ exports.command = async (message, args, database, bot) => {
 
   if (member.user.bot) {
     await message.react(util.icons.error);
-    await message.channel.send("You cant interact with bots");
+    await message.channel.send("You cant interact with bots!");
     return;
   }
 
@@ -42,8 +42,20 @@ exports.command = async (message, args, database, bot) => {
   await member.send(`You were kicked from \`${message.guild.name}\` | ${reason}`);
   await member.kick(`${message.author.username}#${message.author.discriminator}: `+reason);
 
-  await message.channel.send(`Kicked \`${member.user.username}#${member.user.discriminator}\` | ${reason}`);
-  await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` kicked \`${member.user.username}#${member.user.discriminator}\`(ID: ${user.id})\nReason: ${reason}`);
+  const responseEmbed = new Discord.MessageEmbed()
+  .setDescription(`**${member.user.username}#${member.user.discriminator} has been kicked | ${reason}**`)
+  .setColor(0x1FD78D)
+  await message.channel.send(responseEmbed);
+  const embed = new Discord.MessageEmbed()
+  .setColor(0xF62451)
+  .setAuthor(`Case ${insert.insertId} | Kick | ${message.author.username}#${message.author.discriminator}`, member.user.avatarURL())
+  .addFields(
+    { name: "User", value: `<@${member.user.id}>`, inline: true},
+    { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
+    { name: "Reason", value: reason, inline: true}
+  )
+  .setFooter(`ID: ${member.user.id}`)
+  await util.logMessageEmbed(message, "", embed);
 }
 
 exports.names = ['kick'];

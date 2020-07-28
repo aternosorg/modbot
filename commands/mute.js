@@ -62,8 +62,21 @@ exports.command = async (message, args, database, bot) => {
       await member.send(`You were muted in \`${message.guild.name}\` for ${time} | ${reason}`);
     }
 
-    await message.channel.send(`Muted \`${user.username}#${user.discriminator}\` for ${time} | ${reason}`);
-    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${user.username}#${user.discriminator}\`(ID: ${user.id})\nDuration: **${time}**\nReason **${reason}**`);
+    const responseEmbed = new Discord.MessageEmbed()
+    .setDescription(`**${user.username}#${user.discriminator} has been muted for ${time} | ${reason}**`)
+    .setColor(0x1FD78D)
+    await message.channel.send(responseEmbed);
+    const embed = new Discord.MessageEmbed()
+    .setColor(0xEB7B59)
+    .setAuthor(`Case ${insert.insertId} | Mute | ${member.user.username}#${member.user.discriminator}`, member.user.avatarURL())
+    .addFields(
+      { name: "User", value: `<@${member.user.id}>`, inline: true},
+      { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
+      { name: "Reason", value: reason, inline: true},
+      { name: "Duration", value: `${time}`, inline: true}
+    )
+    .setFooter(`ID: ${user.id}`)
+    await util.logMessageEmbed(message, "", embed);
   }
   else {
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId, 'mute', now, reason, message.author.id]);
@@ -73,8 +86,20 @@ exports.command = async (message, args, database, bot) => {
       await member.send(`You were permanently muted in \`${message.guild.name}\` | ${reason}`);
     }
 
-    await message.channel.send(`Muted \`${user.username}#${user.discriminator}\` | ${reason}`);
-    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${user.username}#${user.discriminator}\`(ID: ${user.id})\nReason: ${reason}`);
+    const responseEmbed = new Discord.MessageEmbed()
+    .setDescription(`**${user.username}#${user.discriminator} has been muted | ${reason}**`)
+    .setColor(0x1FD78D)
+    await message.channel.send(responseEmbed);
+    const embed = new Discord.MessageEmbed()
+    .setColor(0xEB7B59)
+    .setAuthor(`Case ${insert.insertId} | Mute | ${user.username}#${user.discriminator}`, user.avatarURL())
+    .addFields(
+      { name: "User", value: `<@${user.id}>`, inline: true},
+      { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
+      { name: "Reason", value: reason, inline: true}
+    )
+    .setFooter(`ID: ${user.id}`)
+    await util.logMessageEmbed(message, "", embed);
   }
 }
 
