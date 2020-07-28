@@ -40,6 +40,10 @@ exports.command = async (message, args, database, bot) => {
   moderations = parseInt(moderations.count);
   embed.setDescription(embed.description + `**Moderations:** ${moderations} \n`);
 
+  let strikes = await database.query("SELECT SUM(value) AS sum FROM moderations WHERE guildid = ? AND userid = ? AND (action = 'strike' OR action = 'pardon')",[message.guild.id, user.id]);
+  strikes = parseInt(strikes.sum);
+  embed.setDescription(embed.description + `**Strikes:** ${strikes} \n`);
+
   let guildConfig = await util.getGuildConfig(message);
   let muteInfo = await database.query("SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = 'mute'",[userId,message.guild.id]);
   if (muteInfo) {
