@@ -1,5 +1,7 @@
 const util = require('../lib/util.js');
 
+const maxStrikesAtOnce = 5;
+
 exports.command = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     await message.react(util.icons.error);
@@ -10,7 +12,11 @@ exports.command = async (message, args, database, bot) => {
   try {
     await bot.users.fetch(util.userMentionToId(args[0]))
   } catch (e) {
-    count = Math.abs(parseInt(args.shift()))
+    count = Math.abs(parseInt(args.shift()));
+    if (count > maxStrikesAtOnce) {
+      await message.channel.send(`You cant give more then ${maxStrikesAtOnce} strikes at once!`);
+      return;
+    }
   }
 
   let user;

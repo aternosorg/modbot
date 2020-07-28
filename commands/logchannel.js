@@ -15,8 +15,6 @@ exports.command = async (message, args, database, bot) => {
         return;
     }
 
-    let guildId = message.guild.id;
-
     let config = await util.getGuildConfig(message);
     config.logChannel = channelId;
     await util.saveGuildConfig(config);
