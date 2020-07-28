@@ -49,7 +49,7 @@ exports.command = async (message, args, database, bot) => {
   await message.channel.send(responseEmbed);
   const embed = new Discord.MessageEmbed()
   .setColor(0xF62451)
-  .setAuthor(`Case ${insert.insertId} | Kick | ${message.author.username}#${message.author.discriminator}`, member.user.avatarURL())
+  .setAuthor(`Case ${insert.insertId} | Kick | ${member.user.username}#${member.user.discriminator}`, member.user.avatarURL())
   .addFields(
     { name: "User", value: `<@${member.user.id}>`, inline: true},
     { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
