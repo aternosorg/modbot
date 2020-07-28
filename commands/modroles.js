@@ -10,36 +10,36 @@ exports.command = async (message, args, database, bot) => {
 
     let guildId = message.guild.id;
     let config = await util.getGuildConfig(message);
-    let roleId;
+    let role;
     switch (args.shift()) {
       case 'add':
         //Get role
-        roleId = util.roleMentionToId(args.shift());;
-        if (!message.guild.roles.resolve(roleId)) {
+        role = message.guild.roles.resolve(util.roleMentionToId(args.shift()));
+        if (!role) {
           await message.channel.send("Please specify a role! (@mention or ID)");
           return;
         }
-        config.addModRole(roleId);
+        config.addModRole(role.id);
         await util.saveGuildConfig(config);
-        await message.channel.send(`Added <@&${roleId}> as a moderator role!`);
+        await message.channel.send(`Added \`${role.name}\` as a moderator role!`);
         break;
 
       case 'remove':
         //Get role
-        roleId = util.roleMentionToId(args.shift());;
-        if (!message.guild.roles.resolve(roleId)) {
+        role = message.guild.roles.resolve(util.roleMentionToId(args.shift()));
+        if (!role) {
           await message.channel.send("Please specify a role! (@mention or ID)");
           return;
         }
 
-        if (!config.isModRole(roleId)) {
-          await message.channel.send("That role is not a moderator role")
+        if (!config.isModRole(role.id)) {
+          await message.channel.send("That role is not a moderator role");
           return;
         }
 
-        config.removeModRole(roleId);
+        config.removeModRole(role.id);
         await util.saveGuildConfig(config);
-        await message.channel.send(`Removed <@&${roleId}> from moderator roles!`);
+        await message.channel.send(`Removed \`${role.name}\` from moderator roles!`);
         break;
 
       case 'list':
