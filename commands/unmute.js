@@ -51,7 +51,7 @@ exports.command = async (message, args, database, bot) => {
   await message.channel.send(responseEmbed);
   const embed = new Discord.MessageEmbed()
   .setColor(0x1FD78D)
-  .setAuthor(`Case ${insert.insertId} | Unmute | ${user.username}#${user.discriminator}`, `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=256`)
+  .setAuthor(`Case ${insert.insertId} | Unmute | ${user.username}#${user.discriminator}`, user.avatarURL())
   .addFields(
     { name: "User", value: `<@${user.id}>`, inline: true},
     { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
