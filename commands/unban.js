@@ -46,8 +46,8 @@ exports.command = async (message, args, database, bot) => {
   await database.query("UPDATE moderations SET active = FALSE WHERE action = 'ban' AND userid = ? AND guildid = ?",[userId,message.guild.guildid]);
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId, 'unban', now, reason, message.author.id]);
 
-  await message.channel.send(`Unbanned \`${user.username}#${user.discriminator}\`: ${reason}`);
-  await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` unbanned \`${user.username}#${user.discriminator}\`: ${reason}`);
+  await message.channel.send(`Unbanned \`${user.username}#${user.discriminator}\` | ${reason}`);
+  await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` unbanned \`${user.username}#${user.discriminator}\`(ID: ${user.id})\nReason: ${reason}`);
 }
 
 exports.names = ['unban'];
