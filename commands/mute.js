@@ -69,9 +69,9 @@ exports.command = async (message, args, database, bot) => {
     await message.channel.send(responseEmbed);
     const embed = new Discord.MessageEmbed()
     .setColor(0xEB7B59)
-    .setAuthor(`Case ${insert.insertId} | Mute | ${member.user.username}#${member.user.discriminator}`, member.user.avatarURL())
+    .setAuthor(`Case ${insert.insertId} | Mute | ${user.username}#${user.discriminator}`, user.avatarURL())
     .addFields(
-      { name: "User", value: `<@${member.user.id}>`, inline: true},
+      { name: "User", value: `<@${user.id}>`, inline: true},
       { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
       { name: "Reason", value: reason, inline: true},
       { name: "Duration", value: `${time}`, inline: true}
