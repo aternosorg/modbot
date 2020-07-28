@@ -8,45 +8,43 @@ exports.command = async (message, args, database, bot) => {
         return;
     }
 
-    let roleId;
+    let role;
 
     if (['create','new'].includes(args[0])) {
-      let role = await message.guild.roles.create({
+      role = await message.guild.roles.create({
         data: {
           name: 'muted',
           hoist: false
         }
       })
-      roleId = role.id;
     }
-    else {
+    else if (args[0] === 'disable'){
+      let config = await util.getGuildConfig(message);
+      delete config.mutedRole;
+      await util.saveGuildConfig(config);
+      await message.channel.send(`Disabled muted role!`);
+      return;
+    }
+    else{
       //Get role
-      roleId = util.roleMentionToId(args.shift());;
-      if (roleId && !message.guild.roles.resolve(roleId)) {
-        await message.channel.send("Please specify a role(@mention or ID) or use 'new' to create one!");
+      role = message.guild.roles.resolve(util.roleMentionToId(args.shift()))
+      if (!role) {
+        await message.channel.send("Please specify a role(@mention or ID), or use the subcommands 'create' or 'disable'!");
         return;
       }
     }
 
-
-    let guildId = message.guild.id;
-
     let config = await util.getGuildConfig(message);
-    config.mutedRole = roleId;
+    config.mutedRole = role.id;
     await util.saveGuildConfig(config);
 
-    if (roleId) {
-      await message.channel.send(`Set muted role to <@&${roleId}>!`);
-      for ([key, channel] of message.guild.channels.cache) {
-        channel.overwritePermissions([{
-          id: roleId,
-          deny: ['SEND_MESSAGES','SPEAK']
-        }]);
-      }
+    for ([key, channel] of message.guild.channels.cache) {
+      await channel.overwritePermissions([{
+        id: role.id,
+        deny: ['SEND_MESSAGES','SPEAK']
+      }]);
     }
-    else {
-      await message.channel.send(`Disabled muted role!`);
-    }
+    await message.channel.send(`Set muted role to \`${role.name}\`!`);
 }
 
 exports.names = ['mutedrole'];
