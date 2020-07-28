@@ -42,8 +42,20 @@ exports.command = async (message, args, database, bot) => {
   await message.guild.members.ban(userId,`${message.author.username}#${message.author.discriminator}: `+reason);
   await message.guild.members.unban(userId,`softban`);
 
-  await message.channel.send(`Softbanned \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
-  await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` softbanned \`${member.user.username}#${member.user.discriminator}\`(ID: ${user.id})\nReason: ${reason}`);
+  const responseEmbed = new Discord.MessageEmbed()
+  .setDescription(`**${member.user.username}#${member.user.discriminator} has been softbanned | ${reason}**`)
+  .setColor(0x1FD78D)
+  await message.channel.send(responseEmbed);
+  const embed = new Discord.MessageEmbed()
+  .setColor(0xF62451)
+  .setAuthor(`Case ${insert.insertId} | Softban | ${member.user.username}#${member.user.discriminator}`, `https://cdn.discordapp.com/avatars/${member.user.id}/${member.user.avatar}.png?size=256`)
+  .addFields(
+    { name: "User", value: `<@${member.user.id}>`, inline: true},
+    { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
+    { name: "Reason", value: reason, inline: true}
+  )
+  .setFooter(`ID: ${member.user.id}`)
+  await util.logMessageEmbed(message, "", embed);
 }
 
 exports.names = ['softban'];
