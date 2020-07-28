@@ -77,6 +77,7 @@ exports.command = async (message, args, database, bot) => {
       { name: "Duration", value: `${time}`, inline: true}
     )
     .setFooter(`ID: ${user.id}`)
+    .setTimestamp()
     await util.logMessageEmbed(message, "", embed);
   }
   else {
@@ -100,6 +101,7 @@ exports.command = async (message, args, database, bot) => {
       { name: "Reason", value: reason, inline: true}
     )
     .setFooter(`ID: ${user.id}`)
+    .setTimestamp()
     await util.logMessageEmbed(message, "", embed);
   }
 }
