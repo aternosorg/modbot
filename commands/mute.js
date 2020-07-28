@@ -58,23 +58,23 @@ exports.command = async (message, args, database, bot) => {
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'mute', now, endsAt, reason, message.author.id]);
 
     if(member) {
-      await member.roles.add(mutedRole, `moderator: ${message.author.username}#${message.author.discriminator} duaration: ${time} reason: ` + reason);
-      await member.send(`You were muted in \`${message.guild.name}\` for ${time}: ${reason}`);
+      await member.roles.add(mutedRole, `${message.author.username}#${message.author.discriminator} (${time}), Reason: ` + reason);
+      await member.send(`You were muted in \`${message.guild.name}\` for ${time} | ${reason}`);
     }
 
-    await message.channel.send(`Muted \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
-    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${user.username}#${user.discriminator}\` for ${time}: ${reason}`);
+    await message.channel.send(`Muted \`${user.username}#${user.discriminator}\` for ${time} | ${reason}`);
+    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${user.username}#${user.discriminator}\`(ID: ${user.id})\nDuration: **${time}**\nReason **${reason}**`);
   }
   else {
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId, 'mute', now, reason, message.author.id]);
 
     if (member) {
-      await member.roles.add(mutedRole, `${message.author.username}#${message.author.discriminator}: `+reason);
-      await member.send(`You were permanently muted in \`${message.guild.name}\`: ${reason}`);
+      await member.roles.add(mutedRole, `${message.author.username}#${message.author.discriminator} | `+reason);
+      await member.send(`You were permanently muted in \`${message.guild.name}\` | ${reason}`);
     }
 
-    await message.channel.send(`Muted \`${user.username}#${user.discriminator}\`: ${reason}`);
-    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${user.username}#${user.discriminator}\`: ${reason}`);
+    await message.channel.send(`Muted \`${user.username}#${user.discriminator}\` | ${reason}`);
+    await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` muted \`${user.username}#${user.discriminator}\`(ID: ${user.id})\nReason: ${reason}`);
   }
 }
 

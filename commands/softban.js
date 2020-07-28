@@ -38,12 +38,12 @@ exports.command = async (message, args, database, bot) => {
 
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'softban', now, reason, message.author.id,false]);
 
-  await member.send(`You were softbanned from \`${message.guild.name}\`: ${reason}`);
+  await member.send(`You were softbanned from \`${message.guild.name}\` | ${reason}`);
   await message.guild.members.ban(userId,`${message.author.username}#${message.author.discriminator}: `+reason);
   await message.guild.members.unban(userId,`softban`);
 
   await message.channel.send(`Softbanned \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
-  await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` softbanned \`${member.user.username}#${member.user.discriminator}\`: ${reason}`);
+  await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` softbanned \`${member.user.username}#${member.user.discriminator}\`(ID: ${user.id})\nReason: ${reason}`);
 }
 
 exports.names = ['softban'];

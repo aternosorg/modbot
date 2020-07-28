@@ -43,9 +43,9 @@ exports.command = async (message, args, database, bot) => {
   await database.query("UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId])
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId,'unmute', now, reason, message.author.id]);
 
-  await member.send(`You were unmuted in \`${message.guild.name}\`: ${reason}`);
-  await message.channel.send(`Unmuted \`${user.username}#${user.discriminator}\`: ${reason}`);
-  await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` unmuted \`${user.username}#${user.discriminator}\`: ${reason}`);
+  await member.send(`You were unmuted in \`${message.guild.name}\` | ${reason}`);
+  await message.channel.send(`Unmuted \`${user.username}#${user.discriminator}\` | ${reason}`);
+  await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` unmuted \`${user.username}#${user.discriminator}\`(ID: ${user.id})\nReason: ${reason}`);
 }
 
 exports.names = ['unmute'];
