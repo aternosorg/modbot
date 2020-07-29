@@ -43,6 +43,7 @@ exports.command = async (message, args, database, bot) => {
     for ([key, channel] of message.guild.channels.cache) {
       await channel.updateOverwrite(role.id, {
         'SEND_MESSAGES': false,
+        'ADD_REACTIONS': false,
         'SPEAK': false
       })
     }
