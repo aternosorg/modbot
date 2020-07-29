@@ -8,8 +8,16 @@ exports.command = async (message, args, database, bot) => {
         return;
     }
 
-    let role;
+    if (!message.guild.member(bot.user.id).hasPermission('MANAGE_CHANNELS')) {
+      await message.channel.send("The bot needs the 'MANAGE_CHANNELS' permission to setup the muted role!");
+      return;
+    }
+    if (!message.guild.member(bot.user.id).hasPermission('MANAGE_ROLES')) {
+      await message.channel.send("The bot needs the 'MANAGE_ROLES' permission for the muted role!");
+      return;
+    }
 
+    let role;
     if (['create','new'].includes(args[0])) {
       role = await message.guild.roles.create({
         data: {
@@ -41,6 +49,9 @@ exports.command = async (message, args, database, bot) => {
     let response = await message.channel.send(`Updating channel overwrites...`);
 
     for ([key, channel] of message.guild.channels.cache) {
+      if (!channel.permissionsFor(bot.user.id).has('MANAGE_CHANNELS') || !channel.permissionsFor(bot.user.id).has('VIEW_CHANNEL')) {
+        continue;
+      }
       await channel.updateOverwrite(role.id, {
         'SEND_MESSAGES': false,
         'ADD_REACTIONS': false,
