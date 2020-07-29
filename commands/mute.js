@@ -59,7 +59,7 @@ exports.command = async (message, args, database, bot) => {
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'mute', now, endsAt, reason, message.author.id]);
 
     if(member) {
-      await member.roles.add(mutedRole, `${message.author.username}#${message.author.discriminator} (${time}), Reason: ` + reason);
+      await member.roles.add(mutedRole, `${message.author.username}#${message.author.discriminator} (${time}) | ` + reason);
       await member.send(`You were muted in \`${message.guild.name}\` for ${time} | ${reason}`);
     }
 
@@ -77,6 +77,7 @@ exports.command = async (message, args, database, bot) => {
       { name: "Duration", value: `${time}`, inline: true}
     )
     .setFooter(`ID: ${user.id}`)
+    .setTimestamp()
     await util.logMessageEmbed(message, "", embed);
   }
   else {
@@ -100,6 +101,7 @@ exports.command = async (message, args, database, bot) => {
       { name: "Reason", value: reason, inline: true}
     )
     .setFooter(`ID: ${user.id}`)
+    .setTimestamp()
     await util.logMessageEmbed(message, "", embed);
   }
 }
