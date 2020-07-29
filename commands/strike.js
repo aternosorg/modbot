@@ -61,3 +61,23 @@ exports.command = async (message, args, database, bot) => {
 }
 
 exports.names = ['strike'];
+
+async function punish(message, user, total) {
+  let config = await util.getGuildConfig(user.guild);
+  let punishment = util.punishments[total];
+  switch (punishment) {
+    case 'ban':
+      
+      break;
+    case 'kick':
+
+      break;
+    case 'mute':
+
+      break;
+    case 'softban':
+
+      break;
+
+  }
+}
