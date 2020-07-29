@@ -2,7 +2,6 @@ const guildConfig = require('../util/guildConfig.js');
 const util = require('../lib/util.js');
 
 exports.command = async (message, args, database, bot) => {
-    return;
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         await message.channel.send('You need the "Manage Server" Permission to use this command.');
@@ -39,13 +38,16 @@ exports.command = async (message, args, database, bot) => {
     config.mutedRole = role.id;
     await util.saveGuildConfig(config);
 
+    let response = await message.channel.send(`Updating channel overwrites...`);
+
     for ([key, channel] of message.guild.channels.cache) {
-      await channel.overwritePermissions([{
-        id: role.id,
-        deny: ['SEND_MESSAGES','SPEAK']
-      }]);
+      await channel.updateOverwrite(role.id, {
+        'SEND_MESSAGES': false,
+        'ADD_REACTIONS': false,
+        'SPEAK': false
+      })
     }
-    await message.channel.send(`Set muted role to \`${role.name}\`!`);
+    await response.edit(`Set muted role to \`${role.name}\`!`);
 }
 
-exports.names = ['mutedrole'];
+exports.names = ['mutedrole','muterole'];
