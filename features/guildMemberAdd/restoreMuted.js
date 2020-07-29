@@ -5,6 +5,6 @@ exports.message = async (member, database) => {
   if (result) {
     let guildConfig = await util.getGuildConfig(member.guild);
     await member.roles.add(guildConfig.mutedRole);
-    await util.log(member.guild, `Restored muted role for \`${member.user.username}#${member.user.discriminator}\` (see \`[${result.id}]\`)`);
+    await util.logMessage(member.guild, `Restored muted role for \`${member.user.username}#${member.user.discriminator}\` (see \`[${result.id}]\`)`);
   }
 }

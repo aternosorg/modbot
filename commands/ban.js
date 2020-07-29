@@ -1,4 +1,5 @@
 const util = require('../lib/util.js');
+const Discord = require('discord.js');
 
 exports.command = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
@@ -54,8 +55,23 @@ exports.command = async (message, args, database, bot) => {
     if (member) {
       await member.send(`You were banned from \`${message.guild.name}\` for ${time} | ${reason}`);
     }
-    await message.channel.send(`Banned \`${user.username}#${user.discriminator}\` for ${time} | ${reason}`);
-    await util.logMessage(message, `\`[${id}]\` \`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\` (ID: ${user.id})\nDuration: **${time}**\nReason: **${reason}**`);
+    await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator} (${time}), Reason:` + reason});
+
+    const responseEmbed = new Discord.MessageEmbed()
+    .setDescription(`**${user.username}#${user.discriminator} has been banned for ${time} | ${reason}**`)
+    .setColor(0x1FD78D)
+    await message.channel.send(responseEmbed);
+    const embed = new Discord.MessageEmbed()
+    .setColor(0xF62451)
+    .setAuthor(`Case ${id} | Ban | ${user.username}#${user.discriminator}`, user.avatarURL())
+    .addFields(
+      { name: "User", value: `<@${user.id}>`, inline: true},
+      { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
+      { name: "Reason", value: reason, inline: true},
+      { name: "Duration", value: `${time}`, inline: true}
+    )
+    .setFooter(`ID: ${user.id}`)
+    await util.logMessageEmbed(message, "", embed);
   }
   else {
     if (member) {
@@ -63,8 +79,20 @@ exports.command = async (message, args, database, bot) => {
     }
     await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator}, Reason: ` + reason});
 
-    await message.channel.send(`Banned \`${user.username}#${user.discriminator}\` | ${reason}`);
-    await util.logMessage(message, `\`[${id}]\` \`${message.author.username}#${message.author.discriminator}\` banned \`${user.username}#${user.discriminator}\` (ID: ${user.id})\nReason: **${reason}**`);
+    const responseEmbed = new Discord.MessageEmbed()
+    .setDescription(`**${user.username}#${user.discriminator} has been banned | ${reason}**`)
+    .setColor(0x1FD78D)
+    await message.channel.send(responseEmbed);
+    const embed = new Discord.MessageEmbed()
+    .setColor(0xF62451)
+    .setAuthor(`Case ${id} | Ban | ${user.username}#${user.discriminator}`, user.avatarURL())
+    .addFields(
+      { name: "User", value: `<@${user.id}>`, inline: true},
+      { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
+      { name: "Reason", value: reason, inline: true}
+    )
+    .setFooter(`ID: ${user.id}`)
+    await util.logMessageEmbed(message, "", embed);
   }
 }
 
