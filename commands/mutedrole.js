@@ -9,7 +9,7 @@ exports.command = async (message, args, database, bot) => {
     }
 
     if (!message.guild.member(bot.user.id).hasPermission('MANAGE_CHANNELS')) {
-      await message.channel.send("The bot needs the 'MANAGE_CHANNELS' permission to setup the muted eole!");
+      await message.channel.send("The bot needs the 'MANAGE_CHANNELS' permission to setup the muted role!");
       return;
     }
     if (!message.guild.member(bot.user.id).hasPermission('MANAGE_ROLES')) {
