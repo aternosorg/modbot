@@ -48,10 +48,20 @@ exports.command = async (message, args, database, bot) => {
     }
 
     let config = await util.getGuildConfig(message);
+    let oldRole = config.mutedRole;
     config.mutedRole = role.id;
     await util.saveGuildConfig(config);
+    let response = await message.channel.send(`Updating current mutes...`);
 
-    let response = await message.channel.send(`Updating channel overwrites...`);
+    for (mute of await database.queryAll("SELECT * FROM moderations WHERE action = 'mute' AND active = TRUE AND guildid = ?",[message.guild.id])) {
+      let member = message.guild.members.resolve(mute.userid);
+      if (member && member.roles.cache.get(oldRole)) {
+        await member.roles.add(role.id);
+        await member.roles.remove(oldRole);
+      }
+    }
+
+    await response.edit(`Updating channel overwrites...`)
 
     for ([key, channel] of message.guild.channels.cache) {
       if (!channel.permissionsFor(bot.user.id).has('MANAGE_CHANNELS') || !channel.permissionsFor(bot.user.id).has('VIEW_CHANNEL')) {
