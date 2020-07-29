@@ -56,8 +56,12 @@ exports.command = async (message, args, database, bot) => {
     for (mute of await database.queryAll("SELECT * FROM moderations WHERE action = 'mute' AND active = TRUE AND guildid = ?",[message.guild.id])) {
       let member = message.guild.members.resolve(mute.userid);
       if (member && member.roles.cache.get(oldRole)) {
-        await member.roles.add(role.id);
-        await member.roles.remove(oldRole);
+        try {
+          await member.roles.add(role.id);
+          await member.roles.remove(oldRole);
+        } catch (e) {
+          console.error("Couldn't change muted role",e);
+        }
       }
     }
 
