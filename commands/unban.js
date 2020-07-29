@@ -43,7 +43,7 @@ exports.command = async (message, args, database, bot) => {
   let now = Math.floor(Date.now()/1000);
 
   if (ban) {
-    await message.guild.members.unban(userId, `${message.author.username}#${message.author.discriminator}: ` + reason);
+    await message.guild.members.unban(userId, `${message.author.username}#${message.author.discriminator} | ` + reason);
   }
 
   await database.query("UPDATE moderations SET active = FALSE WHERE action = 'ban' AND userid = ? AND guildid = ?",[userId,message.guild.guildid]);
@@ -62,6 +62,7 @@ exports.command = async (message, args, database, bot) => {
     { name: "Reason", value: reason, inline: true}
   )
   .setFooter(`ID: ${user.id}`)
+  .setTimestamp()
   await util.logMessageEmbed(message, "", embed);
 }
 

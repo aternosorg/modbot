@@ -57,7 +57,7 @@ exports.command = async (message, args, database, bot) => {
     if (member) {
       await member.send(`You were banned from \`${message.guild.name}\` for ${time} | ${reason}`);
     }
-    await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator} (${time}), Reason:` + reason});
+    await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator} (${time}) | ` + reason});
 
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'ban', now, endsAt, reason, message.author.id]);
     const responseEmbed = new Discord.MessageEmbed()
@@ -74,13 +74,14 @@ exports.command = async (message, args, database, bot) => {
       { name: "Duration", value: `${time}`, inline: true}
     )
     .setFooter(`ID: ${user.id}`)
+    .setTimestamp()
     await util.logMessageEmbed(message, "", embed);
   }
   else {
     if (member) {
       await member.send(`You were permanently banned from \`${message.guild.name}\` | ${reason}`);
     }
-    await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator}, Reason: ` + reason});
+    await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator} | ` + reason});
 
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId, 'ban', now, reason, message.author.id]);
 
@@ -97,6 +98,7 @@ exports.command = async (message, args, database, bot) => {
       { name: "Reason", value: reason, inline: true}
     )
     .setFooter(`ID: ${user.id}`)
+    .setTimestamp()
     await util.logMessageEmbed(message, "", embed);
   }
 }
