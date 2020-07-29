@@ -42,6 +42,11 @@ exports.command = async (message, args, database, bot) => {
       }
     }
 
+    if (message.guild.members.resolve(bot.user.id).roles.highest.comparePositionTo(role) < 0) {
+      await message.channel.send("The role may not have a higher permission then the bot!");
+      return;
+    }
+
     let config = await util.getGuildConfig(message);
     config.mutedRole = role.id;
     await util.saveGuildConfig(config);
