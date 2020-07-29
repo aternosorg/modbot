@@ -38,23 +38,15 @@ exports.command = async (message, args, database, bot) => {
     config.mutedRole = role.id;
     await util.saveGuildConfig(config);
 
+    let response = await message.channel.send(`Updating channel overwrites...`);
+
     for ([key, channel] of message.guild.channels.cache) {
-      let perms = channel.permissionOverwrites
-      if (perms.get(role.id)) {
-        perms.get(role.id).update({
-          'SEND_MESSAGES': false,
-          'SPEAK': false
-        })
-      }
-      else {
-        perms.set(role.id,{
-          id: role.id,
-          deny: ['SEND_MESSAGES','SPEAK']
-        })
-      }
-      await channel.overwritePermissions(perms);
+      await channel.updateOverwrite(role.id, {
+        'SEND_MESSAGES': false,
+        'SPEAK': false
+      })
     }
-    await message.channel.send(`Set muted role to \`${role.name}\`!`);
+    await response.edit(`Set muted role to \`${role.name}\`!`);
 }
 
 exports.names = ['mutedrole','muterole'];
