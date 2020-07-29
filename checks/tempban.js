@@ -18,4 +18,4 @@ exports.check = async (database, bot) => {
   }
 }
 
-exports.interval = 60;
+exports.interval = 30;
