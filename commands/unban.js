@@ -42,7 +42,9 @@ exports.command = async (message, args, database, bot) => {
   let reason = args.join(' ') || 'No reason provided.';
   let now = Math.floor(Date.now()/1000);
 
-  await message.guild.members.unban(userId, `${message.author.username}#${message.author.discriminator} | ` + reason);
+  if (ban) {
+    await message.guild.members.unban(userId, `${message.author.username}#${message.author.discriminator} | ` + reason);
+  }
 
   await database.query("UPDATE moderations SET active = FALSE WHERE action = 'ban' AND userid = ? AND guildid = ?",[userId,message.guild.guildid]);
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId, 'unban', now, reason, message.author.id]);
