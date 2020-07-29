@@ -45,7 +45,7 @@ exports.command = async (message, args, database, bot) => {
   await message.guild.members.unban(userId, `${message.author.username}#${message.author.discriminator}: ` + reason);
 
   await database.query("UPDATE moderations SET active = FALSE WHERE action = 'ban' AND userid = ? AND guildid = ?",[userId,message.guild.guildid]);
-  let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId, 'unban', now, reason, message.author.id]);
+  let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'unban', now, reason, message.author.id, false]);
 
   const responseEmbed = new Discord.MessageEmbed()
   .setDescription(`**${user.username}#${user.discriminator} has been unbanned | ${reason}**`)
