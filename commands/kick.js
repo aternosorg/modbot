@@ -41,7 +41,7 @@ exports.command = async (message, args, database, bot) => {
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'kick', now, reason, message.author.id,false]);
 
   await member.send(`You were kicked from \`${message.guild.name}\` | ${reason}`);
-  await member.kick(`${message.author.username}#${message.author.discriminator}: `+reason);
+  await member.kick(`${message.author.username}#${message.author.discriminator} | `+reason);
 
   const responseEmbed = new Discord.MessageEmbed()
   .setDescription(`**${member.user.username}#${member.user.discriminator} has been kicked | ${reason}**`)

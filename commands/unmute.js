@@ -39,7 +39,7 @@ exports.command = async (message, args, database, bot) => {
   let now = Math.floor(Date.now()/1000);
 
   if (member) {
-    await member.roles.remove([guildConfig.mutedRole], `${message.author.username}#${message.author.discriminator}: ` + reason);
+    await member.roles.remove([guildConfig.mutedRole], `${message.author.username}#${message.author.discriminator} | ` + reason);
   }
   await database.query("UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId])
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId,'unmute', now, reason, message.author.id]);

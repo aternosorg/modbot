@@ -40,7 +40,7 @@ exports.command = async (message, args, database, bot) => {
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'softban', now, reason, message.author.id,false]);
 
   await member.send(`You were softbanned from \`${message.guild.name}\` | ${reason}`);
-  await message.guild.members.ban(userId,{days: 7, reason: `${message.author.username}#${message.author.discriminator}: `+reason});
+  await message.guild.members.ban(userId,{days: 7, reason: `${message.author.username}#${message.author.discriminator} | `+reason});
   await message.guild.members.unban(userId,`Softban`);
 
   const responseEmbed = new Discord.MessageEmbed()
