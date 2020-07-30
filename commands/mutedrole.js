@@ -53,14 +53,18 @@ exports.command = async (message, args, database, bot) => {
     await util.saveGuildConfig(config);
     let response = await message.channel.send(`Updating current mutes...`);
 
-    for (mute of await database.queryAll("SELECT * FROM moderations WHERE action = 'mute' AND active = TRUE AND guildid = ?",[message.guild.id])) {
-      let member = message.guild.members.resolve(mute.userid);
-      if (member && member.roles.cache.get(oldRole)) {
-        try {
-          await member.roles.add(role.id);
-          await member.roles.remove(oldRole);
-        } catch (e) {
-          console.error("Couldn't change muted role",e);
+    if (!(oldRole === role.id)) {
+      for (mute of await database.queryAll("SELECT * FROM moderations WHERE action = 'mute' AND active = TRUE AND guildid = ?",[message.guild.id])) {
+        let member = message.guild.members.resolve(mute.userid);
+        if (member) {
+          try {
+            await member.roles.add(role.id);
+            if (member.roles.cache.get(oldRole)) {
+              await member.roles.remove(oldRole);
+            }
+          } catch (e) {
+            console.error("Couldn't change muted role",e);
+          }
         }
       }
     }
