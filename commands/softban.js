@@ -43,21 +43,8 @@ exports.command = async (message, args, database, bot) => {
   await message.guild.members.ban(userId,{days: 7, reason: `${message.author.username}#${message.author.discriminator} | `+reason});
   await message.guild.members.unban(userId,`Softban`);
 
-  const responseEmbed = new Discord.MessageEmbed()
-  .setDescription(`**${member.user.username}#${member.user.discriminator} has been softbanned | ${reason}**`)
-  .setColor(0x1FD78D)
-  await message.channel.send(responseEmbed);
-  const embed = new Discord.MessageEmbed()
-  .setColor(0xF62451)
-  .setAuthor(`Case ${insert.insertId} | Softban | ${member.user.username}#${member.user.discriminator}`, member.user.avatarURL())
-  .addFields(
-    { name: "User", value: `<@${member.user.id}>`, inline: true},
-    { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
-    { name: "Reason", value: reason, inline: true}
-  )
-  .setFooter(`ID: ${member.user.id}`)
-  .setTimestamp()
-  await util.logMessageEmbed(message, "", embed);
+  await util.chatSuccess(message, message, member.user, reason, "softbanned");
+  await util.logMessageModeration(message, message, member.user, reason, insert, "Softban");
 }
 
 exports.names = ['softban'];

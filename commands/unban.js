@@ -49,21 +49,8 @@ exports.command = async (message, args, database, bot) => {
   await database.query("UPDATE moderations SET active = FALSE WHERE action = 'ban' AND userid = ? AND guildid = ?",[userId,message.guild.guildid]);
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'unban', now, reason, message.author.id, false]);
 
-  const responseEmbed = new Discord.MessageEmbed()
-  .setDescription(`**${user.username}#${user.discriminator} has been unbanned | ${reason}**`)
-  .setColor(0x1FD78D)
-  await message.channel.send(responseEmbed);
-  const embed = new Discord.MessageEmbed()
-  .setColor(0x1FD78D)
-  .setAuthor(`Case ${insert.insertId} | Unban | ${user.username}#${user.discriminator}`, user.avatarURL())
-  .addFields(
-    { name: "User", value: `<@${user.id}>`, inline: true},
-    { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
-    { name: "Reason", value: reason, inline: true}
-  )
-  .setFooter(`ID: ${user.id}`)
-  .setTimestamp()
-  await util.logMessageEmbed(message, "", embed);
+  await util.chatSuccess(message, message, user, reason, "unbanned");
+  await util.logMessageModeration(message, message, user, reason, insert, "Unban");
 }
 
 exports.names = ['unban'];
