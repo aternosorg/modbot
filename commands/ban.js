@@ -55,7 +55,7 @@ exports.command = async (message, args, database, bot) => {
     if (member) {
       await member.send(`You were banned from \`${message.guild.name}\` for ${time} | ${reason}`);
     }
-    await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator} (${time}), Reason:` + reason});
+    await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator} (${time}) | ` + reason});
 
     const responseEmbed = new Discord.MessageEmbed()
     .setDescription(`**${user.username}#${user.discriminator} has been banned for ${time} | ${reason}**`)
@@ -71,13 +71,14 @@ exports.command = async (message, args, database, bot) => {
       { name: "Duration", value: `${time}`, inline: true}
     )
     .setFooter(`ID: ${user.id}`)
+    .setTimestamp()
     await util.logMessageEmbed(message, "", embed);
   }
   else {
     if (member) {
       await member.send(`You were permanently banned from \`${message.guild.name}\` | ${reason}`);
     }
-    await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator}, Reason: ` + reason});
+    await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator} | ` + reason});
 
     const responseEmbed = new Discord.MessageEmbed()
     .setDescription(`**${user.username}#${user.discriminator} has been banned | ${reason}**`)
@@ -92,6 +93,7 @@ exports.command = async (message, args, database, bot) => {
       { name: "Reason", value: reason, inline: true}
     )
     .setFooter(`ID: ${user.id}`)
+    .setTimestamp()
     await util.logMessageEmbed(message, "", embed);
   }
 }
