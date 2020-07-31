@@ -1,5 +1,4 @@
 const util = require('../lib/util.js');
-const Discord = require('discord.js');
 
 exports.command = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('KICK_MEMBERS')) {
@@ -13,7 +12,7 @@ exports.command = async (message, args, database, bot) => {
     await message.channel.send("Please provide a user (@Mention or ID)!");
     return;
   }
-  let member = await message.guild.members.resolve(userId);
+  let member = await message.guild.members.fetch(userId);
 
   if (!member) {
     await message.react(util.icons.error);
@@ -39,25 +38,15 @@ exports.command = async (message, args, database, bot) => {
 
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'softban', now, reason, message.author.id,false]);
 
-  await member.send(`You were softbanned from \`${message.guild.name}\` | ${reason}`);
+  try {
+    await member.send(`You were softbanned from \`${message.guild.name}\` | ${reason}`);
+  } catch (e) {
+  }
   await message.guild.members.ban(userId,{days: 7, reason: `${message.author.username}#${message.author.discriminator} | `+reason});
   await message.guild.members.unban(userId,`Softban`);
 
-  const responseEmbed = new Discord.MessageEmbed()
-  .setDescription(`**${member.user.username}#${member.user.discriminator} has been softbanned | ${reason}**`)
-  .setColor(0x1FD78D)
-  await message.channel.send(responseEmbed);
-  const embed = new Discord.MessageEmbed()
-  .setColor(0xF62451)
-  .setAuthor(`Case ${insert.insertId} | Softban | ${member.user.username}#${member.user.discriminator}`, member.user.avatarURL())
-  .addFields(
-    { name: "User", value: `<@${member.user.id}>`, inline: true},
-    { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
-    { name: "Reason", value: reason, inline: true}
-  )
-  .setFooter(`ID: ${member.user.id}`)
-  .setTimestamp()
-  await util.logMessageEmbed(message, "", embed);
+  await util.chatSuccess(message, message, member.user, reason, "softbanned");
+  await util.logMessageModeration(message, message, member.user, reason, insert, "Softban");
 }
 
 exports.names = ['softban'];

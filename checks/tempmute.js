@@ -4,7 +4,7 @@ exports.check = async (database, bot) => {
   let results = await database.queryAll("SELECT * FROM moderations WHERE action = 'mute' AND active = TRUE AND expireTime IS NOT NULL AND expireTime <= ?", [Math.floor(Date.now()/1000)]);
   for (let result of results) {
     try {
-      if (bot.guilds.resolve(result.guildid).members.resolve(result.userid)) {
+      if (bot.guilds.resolve(result.guildid).members.fetch(result.userid)) {
         let member = bot.guilds.resolve(result.guildid).members.resolve(result.userid);
         let guildConfig = await util.getGuildConfig(result.guildid)
         await member.roles.remove([guildConfig.mutedRole], "Temporary mute completed!");
@@ -14,7 +14,8 @@ exports.check = async (database, bot) => {
       let user = await bot.users.fetch(result.userid);
       let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, active) VALUES (?,?,?,?,?,?)",[result.guildid,result.userid,'unban',Math.floor(Date.now()/1000),"Temporary ban completed!", false]);
 
-      await util.logMessage(result.guildid, `\`[${insert.insertId}]\` Unmuted \`${user.username}#${user.discriminator}\`: Temporary mute completed!`);
+      let reason = "Temporary mute finished!"
+      await util.logMessageChecks(result.guildid, user, reason, insert, "Unmute");
 
       await database.query("UPDATE moderations SET active = FALSE WHERE action = 'mute' AND userid = ? AND guildid = ?",[result.userid,result.guildid]);
     } catch (e) {
@@ -23,4 +24,4 @@ exports.check = async (database, bot) => {
   }
 }
 
-exports.interval = 60;
+exports.interval = 30;
