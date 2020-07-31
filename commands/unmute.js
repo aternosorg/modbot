@@ -42,7 +42,7 @@ exports.command = async (message, args, database, bot) => {
     await member.roles.remove([guildConfig.mutedRole], `${message.author.username}#${message.author.discriminator} | ` + reason);
   }
   await database.query("UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId])
-  let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId,'unmute', now, reason, message.author.id]);
+  let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId,'unmute', now, reason, message.author.id, false]);
 
   await member.send(`You were unmuted in \`${message.guild.name}\` | ${reason}`);
 
