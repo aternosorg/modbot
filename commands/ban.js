@@ -55,7 +55,10 @@ exports.command = async (message, args, database, bot) => {
     let endsAt = now + duration;
 
     if (member) {
-      await member.send(`You were banned from \`${message.guild.name}\` for ${time} | ${reason}`);
+      try {
+        await member.send(`You were banned from \`${message.guild.name}\` for ${time} | ${reason}`);
+      } catch (e) {
+      }
     }
     await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator} (${time}) | ` + reason});
 

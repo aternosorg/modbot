@@ -66,7 +66,21 @@ const database = new Database(config.db);
             let feature = require(path);
             guildMemberAdds.push(feature);
         } catch (e) {
-            console.error(`Failed to load message feature '${file}'`, e);
+            console.error(`Failed to load guildMemberAdd feature '${file}'`, e);
+        }
+    }
+
+    const guildBanRemoves = [];
+    for (let file of await fs.readdir(`${__dirname}/features/guildBanRemove`)) {
+        let path = `${__dirname}/features/guildBanRemove/${file}`;
+        if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
+            continue;
+        }
+        try {
+            let feature = require(path);
+            guildBanRemoves.push(feature);
+        } catch (e) {
+            console.error(`Failed to load guildBanRemove feature '${file}'`, e);
         }
     }
 
@@ -112,6 +126,12 @@ const database = new Database(config.db);
     bot.on('guildMemberAdd', async (member) => {
         for (let feature of guildMemberAdds) {
             await Promise.resolve(feature.message(member, database));
+        }
+    });
+    //guildBanRemove
+    bot.on('guildBanRemove', async (guild, user) => {
+        for (let feature of guildBanRemoves) {
+            await Promise.resolve(feature.message(guild, user, database));
         }
     });
 

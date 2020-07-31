@@ -25,7 +25,7 @@ exports.command = async (message, args, database, bot) => {
     await message.channel.send("You cant interact with bots!");
     return;
   }
-  let member = await message.guild.members.resolve(userId);
+  let member = await message.guild.members.fetch(userId);
 
   //highest role check
   if(member && (message.member.roles.highest.comparePositionTo(message.guild.members.resolve(userId).roles.highest) <= 0 || await util.isMod(member))) {
@@ -60,7 +60,10 @@ exports.command = async (message, args, database, bot) => {
 
     if(member) {
       await member.roles.add(mutedRole, `${message.author.username}#${message.author.discriminator} (${time}) | ` + reason);
-      await member.send(`You were muted in \`${message.guild.name}\` for ${time} | ${reason}`);
+      try {
+        await member.send(`You were muted in \`${message.guild.name}\` for ${time} | ${reason}`);
+      } catch (e) {
+      }
     }
 
     const responseEmbed = new Discord.MessageEmbed()

@@ -13,7 +13,7 @@ exports.command = async (message, args, database, bot) => {
     await message.channel.send("Please provide a user (@Mention or ID)!");
     return;
   }
-  let member = await message.guild.members.resolve(userId);
+  let member = await message.guild.members.fetch(userId);
 
   if (!member) {
     await message.react(util.icons.error);
@@ -39,7 +39,10 @@ exports.command = async (message, args, database, bot) => {
 
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'softban', now, reason, message.author.id,false]);
 
-  await member.send(`You were softbanned from \`${message.guild.name}\` | ${reason}`);
+  try {
+    await member.send(`You were softbanned from \`${message.guild.name}\` | ${reason}`);
+  } catch (e) {
+  }
   await message.guild.members.ban(userId,{days: 7, reason: `${message.author.username}#${message.author.discriminator} | `+reason});
   await message.guild.members.unban(userId,`Softban`);
 

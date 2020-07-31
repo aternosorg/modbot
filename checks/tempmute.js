@@ -4,7 +4,7 @@ exports.check = async (database, bot) => {
   let results = await database.queryAll("SELECT * FROM moderations WHERE action = 'mute' AND active = TRUE AND expireTime IS NOT NULL AND expireTime <= ?", [Math.floor(Date.now()/1000)]);
   for (let result of results) {
     try {
-      if (bot.guilds.resolve(result.guildid).members.resolve(result.userid)) {
+      if (bot.guilds.resolve(result.guildid).members.fetch(result.userid)) {
         let member = bot.guilds.resolve(result.guildid).members.resolve(result.userid);
         let guildConfig = await util.getGuildConfig(result.guildid)
         await member.roles.remove([guildConfig.mutedRole], "Temporary mute completed!");
@@ -23,4 +23,4 @@ exports.check = async (database, bot) => {
   }
 }
 
-exports.interval = 60;
+exports.interval = 30;

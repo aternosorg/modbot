@@ -14,7 +14,7 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  let member = await message.guild.members.resolve(userId);
+  let member = await message.guild.members.fetch(userId);
   if (!member) {
     await message.react(util.icons.error);
     await message.channel.send("User not found or not in guild!");
@@ -40,7 +40,10 @@ exports.command = async (message, args, database, bot) => {
 
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'kick', now, reason, message.author.id,false]);
 
-  await member.send(`You were kicked from \`${message.guild.name}\` | ${reason}`);
+  try {
+    await member.send(`You were kicked from \`${message.guild.name}\` | ${reason}`);
+  } catch (e) {
+  }
   await member.kick(`${message.author.username}#${message.author.discriminator} | `+reason);
 
   const responseEmbed = new Discord.MessageEmbed()
