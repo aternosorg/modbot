@@ -15,7 +15,7 @@ exports.command = async (message, args, database, bot) => {
   }
 
   let user = await bot.users.fetch(userId);
-  let member = await message.guild.members.resolve(userId);
+  let member = await message.guild.members.fetch(userId);
   let guildConfig = await util.getGuildConfig(message);
 
   if (!user) {

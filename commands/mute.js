@@ -25,7 +25,7 @@ exports.command = async (message, args, database, bot) => {
     await message.channel.send("You cant interact with bots!");
     return;
   }
-  let member = await message.guild.members.resolve(userId);
+  let member = await message.guild.members.fetch(userId);
 
   //highest role check
   if(member && (message.member.roles.highest.comparePositionTo(message.guild.members.resolve(userId).roles.highest) <= 0 || await util.isMod(member))) {

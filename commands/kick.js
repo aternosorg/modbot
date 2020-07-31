@@ -14,7 +14,7 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  let member = await message.guild.members.resolve(userId);
+  let member = await message.guild.members.fetch(userId);
   if (!member) {
     await message.react(util.icons.error);
     await message.channel.send("User not found or not in guild!");
