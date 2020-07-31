@@ -60,7 +60,10 @@ exports.command = async (message, args, database, bot) => {
 
     if(member) {
       await member.roles.add(mutedRole, `${message.author.username}#${message.author.discriminator} (${time}) | ` + reason);
-      await member.send(`You were muted in \`${message.guild.name}\` for ${time} | ${reason}`);
+      try {
+        await member.send(`You were muted in \`${message.guild.name}\` for ${time} | ${reason}`);
+      } catch (e) {
+      }
     }
 
     const responseEmbed = new Discord.MessageEmbed()
