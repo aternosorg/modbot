@@ -9,7 +9,7 @@ exports.check = async (database, bot) => {
       let user = await bot.users.fetch(result.userid);
       let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, active) VALUES (?,?,?,?,?,?)",[result.guildid,result.userid,'unban',Math.floor(Date.now()/1000),"Temporary ban completed!", false]);
 
-      let reason = "Temporary ban completed!"
+      let reason = "Temporary ban finished!"
       await util.logMessageChecks(result.guildid, user, reason, insert, "Unban");
       await database.query("UPDATE moderations SET active = FALSE WHERE action = 'ban' AND userid = ? AND guildid = ?",[result.userid,result.guildid]);
     } catch (e) {

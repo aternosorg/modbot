@@ -14,7 +14,7 @@ exports.check = async (database, bot) => {
       let user = await bot.users.fetch(result.userid);
       let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, active) VALUES (?,?,?,?,?,?)",[result.guildid,result.userid,'unban',Math.floor(Date.now()/1000),"Temporary ban completed!", false]);
 
-      let reason = "Temporary mute completed!"
+      let reason = "Temporary mute finished!"
       await util.logMessageChecks(result.guildid, user, reason, insert, "Unmute");
 
       await database.query("UPDATE moderations SET active = FALSE WHERE action = 'mute' AND userid = ? AND guildid = ?",[result.userid,result.guildid]);
