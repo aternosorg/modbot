@@ -60,8 +60,8 @@ exports.command = async (message, args, database, bot) => {
       await member.send(`You recieved ${count} strikes in \`${message.guild.name}\` | ${reason}\nYou now have ${total} strikes`);
     } catch (e) {}
   }
-  await message.channel.send(`Gave ${count} strikes to \`${user.username}#${user.discriminator}\`: ${reason}\nTotal: ${total} strikes`);
-  await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` gave ${count} strikes to \`${user.username}#${user.discriminator}\`(ID: ${user.id})\nReason: ${reason}\nTotal: ${total} strikes`);
+  await util.chatSuccess(message.channel, user, reason, "striked")
+  await util.logMessageModeration(message, message.author, user, reason, insert.insertId, "Strike", null, count, total);
   await punish(message, user, total, bot);
 }
 
@@ -70,6 +70,7 @@ exports.names = ['strike'];
 async function punish(message, user, total, bot) {
   let config = await util.getGuildConfig(message.guild);
   let punishment = config.punishments[total];
+  let member;
 
   if(!punishment) {
     return;
@@ -81,13 +82,26 @@ async function punish(message, user, total, bot) {
       await ban.ban(message.guild, user, bot.user, `Reaching ${total} strikes`, punishment.duration);
       break;
     case 'kick':
-
+      try {
+        member = await message.guild.members.fetch(user.id);
+      } catch (e) {
+        return;
+      }
+      let kick = require('./kick.js');
+      await kick.kick(message.guild, member, bot.user, `Reaching ${total} strikes`);
       break;
     case 'mute':
-
+      let mute = require('./mute.js');
+      await mute.mute(message.guild, user, bot.user, `Reaching ${total} strikes`, punishment.duration);
       break;
     case 'softban':
-
+      try {
+        member = await message.guild.members.fetch(user.id);
+      } catch (e) {
+        return;
+      }
+      let softban = require('./softban.js');
+      await softban.softban(message.guild, member, bot.user, `Reaching ${total} strikes`);
       break;
 
   }

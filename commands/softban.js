@@ -1,6 +1,8 @@
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {}
+
+command.command = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('KICK_MEMBERS')) {
     await message.react(util.icons.error);
     return;
@@ -33,20 +35,26 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  let reason = args.join(' ') || 'No reason provided.';
-  let now = Math.floor(Date.now()/1000);
-
-  let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'softban', now, reason, message.author.id,false]);
-
-  try {
-    await member.send(`You were softbanned from \`${message.guild.name}\` | ${reason}`);
-  } catch (e) {
-  }
-  await message.guild.members.ban(userId,{days: 7, reason: `${message.author.username}#${message.author.discriminator} | `+reason});
-  await message.guild.members.unban(userId,`Softban`);
-
-  await util.chatSuccess(message, message, member.user, reason, "softbanned");
-  await util.logMessageModeration(message, message, member.user, reason, insert, "Softban");
+  await command.softban(message.guild, member, message.author, args.join(' '), message.channel);
 }
 
-exports.names = ['softban'];
+command.softban = async (guild, member, moderator, reason, channel) => {
+  reason = reason || 'No reason provided.';
+
+  let insert = await util.moderationDBAdd(guild.id, member.id, "softban", reason, null, moderator.id)
+
+  try {
+    await member.send(`You were softbanned from \`${guild.name}\` | ${reason}`);
+  } catch (e) {}
+  await guild.members.ban(member.id,{days: 7, reason: `${moderator.username}#${moderator.discriminator} | `+reason});
+  await guild.members.unban(member.id,`Softban`);
+
+  if (channel) {
+    await util.chatSuccess(channel, member.user, reason, "softbanned");
+  }
+  await util.logMessageModeration(guild.id, moderator, member.user, reason, insert, "Softban");
+}
+
+command.names = ['softban'];
+
+module.exports = command;

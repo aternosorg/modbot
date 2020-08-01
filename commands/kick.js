@@ -1,6 +1,8 @@
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.command = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('KICK_MEMBERS')) {
     await message.react(util.icons.error);
     return;
@@ -13,8 +15,11 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  let member = await message.guild.members.fetch(userId);
-  if (!member) {
+  let member;
+  try {
+    member = await message.guild.members.fetch(userId);
+
+  } catch (e) {
     await message.react(util.icons.error);
     await message.channel.send("User not found or not in guild!");
     return;
@@ -34,10 +39,10 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  kick(message.guild, member, message.author, args.join(' '), message.channel);
+  command.kick(message.guild, member, message.author, args.join(' '), message.channel);
 }
 
-async function kick(guild, member, moderator, reason, channel) {
+command.kick = async (guild, member, moderator, reason, channel) => {
   reason = reason || 'No reason provided.';
 
   let insert = await util.moderationDBAdd(guild.id, member.id, "kick", reason, null, moderator.id)
@@ -53,4 +58,6 @@ async function kick(guild, member, moderator, reason, channel) {
   await util.logMessageModeration(guild.id, moderator, member.user, reason, insert, "Kick");
 }
 
-exports.names = ['kick'];
+command.names = ['kick'];
+
+module.exports = command;

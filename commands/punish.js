@@ -33,7 +33,12 @@ exports.command = async (message, args, database, bot) => {
         duration: duration
       }
       await util.saveGuildConfig(config);
-      await message.channel.send(`Set punishment for ${count} strikes to ${action}!`);
+      if (duration) {
+        await message.channel.send(`Set punishment for ${count} strikes to ${action} for ${util.secToTime(duration)}!`);
+      }
+      else {
+        await message.channel.send(`Set punishment for ${count} strikes to ${action}!`);
+      }
   }
 }
 
