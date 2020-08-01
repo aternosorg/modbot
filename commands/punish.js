@@ -6,15 +6,41 @@ exports.command = async (message, args, database, bot) => {
       return;
   }
 
+  let config = await util.getGuildConfig(message);
+  if (!config.punishments) {
+    config.punishments = [];
+  }
+
   let count = parseInt(args.shift());
+  if (!count) {
+    let list = '';
+    for (let [index, value] of config.punishments.entries()) {
+      if (!value) {
+        continue;
+      }
+      if (value.duration) {
+        list += `${index}: ${value.action} for ${util.secToTime(value.duration)} \n`
+      }
+      else {
+        list += `${index}: ${value.action} \n`
+      }
+    }
+
+    util.sendEmbed(message.channel, {
+      title: 'Punishments',
+      description: list
+    })
+    return;
+  }
   let action = args.shift();
-  if (!count || !action) {
+  if (!action) {
     message.channel.send("USAGE: 'punish strikeCount action options' OR 'punish strikeCount disabled'");
     return;
   }
   switch (action) {
     case 'off':
     case 'disabled':
+      delete config.punishments[count];
       await message.channel.send(`Disabled punishment at ${count}!`);
       break;
     default:
@@ -24,10 +50,6 @@ exports.command = async (message, args, database, bot) => {
       }
 
       let duration = util.timeToSec(args.join(' '));
-      let config = await util.getGuildConfig(message);
-      if (!config.punishments) {
-        config.punishments = [];
-      }
       config.punishments[count] = {
         action: action,
         duration: duration
