@@ -25,6 +25,9 @@ exports.command = async (message, args, database, bot) => {
         list += `${index}: ${value.action} \n`
       }
     }
+    if (list === '') {
+      list = 'No punishments set up';
+    }
 
     util.sendEmbed(message.channel, {
       title: 'Punishments',
@@ -41,6 +44,7 @@ exports.command = async (message, args, database, bot) => {
     case 'off':
     case 'disabled':
       delete config.punishments[count];
+      await util.saveGuildConfig(config);
       await message.channel.send(`Disabled punishment at ${count}!`);
       break;
     default:
