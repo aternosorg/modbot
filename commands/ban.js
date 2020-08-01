@@ -1,6 +1,8 @@
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.command = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     await message.react(util.icons.error);
     return;
@@ -40,10 +42,10 @@ exports.command = async (message, args, database, bot) => {
   while (util.isTime(args[0]))
     args.shift();
 
-  ban(message.guild, user, message.author, args.join(' '), duration, message.channel)
+  command.ban(message.guild, user, message.author, args.join(' '), duration, message.channel)
 }
 
-async function ban(guild, user, moderator, reason, duration, channel) {
+command.ban = async (guild, user, moderator, reason, duration, channel) => {
   reason = reason || 'No reason provided.';
   let time = util.secToTime(duration);
 
@@ -71,4 +73,6 @@ async function ban(guild, user, moderator, reason, duration, channel) {
   await util.logMessageModeration(guild.id, moderator, user, reason, insert, "Ban", time);
 }
 
-exports.names = ['ban'];
+command.names = ['ban'];
+
+module.exports = command;

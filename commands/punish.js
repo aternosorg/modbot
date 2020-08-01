@@ -15,8 +15,7 @@ exports.command = async (message, args, database, bot) => {
   switch (action) {
     case 'off':
     case 'disabled':
-
-      await message.channel.send(`Disabled log!`);
+      await message.channel.send(`Disabled punishment at ${count}!`);
       break;
     default:
       if (!['ban','kick','mute','softban'].includes(action)) {
@@ -24,14 +23,17 @@ exports.command = async (message, args, database, bot) => {
         return;
       }
 
-      let options = args.join(' ');
+      let duration = util.timeToSec(args.join(' '));
       let config = await util.getGuildConfig(message);
-      config.punishments[strikes] = {
+      if (!config.punishments) {
+        config.punishments = [];
+      }
+      config.punishments[count] = {
         action: action,
-        options: options
+        duration: duration
       }
       await util.saveGuildConfig(config);
-      await message.channel.send(`Set log channel to <#${channelId}>!`);
+      await message.channel.send(`Set punishment for ${count} strikes to ${action}!`);
   }
 }
 

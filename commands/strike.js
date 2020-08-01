@@ -36,14 +36,14 @@ exports.command = async (message, args, database, bot) => {
 
   //highest role check
   let member;
-  if (message.guild.members.resolve(user)) {
-    member = message.guild.members.resolve(user);
-  }
-  if(member && message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
-    await message.react(util.icons.error);
-    await message.channel.send("You dont have the Permission to strike that Member!");
-    return;
-  }
+  try {
+    member = await message.guild.members.fetch(user);
+    if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
+      await message.react(util.icons.error);
+      await message.channel.send("You dont have the Permission to strike that Member!");
+      return;
+    }
+  } catch (e) {}
 
   let reason = args.join(' ') || 'No reason provided.';
   let now = Math.floor(Date.now()/1000);
@@ -55,19 +55,30 @@ exports.command = async (message, args, database, bot) => {
   let total = await database.query("SELECT SUM(value) AS sum FROM moderations WHERE guildid = ? AND userid = ? AND (action = 'strike' OR action = 'pardon')",[message.guild.id, user.id]);
   total = parseInt(total.sum);
 
-  await member.send(`You recieved ${count} strikes in \`${message.guild.name}\` | ${reason}\nYou now have ${total} strikes`);
-  await message.channel.send(`Gave ${count} strikes to \`${member.user.username}#${member.user.discriminator}\`: ${reason}\nTotal: ${total} strikes`);
-  await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` gave ${count} strikes to \`${member.user.username}#${member.user.discriminator}\`(ID: ${user.id})\nReason: ${reason}\nTotal: ${total} strikes`);
+  if (member) {
+    try {
+      await member.send(`You recieved ${count} strikes in \`${message.guild.name}\` | ${reason}\nYou now have ${total} strikes`);
+    } catch (e) {}
+  }
+  await message.channel.send(`Gave ${count} strikes to \`${user.username}#${user.discriminator}\`: ${reason}\nTotal: ${total} strikes`);
+  await util.logMessage(message, `\`[${insert.insertId}]\` \`${message.author.username}#${message.author.discriminator}\` gave ${count} strikes to \`${user.username}#${user.discriminator}\`(ID: ${user.id})\nReason: ${reason}\nTotal: ${total} strikes`);
+  await punish(message, user, total, bot);
 }
 
 exports.names = ['strike'];
 
-async function punish(message, user, total) {
-  let config = await util.getGuildConfig(user.guild);
-  let punishment = util.punishments[total];
-  switch (punishment) {
+async function punish(message, user, total, bot) {
+  let config = await util.getGuildConfig(message.guild);
+  let punishment = config.punishments[total];
+
+  if(!punishment) {
+    return;
+  }
+
+  switch (punishment.action) {
     case 'ban':
-      
+      let ban = require('./ban.js');
+      await ban.ban(message.guild, user, bot.user, `Reaching ${total} strikes`, punishment.duration);
       break;
     case 'kick':
 
