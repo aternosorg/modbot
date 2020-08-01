@@ -34,19 +34,23 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  let reason = args.join(' ') || 'No reason provided.';
-  let now = Math.floor(Date.now()/1000);
+  kick(message.guild, member, message.author, args.join(' '), message.channel);
+}
 
-  let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'kick', now, reason, message.author.id,false]);
+async function kick(guild, member, moderator, reason, channel) {
+  reason = reason || 'No reason provided.';
+
+  let insert = await util.moderationDBAdd(guild.id, member.id, "kick", reason, null, moderator.id)
 
   try {
-    await member.send(`You were kicked from \`${message.guild.name}\` | ${reason}`);
-  } catch (e) {
-  }
-  await member.kick(`${message.author.username}#${message.author.discriminator} | `+reason);
+    await member.send(`You were kicked from \`${guild.name}\` | ${reason}`);
+  } catch (e) {}
+  await member.kick(`${moderator.username}#${moderator.discriminator} | `+reason);
 
-  await util.chatSuccess(message, message, member.user, reason, "kicked");
-  await util.logMessageModeration(message, message, member.user, reason, insert, "Kick");
+  if (channel) {
+    await util.chatSuccess(channel, member.user, reason, "kicked");
+  }
+  await util.logMessageModeration(guild.id, moderator, member.user, reason, insert, "Kick");
 }
 
 exports.names = ['kick'];
