@@ -47,8 +47,10 @@ exports.command = async (message, args, database, bot) => {
   let guildConfig = await util.getGuildConfig(message);
   let muteInfo = await database.query("SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = 'mute'",[userId,message.guild.id]);
   if (muteInfo) {
-    if(muteInfo.expireTime)
-      muteInfo = `${util.icons.yes} - ${muteInfo.reason} \n**Remaining:** ${util.secToTime(muteInfo.expireTime - Math.floor(Date.now()/1000))}`;
+    if(muteInfo.expireTime) {
+      let remaining = muteInfo.expireTime - Math.floor(Date.now()/1000) > 0 ? muteInfo.expireTime - Math.floor(Date.now()/1000) : 1;
+      muteInfo = `${util.icons.yes} - ${muteInfo.reason} \n**Remaining:** ${util.secToTime(remaining)}`;
+    }
     else
       muteInfo = `${util.icons.yes} - ${muteInfo.reason}`;
   }
@@ -63,8 +65,10 @@ exports.command = async (message, args, database, bot) => {
 
   let banInfo = await database.query("SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = 'ban'",[userId,message.guild.id]);
   if (banInfo) {
-    if(banInfo.expireTime)
-      banInfo = `${util.icons.yes} - ${banInfo.reason} \n**Remaining:** ${util.secToTime(banInfo.expireTime - Math.floor(Date.now()/1000))}`;
+    if(banInfo.expireTime) {
+      let remaining = banInfo.expireTime - Math.floor(Date.now()/1000) > 0 ? banInfo.expireTime - Math.floor(Date.now()/1000) : 1;
+      banInfo = `${util.icons.yes} - ${banInfo.reason} \n**Remaining:** ${util.secToTime(remaining)}`;
+    }
     else
       banInfo = `${util.icons.yes} - ${banInfo.reason}`;
     embed.setDescription(embed.description + `**Banned:** ${banInfo}`);
