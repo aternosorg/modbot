@@ -48,9 +48,10 @@ exports.command = async (message, args, database, bot) => {
   await database.query("UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId])
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId,'unmute', now, reason, message.author.id, false]);
 
-  try {
-    await member.send(`You were unmuted in \`${message.guild.name}\` | ${reason}`);
-  } catch (e) {
+  if (member) {
+    try {
+      await member.send(`You were unmuted in \`${message.guild.name}\` | ${reason}`);
+    } catch (e) {}
   }
 
   await util.chatSuccess(message, message, user, reason, "unmuted");

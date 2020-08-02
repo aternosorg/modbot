@@ -66,11 +66,15 @@ command.mute = async (guild, user, moderator, reason, duration, channel) => {
     let member = await guild.members.fetch(user.id);
     if (duration) {
       await member.roles.add(mutedRole, `${moderator.username}#${moderator.discriminator} (${time}) | ` + reason);
-      await member.send(`You were muted in \`${guild.name}\` for ${time} | ${reason}`);
+      if (member) {
+        await member.send(`You were muted in \`${guild.name}\` for ${time} | ${reason}`);
+      }
     }
     else {
       await member.roles.add(mutedRole, `${moderator.username}#${moderator.discriminator} | `+reason);
-      await member.send(`You were permanently muted in \`${guild.name}\` | ${reason}`);
+      if (member) {
+        await member.send(`You were permanently muted in \`${guild.name}\` | ${reason}`);
+      }
     }
   } catch (e) {}
 
