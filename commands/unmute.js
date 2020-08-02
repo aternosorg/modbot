@@ -13,15 +13,20 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  let user = await bot.users.fetch(userId);
-  let member = await message.guild.members.fetch(userId);
-  let guildConfig = await util.getGuildConfig(message);
-
-  if (!user) {
+  let user;
+  try {
+    user = await bot.users.fetch(userId);
+  } catch (e) {
     await message.react(util.icons.error);
     await message.channel.send("User not found!");
     return;
   }
+  let member
+  try {
+      member = await message.guild.members.fetch(userId);
+  } catch (e) {}
+  let guildConfig = await util.getGuildConfig(message);
+
   if (user.bot) {
     await message.react(util.icons.error);
     await message.channel.send("You cant interact with bots!");

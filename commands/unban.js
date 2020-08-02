@@ -12,9 +12,11 @@ exports.command = async (message, args, database, bot) => {
     await message.channel.send("Please provide a user (@Mention or ID)!");
     return;
   }
-  let user = await bot.users.fetch(userId);
 
-  if (!user) {
+  let user;
+  try {
+    user = await bot.users.fetch(userId);
+  } catch (e) {
     await message.react(util.icons.error);
     await message.channel.send("User not found!");
     return;

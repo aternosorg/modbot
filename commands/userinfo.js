@@ -14,15 +14,19 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  let user = await bot.users.fetch(userId);
-
-  if (!user) {
+  let user
+  try {
+    user = await bot.users.fetch(userId);
+  } catch (e) {
     await message.react(util.icons.error);
     await message.channel.send("User not found!");
     return;
   }
 
-  let member = await message.guild.members.resolve(userId);
+  let member
+  try {
+    member = await message.guild.members.resolve(userId);
+  } catch (e) {}
 
   let embed = new Discord.MessageEmbed({
       description: ``

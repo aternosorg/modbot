@@ -18,7 +18,6 @@ command.command = async (message, args, database, bot) => {
   let member;
   try {
     member = await message.guild.members.fetch(userId);
-
   } catch (e) {
     await message.react(util.icons.error);
     await message.channel.send("User not found or not in guild!");
