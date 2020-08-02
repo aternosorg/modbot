@@ -6,7 +6,7 @@ exports.check = async (database, bot) => {
     try {
       let member
       try {
-        member = bot.guilds.resolve(result.guildid).members.fetch(result.userid);
+        member = await bot.guilds.resolve(result.guildid).members.fetch(result.userid);
         if (member) {
           let guildConfig = await util.getGuildConfig(result.guildid);
           if (member.roles.cache.get(guildConfig.mutedRole)) {
