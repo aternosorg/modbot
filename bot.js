@@ -115,7 +115,7 @@ const database = new Database(config.db);
                   let embed = new Discord.MessageEmbed({
                     color: util.color.red,
                     description: `An error occured while executing that command!`
-                  })
+                  });
                   await message.channel.send(embed);
                   console.error(`An error occured while executing command ${command.names[0]}:`,e);
                 }
