@@ -26,16 +26,19 @@ exports.command = async (message, args, database, bot) => {
   let moderations = await database.queryAll("SELECT id, action, created, value, expireTime - created AS duration, reason, moderator FROM moderations WHERE userid = ? AND guildid = ?",[userId,message.guild.id]);
 
   let text = '', i = 1;
+  async function send(start, end) {
+    let embed = new Discord.MessageEmbed({
+      author: {
+        name: `Moderations for ${user.username}#${user.discriminator} (${start} to ${end} of ${moderations.length})`,
+        iconURL: user.avatarURL()
+      },
+      description: text
+    });
+    await message.channel.send(embed);
+  }
   for (let [key,moderation] of moderations.entries()) {
     if (text.length > 1800) {
-      let embed = new Discord.MessageEmbed({
-        author: {
-          name: `Moderations for ${user.username}#${user.discriminator} (${i}-${key} of ${moderations.length})`,
-          iconURL: user.avatarURL()
-        },
-        description: text
-      });
-      await message.channel.send(embed);
+      await send(i, key);
       text = '';
       i = key + 1;
     }
@@ -55,15 +58,7 @@ exports.command = async (message, args, database, bot) => {
     }
     text += `Reason: ${moderation.reason} \n`;
   }
-  let embed = new Discord.MessageEmbed({
-    author: {
-      name: `Moderations for ${user.username}#${user.discriminator} (${i}-${moderations.length} of ${moderations.length})`,
-      iconURL: user.avatarURL()
-    },
-    description: text
-  });
-  embed.setDescription(text);
-  await message.channel.send(embed);
+  await send(i, moderations.length);
 }
 
 exports.names = ['moderations','modlog','modlogs'];
