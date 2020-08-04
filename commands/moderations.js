@@ -43,7 +43,7 @@ exports.command = async (message, args, database, bot) => {
       i = key + 1;
     }
     let timestamp = new Date(moderation.created*1000);
-    text += `**Case ${moderation.id}** | **${moderation.action}** | ${timestamp.toUTCString()}\n`;
+    text += `[Case ${moderation.id}] **${moderation.action.toUpperCase()}** - *${timestamp.toUTCString()}*\n`;
     if (moderation.action === 'strike') {
       text += `Strikes: ${moderation.value} \n`;
     }
@@ -56,7 +56,7 @@ exports.command = async (message, args, database, bot) => {
     if (moderation.moderator) {
       text += `Moderator: <@!${moderation.moderator}> \n`;
     }
-    text += `Reason: ${moderation.reason} \n`;
+    text += `Reason: ${moderation.reason} \n\n`;
   }
   await send(i, moderations.length);
 }
