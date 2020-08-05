@@ -8,8 +8,7 @@ const config = require('./config');
 
 const bot = new Discord.Client({
   disableMentions: 'everyone',
-  presence: { status: "dnd" },
-  activity: { type: "WATCHING", name: "you" }
+  presence: { status: "dnd", activity: { type: "WATCHING", name: "you" } }
 });
 
 //connect to mysql db
