@@ -61,7 +61,8 @@ exports.command = async (message, args, database, bot) => {
 
   if (member) {
     try {
-      await member.send(`${count} strikes were pardoned in \`${message.guild.name}\` | ${reason}\nYou now have ${total} strikes`);
+
+      await member.send(`${count} ${count === 1 ? "strike was" : "strikes were"} pardoned in \`${message.guild.name}\` | ${reason}\nYou now have ${total} ${total === 1 ? "strike" : "strikes"}`);
     } catch (e) {}
   }
   await util.chatSuccess(message.channel, user, reason, "pardoned")

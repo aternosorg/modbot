@@ -2,7 +2,7 @@ const util = require('../lib/util.js');
 
 exports.command = async (message, args, database, bot) => {
   if (!message.member.hasPermission('MANAGE_GUILD')) {
-      message.channel.send('You need the "Manage Server" Permission to use this command.');
+      message.channel.send('You need the "Manage Server" permission to use this command.');
       return;
   }
 
@@ -60,10 +60,10 @@ exports.command = async (message, args, database, bot) => {
       }
       await util.saveGuildConfig(config);
       if (duration) {
-        await message.channel.send(`Set punishment for ${count} strikes to ${action} for ${util.secToTime(duration)}!`);
+        await message.channel.send(`Set punishment for ${count} ${count === 1 ? "strike" : "strikes"} to ${action} for ${util.secToTime(duration)}!`);
       }
       else {
-        await message.channel.send(`Set punishment for ${count} strikes to ${action}!`);
+        await message.channel.send(`Set punishment for ${count} ${count === 1 ? "strike" : "strikes"} to ${action}!`);
       }
   }
 }

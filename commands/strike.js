@@ -40,7 +40,7 @@ exports.command = async (message, args, database, bot) => {
     member = await message.guild.members.fetch(user);
     if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
       await message.react(util.icons.error);
-      await message.channel.send("You dont have the Permission to strike that Member!");
+      await message.channel.send("You dont have the permission to strike that member!");
       return;
     }
   } catch (e) {}
@@ -57,7 +57,7 @@ exports.command = async (message, args, database, bot) => {
 
   if (member) {
     try {
-      await member.send(`You recieved ${count} strikes in \`${message.guild.name}\` | ${reason}\nYou now have ${total} strikes`);
+      await member.send(`You received ${count} ${count === 1 ? "strike" : "strikes"} in \`${message.guild.name}\` | ${reason}\nYou now have ${total} ${total === 1 ? "strike" : "strikes"}`);
     } catch (e) {}
   }
   await util.chatSuccess(message.channel, user, reason, "striked")
