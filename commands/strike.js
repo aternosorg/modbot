@@ -1,4 +1,8 @@
 const util = require('../lib/util.js');
+const ban = require('./ban.js');
+const kick = require('./kick.js');
+const mute = require('./mute.js');
+const softban = require('./softban.js');
 
 const maxStrikesAtOnce = 5;
 
@@ -82,7 +86,6 @@ async function punish(message, user, total, bot) {
 
   switch (punishment.action) {
     case 'ban':
-      let ban = require('./ban.js');
       await ban.ban(message.guild, user, bot.user, `Reaching ${total} strikes`, punishment.duration);
       break;
     case 'kick':
@@ -91,11 +94,9 @@ async function punish(message, user, total, bot) {
       } catch (e) {
         return;
       }
-      let kick = require('./kick.js');
       await kick.kick(message.guild, member, bot.user, `Reaching ${total} strikes`);
       break;
     case 'mute':
-      let mute = require('./mute.js');
       await mute.mute(message.guild, user, bot.user, `Reaching ${total} strikes`, punishment.duration);
       break;
     case 'softban':
@@ -104,9 +105,7 @@ async function punish(message, user, total, bot) {
       } catch (e) {
         return;
       }
-      let softban = require('./softban.js');
       await softban.softban(message.guild, member, bot.user, `Reaching ${total} strikes`);
       break;
-
   }
 }
