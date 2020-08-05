@@ -1,7 +1,7 @@
 const util = require('../lib/util.js');
 
 exports.command = async (message, args, database, bot) => {
-  if (!await util.isMod(message.member)) {
+  if (!await util.isMod(message.member) && !message.member.hasPermission('MANAGE_GUILD')) {
     message.channel.send("You don't have the permission to execute this command.");
     return;
   }
