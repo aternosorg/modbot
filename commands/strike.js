@@ -77,6 +77,9 @@ async function punish(message, user, total, bot) {
     while (!punishment) {
       punishment = config.punishments[count]
       count --;
+      if(count === 0){
+        return ;
+      }
     }
   }
 
