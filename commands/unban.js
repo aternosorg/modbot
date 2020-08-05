@@ -50,7 +50,7 @@ exports.command = async (message, args, database, bot) => {
   await database.query("UPDATE moderations SET active = FALSE WHERE action = 'ban' AND userid = ? AND guildid = ?",[userId,message.guild.guildid]);
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'unban', now, reason, message.author.id, false]);
 
-  await util.chatSuccess(message, message, user, reason, "unbanned");
+  await util.chatSuccess(message.channel, user, reason, "unbanned");
   await util.logMessageModeration(message, message, user, reason, insert, "Unban");
 };
 
