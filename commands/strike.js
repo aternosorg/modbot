@@ -73,7 +73,11 @@ async function punish(message, user, total, bot) {
   let member;
 
   if(!punishment) {
-    return;
+    let count = total;
+    while (!punishment) {
+      punishment = config.punishments[count]
+      count --;
+    }
   }
 
   switch (punishment.action) {
