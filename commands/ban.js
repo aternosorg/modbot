@@ -42,7 +42,7 @@ command.command = async (message, args, database, bot) => {
   while (util.isTime(args[0]))
     args.shift();
 
-  command.ban(message.guild, user, message.author, args.join(' '), duration, message.channel)
+  command.ban(message.guild, user, message.author, args.join(' '), duration, message.channel);
 }
 
 command.ban = async (guild, user, moderator, reason, duration, channel) => {
