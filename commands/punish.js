@@ -8,21 +8,22 @@ exports.command = async (message, args, database, bot) => {
 
   let config = await util.getGuildConfig(message);
   if (!config.punishments) {
-    config.punishments = [];
+    config.punishments = {};
   }
 
   let count = parseInt(args.shift());
   if (!count) {
     let list = '';
-    for (let [index, value] of config.punishments.entries()) {
+    for (let key in config.punishments) {
+      let value = config.punishments[key]
       if (!value) {
         continue;
       }
       if (value.duration) {
-        list += `${index}: ${value.action} for ${util.secToTime(value.duration)} \n`
+        list += `${key}: ${value.action} for ${util.secToTime(value.duration)} \n`
       }
       else {
-        list += `${index}: ${value.action} \n`
+        list += `${key}: ${value.action} \n`
       }
     }
     if (list === '') {
@@ -35,6 +36,11 @@ exports.command = async (message, args, database, bot) => {
     })
     return;
   }
+  if (count <= 0) {
+    message.channel.send("You can't have negative strikes'");
+    return;
+  }
+
   let action = args.shift();
   if (!action) {
     message.channel.send("USAGE: 'punish strikeCount action options' OR 'punish strikeCount disabled'");
