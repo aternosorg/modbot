@@ -14,15 +14,19 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  let user = await bot.users.fetch(userId);
-
-  if (!user) {
+  let user;
+  try {
+    user = await bot.users.fetch(userId);
+  } catch (e) {
     await message.react(util.icons.error);
     await message.channel.send("User not found!");
     return;
   }
 
-  let member = await message.guild.members.resolve(userId);
+  let member
+  try {
+    member = await message.guild.members.resolve(userId);
+  } catch (e) {}
 
   let embed = new Discord.MessageEmbed({
       description: ``
@@ -40,11 +44,17 @@ exports.command = async (message, args, database, bot) => {
   moderations = parseInt(moderations.count);
   embed.setDescription(embed.description + `**Moderations:** ${moderations} \n`);
 
+  let strikes = await database.query("SELECT SUM(value) AS sum FROM moderations WHERE guildid = ? AND userid = ? AND (action = 'strike' OR action = 'pardon')",[message.guild.id, user.id]);
+  strikes = parseInt(strikes.sum);
+  embed.setDescription(embed.description + `**Strikes:** ${strikes || 0} \n`);
+
   let guildConfig = await util.getGuildConfig(message);
   let muteInfo = await database.query("SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = 'mute'",[userId,message.guild.id]);
   if (muteInfo) {
-    if(muteInfo.expireTime)
-      muteInfo = `${util.icons.yes} - ${muteInfo.reason} \n**Remaining:** ${util.secToTime(muteInfo.expireTime - Math.floor(Date.now()/1000))}`;
+    if(muteInfo.expireTime) {
+      let remaining = muteInfo.expireTime - Math.floor(Date.now()/1000) > 0 ? muteInfo.expireTime - Math.floor(Date.now()/1000) : 1;
+      muteInfo = `${util.icons.yes} - ${muteInfo.reason} \n**Remaining:** ${util.secToTime(remaining)}`;
+    }
     else
       muteInfo = `${util.icons.yes} - ${muteInfo.reason}`;
   }
@@ -59,8 +69,10 @@ exports.command = async (message, args, database, bot) => {
 
   let banInfo = await database.query("SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = 'ban'",[userId,message.guild.id]);
   if (banInfo) {
-    if(banInfo.expireTime)
-      banInfo = `${util.icons.yes} - ${banInfo.reason} \n**Remaining:** ${util.secToTime(banInfo.expireTime - Math.floor(Date.now()/1000))}`;
+    if(banInfo.expireTime) {
+      let remaining = banInfo.expireTime - Math.floor(Date.now()/1000) > 0 ? banInfo.expireTime - Math.floor(Date.now()/1000) : 1;
+      banInfo = `${util.icons.yes} - ${banInfo.reason} \n**Remaining:** ${util.secToTime(remaining)}`;
+    }
     else
       banInfo = `${util.icons.yes} - ${banInfo.reason}`;
     embed.setDescription(embed.description + `**Banned:** ${banInfo}`);
@@ -75,6 +87,6 @@ exports.command = async (message, args, database, bot) => {
     }
   }
   await message.channel.send(embed);
-}
+};
 
 exports.names = ['userinfo','user','check'];

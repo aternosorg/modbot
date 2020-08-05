@@ -51,7 +51,7 @@ exports.command = async (message, args, database, bot) => {
       text += `Pardoned strikes: ${moderation.value} \n`;
     }
     if (moderation.duration) {
-      text += `Duration: ${util.secToTime(moderation.duration)} \n`
+      text += `Duration: ${util.secToTime(moderation.duration)} \n`;
     }
     if (moderation.moderator) {
       text += `Moderator: <@!${moderation.moderator}> \n`;
@@ -59,6 +59,6 @@ exports.command = async (message, args, database, bot) => {
     text += `Reason: ${moderation.reason} \n\n`;
   }
   await send(i, moderations.length);
-}
+};
 
 exports.names = ['moderations','modlog','modlogs'];

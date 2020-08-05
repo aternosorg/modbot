@@ -48,7 +48,6 @@ exports.command = async (message, args, database, bot) => {
       default:
         await message.channel.send("Valid subcommands: add, remove, list");
     }
-
-}
+};
 
 exports.names = ['modrole','modroles'];

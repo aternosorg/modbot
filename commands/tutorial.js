@@ -30,7 +30,7 @@ exports.command = async (message, args, database, bot) => {
 
   const fuse = new Fuse(videos, {
     keys: ['snippet.title']
-  })
+  });
 
   let video = fuse.search(query)[0];
 
@@ -40,6 +40,6 @@ exports.command = async (message, args, database, bot) => {
   else {
     await message.channel.send('No video found!');
   }
-}
+};
 
 exports.names = ['tutorial','video'];

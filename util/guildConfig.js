@@ -12,7 +12,9 @@ class channelConfig {
           //moderator roles
           this.modRoles = json.modRoles;
           //protected roles
-          this.protectedRoles = json.protectedRoles
+          this.protectedRoles = json.protectedRoles;
+          //protected roles
+          this.punishments = json.punishments;
         }
     }
 

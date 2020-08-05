@@ -42,4 +42,4 @@ exports.message = async (message, database) => {
             }
         }
     }
-}
+};

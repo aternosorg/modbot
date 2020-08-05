@@ -1,22 +1,25 @@
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.command = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     await message.react(util.icons.error);
     return;
   }
 
-  let userId = util.userMentionToId(args.shift());
-  if (!userId) {
+  if (!util.userMentionToId(args[0])) {
     await message.react(util.icons.error);
     await message.channel.send("Please provide a user (@Mention or ID)!");
     return;
   }
 
-  let user = await bot.users.fetch(userId);
-  if (!user) {
+  let user;
+  try {
+    user = await bot.users.fetch(util.userMentionToId(args.shift()));
+  } catch (e) {
     await message.react(util.icons.error);
-    await message.channel.send("User not found!");
+    await message.channel.send("Please provide a user (@Mention or ID)!");
     return;
   }
 
@@ -26,57 +29,50 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  let member
+  let duration = util.timeToSec(args.join(' '));
+  let member = await message.guild.members.resolve(user);
   //highest role & mod check
   if(message.guild.members.resolve(user)) {
-    member = await message.guild.members.resolve(user);
     if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)) {
       await message.react(util.icons.error);
-      await message.channel.send("You dont have the Permission to ban that Member!")
+      await message.channel.send("You don't have the permission to ban that member!");
       return;
     }
   }
-
-  let duration = util.timeToSec(args.join(' '));
   while (util.isTime(args[0]))
     args.shift();
-  let reason = args.join(' ') || 'No reason provided.';
-  let now = Math.floor(Date.now()/1000);
 
-  let ban = await database.query("SELECT * FROM moderations WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'ban'", [message.guild.id, userId]);
-  //check user was already banned
-  if (ban) {
-    await database.query("UPDATE moderations SET active = FALSE WHERE guildid = ? AND userid = ? AND action = 'ban'", [message.guild.id, userId])
-  }
-
-  if (duration) {
-    let time = util.secToTime(duration);
-    let endsAt = now + duration;
-
-    if (member) {
-      try {
-        await member.send(`You were banned from \`${message.guild.name}\` for ${time} | ${reason}`);
-      } catch (e) {
-      }
-    }
-    await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator} (${time}) | ` + reason});
-
-    let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'ban', now, endsAt, reason, message.author.id]);
-
-    await util.chatSuccess(message, message, user, reason, "banned", time);
-    await util.logMessageModeration(message, message, user, reason, insert, "Ban", time);
-  }
-  else {
-    if (member) {
-      await member.send(`You were permanently banned from \`${message.guild.name}\` | ${reason}`);
-    }
-    await message.guild.members.ban(userId, {days: 7, reason: `${message.author.username}#${message.author.discriminator} | ` + reason});
-
-    let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator) VALUES (?,?,?,?,?,?)",[message.guild.id, userId, 'ban', now, reason, message.author.id]);
-
-    await util.chatSuccess(message, message, user, reason, "banned");
-    await util.logMessageModeration(message, message, user, reason, insert, "Ban");
-  }
+  command.ban(message.guild, user, message.author, args.join(' '), duration, message.channel);
 }
 
-exports.names = ['ban'];
+command.ban = async (guild, user, moderator, reason, duration, channel) => {
+  reason = reason || 'No reason provided.';
+  let time = util.secToTime(duration);
+
+  try {
+    let member = await guild.members.fetch(user.id);
+    if (duration) {
+      await member.send(`You were banned from \`${guild.name}\` for ${time} | ${reason}`);
+    }
+    else {
+      await member.send(`You were permanently banned from \`${guild.name}\` | ${reason}`);
+    }
+  } catch (e) {}
+
+  if (duration) {
+    await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} (${time}), Reason:` + reason});
+  }
+  else {
+    await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} | ` + reason});
+  }
+
+  let insert = await util.moderationDBAdd(guild.id, user.id, "ban", reason, duration, moderator.id);
+  if (channel) {
+    await util.chatSuccess(channel, user, reason, "banned", time);
+  }
+  await util.logMessageModeration(guild.id, moderator, user, reason, insert, "Ban", time);
+};
+
+command.names = ['ban'];
+
+module.exports = command;

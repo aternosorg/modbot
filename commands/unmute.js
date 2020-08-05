@@ -13,18 +13,23 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  let user = await bot.users.fetch(userId);
-  let member = await message.guild.members.fetch(userId);
-  let guildConfig = await util.getGuildConfig(message);
-
-  if (!user) {
+  let user;
+  try {
+    user = await bot.users.fetch(userId);
+  } catch (e) {
     await message.react(util.icons.error);
     await message.channel.send("User not found!");
     return;
   }
+  let member
+  try {
+      member = await message.guild.members.fetch(userId);
+  } catch (e) {}
+  let guildConfig = await util.getGuildConfig(message);
+
   if (user.bot) {
     await message.react(util.icons.error);
-    await message.channel.send("You cant interact with bots!");
+    await message.channel.send("You can't interact with bots!");
     return;
   }
 
@@ -40,16 +45,17 @@ exports.command = async (message, args, database, bot) => {
   if (member) {
     await member.roles.remove([guildConfig.mutedRole], `${message.author.username}#${message.author.discriminator} | ` + reason);
   }
-  await database.query("UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId])
+  await database.query("UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId]);
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId,'unmute', now, reason, message.author.id, false]);
 
-  try {
-    await member.send(`You were unmuted in \`${message.guild.name}\` | ${reason}`);
-  } catch (e) {
+  if (member) {
+    try {
+      await member.send(`You were unmuted in \`${message.guild.name}\` | ${reason}`);
+    } catch (e) {}
   }
 
   await util.chatSuccess(message, message, user, reason, "unmuted");
   await util.logMessageModeration(message, message, user, reason, insert, "Unmute");
-}
+};
 
 exports.names = ['unmute'];

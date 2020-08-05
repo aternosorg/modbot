@@ -37,7 +37,7 @@ exports.command = async (message, args, database, bot) => {
       //Get role
       role = message.guild.roles.resolve(util.roleMentionToId(args.shift()))
       if (!role) {
-        await message.channel.send("Please specify a role(@mention or ID), or use the subcommands 'create' or 'disable'!");
+        await message.channel.send("Please specify a role(@Mention or ID), or use the subcommands 'create' or 'disable'!");
         return;
       }
     }
@@ -79,9 +79,9 @@ exports.command = async (message, args, database, bot) => {
         'SEND_MESSAGES': false,
         'ADD_REACTIONS': false,
         'SPEAK': false
-      })
+      });
     }
     await response.edit(`Set muted role to \`${role.name}\`!`);
-}
+};
 
 exports.names = ['mutedrole','muterole'];
