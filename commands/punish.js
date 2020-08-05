@@ -1,11 +1,10 @@
 const util = require('../lib/util.js');
 
 exports.command = async (message, args, database, bot) => {
-  if (!message.member.hasPermission('MANAGE_GUILD')) {
-      message.channel.send('You need the "Manage Server" permission to use this command.');
-      return;
+  if (!await util.isMod(message.member) && !message.member.hasPermission('MANAGE_GUILD')) {
+    message.channel.send("You don't have the permission to execute this command.");
+    return;
   }
-
   let config = await util.getGuildConfig(message);
   if (!config.punishments) {
     config.punishments = {};
@@ -34,6 +33,10 @@ exports.command = async (message, args, database, bot) => {
       title: 'Punishments',
       description: list
     });
+    return;
+  }
+  if (!message.member.hasPermission('MANAGE_GUILD')) {
+    message.channel.send('You need the "Manage Server" permission to use this command.');
     return;
   }
   if (count <= 0) {
