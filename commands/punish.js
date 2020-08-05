@@ -37,7 +37,7 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
   if (count <= 0) {
-    message.channel.send("You can't have negative strikes'");
+    message.channel.send("You can't have negative strikes!");
     return;
   }
 
