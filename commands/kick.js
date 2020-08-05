@@ -26,7 +26,7 @@ command.command = async (message, args, database, bot) => {
 
   if (member.user.bot) {
     await message.react(util.icons.error);
-    await message.channel.send("You cant interact with bots!");
+    await message.channel.send("You can't interact with bots!");
     return;
   }
 
@@ -34,17 +34,17 @@ command.command = async (message, args, database, bot) => {
   //highest role check
   if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
     await message.react(util.icons.error);
-    await message.channel.send("You dont have the Permission to kick that Member!");
+    await message.channel.send("You dont have the permission to kick that member!");
     return;
   }
 
   command.kick(message.guild, member, message.author, args.join(' '), message.channel);
-}
+};
 
 command.kick = async (guild, member, moderator, reason, channel) => {
   reason = reason || 'No reason provided.';
 
-  let insert = await util.moderationDBAdd(guild.id, member.id, "kick", reason, null, moderator.id)
+  let insert = await util.moderationDBAdd(guild.id, member.id, "kick", reason, null, moderator.id);
 
   try {
     await member.send(`You were kicked from \`${guild.name}\` | ${reason}`);
@@ -55,7 +55,7 @@ command.kick = async (guild, member, moderator, reason, channel) => {
     await util.chatSuccess(channel, member.user, reason, "kicked");
   }
   await util.logMessageModeration(guild.id, moderator, member.user, reason, insert, "Kick");
-}
+};
 
 command.names = ['kick'];
 

@@ -10,7 +10,7 @@ exports.command = async (message, args, database, bot) => {
 
   let count = 1;
   try {
-    await bot.users.fetch(util.userMentionToId(args[0]))
+    await bot.users.fetch(util.userMentionToId(args[0]));
   } catch (e) {
     count = Math.abs(parseInt(args.shift()));
     if (count > maxStrikesAtOnce) {
@@ -60,10 +60,10 @@ exports.command = async (message, args, database, bot) => {
       await member.send(`You received ${count} ${count === 1 ? "strike" : "strikes"} in \`${message.guild.name}\` | ${reason}\nYou now have ${total} ${total === 1 ? "strike" : "strikes"}`);
     } catch (e) {}
   }
-  await util.chatSuccess(message.channel, user, reason, "striked")
+  await util.chatSuccess(message.channel, user, reason, "striked");
   await util.logMessageModeration(message, message.author, user, reason, insert.insertId, "Strike", null, count, total);
   await punish(message, user, total, bot);
-}
+};
 
 exports.names = ['strike'];
 

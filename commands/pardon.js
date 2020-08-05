@@ -10,7 +10,7 @@ exports.command = async (message, args, database, bot) => {
 
   let count = 1;
   try {
-    await bot.users.fetch(util.userMentionToId(args[0]))
+    await bot.users.fetch(util.userMentionToId(args[0]));
   } catch (e) {
     count = Math.abs(parseInt(args.shift()));
     if (count > maxStrikesAtOnce) {
@@ -61,12 +61,11 @@ exports.command = async (message, args, database, bot) => {
 
   if (member) {
     try {
-
       await member.send(`${count} ${count === 1 ? "strike was" : "strikes were"} pardoned in \`${message.guild.name}\` | ${reason}\nYou now have ${total} ${total === 1 ? "strike" : "strikes"}`);
     } catch (e) {}
   }
   await util.chatSuccess(message.channel, user, reason, "pardoned");
   await util.logMessageModeration(message, message.author, user, reason, insert.insertId, "Pardon", null, count, total);
-}
+};
 
 exports.names = ['pardon'];

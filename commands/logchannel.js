@@ -4,7 +4,7 @@ const util = require('../lib/util.js');
 exports.command = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
-        message.channel.send('You need the "Manage Server" Permission to use this command.');
+        message.channel.send('You need the "Manage Server" permission to use this command.');
         return;
     }
 
@@ -25,6 +25,6 @@ exports.command = async (message, args, database, bot) => {
     else {
       await message.channel.send(`Disabled log!`);
     }
-}
+};
 
 exports.names = ['logchannel'];

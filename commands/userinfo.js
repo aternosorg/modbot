@@ -14,7 +14,7 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  let user
+  let user;
   try {
     user = await bot.users.fetch(userId);
   } catch (e) {
@@ -87,6 +87,6 @@ exports.command = async (message, args, database, bot) => {
     }
   }
   await message.channel.send(embed);
-}
+};
 
 exports.names = ['userinfo','user','check'];

@@ -8,7 +8,7 @@ exports.message = async (guild, user, database) => {
       title: `Ban deleted from guild | ${user.username}#${user.discriminator}`,
       description: `Ban ID: ${result.id}`,
       footer: {text:`ID: ${user.id}`}
-    })
+    });
     await util.logMessage(guild, `Deleted ban [${result.id}] because user was unbanned in this guild!`);
   }
 }

@@ -26,7 +26,7 @@ command.command = async (message, args, database, bot) => {
 
   if (user.bot) {
     await message.react(util.icons.error);
-    await message.channel.send("You cant interact with bots!");
+    await message.channel.send("You can't interact with bots!");
     return;
   }
   let member
@@ -46,7 +46,7 @@ command.command = async (message, args, database, bot) => {
   while (util.isTime(args[0]))
     args.shift();
 
-  command.mute(message.guild, user, message.author, args.join(' '), duration, message.channel)
+  command.mute(message.guild, user, message.author, args.join(' '), duration, message.channel);
 }
 
 command.mute = async (guild, user, moderator, reason, duration, channel) => {
@@ -83,7 +83,7 @@ command.mute = async (guild, user, moderator, reason, duration, channel) => {
     await util.chatSuccess(channel, user, reason, "muted", time);
   }
   await util.logMessageModeration(guild.id, moderator, user, reason, insert, "Mute", time);
-}
+};
 
 command.names = ['mute'];
 

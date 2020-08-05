@@ -10,5 +10,5 @@ exports.message = async (member, database) => {
       description: `Mute ID: ${result.id}`,
       footer: {text:`ID: ${member.id}`}
     })
-  }
+  };
 }

@@ -35,7 +35,7 @@ command.command = async (message, args, database, bot) => {
   if(message.guild.members.resolve(user)) {
     if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)) {
       await message.react(util.icons.error);
-      await message.channel.send("You dont have the Permission to ban that Member!")
+      await message.channel.send("You don't have the permission to ban that member!");
       return;
     }
   }
@@ -71,7 +71,7 @@ command.ban = async (guild, user, moderator, reason, duration, channel) => {
     await util.chatSuccess(channel, user, reason, "banned", time);
   }
   await util.logMessageModeration(guild.id, moderator, user, reason, insert, "Ban", time);
-}
+};
 
 command.names = ['ban'];
 

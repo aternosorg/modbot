@@ -29,7 +29,7 @@ exports.command = async (message, args, database, bot) => {
 
   if (user.bot) {
     await message.react(util.icons.error);
-    await message.channel.send("You cant interact with bots!");
+    await message.channel.send("You can't interact with bots!");
     return;
   }
 
@@ -45,7 +45,7 @@ exports.command = async (message, args, database, bot) => {
   if (member) {
     await member.roles.remove([guildConfig.mutedRole], `${message.author.username}#${message.author.discriminator} | ` + reason);
   }
-  await database.query("UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId])
+  await database.query("UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId]);
   let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId,'unmute', now, reason, message.author.id, false]);
 
   if (member) {
@@ -56,6 +56,6 @@ exports.command = async (message, args, database, bot) => {
 
   await util.chatSuccess(message, message, user, reason, "unmuted");
   await util.logMessageModeration(message, message, user, reason, insert, "Unmute");
-}
+};
 
 exports.names = ['unmute'];

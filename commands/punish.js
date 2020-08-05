@@ -33,7 +33,7 @@ exports.command = async (message, args, database, bot) => {
     util.sendEmbed(message.channel, {
       title: 'Punishments',
       description: list
-    })
+    });
     return;
   }
   if (count <= 0) {
@@ -63,7 +63,7 @@ exports.command = async (message, args, database, bot) => {
       config.punishments[count] = {
         action: action,
         duration: duration
-      }
+      };
       await util.saveGuildConfig(config);
       if (duration) {
         await message.channel.send(`Set punishment for ${count} ${count === 1 ? "strike" : "strikes"} to ${action} for ${util.secToTime(duration)}!`);
@@ -72,6 +72,6 @@ exports.command = async (message, args, database, bot) => {
         await message.channel.send(`Set punishment for ${count} ${count === 1 ? "strike" : "strikes"} to ${action}!`);
       }
   }
-}
+};
 
 exports.names = ['punish','punishment','punishments'];

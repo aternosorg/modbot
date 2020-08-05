@@ -26,14 +26,14 @@ command.command = async (message, args, database, bot) => {
 
   if (member.user.bot) {
     await message.react(util.icons.error);
-    await message.channel.send("You cant interact with bots!");
+    await message.channel.send("You can't interact with bots!");
     return;
   }
 
   //highest role check
   if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
     await message.react(util.icons.error);
-    await message.channel.send("You dont have the Permission to softban that Member!");
+    await message.channel.send("You don't have the Permission to softban that Member!");
     return;
   }
 
@@ -43,7 +43,7 @@ command.command = async (message, args, database, bot) => {
 command.softban = async (guild, member, moderator, reason, channel) => {
   reason = reason || 'No reason provided.';
 
-  let insert = await util.moderationDBAdd(guild.id, member.id, "softban", reason, null, moderator.id)
+  let insert = await util.moderationDBAdd(guild.id, member.id, "softban", reason, null, moderator.id);
 
   try {
     await member.send(`You were softbanned from \`${guild.name}\` | ${reason}`);
@@ -55,7 +55,7 @@ command.softban = async (guild, member, moderator, reason, channel) => {
     await util.chatSuccess(channel, member.user, reason, "softbanned");
   }
   await util.logMessageModeration(guild.id, moderator, member.user, reason, insert, "Softban");
-}
+};
 
 command.names = ['softban'];
 

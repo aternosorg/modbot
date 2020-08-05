@@ -24,7 +24,7 @@ exports.command = async (message, args, database, bot) => {
 
   if (user.bot) {
     await message.react(util.icons.error);
-    await message.channel.send("You cant interact with bots!");
+    await message.channel.send("You can't interact with bots!");
     return;
   }
 
@@ -52,6 +52,6 @@ exports.command = async (message, args, database, bot) => {
 
   await util.chatSuccess(message, message, user, reason, "unbanned");
   await util.logMessageModeration(message, message, user, reason, insert, "Unban");
-}
+};
 
 exports.names = ['unban'];
