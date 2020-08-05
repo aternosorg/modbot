@@ -14,7 +14,7 @@ exports.command = async (message, args, database, bot) => {
   } catch (e) {
     count = Math.abs(parseInt(args.shift()));
     if (count > maxStrikesAtOnce) {
-      await message.channel.send(`You cant give more then ${maxStrikesAtOnce} strikes at once!`);
+      await message.channel.send(`You can't give more than ${maxStrikesAtOnce} strikes at once!`);
       return;
     }
   }
@@ -30,7 +30,7 @@ exports.command = async (message, args, database, bot) => {
 
   if (user.bot) {
     await message.react(util.icons.error);
-    await message.channel.send("You cant interact with bots!");
+    await message.channel.send("You can't interact with bots!");
     return;
   }
 
@@ -40,7 +40,7 @@ exports.command = async (message, args, database, bot) => {
     member = await message.guild.members.fetch(user);
     if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
       await message.react(util.icons.error);
-      await message.channel.send("You dont have the permission to strike that member!");
+      await message.channel.send("You don't have the permission to strike that member!");
       return;
     }
   } catch (e) {}
