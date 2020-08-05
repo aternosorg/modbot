@@ -109,7 +109,16 @@ const database = new Database(config.db);
 
         for (let command of commands) {
             if (command.names.includes(cmd)) {
-                await Promise.resolve(command.command(message, args, database, bot));
+                try {
+                  await Promise.resolve(command.command(message, args, database, bot));
+                } catch (e) {
+                  let embed = new Discord.MessageEmbed({
+                    color: util.color.red,
+                    description: `An error occured while executing that command!`
+                  });
+                  await message.channel.send(embed);
+                  console.error(`An error occured while executing command ${command.names[0]}:`,e);
+                }
                 break;
             }
         }

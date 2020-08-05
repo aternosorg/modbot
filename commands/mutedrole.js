@@ -42,11 +42,34 @@ exports.command = async (message, args, database, bot) => {
       }
     }
 
+    if (message.guild.members.resolve(bot.user.id).roles.highest.comparePositionTo(role) < 0) {
+      await message.channel.send("I'm not high enough (in the role list)!");
+      return;
+    }
+
     let config = await util.getGuildConfig(message);
+    let oldRole = config.mutedRole;
     config.mutedRole = role.id;
     await util.saveGuildConfig(config);
+    let response = await message.channel.send(`Updating current mutes...`);
 
-    let response = await message.channel.send(`Updating channel overwrites...`);
+    if (!(oldRole === role.id)) {
+      for (mute of await database.queryAll("SELECT * FROM moderations WHERE action = 'mute' AND active = TRUE AND guildid = ?",[message.guild.id])) {
+        let member = message.guild.members.resolve(mute.userid);
+        if (member) {
+          try {
+            await member.roles.add(role.id);
+            if (member.roles.cache.get(oldRole)) {
+              await member.roles.remove(oldRole);
+            }
+          } catch (e) {
+            console.error("Couldn't change muted role",e);
+          }
+        }
+      }
+    }
+
+    await response.edit(`Updating channel overwrites...`)
 
     for ([key, channel] of message.guild.channels.cache) {
       if (!channel.permissionsFor(bot.user.id).has('MANAGE_CHANNELS') || !channel.permissionsFor(bot.user.id).has('VIEW_CHANNEL')) {
