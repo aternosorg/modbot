@@ -69,18 +69,15 @@ exports.names = ['strike'];
 
 async function punish(message, user, total, bot) {
   let config = await util.getGuildConfig(message.guild);
-  let punishment = config.punishments[total];
-  let member;
+  let punishment, member;
+  let count = total;
+  do {
+    punishment = config.punishments[count];
+    count --;
+  } while (!punishment && total > 0)
 
-  if(!punishment) {
-    let count = total;
-    while (!punishment) {
-      punishment = config.punishments[count]
-      count --;
-      if(count === 0){
-        return ;
-      }
-    }
+  if (!punishment) {
+    return ;
   }
 
   switch (punishment.action) {

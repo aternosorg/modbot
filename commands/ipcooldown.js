@@ -24,7 +24,7 @@ exports.command = async (message, args, database, bot) => {
             if (channel.mode === 0) {
                 await database.query("DELETE FROM channels WHERE id = ?", [channelId]);
             } else {
-                await database.query("UPDATE channels WHERE SET config = ? WHERE id = ?", [JSON.stringify(channel), channelId]);
+                await database.query("UPDATE channels SET config = ? WHERE id = ?", [JSON.stringify(channel), channelId]);
             }
             await message.channel.send(`Disabled IP cooldown <#${channelId}>!`);
         } else {
