@@ -54,7 +54,7 @@ exports.command = async (message, args, database, bot) => {
     } catch (e) {}
   }
 
-  await util.chatSuccess(message, message, user, reason, "unmuted");
+  await util.chatSuccess(message.channel, user, reason, "unmuted");
   await util.logMessageModeration(message, message, user, reason, insert, "Unmute");
 };
 
