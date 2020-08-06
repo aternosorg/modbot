@@ -1,6 +1,8 @@
 const guildConfig = require('../util/guildConfig.js');
 const util = require('../lib/util.js');
 const tutorial = require('./tutorial.js');
+const {google} = require('googleapis');
+const config = require('../config.json');
 
 exports.command = async (message, args, database, bot) => {
     //Permission check
@@ -20,9 +22,23 @@ exports.command = async (message, args, database, bot) => {
     if (["off","disabled","none"].includes(playlist)) {
       playlist = null;
     }
-    let config = await util.getGuildConfig(message);
-    config.playlist = playlist
-    await util.saveGuildConfig(config);
+
+    let service = google.youtube('v3');
+    let response = await service.playlists.list({
+      auth: config.googleapikey,
+      part: 'id',
+      id: playlist
+    });
+
+    if (response.data.items.length === 0) {
+      await message.react(util.icons.error);
+      await message.channel.send("Invlaid playlist!");
+      return;
+    }
+
+    let guildConfig = await util.getGuildConfig(message);
+    guildConfig.playlist = playlist
+    await util.saveGuildConfig(guildConfig);
 
      tutorial.clearCache(message.guild);
 
