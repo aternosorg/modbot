@@ -1,5 +1,5 @@
 //saves the config for each guild
-class channelConfig {
+class guildConfig {
     constructor(id, json) {
         //guild ID
         this.id = id;
@@ -15,6 +15,8 @@ class channelConfig {
           this.protectedRoles = json.protectedRoles;
           //protected roles
           this.punishments = json.punishments;
+          //playlist
+          this.playlist = json.playlist;
         }
     }
 
@@ -66,4 +68,4 @@ class channelConfig {
 
 }
 
-module.exports = channelConfig;
+module.exports = guildConfig;
