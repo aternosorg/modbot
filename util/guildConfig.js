@@ -15,8 +15,10 @@ class guildConfig {
           this.protectedRoles = json.protectedRoles;
           //protected roles
           this.punishments = json.punishments;
-          //playlist
+          //playlist ID
           this.playlist = json.playlist;
+          //zendesk helpcenter subdomain
+          this.helpcenter = json.helpcenter;
         }
     }
 
