@@ -4,18 +4,18 @@ const axios = require('axios');
 
 exports.command = async (message, args, database, bot) => {
 
-  let query = args.join(' ').toLowerCase();
-
-  if(!query){
-    await message.channel.send('Please provide a search query');
-    return ;
-  }
-
   let guildConfig = await util.getGuildConfig(message);
   if (!guildConfig.helpcenter) {
     await message.channel.send('No helpcenter configured!');
     return ;
   }
+  
+  let query = args.join(' ').toLowerCase();
+  if(!query){
+    await message.channel.send('Please provide a search query');
+    return ;
+  }
+
 
   let response = await axios.get(`https://${guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles/search.json?query=`+encodeURIComponent(query));
 
