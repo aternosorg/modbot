@@ -1,5 +1,5 @@
 //saves the config for each guild
-class channelConfig {
+class guildConfig {
     constructor(id, json) {
         //guild ID
         this.id = id;
@@ -15,6 +15,10 @@ class channelConfig {
           this.protectedRoles = json.protectedRoles;
           //protected roles
           this.punishments = json.punishments;
+          //playlist ID
+          this.playlist = json.playlist;
+          //zendesk helpcenter subdomain
+          this.helpcenter = json.helpcenter;
         }
     }
 
@@ -66,4 +70,4 @@ class channelConfig {
 
 }
 
-module.exports = channelConfig;
+module.exports = guildConfig;
