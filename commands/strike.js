@@ -6,7 +6,9 @@ const softban = require('./softban.js');
 
 const maxStrikesAtOnce = 5;
 
-exports.command = async (message, args, database, bot) => {
+let command = {};
+
+command.command = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     await message.react(util.icons.error);
     return;
@@ -49,30 +51,38 @@ exports.command = async (message, args, database, bot) => {
     }
   } catch (e) {}
 
-  let reason = args.join(' ') || 'No reason provided.';
-  let now = Math.floor(Date.now()/1000);
-
-  //insert strike
-  let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, value, created, reason, moderator) VALUES (?,?,?,?,?,?,?)",[message.guild.id, user.id, 'strike', count, now, reason, message.author.id]);
-
-  //count all strikes
-  let total = await database.query("SELECT SUM(value) AS sum FROM moderations WHERE guildid = ? AND userid = ? AND (action = 'strike' OR action = 'pardon')",[message.guild.id, user.id]);
-  total = parseInt(total.sum);
-
-  if (member) {
-    try {
-      await member.send(`You received ${count} ${count === 1 ? "strike" : "strikes"} in \`${message.guild.name}\` | ${reason}\nYou now have ${total} ${total === 1 ? "strike" : "strikes"}`);
-    } catch (e) {}
-  }
-  await util.chatSuccess(message.channel, user, reason, "striked");
-  await util.logMessageModeration(message, message.author, user, reason, insert.insertId, "Strike", null, count, total);
-  await punish(message, user, total, bot);
+  await command.add(message.guild, user, count, message.author, args.join(' '), message.channel, database, bot);
 };
 
-exports.names = ['strike'];
+command.names = ['strike'];
 
-async function punish(message, user, total, bot) {
-  let config = await util.getGuildConfig(message.guild);
+command.add = async (guild, user, count, moderator, reason, channel, database, bot, punish = true) => {
+  reason = reason || 'No reason provided.';
+  let now = Math.floor(Date.now()/1000);
+  let member;
+
+  //insert strike
+  let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, value, created, reason, moderator) VALUES (?,?,?,?,?,?,?)",[guild.id, user.id, 'strike', count, now, reason, moderator.id]);
+
+  //count all strikes
+  let total = await database.query("SELECT SUM(value) AS sum FROM moderations WHERE guildid = ? AND userid = ? AND (action = 'strike' OR action = 'pardon')",[guild.id, user.id]);
+  total = parseInt(total.sum);
+
+  try {
+    member = await guild.members.fetch(user);
+    await member.send(`You received ${count} ${count === 1 ? "strike" : "strikes"} in \`${guild.name}\` | ${reason}\nYou now have ${total} ${total === 1 ? "strike" : "strikes"}`);
+  } catch{}
+  if (channel) {
+    await util.chatSuccess(channel, user, reason, "striked");
+  }
+  await util.logMessageModeration(guild, moderator, user, reason, insert.insertId, "Strike", null, count, total);
+  if (punish) {
+    await punish(guild, user, total, bot);
+  }
+}
+
+async function punish(guild, user, total, bot) {
+  let config = await util.getGuildConfig(guild);
   let punishment, member;
   let count = total;
   do {
@@ -86,26 +96,28 @@ async function punish(message, user, total, bot) {
 
   switch (punishment.action) {
     case 'ban':
-      await ban.ban(message.guild, user, bot.user, `Reaching ${total} strikes`, punishment.duration);
+      await ban.ban(guild, user, bot.user, `Reaching ${total} strikes`, punishment.duration);
       break;
     case 'kick':
       try {
-        member = await message.guild.members.fetch(user.id);
+        member = await guild.members.fetch(user.id);
       } catch (e) {
         return;
       }
-      await kick.kick(message.guild, member, bot.user, `Reaching ${total} strikes`);
+      await kick.kick(guild, member, bot.user, `Reaching ${total} strikes`);
       break;
     case 'mute':
-      await mute.mute(message.guild, user, bot.user, `Reaching ${total} strikes`, punishment.duration);
+      await mute.mute(guild, user, bot.user, `Reaching ${total} strikes`, punishment.duration);
       break;
     case 'softban':
       try {
-        member = await message.guild.members.fetch(user.id);
+        member = await guild.members.fetch(user.id);
       } catch (e) {
         return;
       }
-      await softban.softban(message.guild, member, bot.user, `Reaching ${total} strikes`);
+      await softban.softban(guild, member, bot.user, `Reaching ${total} strikes`);
       break;
   }
 }
+
+module.exports = command;
