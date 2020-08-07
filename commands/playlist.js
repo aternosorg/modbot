@@ -32,7 +32,7 @@ exports.command = async (message, args, database, bot) => {
 
       if (response.data.items.length === 0) {
         await message.react(util.icons.error);
-        await message.channel.send("Invlaid playlist!");
+        await message.channel.send("Invalid playlist!");
         return;
       }
     }
