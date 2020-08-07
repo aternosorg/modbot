@@ -17,18 +17,28 @@ exports.command = async (message, args, database, bot) => {
       return;
     }
 
-    try {
-      await axios.get(`https://${subdomain}.zendesk.com/api/v2/help_center/articles/search.json?query=a`);
-    } catch (e) {
-      await message.channel.send('This is not a valid helpcenter subdomain!');
-      return;
+    if (["off","disabled","none"].includes(subdomain)) {
+      subdomain = null;
+    }
+    else {
+      try {
+        await axios.get(`https://${subdomain}.zendesk.com/api/v2/help_center/articles/search.json?query=a`);
+      } catch (e) {
+        await message.channel.send('This is not a valid helpcenter subdomain!');
+        return;
+      }
     }
 
     let config = await util.getGuildConfig(message);
     config.helpcenter = subdomain;
     await util.saveGuildConfig(config);
 
-    await message.channel.send(`Set helpcenter to https://${subdomain}.zendesk.com`);
+    if (subdomain) {
+      await message.channel.send(`Set helpcenter to https://${subdomain}.zendesk.com`);
+    }
+    else {
+      await message.channel.send(`Disabled helpcenter`);
+    }
 };
 
 exports.names = ['helpcenter'];

@@ -22,18 +22,19 @@ exports.command = async (message, args, database, bot) => {
     if (["off","disabled","none"].includes(playlist)) {
       playlist = null;
     }
+    else {
+      let service = google.youtube('v3');
+      let response = await service.playlists.list({
+        auth: config.googleapikey,
+        part: 'id',
+        id: playlist
+      });
 
-    let service = google.youtube('v3');
-    let response = await service.playlists.list({
-      auth: config.googleapikey,
-      part: 'id',
-      id: playlist
-    });
-
-    if (response.data.items.length === 0) {
-      await message.react(util.icons.error);
-      await message.channel.send("Invlaid playlist!");
-      return;
+      if (response.data.items.length === 0) {
+        await message.react(util.icons.error);
+        await message.channel.send("Invlaid playlist!");
+        return;
+      }
     }
 
     let guildConfig = await util.getGuildConfig(message);

@@ -12,6 +12,10 @@ exports.command = async (message, args, database, bot) => {
   }
 
   let guildConfig = await util.getGuildConfig(message);
+  if (!guildConfig.helpcenter) {
+    await message.channel.send('No helpcenter configured!');
+    return ;
+  }
 
   let response = await axios.get(`https://${guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles/search.json?query=`+encodeURIComponent(query));
 
