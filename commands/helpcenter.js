@@ -9,11 +9,17 @@ exports.command = async (message, args, database, bot) => {
         return;
     }
 
+    if (!args[0]) {
+      await message.react(util.icons.error);
+      await message.channel.send("Please provide a link (https://example.zendesk.com) or your zendesk subdomain (example)!");
+      return;
+    }
+
     let subdomain = args.shift().replace(/\.zendesk\.com$/i, '').replace(/[^a-zA-Z\d]/g, '');;
 
     if (!subdomain || !subdomain.length) {
       await message.react(util.icons.error);
-      await message.channel.send("Please provide a zendesk.com adress or your zendesk subdomain!");
+      await message.channel.send("Please provide a link (https://example.zendesk.com) or your zendesk subdomain (example)!");
       return;
     }
 
