@@ -11,9 +11,10 @@ exports.command = async (message, args, database, bot) => {
         return;
     }
 
-    let playlist = /youtube.com/.test(args[0]) ? args[0].split(/list=/)[1].replace(/&[\w=]+/,'') : args[0];
+    let match = String(args[0]).match(/youtube\.com\/.*[&?]list=(.+?)(?:&.*)?$/);
+    let playlist = match ? match[1] : args[0];
 
-    if (!playlist) {
+    if (!playlist  || !playlist.length) {
       await message.react(util.icons.error);
       await message.channel.send("Please provide a youtube playlist link or id");
       return;

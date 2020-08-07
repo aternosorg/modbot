@@ -6,10 +6,10 @@ exports.command = async (message, args, database, bot) => {
 
   let guildConfig = await util.getGuildConfig(message);
   if (!guildConfig.helpcenter) {
-    await message.channel.send('No helpcenter configured!');
+    await message.channel.send('No help center configured!');
     return ;
   }
-  
+
   let query = args.join(' ').toLowerCase();
   if(!query){
     await message.channel.send('Please provide a search query');

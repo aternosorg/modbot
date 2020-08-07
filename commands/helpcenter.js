@@ -9,9 +9,9 @@ exports.command = async (message, args, database, bot) => {
         return;
     }
 
-    let subdomain = /zendesk.com/.test(args[0]) ? args[0].split(/.zendesk.com/)[0] : args[0];
+    let subdomain = args.shift().replace(/\.zendesk\.com$/i, '').replace(/[^a-zA-Z\d]/g, '');;
 
-    if (!subdomain) {
+    if (!subdomain || !subdomain.length) {
       await message.react(util.icons.error);
       await message.channel.send("Please provide a zendesk.com adress or your zendesk subdomain!");
       return;
@@ -22,7 +22,7 @@ exports.command = async (message, args, database, bot) => {
     }
     else {
       try {
-        await axios.get(`https://${subdomain}.zendesk.com/api/v2/help_center/articles/search.json?query=a`);
+        await axios.get(`https://${subdomain}.zendesk.com/api/v2/help_center/articles.json`);
       } catch (e) {
         await message.channel.send('This is not a valid helpcenter subdomain!');
         return;
