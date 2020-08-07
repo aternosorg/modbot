@@ -29,7 +29,7 @@ exports.command = async (message, args, database, bot) => {
     for (let key of Object.keys(data.tempmutes)) {
       if (mutes.successful / mutes.total * 100  > percent + 0.5) {
         percent = mutes.successful / mutes.total * 100;
-        await response.edit(`Importing mutes (${percent.toFixed(1)}%)...`);
+        response.edit(`Importing mutes (${percent.toFixed(1)}%)...`).catch(console.error);;
       }
       let endsAt = data.tempmutes[key];
       if (endsAt > Number.MAX_SAFE_INTEGER) {
@@ -55,7 +55,7 @@ exports.command = async (message, args, database, bot) => {
       let now = Math.floor(Date.now()/1000);
       if (strikes.successful / strikes.total * 100  > percent + 0.5) {
         percent = strikes.successful / strikes.total * 100;
-        await response.edit(`Importing strikes (${percent.toFixed(1)}%)...`);
+        response.edit(`Importing strikes (${percent.toFixed(1)}%)...`).catch(console.error);;
       }
       let count = data.strikes[key];
 
@@ -74,7 +74,7 @@ exports.command = async (message, args, database, bot) => {
     for (let key of Object.keys(data.tempbans)) {
       if (bans.successful / bans.total * 100  > percent + 0.5) {
         percent = bans.successful / bans.total * 100;
-        await response.edit(`Importing bans (${percent.toFixed(1)}%)...`);
+        response.edit(`Importing bans (${percent.toFixed(1)}%)...`).catch(console.error);
       }
       let endsAt = data.tempbans[key];
       if (endsAt > Number.MAX_SAFE_INTEGER) {
