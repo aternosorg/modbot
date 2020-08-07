@@ -1,12 +1,6 @@
 const axios = require('axios');
 const util = require('../lib/util.js');
 
-const ban = require('./ban.js');
-const kick = require('./kick.js');
-const mute = require('./mute.js');
-const softban = require('./softban.js');
-const strike = require('./strike.js');
-
 exports.command = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
@@ -33,7 +27,7 @@ exports.command = async (message, args, database, bot) => {
       total: Object.keys(data.tempmutes).length
     }
     for (let key of Object.keys(data.tempmutes)) {
-      if (mutes.successful / mutes.total * 100  > percent + 0,1) {
+      if (mutes.successful / mutes.total * 100  > percent + 0.5) {
         percent = mutes.successful / mutes.total * 100;
         await response.edit(`Importing mutes (${percent.toFixed(1)}%)...`);
       }
@@ -44,14 +38,8 @@ exports.command = async (message, args, database, bot) => {
       }
 
       let now = Math.floor(Date.now()/1000);
-      let user;
 
-      try {
-        user = await bot.users.fetch(key);
-      } catch (e) {
-        continue;
-      }
-      await util.moderationDBAdd(message.guild.id, user.id, "mute", `Imported from Vortex`, endsAt - now, bot.user.id);
+      await util.moderationDBAdd(message.guild.id, key, "mute", `Imported from Vortex`, endsAt - now, bot.user.id);
       mutes.successful ++;
     }
 
@@ -65,19 +53,13 @@ exports.command = async (message, args, database, bot) => {
     }
     for (let key of Object.keys(data.strikes)) {
       let now = Math.floor(Date.now()/1000);
-      if (strikes.successful / strikes.total * 100  > percent + 0,1) {
+      if (strikes.successful / strikes.total * 100  > percent + 0.5) {
         percent = strikes.successful / strikes.total * 100;
         await response.edit(`Importing strikes (${percent.toFixed(1)}%)...`);
       }
       let count = data.strikes[key];
-      let user;
 
-      try {
-        user = await bot.users.fetch(key);
-      } catch (e) {
-        continue;
-      }
-      await database.queryAll("INSERT INTO moderations (guildid, userid, action, value, created, reason, moderator) VALUES (?,?,?,?,?,?,?)",[message.guild.id, user.id, 'strike', count, now, `Imported from Vortex`, bot.user.id]);
+      await database.queryAll("INSERT INTO moderations (guildid, userid, action, value, created, reason, moderator) VALUES (?,?,?,?,?,?,?)",[message.guild.id, key, 'strike', count, now, `Imported from Vortex`, bot.user.id]);
       strikes.successful ++;
     }
 
@@ -90,7 +72,7 @@ exports.command = async (message, args, database, bot) => {
       total: Object.keys(data.tempbans).length
     }
     for (let key of Object.keys(data.tempbans)) {
-      if (bans.successful / bans.total * 100  > percent + 0,1) {
+      if (bans.successful / bans.total * 100  > percent + 0.5) {
         percent = bans.successful / bans.total * 100;
         await response.edit(`Importing bans (${percent.toFixed(1)}%)...`);
       }
@@ -101,14 +83,8 @@ exports.command = async (message, args, database, bot) => {
       }
 
       let now = Math.floor(Date.now()/1000);
-      let user;
 
-      try {
-        user = await bot.users.fetch(key);
-      } catch (e) {
-        continue;
-      }
-      await util.moderationDBAdd(message.guild.id, user.id, "ban", `Imported from Vortex`, endsAt - now, bot.user.id);
+      await util.moderationDBAdd(message.guild.id, key, "ban", `Imported from Vortex`, endsAt - now, bot.user.id);
       bans.successful ++;
     }
 
