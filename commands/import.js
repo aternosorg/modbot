@@ -38,16 +38,20 @@ exports.command = async (message, args, database, bot) => {
         await response.edit(`Importing mutes (${percent.toFixed(1)}%)...`);
       }
       let endsAt = data.tempmutes[key];
+      if (endsAt > Number.MAX_SAFE_INTEGER) {
+        //ignore bugged timers
+        continue ;
+      }
+
       let now = Math.floor(Date.now()/1000);
       let user;
 
       try {
         user = await bot.users.fetch(key);
       } catch (e) {
-        mutes.failed ++;
         continue;
       }
-      await mute.mute(message.guild, user, bot.user, `Imported from Vortex`, endsAt - now);
+      await util.moderationDBAdd(message.guild.id, user.id, "mute", `Imported from Vortex`, endsAt - now, bot.user.id);
       mutes.successful ++;
     }
 
@@ -60,6 +64,7 @@ exports.command = async (message, args, database, bot) => {
       total: Object.keys(data.strikes).length
     }
     for (let key of Object.keys(data.strikes)) {
+      let now = Math.floor(Date.now()/1000);
       if (strikes.successful / strikes.total * 100  > percent + 0,1) {
         percent = strikes.successful / strikes.total * 100;
         await response.edit(`Importing strikes (${percent.toFixed(1)}%)...`);
@@ -72,7 +77,7 @@ exports.command = async (message, args, database, bot) => {
       } catch (e) {
         continue;
       }
-      await strike.add(message.guild, user, count, bot.user, `Imported from Vortex`, null, database, bot, false);
+      await database.queryAll("INSERT INTO moderations (guildid, userid, action, value, created, reason, moderator) VALUES (?,?,?,?,?,?,?)",[message.guild.id, user.id, 'strike', count, now, `Imported from Vortex`, bot.user.id]);
       strikes.successful ++;
     }
 
@@ -90,6 +95,11 @@ exports.command = async (message, args, database, bot) => {
         await response.edit(`Importing bans (${percent.toFixed(1)}%)...`);
       }
       let endsAt = data.tempbans[key];
+      if (endsAt > Number.MAX_SAFE_INTEGER) {
+        //ignore bugged timers
+        continue;
+      }
+
       let now = Math.floor(Date.now()/1000);
       let user;
 
@@ -98,7 +108,7 @@ exports.command = async (message, args, database, bot) => {
       } catch (e) {
         continue;
       }
-      await ban.ban(message.guild, user, bot.user, `Imported from Vortex`, endsAt - now);
+      await util.moderationDBAdd(message.guild.id, user.id, "ban", `Imported from Vortex`, endsAt - now, bot.user.id);
       bans.successful ++;
     }
 
