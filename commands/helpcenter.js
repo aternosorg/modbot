@@ -11,7 +11,7 @@ exports.command = async (message, args, database, bot) => {
 
     if (!args[0]) {
       await message.react(util.icons.error);
-      await message.channel.send("Please provide a Zendesk subdomain ( https://example.zendesk.com )!");
+      await message.channel.send("Please provide a Zendesk subdomain e.g. https://example.zendesk.com");
       return;
     }
 
@@ -19,7 +19,7 @@ exports.command = async (message, args, database, bot) => {
 
     if (!subdomain || !subdomain.length) {
       await message.react(util.icons.error);
-      await message.channel.send("Please provide a Zendesk subdomain ( https://example.zendesk.com )!");
+      await message.channel.send("Please provide a Zendesk subdomain e.g. https://example.zendesk.com");
       return;
     }
 
