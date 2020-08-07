@@ -72,7 +72,9 @@ command.add = async (guild, user, count, moderator, reason, channel, database, b
     member = await guild.members.fetch(user);
     await member.send(`You received ${count} ${count === 1 ? "strike" : "strikes"} in \`${guild.name}\` | ${reason}\nYou now have ${total} ${total === 1 ? "strike" : "strikes"}`);
   } catch{}
-  await util.chatSuccess(channel, user, reason, "striked");
+  if (channel) {
+    await util.chatSuccess(channel, user, reason, "striked");
+  }
   await util.logMessageModeration(guild, moderator, user, reason, insert.insertId, "Strike", null, count, total);
   await punish(guild, user, total, bot);
 }
