@@ -19,10 +19,13 @@ exports.command = async (message, args, database, bot) => {
       return;
     }
 
+    let time = Date.now();
+
     let data = await axios.get(message.attachments.first().url);
     data = data.data;
 
     let response = await message.channel.send('Importing mutes...');
+    let percent = 0;
 
     //mutes
     let mutes = {
@@ -30,6 +33,10 @@ exports.command = async (message, args, database, bot) => {
       total: Object.keys(data.tempmutes).length
     }
     for (let key of Object.keys(data.tempmutes)) {
+      if (mutes.successful / mutes.total * 100  > percent + 0,1) {
+        percent = mutes.successful / mutes.total * 100;
+        await response.edit(`Importing mutes (${percent.toFixed(1)}%)...`);
+      }
       let endsAt = data.tempmutes[key];
       let now = Math.floor(Date.now()/1000);
       let user;
@@ -44,6 +51,7 @@ exports.command = async (message, args, database, bot) => {
       mutes.successful ++;
     }
 
+    percent = 0;
     await response.edit('Importing strikes...');
 
     //strikes
@@ -52,6 +60,10 @@ exports.command = async (message, args, database, bot) => {
       total: Object.keys(data.strikes).length
     }
     for (let key of Object.keys(data.strikes)) {
+      if (strikes.successful / strikes.total * 100  > percent + 0,1) {
+        percent = strikes.successful / strikes.total * 100;
+        await response.edit(`Importing strikes (${percent.toFixed(1)}%)...`);
+      }
       let count = data.strikes[key];
       let user;
 
@@ -64,6 +76,7 @@ exports.command = async (message, args, database, bot) => {
       strikes.successful ++;
     }
 
+    percent = 0;
     await response.edit('Importing bans...');
 
     //bans
@@ -72,6 +85,10 @@ exports.command = async (message, args, database, bot) => {
       total: Object.keys(data.tempbans).length
     }
     for (let key of Object.keys(data.tempbans)) {
+      if (bans.successful / bans.total * 100  > percent + 0,1) {
+        percent = bans.successful / bans.total * 100;
+        await response.edit(`Importing bans (${percent.toFixed(1)}%)...`);
+      }
       let endsAt = data.tempbans[key];
       let now = Math.floor(Date.now()/1000);
       let user;
@@ -85,7 +102,9 @@ exports.command = async (message, args, database, bot) => {
       bans.successful ++;
     }
 
-    await response.edit(`Imported ${mutes.successful} of ${mutes.total} mutes, ${strikes.successful} of ${strikes.total} strikes and ${bans.successful} of ${bans.total} bans!`);
+    time = Math.floor((Date.now() - time)/1000);
+    time = util.secToTime(time);
+    await response.edit(`Imported ${mutes.successful} of ${mutes.total} mutes, ${strikes.successful} of ${strikes.total} strikes and ${bans.successful} of ${bans.total} bans in ${time}!`);
 };
 
 exports.names = ['import'];
