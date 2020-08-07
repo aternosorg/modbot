@@ -60,7 +60,7 @@ exports.command = async (message, args, database, bot) => {
       } catch (e) {
         continue;
       }
-      await strike.add(message.guild, user, count, bot.user, `Imported from Vortex`, null, database, bot);
+      await strike.add(message.guild, user, count, bot.user, `Imported from Vortex`, null, database, bot, false);
       strikes.successful ++;
     }
 
