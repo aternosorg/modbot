@@ -15,7 +15,7 @@ exports.command = async (message, args, database, bot) => {
       return;
     }
 
-    let subdomain = args.shift().replace(/\.zendesk\.com$/i, '').replace(/[^a-zA-Z\d]/g, '');;
+    let subdomain = args.shift().replace(/^https?:\/\/|\.zendesk\.com(\/.*)?$/ig, '').replace(/[^a-zA-Z\d]/g, '');;
 
     if (!subdomain || !subdomain.length) {
       await message.react(util.icons.error);
