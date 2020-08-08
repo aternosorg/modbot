@@ -56,7 +56,7 @@ command.command = async (message, args, database, bot) => {
 
 command.names = ['strike'];
 
-command.add = async (guild, user, count, moderator, reason, channel, database, bot, punish = true) => {
+command.add = async (guild, user, count, moderator, reason, channel, database, bot) => {
   reason = reason || 'No reason provided.';
   let now = Math.floor(Date.now()/1000);
   let member;
@@ -76,9 +76,7 @@ command.add = async (guild, user, count, moderator, reason, channel, database, b
     await util.chatSuccess(channel, user, reason, "striked");
   }
   await util.logMessageModeration(guild, moderator, user, reason, insert.insertId, "Strike", null, count, total);
-  if (punish) {
-    await punish(guild, user, total, bot);
-  }
+  await punish(guild, user, total, bot);
 }
 
 async function punish(guild, user, total, bot) {
