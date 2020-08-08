@@ -58,6 +58,17 @@ exports.command = async (message, args, database, bot) => {
     }
   }
 
+  if (!filter.users.length && !filter.regex && !filter.string && !filter.count) {
+    let embed = new Discord.MessageEmbed({ description: ''});
+    embed.setDescription(embed.description + 'Deletes messages that match the filter \n');
+    embed.setDescription(embed.description + 'USAGE: \`purge filter1 filter2\` ... \n');
+    embed.setDescription(embed.description + 'Available filters: "includes string" /matches regex/ @byUser byUserId count \n');
+    embed.setDescription(embed.description + 'any combination and order of filters is supported!');
+    await message.channel.send(embed);
+    return ;
+  }
+
+
   let messages = await message.channel.messages.fetch({
     before: message.id,
     limit: filter.count || 100
@@ -135,6 +146,9 @@ exports.command = async (message, args, database, bot) => {
   }
   if (filter.regex) {
     logembed.addField("Regex", filter.regex, true);
+  }
+  if (filter.count) {
+    logembed.addField("Tested messages", filter.count, true);
   }
   return await message.guild.channels.resolve(guildConfig.logChannel).send(logembed);
 
