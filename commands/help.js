@@ -1,5 +1,5 @@
 const util = require('../lib/util.js');
-
+const Discord = require ('discord.js')
 const command = {};
 
 command.command = async (message, args, database, bot) => {
