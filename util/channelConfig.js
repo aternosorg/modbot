@@ -9,7 +9,7 @@ class channelConfig {
           this.mode = json.mode;
           //IP cooldown time
           this.cooldown = json.cooldown;
-          //invites is not the same as guild setting
+          //allow invites
           this.invites = json.invites;
         }
     }
