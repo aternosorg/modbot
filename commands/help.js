@@ -1,12 +1,13 @@
 const util = require('../lib/util.js');
-const Discord = require ('discord.js')
+const Discord = require('discord.js');
+const config = require('../config');
 
 const command = {};
 
 command.command = async (message, args, database, bot) => {
  const embed = new Discord.MessageEmbed()
-   .setColor(0x43b581)
-   .setAuthor(`Help menu | prefix: !`)
+   .setColor(util.color.green)
+   .setAuthor(`Help Menu | Prefix: ${config.prefix}`)
    .setFooter(`Command executed by ${message.author.username}`)
    .setTimestamp()
    .addFields(
@@ -15,9 +16,10 @@ command.command = async (message, args, database, bot) => {
      { name: "Syntax", value: "`help`\n`article {keyword}`\n`ban {user} {duration} {reason}`\n`helpcenter {zendesk subdomain}`\n`import`\n`ip {require/forbid/off} {channel}`\n`ipcooldown {duration}`\n`kick {user} {reason}`\n`logchannel {channel}`\n`moderations {user}`\n`modroles {add/remove/list} {role}`\n`mute {user} {duration} {reason}`", inline: false},
      { name: "Syntax", value: "`mutedrole {role}`\n`pardon {case}`\n`ping`\n`playlist {yt playlist link}`\n`punish {strikes} {punishment}`\n`softban {user} {reason}`\n`strike {amount} {user} {reason}`\n`tutorial/video {keyword}`\n`unban {user}`\n`unmute {user}`\n`userinfo/check {user}`", inline: true}
  );
-message.channel.send(embed)
+ message.channel.send(embed);
 
-}
+};
+
 command.names = ['help'];
 
 module.exports = command;
