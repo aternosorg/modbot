@@ -118,11 +118,13 @@ exports.command = async (message, args, database, bot) => {
   });
 
   await message.delete();
-  let response = await message.channel.send(`Deleting ${messages.size} messages...`)
 
   await message.channel.bulkDelete(messages);
 
-  await response.delete();
+  let response = await message.channel.send(`Deleted ${messages.size} messages`);
+  try {
+    await response.delete({timeout: 3000});
+  } catch (e) {}
 
   let guildConfig = await util.getGuildConfig(message);
   const logembed = new Discord.MessageEmbed()
