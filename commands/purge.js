@@ -22,14 +22,7 @@ exports.command = async (message, args, database, bot) => {
       continue;
     }
 
-    if (arg.startsWith('"') && index != args.length - 1) {
-      i = index;
-      while (args[i] && !args[i].endsWith('"')) {
-        arg += ' ' + args[i];
-        i ++;
-      }
-    }
-    else if (arg.startsWith('/') && index != args.length - 1) {
+    if (arg.startsWith('/') && index != args.length - 1) {
       i = index;
       while (args[i] && !String(args[i]).match(/\/([gimsuy]*)$/)) {
         arg += ' ' + args[i];
