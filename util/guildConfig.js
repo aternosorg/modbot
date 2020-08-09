@@ -19,6 +19,8 @@ class guildConfig {
           this.playlist = json.playlist;
           //zendesk helpcenter subdomain
           this.helpcenter = json.helpcenter;
+          //allow invites
+          this.invites = json.invites;
         }
     }
 
