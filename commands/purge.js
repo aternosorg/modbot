@@ -17,19 +17,6 @@ exports.command = async (message, args, database, bot) => {
 
   let i;
   for (let [index, arg] of args.entries()) {
-
-    if (i > index) {
-      continue;
-    }
-
-    if (arg.startsWith('/') && index != args.length - 1) {
-      i = index;
-      while (args[i] && !String(args[i]).match(/\/([gimsuy]*)$/)) {
-        arg += ' ' + args[i];
-        i ++;
-      }
-    }
-
     //purge @user
     //purge userid
     if (await util.isUserMention(arg)) {
@@ -65,7 +52,6 @@ exports.command = async (message, args, database, bot) => {
     await message.channel.send(embed);
     return ;
   }
-
 
   let messages = await message.channel.messages.fetch({
     before: message.id,
