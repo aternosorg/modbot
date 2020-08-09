@@ -25,7 +25,7 @@ command.command = async (message, args, database, bot) => {
 
   if (user.bot) {
     await message.react(util.icons.error);
-    await message.channel.send("You cant interact with bots!");
+    await message.channel.send("You can't interact with bots!");
     return;
   }
 

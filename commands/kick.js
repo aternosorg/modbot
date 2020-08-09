@@ -34,7 +34,7 @@ command.command = async (message, args, database, bot) => {
   //highest role check
   if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
     await message.react(util.icons.error);
-    await message.channel.send("You dont have the permission to kick that member!");
+    await message.channel.send("You don't have the permission to kick that member!");
     return;
   }
 

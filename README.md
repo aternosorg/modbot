@@ -8,7 +8,7 @@ Modbot is a Moderation Bot specifically for the [Aternos Discord](https://chat.a
 - set a cooldown on .aternos.me IPs in specified channels
 - find articles from the [Aternos Help Center](https://support.aternos.org/hc/en-us)
 - find our [tutorials](https://www.youtube.com/playlist?list=PLHn1eAE9tVwzD2pnhzfvCj9h-e06MfH2N)
-- log it's actions(message deletions etc.) in a configurable channel.
+- log it's actions (message deletions etc.) in a configurable channel.
 
 ### Setup
 
