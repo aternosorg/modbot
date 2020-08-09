@@ -36,14 +36,19 @@ exports.command = async (message, args, database, bot) => {
       filter.users.push(util.userMentionToId(arg));
     }
     //purge /regex/
-    else if (String(arg).match(/^\/((.* *))\/([gimsuy]*)$/)) {
-      let match = String(arg).match(/^\/(.* *)\/([gimsuy]*)$/);
-      filter.regex = new RegExp(match[1],match[2]);
+    else if (String(arg).match(/^\/.*\/[gimsuy]*$/)) {
+      let match = String(arg).match(/^\/(.*)\/([gimsuy]*)$/);
+      try {
+        filter.regex = new RegExp(match[1],match[2]);
+      }
+      catch (e) {
+        message.channel.send(`Invalid regex as filter number ${index+1}`);
+        return;
+      }
     }
     //purge "word"
-    else if (String(arg).match(/"(.* *)"/) && arg.length > 2) {
-      let match = String(arg).match(/"(.* *)"/);
-      filter.string = match[1];
+    else if (!/\d+/.test(arg)) {
+      filter.string = arg;
     }
     //purge 10
     else if (parseInt(arg) && parseInt(arg) < 100) {
