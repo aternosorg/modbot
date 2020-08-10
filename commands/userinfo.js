@@ -3,9 +3,9 @@ const Discord = require('discord.js');
 
 const command = {};
 
-command.description = 'Pardon strikes of a user';
+command.description = 'Show information about a user';
 
-command.usage = '<count> @user|userId <reason>';
+command.usage = '@user|userId';
 
 command.names = ['userinfo','user','check'];
 

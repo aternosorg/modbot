@@ -5,7 +5,7 @@ const command = {};
 
 command.description = 'Specify the muted role';
 
-command.usage = '@role|id';
+command.usage = '@role|roleId';
 
 command.names = ['mutedrole','muterole'];
 

@@ -2,7 +2,7 @@ const util = require('../lib/util.js');
 
 const command = {};
 
-command.description = 'Softban a user';
+command.description = 'Softban a user (kick and delete messages)';
 
 command.usage = '@member|memberId <reason>';
 

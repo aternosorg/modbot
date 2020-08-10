@@ -8,7 +8,7 @@ const command = {};
 
 command.description = 'Specify a tutorial playlist';
 
-command.usage = 'link|playlistId';
+command.usage = 'link|playlistId|disabled';
 
 command.names = ['playlist'];
 
