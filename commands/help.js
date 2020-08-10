@@ -5,7 +5,7 @@ const fs = require('fs').promises;
 
 const command = {};
 
-command.description = 'List all commands or a description to a single command';
+command.description = 'List all commands or get a description for a single command';
 
 command.usage = '<command>';
 

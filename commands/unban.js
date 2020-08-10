@@ -2,7 +2,7 @@ const util = require('../lib/util.js');
 
 const command = {};
 
-command.description = 'Uban a user';
+command.description = 'Unban a user';
 
 command.usage = '@user|userId <reason>';
 

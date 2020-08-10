@@ -4,7 +4,7 @@ const axios = require('axios');
 
 const command = {};
 
-command.description = 'Specify the zendesk help center';
+command.description = 'Specify the Zendesk help center';
 
 command.usage = 'example.zendesk.com|example|disabled';
 

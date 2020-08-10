@@ -7,7 +7,7 @@ let videos = new Discord.Collection();
 
 const command = {};
 
-command.description = 'Search tutorials in youtube playlist';
+command.description = 'Search tutorials in a youtube playlist';
 
 command.usage = 'query';
 
