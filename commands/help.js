@@ -11,7 +11,7 @@ command.command = async (message, args, database, bot) => {
    .setFooter(`Command executed by ${message.author.username}`)
    .setTimestamp()
    .addFields(
-     { name: "Command", value: "`help` `article` `ban` `helpcenter`\n`import` `ip` `ipcooldown` `kick`\n`logchannel` `moderations` `modroles` `mute`\n`mutedrole` `pardon` `ping` `playlist`\n`punish` `softban` `strike` `tutorial`\n`unban` `unmute` `userinfo`", inline: true},
+     { name: "Command", value: "`help`|`article`|`ban`|`helpcenter`\n`import`|`ip`|`ipcooldown`|`kick`\n`logchannel`|`moderations`|`modroles`|`mute`\n`mutedrole`|`pardon`|`ping`|`playlist`\n`punish`|`softban`|`strike`|`tutorial`\n`unban`|`unmute`|`userinfo`|`invites`|`purge`", inline: true},
  );
  message.channel.send(embed);
 
