@@ -33,11 +33,30 @@ command.command = async (message, args, database, bot) => {
   .setColor(util.color.green)
   .setFooter(`Command executed by ${message.author.username}`)
   .setTimestamp();
+  if (!args.length || args[0] === 'list') {
       embed
       .setAuthor(`Help Menu | Prefix: ${config.prefix}`)
       .addFields(
         { name: "Commands", value: commandList, inline: true}
       );
+  }
+  else {
+      if (commands[args[0]]) {
+        let cmd = commands[args[0]];
+        embed
+        .setAuthor(`Help for ${args[0]} | Prefix: ${config.prefix}`)
+        .addFields(
+          { name: "usage", value: cmd.usage, inline: true},
+          { name: "description", value: cmd.description, inline: true}
+        );
+      }
+      else {
+        embed
+        .setAuthor(`Help | Prefix: ${config.prefix}`)
+        .setColor(util.color.red)
+        .setDescription(`${args[0]} is not a valid command`);
+      }
+  }
   message.channel.send(embed);
 
 };
