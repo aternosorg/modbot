@@ -13,7 +13,7 @@ exports.command = async (message, args, database, bot) => {
     regex: null,
     string: null,
     count: null
-  }
+  };
 
   let i;
   for (let [index, arg] of args.entries()) {
@@ -47,7 +47,7 @@ exports.command = async (message, args, database, bot) => {
     let embed = new Discord.MessageEmbed({ description: ''});
     embed.setDescription(embed.description + 'Deletes messages that match the filter \n');
     embed.setDescription(embed.description + 'USAGE: \`purge filter1 filter2\` ... \n');
-    embed.setDescription(embed.description + 'Available filters: "includes string" /matches regex/ @byUser byUserId count \n');
+    embed.setDescription(embed.description + 'Available filters: string /regex/flags @byUser byUserId count \n');
     embed.setDescription(embed.description + 'any combination and order of filters is supported!');
     await message.channel.send(embed);
     return ;
