@@ -25,7 +25,7 @@ let commandList = '';
       for (let name of cmd.names) {
         commands[name] = cmd;
       }
-      commandList += `${cmd.names[0]}, `;
+      commandList += `\`${cmd.names[0]}\`, `;
     } catch (e) {
       console.error(`Failed to load command '${file}'`, e);
     }
@@ -57,6 +57,16 @@ command.execute = async (message, args, database, bot) => {
         if (cmd.comment) {
           embed.addFields(
             { name: "Comment", value: `${cmd.comment}`, inline: false});
+        }
+        if (cmd.names.length > 1) {
+          let aliases = '';
+          for (let name of cmd.names) {
+            if (name !== args[0]) {
+              aliases += `\`${name}\`, `;
+            }
+          }
+          embed.addFields(
+            { name: "Aliases", value: aliases.substring(0,aliases.length - 2), inline: false});
         }
       }
       else {
