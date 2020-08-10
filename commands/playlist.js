@@ -7,8 +7,9 @@ const config = require('../config.json');
 exports.command = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
-        message.channel.send('You need the "Manage Server" permission to use this command.');
-        return;
+      await message.react(util.icons.error);
+      await message.channel.send('You need the "Manage Server" permission to use this command.');
+      return;
     }
 
     let match = String(args[0]).match(/youtube\.com\/.*[&?]list=(.+?)(?:&.*)?$/);
@@ -39,10 +40,10 @@ exports.command = async (message, args, database, bot) => {
     }
 
     let guildConfig = await util.getGuildConfig(message);
-    guildConfig.playlist = playlist
+    guildConfig.playlist = playlist;
     await util.saveGuildConfig(guildConfig);
 
-     tutorial.clearCache(message.guild);
+    tutorial.clearCache(message.guild);
 
     if (playlist) {
       await message.channel.send(`Set playlist to https://www.youtube.com/playlist?list=${playlist}`);
