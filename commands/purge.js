@@ -107,11 +107,21 @@ exports.command = async (message, args, database, bot) => {
     return true;
   });
 
-  await message.delete();
+  try {
+    await message.delete();
+  } catch (e) {}
 
-  await message.channel.bulkDelete(messages);
+  try {
+    await message.channel.bulkDelete(messages);
+  } catch (e) {
+    console.log('bulkDelete failed');
+  }
 
-  let response = await message.channel.send(`Deleted ${messages.size} messages`);
+  let response = await message.channel.send(new Discord.MessageEmbed({
+    color: util.color.green,
+    description: `Deleted **${messages.size}** messages.`
+  }));
+
   try {
     await response.delete({timeout: 3000});
   } catch (e) {}
