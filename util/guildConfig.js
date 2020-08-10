@@ -20,6 +20,10 @@ class guildConfig {
           //zendesk helpcenter subdomain
           this.helpcenter = json.helpcenter;
         }
+
+        if (!this.punishments) {
+          this.punishments = {}
+        }
     }
 
     isModRole(role) {

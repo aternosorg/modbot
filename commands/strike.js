@@ -86,7 +86,7 @@ async function punish(guild, user, total, bot) {
   do {
     punishment = config.punishments[count];
     count --;
-  } while (!punishment && total > 0)
+  } while (!punishment && count > 0)
 
   if (!punishment) {
     return ;
