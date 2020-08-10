@@ -119,7 +119,7 @@ exports.command = async (message, args, database, bot) => {
 
   let response = await message.channel.send(new Discord.MessageEmbed({
     color: util.color.green,
-    description: `Deleted **${messages.size}** messages.`
+    description: `Deleted **${messages.size}** ${messages.size === 1 ? 'message' : 'messages'}.`
   }));
 
   try {
@@ -129,7 +129,7 @@ exports.command = async (message, args, database, bot) => {
   let guildConfig = await util.getGuildConfig(message);
   const logembed = new Discord.MessageEmbed()
   .setColor(util.color.orange)
-  .setAuthor(`${message.author.username}#${message.author.discriminator} purged  ${messages.size} messages`)
+  .setAuthor(`${message.author.username}#${message.author.discriminator} purged  ${messages.size} ${messages.size === 1 ? 'message' : 'messages'}.`)
   .setTimestamp()
   .addFields(
     { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
@@ -149,7 +149,7 @@ exports.command = async (message, args, database, bot) => {
     logembed.addField("Regex", filter.regex, true);
   }
   if (filter.count) {
-    logembed.addField("Tested messages", filter.count, true);
+    logembed.addField(`Tested ${messages.size === 1 ? 'message' : 'messages'}`, filter.count, true);
   }
   return await message.guild.channels.resolve(guildConfig.logChannel).send(logembed);
 
