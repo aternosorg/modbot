@@ -118,7 +118,8 @@ exports.command = async (message, args, database, bot) => {
   .setAuthor(`${message.author.username}#${message.author.discriminator} purged  ${messages.size} messages`)
   .setTimestamp()
   .addFields(
-    { name: "Moderator", value: `<@${message.author.id}>`, inline: true}
+    { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
+    { name: "Channel", value: `<#${message.channel.id}>`, inline: true}
   );
   if (filter.users.length) {
     let s = '';
