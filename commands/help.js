@@ -51,9 +51,13 @@ command.execute = async (message, args, database, bot) => {
         embed
         .setAuthor(`Help for ${args[0]} | Prefix: ${config.prefix}`)
         .addFields(
-          { name: "usage", value: cmd.usage, inline: true},
-          { name: "description", value: cmd.description, inline: true}
+          { name: "Usage", value: `${config.prefix}${args[0]} ${cmd.usage}`, inline: true},
+          { name: "Description", value: cmd.description, inline: true}
         );
+        if (cmd.comment) {
+          embed.addFields(
+            { name: "Comment", value: `${cmd.comment}`, inline: false});
+        }
       }
       else {
         embed

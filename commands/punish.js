@@ -6,6 +6,8 @@ command.description = 'Specify auto punishments';
 
 command.usage = 'count action <duration>';
 
+command.comment = 'If there is no punishment for the current strike count the last punishment will be repeated';
+
 command.names = ['punish','punishment','punishments'];
 
 command.execute = async (message, args, database, bot) => {

@@ -5,7 +5,9 @@ const command = {};
 
 command.description = 'Import tempmutes, tempbans and strikes from vortex ';
 
-command.usage = 'example.zendesk.com|example|disabled';
+command.usage = '';
+
+command.comment = 'Add the .json file to your message';
 
 command.names = ['import'];
 
