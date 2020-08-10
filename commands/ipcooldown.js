@@ -5,7 +5,7 @@ const command = {};
 
 command.description = 'Set a cooldown on ips in a channel';
 
-command.usage = 'example.zendesk.com|example|disabled';
+command.usage = '#channel|channelId duration';
 
 command.comment = 'If the cooldown has less then 60s remaining the message will not be deleted';
 
