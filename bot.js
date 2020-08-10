@@ -105,7 +105,7 @@ const database = new Database(config.db);
         if (!message.guild || message.author.bot) return;
         if (!message.content.toLowerCase().startsWith(config.prefix.toLowerCase())) return;
 
-        const args = message.content.split(/\s+/g);
+        const args = util.split(message.content,' ');
         const cmd = args.shift().slice(config.prefix.length).toLowerCase();
 
         for (let command of commands) {
