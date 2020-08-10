@@ -6,9 +6,15 @@ const softban = require('./softban.js');
 
 const maxStrikesAtOnce = 5;
 
-let command = {};
+const command = {};
 
-command.command = async (message, args, database, bot) => {
+command.description = 'Strike a user';
+
+command.usage = '<count> @user|userId <reason>';
+
+command.names = ['strike'];
+
+command.execute = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     await message.react(util.icons.error);
     return;
@@ -54,8 +60,6 @@ command.command = async (message, args, database, bot) => {
   await command.add(message.guild, user, count, message.author, args.join(' '), message.channel, database, bot);
 };
 
-command.names = ['strike'];
-
 command.add = async (guild, user, count, moderator, reason, channel, database, bot) => {
   reason = reason || 'No reason provided.';
   let now = Math.floor(Date.now()/1000);
@@ -77,7 +81,7 @@ command.add = async (guild, user, count, moderator, reason, channel, database, b
   }
   await util.logMessageModeration(guild, moderator, user, reason, insert.insertId, "Strike", null, count, total);
   await punish(guild, user, total, bot);
-}
+};
 
 async function punish(guild, user, total, bot) {
   let config = await util.getGuildConfig(guild);
@@ -86,7 +90,7 @@ async function punish(guild, user, total, bot) {
   do {
     punishment = config.punishments[count];
     count --;
-  } while (!punishment && count > 0)
+  } while (!punishment && count > 0);
 
   if (!punishment) {
     return ;

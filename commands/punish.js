@@ -1,6 +1,14 @@
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Specify auto punishments';
+
+command.usage = 'count action <duration>';
+
+command.names = ['punish','punishment','punishments'];
+
+command.execute = async (message, args, database, bot) => {
   if (!await util.isMod(message.member) && !message.member.hasPermission('MANAGE_GUILD')) {
     message.channel.send("You don't have the permission to execute this command.");
     return;
@@ -14,15 +22,15 @@ exports.command = async (message, args, database, bot) => {
   if (!count) {
     let list = '';
     for (let key in config.punishments) {
-      let value = config.punishments[key]
+      let value = config.punishments[key];
       if (!value) {
         continue;
       }
       if (value.duration) {
-        list += `${key}: ${value.action} for ${util.secToTime(value.duration)} \n`
+        list += `${key}: ${value.action} for ${util.secToTime(value.duration)} \n`;
       }
       else {
-        list += `${key}: ${value.action} \n`
+        list += `${key}: ${value.action} \n`;
       }
     }
     if (list === '') {
@@ -77,4 +85,4 @@ exports.command = async (message, args, database, bot) => {
   }
 };
 
-exports.names = ['punish','punishment','punishments'];
+module.exports = command;

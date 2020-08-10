@@ -4,7 +4,15 @@ const tutorial = require('./tutorial.js');
 const {google} = require('googleapis');
 const config = require('../config.json');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Specify a tutorial playlist';
+
+command.usage = 'link|playlistId';
+
+command.names = ['playlist'];
+
+command.execute = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         message.channel.send('You need the "Manage Server" permission to use this command.');
@@ -39,7 +47,7 @@ exports.command = async (message, args, database, bot) => {
     }
 
     let guildConfig = await util.getGuildConfig(message);
-    guildConfig.playlist = playlist
+    guildConfig.playlist = playlist;
     await util.saveGuildConfig(guildConfig);
 
      tutorial.clearCache(message.guild);
@@ -52,4 +60,4 @@ exports.command = async (message, args, database, bot) => {
     }
 };
 
-exports.names = ['playlist'];
+module.exports = command;

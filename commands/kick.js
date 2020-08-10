@@ -2,7 +2,13 @@ const util = require('../lib/util.js');
 
 const command = {};
 
-command.command = async (message, args, database, bot) => {
+command.description = 'Kick a user';
+
+command.usage = '@user|userId <reason>';
+
+command.names = ['kick'];
+
+command.execute = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('KICK_MEMBERS')) {
     await message.react(util.icons.error);
     return;
@@ -56,7 +62,5 @@ command.kick = async (guild, member, moderator, reason, channel) => {
   }
   await util.logMessageModeration(guild.id, moderator, member.user, reason, insert, "Kick");
 };
-
-command.names = ['kick'];
 
 module.exports = command;

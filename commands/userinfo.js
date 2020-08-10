@@ -1,7 +1,15 @@
 const util = require('../lib/util.js');
 const Discord = require('discord.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Pardon strikes of a user';
+
+command.usage = '<count> @user|userId <reason>';
+
+command.names = ['userinfo','user','check'];
+
+command.execute = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     await message.react(util.icons.error);
     return;
@@ -23,7 +31,7 @@ exports.command = async (message, args, database, bot) => {
     return;
   }
 
-  let member
+  let member;
   try {
     member = await message.guild.members.resolve(userId);
   } catch (e) {}
@@ -89,4 +97,4 @@ exports.command = async (message, args, database, bot) => {
   await message.channel.send(embed);
 };
 
-exports.names = ['userinfo','user','check'];
+module.exports = command;

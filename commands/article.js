@@ -2,7 +2,15 @@ const config = require('../config.json');
 const util = require('../lib/util.js');
 const axios = require('axios');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Search articles in the help center';
+
+command.usage = 'query';
+
+command.names = ['article'];
+
+command.execute = async (message, args, database, bot) => {
 
   let guildConfig = await util.getGuildConfig(message);
   if (!guildConfig.helpcenter) {
@@ -27,4 +35,4 @@ exports.command = async (message, args, database, bot) => {
   }
 };
 
-exports.names = ['article'];
+module.exports = command;

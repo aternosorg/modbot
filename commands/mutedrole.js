@@ -1,7 +1,15 @@
 const guildConfig = require('../util/guildConfig.js');
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Specify the muted role';
+
+command.usage = '@role|id';
+
+command.names = ['mutedrole','muterole'];
+
+command.execute = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         await message.channel.send('You need the "Manage Server" Permission to use this command.');
@@ -24,7 +32,7 @@ exports.command = async (message, args, database, bot) => {
           name: 'muted',
           hoist: false
         }
-      })
+      });
     }
     else if (args[0] === 'disable'){
       let config = await util.getGuildConfig(message);
@@ -35,7 +43,7 @@ exports.command = async (message, args, database, bot) => {
     }
     else{
       //Get role
-      role = message.guild.roles.resolve(util.roleMentionToId(args.shift()))
+      role = message.guild.roles.resolve(util.roleMentionToId(args.shift()));
       if (!role) {
         await message.channel.send("Please specify a role(@Mention or ID), or use the subcommands 'create' or 'disable'!");
         return;
@@ -53,8 +61,8 @@ exports.command = async (message, args, database, bot) => {
     await util.saveGuildConfig(config);
     let response = await message.channel.send(`Updating current mutes...`);
 
-    if (!(oldRole === role.id)) {
-      for (mute of await database.queryAll("SELECT * FROM moderations WHERE action = 'mute' AND active = TRUE AND guildid = ?",[message.guild.id])) {
+    if (oldRole !== role.id) {
+      for (let mute of await database.queryAll("SELECT * FROM moderations WHERE action = 'mute' AND active = TRUE AND guildid = ?",[message.guild.id])) {
         let member = message.guild.members.resolve(mute.userid);
         if (member) {
           try {
@@ -69,9 +77,9 @@ exports.command = async (message, args, database, bot) => {
       }
     }
 
-    await response.edit(`Updating channel overwrites...`)
+    await response.edit(`Updating channel overwrites...`);
 
-    for ([key, channel] of message.guild.channels.cache) {
+    for (let [key, channel] of message.guild.channels.cache) {
       if (!channel.permissionsFor(bot.user.id).has('MANAGE_CHANNELS') || !channel.permissionsFor(bot.user.id).has('VIEW_CHANNEL')) {
         continue;
       }
@@ -84,4 +92,4 @@ exports.command = async (message, args, database, bot) => {
     await response.edit(`Set muted role to \`${role.name}\`!`);
 };
 
-exports.names = ['mutedrole','muterole'];
+module.exports = command;

@@ -2,7 +2,15 @@ const guildConfig = require('../util/guildConfig.js');
 const util = require('../lib/util.js');
 const axios = require('axios');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Specify the zendesk help center';
+
+command.usage = 'example.zendesk.com|example|disabled';
+
+command.names = ['helpcenter'];
+
+command.execute = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         await message.channel.send('You need the "Manage Server" permission to use this command.');
@@ -15,7 +23,7 @@ exports.command = async (message, args, database, bot) => {
       return;
     }
 
-    let subdomain = args.shift().replace(/^https?:\/\/|\.zendesk\.com(\/.*)?$/ig, '').replace(/[^a-zA-Z\d]/g, '');;
+    let subdomain = args.shift().replace(/^https?:\/\/|\.zendesk\.com(\/.*)?$/ig, '').replace(/[^a-zA-Z\d]/g, '');
 
     if (!subdomain || !subdomain.length) {
       await message.react(util.icons.error);
@@ -47,4 +55,4 @@ exports.command = async (message, args, database, bot) => {
     }
 };
 
-exports.names = ['helpcenter'];
+module.exports = command;

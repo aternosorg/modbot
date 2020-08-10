@@ -1,7 +1,15 @@
 const util = require('../lib/util.js');
 const Discord = require('discord.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Purge messages';
+
+command.usage = '</regex/flags> <@users> <userIds> <text> <count>';
+
+command.names = ['purge','clean'];
+
+command.execute = async (message, args, database, bot) => {
 
   if(!await util.isMod(message.member) && !message.member.hasPermission('MANAGE_MESSAGES')) {
     await message.react(util.icons.error);
@@ -155,4 +163,4 @@ exports.command = async (message, args, database, bot) => {
 
 };
 
-exports.names = ['purge','clean'];
+module.exports = command;

@@ -1,7 +1,15 @@
 const channelConfig = require('../util/channelConfig.js');
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Set a cooldown on ips in a channel';
+
+command.usage = 'example.zendesk.com|example|disabled';
+
+command.names = ['ipcooldown'];
+
+command.execute = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         await message.channel.send('You need the "Manage Server" permission to use this command.');
@@ -62,4 +70,4 @@ exports.command = async (message, args, database, bot) => {
     await util.refreshChannelConfig(channelId);
 };
 
-exports.names = ['ipcooldown'];
+module.exports = command;

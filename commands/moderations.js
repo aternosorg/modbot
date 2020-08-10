@@ -1,7 +1,15 @@
 const util = require('../lib/util.js');
 const Discord = require('discord.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'List all moderations for a user';
+
+command.usage = '@user|userId';
+
+command.names = ['moderations','modlog','modlogs'];
+
+command.execute = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('VIEW_AUDIT_LOG')) {
     await message.react(util.icons.error);
     return;
@@ -61,4 +69,4 @@ exports.command = async (message, args, database, bot) => {
   await send(i, moderations.length);
 };
 
-exports.names = ['moderations','modlog','modlogs'];
+module.exports = command;

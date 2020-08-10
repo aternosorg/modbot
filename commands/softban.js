@@ -1,8 +1,14 @@
 const util = require('../lib/util.js');
 
-const command = {}
+const command = {};
 
-command.command = async (message, args, database, bot) => {
+command.description = 'Softban a user';
+
+command.usage = '@member|memberId <reason>';
+
+command.names = ['softban'];
+
+command.execute = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('KICK_MEMBERS')) {
     await message.react(util.icons.error);
     return;
@@ -38,7 +44,7 @@ command.command = async (message, args, database, bot) => {
   }
 
   await command.softban(message.guild, member, message.author, args.join(' '), message.channel);
-}
+};
 
 command.softban = async (guild, member, moderator, reason, channel) => {
   reason = reason || 'No reason provided.';
@@ -56,7 +62,5 @@ command.softban = async (guild, member, moderator, reason, channel) => {
   }
   await util.logMessageModeration(guild.id, moderator, member.user, reason, insert, "Softban");
 };
-
-command.names = ['softban'];
 
 module.exports = command;

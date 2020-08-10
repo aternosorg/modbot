@@ -1,7 +1,15 @@
 const channelConfig = require('../util/channelConfig.js');
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Require or forbid ips in a channel';
+
+command.usage = '#channel|channelId require|forbid|off';
+
+command.names = ['ip'];
+
+command.execute = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         message.channel.send('You need the "Manage Server" permission to use this command.');
@@ -79,4 +87,4 @@ exports.command = async (message, args, database, bot) => {
     await util.refreshChannelConfig(channelId);
 };
 
-exports.names = ['ip'];
+module.exports = command;
