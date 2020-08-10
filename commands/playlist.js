@@ -4,7 +4,15 @@ const tutorial = require('./tutorial.js');
 const {google} = require('googleapis');
 const config = require('../config.json');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Specify a tutorial playlist';
+
+command.usage = 'link|playlistId|disabled';
+
+command.names = ['playlist'];
+
+command.execute = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
       await message.react(util.icons.error);
@@ -53,4 +61,4 @@ exports.command = async (message, args, database, bot) => {
     }
 };
 
-exports.names = ['playlist'];
+module.exports = command;

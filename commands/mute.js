@@ -1,8 +1,14 @@
 const util = require('../lib/util.js');
 
-const command = {}
+const command = {};
 
-command.command = async (message, args, database, bot) => {
+command.description = 'Mute a user';
+
+command.usage = '@user|userId <duration> <reason>';
+
+command.names = ['mute'];
+
+command.execute = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     await message.react(util.icons.error);
     return;
@@ -29,7 +35,7 @@ command.command = async (message, args, database, bot) => {
     await message.channel.send("You can't interact with bots!");
     return;
   }
-  let member
+  let member;
   try {
     member = await message.guild.members.fetch(userId);
   }
@@ -47,7 +53,7 @@ command.command = async (message, args, database, bot) => {
     args.shift();
 
   command.mute(message.guild, user, message.author, args.join(' '), duration, message.channel);
-}
+};
 
 command.mute = async (guild, user, moderator, reason, duration, channel) => {
   reason = reason || 'No reason provided.';
@@ -84,7 +90,5 @@ command.mute = async (guild, user, moderator, reason, duration, channel) => {
   }
   await util.logMessageModeration(guild.id, moderator, user, reason, insert, "Mute", time);
 };
-
-command.names = ['mute'];
 
 module.exports = command;

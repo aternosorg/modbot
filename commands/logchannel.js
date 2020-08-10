@@ -1,7 +1,15 @@
 const guildConfig = require('../util/guildConfig.js');
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Specify the log channel';
+
+command.usage = '#channel|channelId';
+
+command.names = ['logchannel'];
+
+command.execute = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         message.channel.send('You need the "Manage Server" permission to use this command.');
@@ -27,4 +35,4 @@ exports.command = async (message, args, database, bot) => {
     }
 };
 
-exports.names = ['logchannel'];
+module.exports = command;

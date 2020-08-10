@@ -2,7 +2,15 @@ const util = require('../lib/util.js');
 
 const maxStrikesAtOnce = 5;
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Pardon strikes of a user';
+
+command.usage = '<count> @user|userId <reason>';
+
+command.names = ['pardon'];
+
+command.execute = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     await message.react(util.icons.error);
     return;
@@ -68,4 +76,4 @@ exports.command = async (message, args, database, bot) => {
   await util.logMessageModeration(message, message.author, user, reason, insert.insertId, "Pardon", null, count, total);
 };
 
-exports.names = ['pardon'];
+module.exports = command;

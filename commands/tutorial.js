@@ -5,7 +5,15 @@ const {google} = require('googleapis');
 const Fuse = require('fuse.js');
 let videos = new Discord.Collection();
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Search tutorials in a youtube playlist';
+
+command.usage = 'query';
+
+command.names = ['tutorial','video'];
+
+command.execute = async (message, args, database, bot) => {
 
   let guildConfig = await util.getGuildConfig(message);
   if (!guildConfig.playlist) {
@@ -29,7 +37,7 @@ exports.command = async (message, args, database, bot) => {
       maxResults: 100
     });
     videos.set(message.guild.id, response.data.items);
-    setTimeout(() => {clearCache(message.guild)}, 10*60*1000);
+    setTimeout(() => {clearCache(message.guild);}, 10*60*1000);
   }
 
   const fuse = new Fuse(videos.get(message.guild.id), {
@@ -46,11 +54,11 @@ exports.command = async (message, args, database, bot) => {
   }
 };
 
-exports.names = ['tutorial','video'];
-
 function clearCache(guild) {
     videos.delete(guild.id);
     console.log(`Cleared video cache in ${guild.name}`);
 }
 
-exports.clearCache = clearCache;
+command.clearCache = clearCache;
+
+module.exports = command;

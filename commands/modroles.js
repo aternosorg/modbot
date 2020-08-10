@@ -1,7 +1,15 @@
 const guildConfig = require('../util/guildConfig.js');
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Add or remove modroles';
+
+command.usage = 'add|remove @role|roleId';
+
+command.names = ['modrole','modroles'];
+
+command.execute = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         message.channel.send('You need the "Manage Server" Permission to use this command.');
@@ -42,12 +50,9 @@ exports.command = async (message, args, database, bot) => {
         await message.channel.send(`Removed \`${role.name}\` from moderator roles!`);
         break;
 
-      case 'list':
-        //LIST
-        break;
       default:
-        await message.channel.send("Valid subcommands: add, remove, list");
+        await message.channel.send("Valid subcommands: add, remove");
     }
 };
 
-exports.names = ['modrole','modroles'];
+module.exports = command;

@@ -1,6 +1,14 @@
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Unmute a user';
+
+command.usage = '@user|userId <reason>';
+
+command.names = ['unmute'];
+
+command.execute = async (message, args, database, bot) => {
   if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     await message.react(util.icons.error);
     return;
@@ -21,7 +29,7 @@ exports.command = async (message, args, database, bot) => {
     await message.channel.send("User not found!");
     return;
   }
-  let member
+  let member;
   try {
       member = await message.guild.members.fetch(userId);
   } catch (e) {}
@@ -58,4 +66,4 @@ exports.command = async (message, args, database, bot) => {
   await util.logMessageModeration(message.guild.id, message.author, user, reason, insert.insertId, "Unmute");
 };
 
-exports.names = ['unmute'];
+module.exports = command;
