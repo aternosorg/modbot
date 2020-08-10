@@ -29,19 +29,10 @@ command.execute = async (message, args, database, bot) => {
 
     //Disabling cooldown
     if (args[0] === '0' || args[0] === '0s') {
-        if (channel) {
-            channel.cooldown = 0;
-            if (channel.mode === 0) {
-                await database.query("DELETE FROM channels WHERE id = ?", [channelId]);
-            } else {
-                await database.query("UPDATE channels SET config = ? WHERE id = ?", [JSON.stringify(channel), channelId]);
-            }
-            await message.channel.send(`Disabled IP cooldown <#${channelId}>!`);
-        } else {
-            await message.channel.send(`IP cooldown in <#${channelId}> is already disabled!`);
-        }
-        await util.refreshChannelConfig(channelId);
-        return;
+      channel.cooldown = 0;
+      await util.saveChannelConfig(channel);
+      await message.channel.send(`Disabled IP cooldown <#${channelId}>!`);
+      return;
     }
 
     let sec = util.timeToSec(args.join(' '));
@@ -53,23 +44,9 @@ command.execute = async (message, args, database, bot) => {
 
     let time = util.secToTime(sec);
 
-    if (channel) {
-        //Update Channel
-        if (channel.cooldown) {
-            await message.channel.send(`Updated IP cooldown of <#${channelId}> to ${time}.`);
-        } else {
-            await message.channel.send(`Set IP cooldown of <#${channelId}> to ${time}.`);
-        }
-        channel.cooldown = sec;
-        await database.query("UPDATE channels SET config = ? WHERE id =?", [JSON.stringify(channel), channelId]);
-    } else {
-        //Add Channel
-        channel= new channelConfig(channelId, 0, sec);
-        await database.query("INSERT INTO channels (id, config) VALUES (?,?)", [channelId, JSON.stringify(channel)]);
-        await message.channel.send(`Set IP cooldown of <#${channelId}> to ${time}.`);
-    }
-
-    await util.refreshChannelConfig(channelId);
+    channel.cooldown = sec;
+    await util.saveChannelConfig(channel);
+    await message.channel.send(`Set IP cooldown of <#${channelId}> to ${time}.`);
 };
 
 module.exports = command;
