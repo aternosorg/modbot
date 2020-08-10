@@ -21,9 +21,10 @@ exports.command = async (message, args, database, bot) => {
     //purge userid
     if (await util.isUserMention(arg)) {
       filter.users.push(util.userMentionToId(arg));
+      continue;
     }
     //purge /regex/
-    else if (String(arg).match(/^\/.*\/[gimsuy]*$/)) {
+    if (String(arg).match(/^\/.*\/[gimsuy]*$/)) {
       let match = String(arg).match(/^\/(.*)\/([gimsuy]*)$/);
       try {
         filter.regex = new RegExp(match[1],match[2]);
@@ -32,14 +33,17 @@ exports.command = async (message, args, database, bot) => {
         message.channel.send(`Invalid regex as filter number ${index+1}`);
         return;
       }
+      continue;
     }
     //purge "word"
-    else if (!/\d+/.test(arg)) {
+    if (!/\d+/.test(arg)) {
       filter.string = arg;
+      continue;
     }
     //purge 10
-    else if (parseInt(arg) && parseInt(arg) < 100) {
+    if (parseInt(arg) && parseInt(arg) < 100) {
       filter.count = parseInt(arg);
+      continue;
     }
   }
 
