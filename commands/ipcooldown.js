@@ -1,4 +1,3 @@
-const channelConfig = require('../util/channelConfig.js');
 const util = require('../lib/util.js');
 
 const command = {};

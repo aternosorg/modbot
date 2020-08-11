@@ -1,4 +1,3 @@
-const guildConfig = require('../util/guildConfig.js');
 const util = require('../lib/util.js');
 const axios = require('axios');
 

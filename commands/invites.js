@@ -1,4 +1,3 @@
-const guildConfig = require('../util/guildConfig.js');
 const util = require('../lib/util.js');
 
 exports.command = async (message, args, database, bot) => {
