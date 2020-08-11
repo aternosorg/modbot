@@ -28,8 +28,9 @@ command.execute = async (message, args, database, bot) => {
       return;
     }
 
+    let guildConfig = await util.getGuildConfig(message);
     if (["off","disabled","none"].includes(playlist)) {
-      playlist = null;
+      delete guildConfig.playlist;
     }
     else {
       let service = google.youtube('v3');
@@ -44,10 +45,9 @@ command.execute = async (message, args, database, bot) => {
         await message.channel.send("Invalid playlist!");
         return;
       }
+      guildConfig.playlist = playlist;
     }
 
-    let guildConfig = await util.getGuildConfig(message);
-    guildConfig.playlist = playlist;
     await util.saveGuildConfig(guildConfig);
 
     tutorial.clearCache(message.guild);

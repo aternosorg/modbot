@@ -37,7 +37,12 @@ command.execute = async (message, args, database, bot) => {
     }
 
     let channel = await util.getChannelConfig(channelId);
-    channel.mode = mode;
+    if (mode === 0) {
+      delete channel.mode;
+    }
+    else {
+      channel.mode = mode;
+    }
     await util.saveChannelConfig(channel);
     if (mode) {
       await message.channel.send(`Set IPs to ${mode === 1 ? 'required' : 'forbidden'} in <#${channelId}>.`);

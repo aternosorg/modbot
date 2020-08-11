@@ -23,7 +23,12 @@ command.execute = async (message, args, database, bot) => {
     }
 
     let config = await util.getGuildConfig(message);
-    config.logChannel = channelId;
+    if (channelId) {
+      config.logChannel = channelId;
+    }
+    else {
+      delete config.logChannel;
+    }
     await util.saveGuildConfig(config);
 
     if (channelId) {

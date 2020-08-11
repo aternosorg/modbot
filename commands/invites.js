@@ -24,7 +24,12 @@ exports.command = async (message, args, database, bot) => {
 
       let guildConfig = await util.getGuildConfig(message);
       let channelConfig = await util.getChannelConfig(channel);
-      channelConfig.invites = mode;
+      if (mode === undefined) {
+        delete channelConfig.invites;
+      }
+      else {
+        channelConfig.invites = mode;
+      }
       await util.saveChannelConfig(channelConfig);
 
       await message.channel.send(`Invites are now ${mode === undefined ? 'server default' : mode === true ? 'allowed' : 'forbidden'} in <#${channel}>`);
