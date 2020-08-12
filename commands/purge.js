@@ -75,7 +75,7 @@ command.execute = async (message, args, database, bot) => {
   messages = messages.filter(msg => {
 
     //messages too old to bulk delete
-    if (message.createdTimestamp - Date.now() > 14*24*60*60*1000) {
+    if (message.createdAt - msg.createdAt > 14*24*60*60*1000) {
       return false;
     }
 
