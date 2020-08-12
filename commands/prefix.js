@@ -32,6 +32,11 @@ command.execute = async (message, args, database, bot) => {
       return;
     }
 
+    if (prefix.length >= 5) {
+      await message.channel.send('Your code may not be longer then 5 characters.');
+      return;
+    }
+
     guild.prefix = prefix;
     await util.saveGuildConfig(guild);
 
