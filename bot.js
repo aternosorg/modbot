@@ -103,10 +103,21 @@ const database = new Database(config.db);
     // commands
     bot.on('message', async (message) => {
         if (!message.guild || message.author.bot) return;
-        if (!message.content.toLowerCase().startsWith(config.prefix.toLowerCase())) return;
-
+        let guild = await util.getGuildConfig(message);
         const args = util.split(message.content,' ');
-        const cmd = args.shift().slice(config.prefix.length).toLowerCase();
+        let cmd;
+        if (!message.content.toLowerCase().startsWith(guild.prefix.toLowerCase())) {
+          if (!message.content.toLowerCase().startsWith(config.prefix.toLowerCase())) {
+            return;
+          }
+          else {
+            cmd = args.shift().slice(config.prefix.length).toLowerCase();
+          }
+        }
+        else {
+          cmd = args.shift().slice(guild.prefix.length).toLowerCase();
+        }
+
 
         for (let command of commands) {
             if (command.names.includes(cmd)) {
