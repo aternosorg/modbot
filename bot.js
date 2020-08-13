@@ -105,19 +105,11 @@ const database = new Database(config.db);
         if (!message.guild || message.author.bot) return;
         let guild = await util.getGuildConfig(message);
         const args = util.split(message.content,' ');
-        let cmd;
-        if (!message.content.toLowerCase().startsWith(guild.prefix.toLowerCase())) {
-          if (!message.content.toLowerCase().startsWith(config.prefix.toLowerCase())) {
-            return;
-          }
-          else {
-            cmd = args.shift().slice(config.prefix.length).toLowerCase();
-          }
+        let prefix = util.startsWithMultiple(message.content.toLowerCase(),guild.prefix.toLowerCase(), config.prefix.toLowerCase());
+        if (!prefix) {
+          return ;
         }
-        else {
-          cmd = args.shift().slice(guild.prefix.length).toLowerCase();
-        }
-
+        let cmd = args.shift().slice(prefix.length).toLowerCase();
 
         for (let command of commands) {
             if (command.names.includes(cmd)) {
