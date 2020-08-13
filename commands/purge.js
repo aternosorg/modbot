@@ -53,7 +53,7 @@ command.execute = async (message, args, database, bot) => {
     //purge 10
     if (parseInt(arg)) {
       if (parseInt(arg) > 1000) {
-        await message.channel.send(`You cant purge more then 1000 messages`);
+        await message.channel.send(`You cant purge more than 1000 messages`);
         return ;
       }
       else {
