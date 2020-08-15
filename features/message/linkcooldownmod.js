@@ -28,6 +28,4 @@ exports.event = async (database, message) => {
       }
     }, guild.linkCooldown * 1000);
   }
-
-
 };
