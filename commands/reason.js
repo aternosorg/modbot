@@ -27,7 +27,7 @@ command.execute = async (message, args, database, bot) => {
     let result = await database.queryAll("UPDATE moderations SET reason = ? WHERE id = ? AND guildid = ? ",[reason, id, message.guild.id]);
 
     if (result.affectedRows === 0) {
-      await message.channel.send(`There is no strike with the id \`${id}\` on this guild!`);
+      await message.channel.send(`There is no moderation with the id \`${id}\` on this guild!`);
       return;
     }
 
@@ -39,7 +39,7 @@ command.execute = async (message, args, database, bot) => {
       await message.channel.send(`Reason for case \`${id}\` | ${result.reason}`.substring(0,2000));
     }
     else {
-      await message.channel.send(`There is no strike with the id \`${id}\` on this guild!`);
+      await message.channel.send(`There is no moderation with the id \`${id}\` on this guild!`);
     }
   }
 };
