@@ -6,7 +6,7 @@ exports.event = async (database, message) => {
     return;
   }
 
-  let link = String(message.content).match(/https?:\/\/([\w./]+)/);
+  let link = String(message.content).match(/https?:\/\/([\w\.\/]+)/);
   if (!link || link.length < 2) {
     return ;
   }
