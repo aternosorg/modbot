@@ -1,5 +1,3 @@
-const config = require('../lib/util.js');
-
 const command = {};
 
 command.description = 'Show the ping';

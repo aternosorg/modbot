@@ -12,7 +12,7 @@ exports.check = async (database, bot) => {
   //stats on servers size
   let result = await database.query("SELECT COUNT(*) as c FROM servers");
   let date = new Date();
-  console.log(`[${date.getUTCHours()}:${date.getUTCMinutes()}] There are currently ${result['c']} servers in the Database!`);
-}
+  console.log(`[${date.getUTCHours()}:${date.getUTCMinutes()}] There are currently ${result.c} servers in the Database!`);
+};
 
 exports.interval = 60;

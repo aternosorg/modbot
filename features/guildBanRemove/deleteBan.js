@@ -25,4 +25,4 @@ exports.message = async (guild, user, database) => {
       });
     }
   }
-}
+};
