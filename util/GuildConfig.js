@@ -28,23 +28,20 @@ class guildConfig {
         if (!this.punishments) {
           this.punishments = {};
         }
+        if (!this.modRoles) {
+          this.modRoles = [];
+        }
     }
 
     isModRole(role) {
-      if (!this.modRoles)
-        this.modRoles = [];
       return this.modRoles.includes(role);
     }
 
     addModRole(role) {
-      if (!this.modRoles)
-        this.modRoles = [];
       this.modRoles.push(role);
     }
 
     removeModRole(role) {
-      if (!this.modRoles)
-        return;
       let newRoles = [];
       for (let modRole of this.modRoles) {
         if (modRole != role)
