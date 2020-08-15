@@ -1,38 +1,33 @@
 const util = require('../../lib/util');
-let links = {};
+let users = {};
 
 exports.event = async (database, message) => {
   if (!message.guild || await util.ignoresAutomod(message)) {
     return;
   }
 
-  let link = String(message.content).match(/https?:\/\/([\w./]+)/);
-  if (!link || link.length < 2) {
-    return ;
+  if (!String(message.content).match(/https?:\/\//)) {
+    return;
   }
-  link = link[1];
 
   let guild = await util.getGuildConfig(message.guild.id);
 
-  console.log(guild);
-
   if (!guild.linkCooldown) {
-    return ;
+    return;
   }
 
-
-  if (links[link]) {
-    await message.delete();
-    await util.logMessageDeletion(message, `https://${link} is on cooldown`);
+  if (users[message.author.id] && users[message.author.id] + guild.linkCooldown > Math.floor(Date.now() / 1000)) {
+    await util.retry(message.delete, message);
+    await util.logMessageDeletion(message, `link cooldown`);
+    let response = await message.channel.send(`<@!${message.author.id}> You can post a link again in ${util.secToTime(users[message.author.id] + guild.linkCooldown - Math.floor(Date.now() / 1000))}!`);
+    await util.retry(response.delete, response, [{timeout:3000}]);
   }
   else {
-    links[link] = true;
+    users[message.author.id] = Math.floor(Date.now() / 1000);
     setTimeout(() => {
-      if (links[link]) {
-        delete links[link];
+      if (users[message.author.id]) {
+        delete users[message.author.id];
       }
     }, guild.linkCooldown * 1000);
   }
-
-
 };
