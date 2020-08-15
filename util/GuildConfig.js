@@ -1,3 +1,5 @@
+const config = require('../config');
+
 //saves the config for each guild
 class guildConfig {
     constructor(id, json) {
@@ -23,10 +25,16 @@ class guildConfig {
           this.invites = json.invites;
           //cooldown on links (in s)
           this.linkCooldown = json.linkCooldown;
+          //prefix
+          this.prefix = json.prefix;
         }
 
         if (!this.punishments) {
           this.punishments = {};
+        }
+
+        if (!this.prefix) {
+          this.prefix = config.prefix;
         }
     }
 

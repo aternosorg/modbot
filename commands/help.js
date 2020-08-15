@@ -1,6 +1,5 @@
 const util = require('../lib/util.js');
 const Discord = require('discord.js');
-const config = require('../config');
 const fs = require('fs').promises;
 
 const command = {};
@@ -34,6 +33,7 @@ let commandList = '';
 })();
 
 command.execute = async (message, args, database, bot) => {
+  let config = await util.getGuildConfig(message);
   const embed = new Discord.MessageEmbed()
   .setColor(util.color.green)
   .setFooter(`Command executed by ${message.author.username}`)
