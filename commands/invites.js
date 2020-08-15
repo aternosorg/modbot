@@ -1,7 +1,14 @@
-const guildConfig = require('../util/guildConfig.js');
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Forbid invites in specific channels';
+
+command.usage = '<#channel|channelId> allow|forbid';
+
+command.names = ['invites'];
+
+command.execute = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         await message.channel.send('You need the "Manage Server" permission to use this command.');
@@ -25,7 +32,12 @@ exports.command = async (message, args, database, bot) => {
 
       let guildConfig = await util.getGuildConfig(message);
       let channelConfig = await util.getChannelConfig(channel);
-      channelConfig.invites = mode;
+      if (mode === undefined) {
+        delete channelConfig.invites;
+      }
+      else {
+        channelConfig.invites = mode;
+      }
       await util.saveChannelConfig(channelConfig);
 
       await message.channel.send(`Invites are now ${mode === undefined ? 'server default' : mode === true ? 'allowed' : 'forbidden'} in <#${channel}>`);
@@ -59,4 +71,4 @@ function getMode(string) {
   return null;
 }
 
-exports.names = ['invites'];
+module.exports = command;

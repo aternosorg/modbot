@@ -28,7 +28,7 @@ class guildConfig {
         }
 
         if (!this.punishments) {
-          this.punishments = {}
+          this.punishments = {};
         }
 
         if (!this.prefix) {
