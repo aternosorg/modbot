@@ -25,4 +25,4 @@ exports.event = async (database, guild, user) => {
       });
     }
   }
-}
+};
