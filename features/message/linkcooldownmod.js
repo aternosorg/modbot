@@ -1,35 +1,30 @@
 const util = require('../../lib/util');
-let links = {};
+let users = {};
 
 exports.event = async (database, message) => {
   if (!message.guild || await util.ignoresAutomod(message)) {
     return;
   }
 
-  let link = String(message.content).match(/https?:\/\/([\w\.\/]+)/);
-  if (!link || link.length < 2) {
+  if (!String(message.content).match(/https?:\/\//)) {
     return ;
   }
-  link = link[1];
 
   let guild = await util.getGuildConfig(message.guild.id);
-
-  console.log(guild);
 
   if (!guild.linkCooldown) {
     return ;
   }
 
-
-  if (links[link]) {
+  if (users[message.author.id]) {
     await message.delete();
     await util.logMessageDeletion(message, `link cooldown`);
   }
   else {
-    links[link] = true;
+    users[message.author.id] = true;
     setTimeout(() => {
-      if (links[link]) {
-        delete links[link];
+      if (users[message.author.id]) {
+        delete users[message.author.id];
       }
     }, guild.linkCooldown * 1000);
   }
