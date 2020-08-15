@@ -17,10 +17,10 @@ exports.event = async (database, message) => {
   }
 
   if (users[message.author.id] && users[message.author.id] + guild.linkCooldown > Math.floor(Date.now() / 1000)) {
-    await message.delete();
+    await util.retry(message.delete, message);
     await util.logMessageDeletion(message, `link cooldown`);
     let response = await message.channel.send(`<@!${message.author.id}> You can post a link again in ${util.secToTime(users[message.author.id] + guild.linkCooldown - Math.floor(Date.now() / 1000))}!`);
-    await response.delete({timeout: 3000});
+    await util.retry(response.delete, response, [{timeout:3000}]);
   }
   else {
     users[message.author.id] = Math.floor(Date.now() / 1000);
