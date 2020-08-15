@@ -19,6 +19,7 @@ exports.event = async (database, message) => {
   if (users[message.author.id] && users[message.author.id] + guild.linkCooldown > Math.floor(Date.now() / 1000)) {
     await message.delete();
     await util.logMessageDeletion(message, `link cooldown`);
+    await message.channel.send(`${util.icons.forbidden} You can post a link again in ${util.secToTime(users[message.author.id] + guild.linkCooldown - Math.floor(Date.now() / 1000))}!`)
   }
   else {
     users[message.author.id] = Math.floor(Date.now() / 1000);
