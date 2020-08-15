@@ -45,7 +45,7 @@ command.execute = async (message, args, database, bot) => {
     }
     await util.saveGuildConfig(config);
 
-    if (["off","disabled","none"].includes(subdomain)) {
+    if (!["off","disabled","none"].includes(subdomain)) {
       await message.channel.send(`Set helpcenter to https://${subdomain}.zendesk.com`);
     }
     else {
