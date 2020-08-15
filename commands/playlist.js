@@ -52,7 +52,7 @@ command.execute = async (message, args, database, bot) => {
 
     tutorial.clearCache(message.guild);
 
-    if (playlist) {
+    if (!["off","disabled","none"].includes(playlist)) {
       await message.channel.send(`Set playlist to https://www.youtube.com/playlist?list=${playlist}`);
     }
     else {
