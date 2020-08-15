@@ -16,12 +16,12 @@ exports.event = async (database, message) => {
     return ;
   }
 
-  if (users[message.author.id]) {
+  if (users[message.author.id] && users[message.author.id] + guild.linkCooldown < Math.floor(Date.now() / 1000)) {
     await message.delete();
     await util.logMessageDeletion(message, `link cooldown`);
   }
   else {
-    users[message.author.id] = true;
+    users[message.author.id] = Math.floor(Date.now() / 1000);
     setTimeout(() => {
       if (users[message.author.id]) {
         delete users[message.author.id];
