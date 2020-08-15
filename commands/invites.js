@@ -1,6 +1,14 @@
 const util = require('../lib/util.js');
 
-exports.command = async (message, args, database, bot) => {
+const command = {};
+
+command.description = 'Forbid invites in specific channels';
+
+command.usage = '<#channel|channelId> allow|forbid';
+
+command.names = ['invites'];
+
+command.execute = async (message, args, database, bot) => {
     //Permission check
     if (!message.member.hasPermission('MANAGE_GUILD')) {
         await message.channel.send('You need the "Manage Server" permission to use this command.');
@@ -63,4 +71,4 @@ function getMode(string) {
   return null;
 }
 
-exports.names = ['invites'];
+module.exports = command;
