@@ -52,7 +52,7 @@ command.execute = async (message, args, database, bot) => {
   while (util.isTime(args[0]))
     args.shift();
 
-  command.mute(message.guild, user, message.author, args.join(' '), duration, message.channel);
+  await command.mute(message.guild, user, message.author, args.join(' '), duration, message.channel);
 };
 
 command.mute = async (guild, user, moderator, reason, duration, channel) => {
