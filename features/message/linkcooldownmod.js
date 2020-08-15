@@ -7,13 +7,13 @@ exports.event = async (database, message) => {
   }
 
   if (!String(message.content).match(/https?:\/\//)) {
-    return ;
+    return;
   }
 
   let guild = await util.getGuildConfig(message.guild.id);
 
   if (!guild.linkCooldown) {
-    return ;
+    return;
   }
 
   if (users[message.author.id] && users[message.author.id] + guild.linkCooldown < Math.floor(Date.now() / 1000)) {
