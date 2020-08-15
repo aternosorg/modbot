@@ -1,6 +1,6 @@
 const util = require('../../lib/util');
 
-exports.message = async (message, database) => {
+exports.event = async (database, message) => {
   if (!message.guild || message.author.bot || message.member.hasPermission('MANAGE_MESSAGES')) {
     return;
   }

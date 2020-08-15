@@ -42,49 +42,31 @@ const database = new Database(config.db);
     }
 
     // FEATURES
-    // message
-    const messages = [];
-    for (let file of await fs.readdir(`${__dirname}/features/message`)) {
-        let path = `${__dirname}/features/message/${file}`;
-        if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
+    const features = {};
+    for (let folder of await fs.readdir(`${__dirname}/features`)) {
+        let folderPath = `${__dirname}/features/${folder}`;
+        if (!(await fs.lstat(folderPath)).isDirectory()) {
             continue;
         }
-        try {
-            let feature = require(path);
-            messages.push(feature);
-        } catch (e) {
-            console.error(`Failed to load message feature '${file}'`, e);
+        let feature = features[folder];
+        feature = [];
+        for (let file of await fs.readdir(folderPath)) {
+          let path = `${__dirname}/features/${folder}/${file}`;
+          if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
+              continue;
+          }
+          try {
+              feature.push(require(path));
+          } catch (e) {
+              console.error(`Failed to load message feature '${file}'`, e);
+          }
         }
+        bot.on(folder, async (...args) => {
+          for (let f of feature) {
+              await Promise.resolve(f.event(database, ...args));
+          }
+        });
     }
-    // guildMemberAdd
-    const guildMemberAdds = [];
-    for (let file of await fs.readdir(`${__dirname}/features/guildMemberAdd`)) {
-        let path = `${__dirname}/features/guildMemberAdd/${file}`;
-        if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
-            continue;
-        }
-        try {
-            let feature = require(path);
-            guildMemberAdds.push(feature);
-        } catch (e) {
-            console.error(`Failed to load guildMemberAdd feature '${file}'`, e);
-        }
-    }
-
-    const guildBanRemoves = [];
-    for (let file of await fs.readdir(`${__dirname}/features/guildBanRemove`)) {
-        let path = `${__dirname}/features/guildBanRemove/${file}`;
-        if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
-            continue;
-        }
-        try {
-            let feature = require(path);
-            guildBanRemoves.push(feature);
-        } catch (e) {
-            console.error(`Failed to load guildBanRemove feature '${file}'`, e);
-        }
-    }
-
     // load checks
     for (let file of await fs.readdir(`${__dirname}/checks`)) {
         let path = `${__dirname}/checks/${file}`;
@@ -125,26 +107,6 @@ const database = new Database(config.db);
                 }
                 break;
             }
-        }
-    });
-
-    //FEATURES
-    // message
-    bot.on('message', async (message) => {
-        for (let feature of messages) {
-            await Promise.resolve(feature.message(message, database));
-        }
-    });
-    // guildMemberAdd features
-    bot.on('guildMemberAdd', async (member) => {
-        for (let feature of guildMemberAdds) {
-            await Promise.resolve(feature.message(member, database));
-        }
-    });
-    //guildBanRemove
-    bot.on('guildBanRemove', async (guild, user) => {
-        for (let feature of guildBanRemoves) {
-            await Promise.resolve(feature.message(guild, user, database));
         }
     });
 

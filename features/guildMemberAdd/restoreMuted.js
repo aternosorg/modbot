@@ -1,6 +1,6 @@
 const util = require('../../lib/util');
 
-exports.message = async (member, database) => {
+exports.event = async (database, member) => {
   let result = await database.query("SELECT * FROM moderations WHERE action = 'mute' AND active = TRUE AND userid = ? AND guildid = ?",[member.id,member.guild.id]);
   if (result) {
     let guildConfig = await util.getGuildConfig(member.guild);
