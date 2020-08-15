@@ -44,7 +44,7 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  command.kick(message.guild, member, message.author, args.join(' '), message.channel);
+  await command.kick(message.guild, member, message.author, args.join(' '), message.channel);
 };
 
 command.kick = async (guild, member, moderator, reason, channel) => {
