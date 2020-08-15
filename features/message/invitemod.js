@@ -22,7 +22,7 @@ exports.event = async (database, message) => {
       allowed = true;
     }
     else {
-      allowed = guildConfig.invites
+      allowed = guildConfig.invites;
     }
   }
 
