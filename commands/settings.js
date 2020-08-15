@@ -32,7 +32,7 @@ command.execute = async (message, args, database, bot) => {
     automod += `Link cooldown: ${guild.linkCooldown > 0 ? util.secToTime(guild.linkCooldown) : `disabled`} \n`;
 
     let embed = new Discord.MessageEmbed()
-    .setTitle('Settings')
+    .setTitle(`Settings | Prefix: ${guild.prefix}`)
     .addFields(
       {name: `Moderation`, value: moderation, inline: false},
       {name: `Support`, value: support, inline: false},
