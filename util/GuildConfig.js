@@ -23,6 +23,8 @@ class guildConfig {
           this.helpcenter = json.helpcenter;
           //allow invites
           this.invites = json.invites;
+          //cooldown on links (in s)
+          this.linkCooldown = json.linkCooldown;
           //prefix
           this.prefix = json.prefix;
         }
