@@ -6,7 +6,7 @@ exports.check = async (database, bot) => {
     try {
       let user = await bot.users.fetch(result.userid);
       let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, active) VALUES (?,?,?,?,?,?)",[result.guildid,result.userid,'unban',Math.floor(Date.now()/1000),"Temporary ban completed!", false]);
-      let reason = "Temporary ban finished!"
+      let reason = "Temporary ban finished!";
 
       await database.query("UPDATE moderations SET active = FALSE WHERE action = 'ban' AND userid = ? AND guildid = ?",[result.userid,result.guildid]);
 
@@ -16,6 +16,6 @@ exports.check = async (database, bot) => {
       console.error(`Couldn't unban user ${result.userid} in ${result.guildid}`, e);
     }
   }
-}
+};
 
 exports.interval = 30;

@@ -7,6 +7,8 @@ command.description = 'Purge messages';
 
 command.usage = '</regex/flags> <@users> <userIds> <text> <count>';
 
+command.comment = 'Count specifes the amount of messages that will be tested for your filters (not the amount that will be deleted) and defaults to 100';
+
 command.names = ['purge','clean'];
 
 command.execute = async (message, args, database, bot) => {
@@ -49,8 +51,14 @@ command.execute = async (message, args, database, bot) => {
       continue;
     }
     //purge 10
-    if (parseInt(arg) && parseInt(arg) < 100) {
-      filter.count = parseInt(arg);
+    if (parseInt(arg)) {
+      if (parseInt(arg) > 1000) {
+        await message.channel.send(`You cant purge more than 1000 messages`);
+        return ;
+      }
+      else {
+        filter.count = parseInt(arg);
+      }
       continue;
     }
   }
@@ -65,12 +73,17 @@ command.execute = async (message, args, database, bot) => {
     return ;
   }
 
-  let messages = await message.channel.messages.fetch({
+  let messages = await util.getMessages(message.channel,{
     before: message.id,
     limit: filter.count || 100
   });
 
   messages = messages.filter(msg => {
+
+    //messages too old to bulk delete
+    if (message.createdAt - msg.createdAt > 14*24*60*60*1000) {
+      return false;
+    }
 
     //test users
     if (filter.users.length && !filter.users.includes(msg.author.id)) {
@@ -120,9 +133,9 @@ command.execute = async (message, args, database, bot) => {
   } catch (e) {}
 
   try {
-    await message.channel.bulkDelete(messages);
+    await util.bulkDelete(message.channel,messages);
   } catch (e) {
-    console.log('bulkDelete failed');
+    console.log('bulkDelete failed ', e);
   }
 
   let response = await message.channel.send(new Discord.MessageEmbed({

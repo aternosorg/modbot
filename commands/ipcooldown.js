@@ -1,4 +1,3 @@
-const channelConfig = require('../util/channelConfig.js');
 const util = require('../lib/util.js');
 
 const command = {};
@@ -29,7 +28,7 @@ command.execute = async (message, args, database, bot) => {
 
     //Disabling cooldown
     if (args[0] === '0' || args[0] === '0s') {
-      channel.cooldown = 0;
+      delete channel.cooldown;
       await util.saveChannelConfig(channel);
       await message.channel.send(`Disabled IP cooldown <#${channelId}>!`);
       return;

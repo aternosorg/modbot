@@ -1,11 +1,11 @@
 const util = require('../../lib/util');
 
 //cooldown automod
-exports.message = async (message, database) => {
+exports.event = async (database, message) => {
     if (!message.guild || message.author.bot || message.member.hasPermission('MANAGE_MESSAGES'))
         return;
 
-    let channel = await util.getChannelConfig(message.channel.id)
+    let channel = await util.getChannelConfig(message.channel.id);
     if (channel && channel.cooldown) {
         let cooldown = channel.cooldown;
         if (message.content.toLowerCase().includes('.aternos.me')) {
@@ -16,7 +16,7 @@ exports.message = async (message, database) => {
 
             let uniqueIps = [];
             for (let ip of ips){
-              ip = ip.toLowerCase()
+              ip = ip.toLowerCase();
               if(!uniqueIps.includes(ip)){
                 uniqueIps.push(ip);
               }

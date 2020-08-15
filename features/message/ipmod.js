@@ -1,11 +1,11 @@
 const util = require('../../lib/util');
 
 //removes messages with(out) IPs in specific channels
-exports.message = async (message, database) => {
+exports.event = async (database, message) => {
     if (!message.guild || message.author.bot || message.member.hasPermission('MANAGE_MESSAGES'))
         return;
 
-    let channel = await util.getChannelConfig(message.channel.id)
+    let channel = await util.getChannelConfig(message.channel.id);
 
     if (channel && channel.mode) {
 
