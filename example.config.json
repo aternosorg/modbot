@@ -4,7 +4,8 @@
     "host": "localhost",
     "user": "modbot",
     "password": "password",
-    "database": "modbot"
+    "database": "modbot",
+    "charset": "utf8mb4"
   },
   "prefix": ",",
   "googleapikey":"google API Key"
