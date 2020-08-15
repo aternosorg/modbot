@@ -23,7 +23,7 @@ exports.event = async (database, message) => {
 
   if (links[link]) {
     await message.delete();
-    await util.logMessageDeletion(message, `https://${link} is on cooldown`);
+    await util.logMessageDeletion(message, `link cooldown`);
   }
   else {
     links[link] = true;
