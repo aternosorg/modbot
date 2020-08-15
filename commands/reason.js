@@ -9,7 +9,7 @@ command.usage = 'moderationId <reason>';
 command.names = ['reason','edit'];
 
 command.execute = async (message, args, database, bot) => {
-  if(!await util.isMod(message.member)) {
+  if(!await util.isMod(message.member) && !message.member.hasPermission('VIEW_AUDIT_LOG')) {
     await message.react(util.icons.error);
     return;
   }
