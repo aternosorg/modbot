@@ -80,4 +80,11 @@ command.execute = async (message, args, database, bot) => {
 
 };
 
+command.getUse = (cmd) => {
+  let embed = new Discord.MessageEmbed();
+  return embed
+  .setAuthor(`Help for ${cmd} | Prefix: ${config.prefix}`)
+  .addFields({ name: "Usage", value: `\`${config.prefix}${cmd} ${commands[cmd].usage}\``, inline: true});
+};
+
 module.exports = command;
