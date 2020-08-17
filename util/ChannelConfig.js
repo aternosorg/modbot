@@ -1,5 +1,3 @@
-//saves the config for each configured channel
-class channelConfig {
     constructor(id, json) {
         //channel ID
         this.id = id;
@@ -15,4 +13,3 @@ class channelConfig {
     }
 }
 
-module.exports = channelConfig;

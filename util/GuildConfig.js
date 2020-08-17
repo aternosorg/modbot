@@ -1,7 +1,7 @@
 const config = require('../config');
 
 //saves the config for each guild
-class guildConfig {
+class GuildConfig {
     constructor(id, json) {
         //guild ID
         this.id = id;
@@ -86,4 +86,4 @@ class guildConfig {
 
 }
 
-module.exports = guildConfig;
+module.exports = GuildConfig;
