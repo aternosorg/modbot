@@ -8,11 +8,11 @@ exports.event = async (database, message) => {
     return ;
   }
   let embed = new Discord.MessageEmbed()
-    .setAuthor(`${message.author.username}#${message.author.discriminator}`,message.author.avatarURL())
+    .setAuthor(`Message by ${message.author.username}#${message.author.discriminator} in #${message.channel.name} was deleted`,message.author.avatarURL())
     .setDescription(message.content.substring(0,2048))
     .setFooter(`ID: ${message.author.id}`);
 
-  await util.logMessageEmbed(message, `Message by <@!${message.author.id}> deleted in <#${message.channel.id}>`, embed);
+  await util.logMessageEmbed(message, '', embed);
 };
 
 exports.ignore = (id) => {
