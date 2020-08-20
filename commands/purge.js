@@ -129,7 +129,7 @@ command.execute = async (message, args, database, bot) => {
   });
 
   try {
-    await message.delete();
+    await util.delete(message);
   } catch (e) {}
 
   try {
@@ -144,7 +144,7 @@ command.execute = async (message, args, database, bot) => {
   }));
 
   try {
-    await response.delete({timeout: 3000});
+    await util.delete(response,{timeout: 3000});
   } catch (e) {}
 
   let guildConfig = await util.getGuildConfig(message);
