@@ -2,12 +2,12 @@ const config = require('../config');
 const Discord = require('discord.js');
 
 /**
- * class representing the config of a guild
+ * Class representing the config of a guild
  */
 class GuildConfig {
 
     /**
-     * constructor - create a guild config
+     * Constructor - create a guild config
      *
      * @param  {Discord.Snowflake}    id                  guild id
      * @param  {Object}               [json]              options
@@ -47,7 +47,7 @@ class GuildConfig {
     }
 
     /**
-     * isModRole - is this a moderator role?
+     * Is this a moderator role?
      *
      * @param  {Discord.Snowflake} role role id
      * @return {Boolean}
@@ -59,7 +59,7 @@ class GuildConfig {
     }
 
     /**
-     * addModRole - add this role to the moderator roles
+     * Add this role to the moderator roles
      *
      * @param  {Discord.Snowflake} role role id
      */

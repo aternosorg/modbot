@@ -1,12 +1,12 @@
 const Discord = require('discord.js');
 
 /**
- * class representing the config of a channel
+ * Class representing the config of a channel
  */
 class ChannelConfig {
 
     /**
-     * constructor - create a channel config
+     * Constructor - create a channel config
      *
      * @param  {Discord.Snowflake} id             channel id
      * @param  {Object}           [json]          options
