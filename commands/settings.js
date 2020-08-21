@@ -40,7 +40,6 @@ command.execute = async (message, args, database, bot) => {
   );
 
   await message.channel.send(embed);
-
 };
 
 module.exports = command;
