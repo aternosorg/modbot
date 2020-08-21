@@ -70,7 +70,7 @@ class GuildConfig {
     }
 
     /**
-     * removeModRole - remove this role from the moderator roles
+     * Remove this role from the moderator roles
      *
      * @param  {Discord.Snowflake} role role id
      */
