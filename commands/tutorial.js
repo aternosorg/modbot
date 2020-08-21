@@ -23,7 +23,7 @@ command.execute = async (message, args, database, bot) => {
 
   let query = args.join(' ').toLowerCase();
   if(!query){
-    await message.channel.send('Please provide a search query');
+    await message.channel.send(await util.usage(message, command.names[0]));
     return ;
   }
 

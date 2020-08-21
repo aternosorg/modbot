@@ -64,12 +64,7 @@ command.execute = async (message, args, database, bot) => {
   }
 
   if (!filter.users.length && !filter.regex && !filter.string && !filter.count) {
-    let embed = new Discord.MessageEmbed({ description: ''});
-    embed.setDescription(embed.description + 'Deletes messages that match the filter \n');
-    embed.setDescription(embed.description + 'USAGE: \`purge filter1 filter2\` ... \n');
-    embed.setDescription(embed.description + 'Available filters: string /regex/flags @byUser byUserId count \n');
-    embed.setDescription(embed.description + 'any combination and order of filters is supported!');
-    await message.channel.send(embed);
+    await message.channel.send(await util.usage(message, command.names[0]));
     return ;
   }
 

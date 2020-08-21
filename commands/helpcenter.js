@@ -17,16 +17,14 @@ command.execute = async (message, args, database, bot) => {
     }
 
     if (!args[0]) {
-      await message.react(util.icons.error);
-      await message.channel.send("Please provide a Zendesk subdomain e.g. https://example.zendesk.com");
+      await message.channel.send(await util.usage(message, command.names[0]));
       return;
     }
 
     let subdomain = args.shift().replace(/^https?:\/\/|\.zendesk\.com(\/.*)?$/ig, '').replace(/[^a-zA-Z\d]/g, '');
 
     if (!subdomain || !subdomain.length) {
-      await message.react(util.icons.error);
-      await message.channel.send("Please provide a Zendesk subdomain e.g. https://example.zendesk.com");
+      await message.channel.send(await util.usage(message, command.names[0]));
       return;
     }
 
