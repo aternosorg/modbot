@@ -7,7 +7,7 @@ command.description = 'Import tempmutes, tempbans and strikes from vortex ';
 
 command.usage = '';
 
-command.comment = 'Add the .json file to your message';
+command.comment = 'Attach the .json file to your message';
 
 command.names = ['import'];
 
