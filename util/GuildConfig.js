@@ -41,6 +41,10 @@ class GuildConfig {
           this.punishments = {};
         }
 
+        if (!this.modRoles) {
+          this.modRoles = [];
+        }
+
         if (!this.prefix) {
           this.prefix = config.prefix;
         }
@@ -53,8 +57,6 @@ class GuildConfig {
      * @return {Boolean}
      */
     isModRole(role) {
-      if (!this.modRoles)
-        this.modRoles = [];
       return this.modRoles.includes(role);
     }
 
@@ -64,8 +66,6 @@ class GuildConfig {
      * @param  {Discord.Snowflake} role role id
      */
     addModRole(role) {
-      if (!this.modRoles)
-        this.modRoles = [];
       this.modRoles.push(role);
     }
 
@@ -75,8 +75,6 @@ class GuildConfig {
      * @param  {Discord.Snowflake} role role id
      */
     removeModRole(role) {
-      if (!this.modRoles)
-        return;
       let newRoles = [];
       for (let modRole of this.modRoles) {
         if (modRole != role)

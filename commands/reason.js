@@ -15,8 +15,7 @@ command.execute = async (message, args, database, bot) => {
   }
 
   if (!args.length || !parseInt(args[0])) {
-    await message.react(util.icons.error);
-    await message.channel.send(util.usage(command.names[0]));
+    await message.channel.send(await util.usage(message, command.names[0]));
     return;
   }
 

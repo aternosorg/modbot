@@ -15,8 +15,7 @@ command.execute = async (message, args, database, bot) => {
   }
 
   if (!util.userMentionToId(args[0])) {
-    await message.react(util.icons.error);
-    await message.channel.send("Please provide a user (@Mention or ID)!");
+    await message.channel.send(await util.usage(message, command.names[0]));
     return;
   }
 
@@ -24,8 +23,7 @@ command.execute = async (message, args, database, bot) => {
   try {
     user = await bot.users.fetch(util.userMentionToId(args.shift()));
   } catch (e) {
-    await message.react(util.icons.error);
-    await message.channel.send("Please provide a user (@Mention or ID)!");
+    await message.channel.send(await util.usage(message, command.names[0]));
     return;
   }
 
