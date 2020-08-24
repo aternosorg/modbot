@@ -28,9 +28,9 @@ exports.event = async (database, message) => {
 
 
   if (!allowed) {
-    message.delete({reason: 'Invites are not allowed here'});
+    await util.delete(message, {reason: 'Invites are not allowed here'});
     let response = await message.channel.send(`${util.icons.forbidden} <@!${message.author.id}> invites are not allowed here ${util.icons.forbidden}`);
-    await response.delete({timeout: 5000});
+    await util.delete(response, {timeout: 5000});
   }
 
 };
