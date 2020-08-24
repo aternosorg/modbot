@@ -1,31 +1,39 @@
 const config = require('../config');
+const Discord = require('discord.js');
 
-//saves the config for each guild
-class guildConfig {
+/**
+ * Class representing the config of a guild
+ */
+class GuildConfig {
+
+    /**
+     * Constructor - create a guild config
+     *
+     * @param  {Discord.Snowflake}    id                  guild id
+     * @param  {Object}               [json]              options
+     * @param  {Discord.Snowflake}    [json.logChannel]   id of the log channel
+     * @param  {Discord.Snowflake}    [json.mutedRole]    id of the muted role
+     * @param  {Discord.Snowflake[]}  [json.modRoles]     array with ids of the moderator roles
+     * @param  {Object}               [json.punishments]  automatic punishments for strikes
+     * @param  {String}               [json.playlist]     id of youtube playlist for tutorials
+     * @param  {String}               [json.helpcenter]   subdomain of the zendesk help center
+     * @param  {Boolean}              [json.invites]      allow invites (can be overwritten per channel)
+     * @param  {Number}               [json.linkCooldown] cooldown on links in s (user based)
+     * @param  {Number}               [json.prefix] alternative prefix for command
+     * @return {type} description
+     */
     constructor(id, json) {
-        //guild ID
         this.id = id;
 
         if (json) {
-          //log channel
           this.logChannel = json.logChannel;
-          //muted role
           this.mutedRole = json.mutedRole;
-          //moderator roles
           this.modRoles = json.modRoles;
-          //protected roles
-          this.protectedRoles = json.protectedRoles;
-          //protected roles
           this.punishments = json.punishments;
-          //playlist ID
           this.playlist = json.playlist;
-          //zendesk helpcenter subdomain
           this.helpcenter = json.helpcenter;
-          //allow invites
           this.invites = json.invites;
-          //cooldown on links (in s)
           this.linkCooldown = json.linkCooldown;
-          //prefix
           this.prefix = json.prefix;
         }
 
@@ -42,14 +50,30 @@ class guildConfig {
         }
     }
 
+    /**
+     * Is this a moderator role?
+     *
+     * @param  {Discord.Snowflake} role role id
+     * @return {Boolean}
+     */
     isModRole(role) {
       return this.modRoles.includes(role);
     }
 
+    /**
+     * Add this role to the moderator roles
+     *
+     * @param  {Discord.Snowflake} role role id
+     */
     addModRole(role) {
       this.modRoles.push(role);
     }
 
+    /**
+     * Remove this role from the moderator roles
+     *
+     * @param  {Discord.Snowflake} role role id
+     */
     removeModRole(role) {
       let newRoles = [];
       for (let modRole of this.modRoles) {
@@ -59,29 +83,6 @@ class guildConfig {
       this.modRoles = newRoles;
     }
 
-    hasProtectedRole(role) {
-      if (!this.protectedRoles)
-        this.protectedRoles = [];
-      return this.protectedRoles.includes(role);
-    }
-
-    addProtectedRole(role) {
-      if (!this.protectedRoles)
-        this.protectedRoles = [];
-      this.protectedRoles.push(role);
-    }
-
-    removeProtectedRole(role) {
-      if (!this.protectedRoles)
-        return;
-      let newRoles = [];
-      for (let protectedRole of this.protectedRoles) {
-        if (protectedRole != role)
-          newRoles.push(protectedRole);
-      }
-      this.protectedRoles = newRoles;
-    }
-
 }
 
-module.exports = guildConfig;
+module.exports = GuildConfig;
