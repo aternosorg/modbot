@@ -17,8 +17,7 @@ command.execute = async (message, args, database, bot) => {
 
   let userId = util.userMentionToId(args.shift());
   if (!userId) {
-    await message.react(util.icons.error);
-    await message.channel.send("Please provide a user (@Mention or ID)!");
+    await message.channel.send(await util.usage(message, command.names[0]));
     return;
   }
 
