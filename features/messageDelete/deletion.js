@@ -21,5 +21,4 @@ exports.ignore = (id) => {
 
 exports.purgeCache = () => {
   ignore = ignore.filter(timestamp => timestamp > Date.now() + cache);
-  console.log(ignore.size);
 };
