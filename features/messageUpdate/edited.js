@@ -5,7 +5,7 @@ exports.event = async (database, old, newMsg) => {
   if (old.author.bot) {
     return;
   }
-  if (old.content == newMsg.content) {
+  if (old.content === newMsg.content) {
     return;
   }
 
