@@ -47,7 +47,7 @@ exports.event = async (database, message) => {
           console.error('Failed to delete message', e);
         }
         try {
-          await uti.delete(response,{timeout: 5000});
+          await util.delete(response,{timeout: 5000});
         } catch (e) {
           console.error('Failed to delete message', e);
         }
