@@ -13,7 +13,6 @@ exports.event = async (database, old, newMsg) => {
       {name: 'After:', value: newMsg.content.substring(0,1024)}
     ])
     .setFooter(`ID: ${old.author.id}`);
-;
 
   await util.logMessageEmbed(old, '', embed);
 };
