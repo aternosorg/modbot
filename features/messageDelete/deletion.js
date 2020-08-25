@@ -5,7 +5,7 @@ let ignore = new Discord.Collection();
 const cache = 30*1000;
 exports.event = async (database, message) => {
   if (message.author.bot || ignore.has(message.id)) {
-    return ;
+    return;
   }
   let embed = new Discord.MessageEmbed()
     .setColor(util.color.red)

@@ -3,10 +3,10 @@ const Discord = require('discord.js');
 
 exports.event = async (database, old, newMsg) => {
   if (old.author.bot) {
-    return ;
+    return;
   }
   if (old.content == newMsg.content) {
-    return ;
+    return;
   }
 
   let embed = new Discord.MessageEmbed()
