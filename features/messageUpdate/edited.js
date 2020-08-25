@@ -6,9 +6,9 @@ exports.event = async (database, old, newMsg) => {
     return ;
   }
   if (old.content == newMsg.content) {
-    return
+    return ;
   }
-  
+
   let embed = new Discord.MessageEmbed()
     .setColor(util.color.orange)
     .setAuthor(`Message by ${old.author.username}#${old.author.discriminator} in #${old.channel.name} was edited`,old.author.avatarURL())
