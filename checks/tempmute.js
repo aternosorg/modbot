@@ -17,7 +17,7 @@ exports.check = async (database, bot) => {
       } catch (e) {}
 
       let user = await bot.users.fetch(result.userid);
-      let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, active) VALUES (?,?,?,?,?,?)",[result.guildid,result.userid,'unban',Math.floor(Date.now()/1000),"Temporary ban completed!", false]);
+      let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, active) VALUES (?,?,?,?,?,?)",[result.guildid,result.userid,'unmute',Math.floor(Date.now()/1000),"Temporary mute completed!", false]);
 
       let reason = "Temporary mute finished!";
       await util.logMessageChecks(result.guildid, user, reason, insert.insertId, "Unmute");
