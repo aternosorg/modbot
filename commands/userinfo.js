@@ -87,7 +87,7 @@ command.execute = async (message, args, database, bot) => {
   else {
     try {
       banInfo = await message.guild.fetchBan(userId);
-      banInfo = `${util.icons.yes} - ${banInfo.reason}`;
+      banInfo = `${util.icons.yes} - ${decodeURIComponent(banInfo.reason)}`;
       embed.setDescription(embed.description + `**Banned:** ${banInfo}`);
     } catch (e) {
       embed.setDescription(embed.description + `**Banned:** ${util.icons.no}`);
