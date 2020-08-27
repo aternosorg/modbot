@@ -13,7 +13,7 @@ exports.event = async (database, old, newMsg) => {
   let diff = jsdiff.diffWords(old.content, newMsg.content);
 
   let formatted = '';
-  let maxLength = 1991;
+  let maxLength = 1985;
   for (let part of diff) {
     let maxPartLength = maxLength - formatted.length;
     if (part.added) {
