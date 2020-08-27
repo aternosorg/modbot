@@ -11,13 +11,13 @@ command.comment = 'This will only find the user if he is in a common guild with 
 command.names = ['id'];
 
 command.execute = async (message, args, database, bot) => {
-  let id;
+  let response;
   if (!args.length) {
-    id = message.author.id;
+    response = message.author.id;
   }
   else {
     try {
-      id = (await bot.users.fetch(util.userMentionToId(args[0]))).id;
+      response = (await bot.users.fetch(util.userMentionToId(args[0]))).id;
     } catch {
       let [name,discrim] = args[0].split('#');
       if (discrim) {
@@ -27,20 +27,15 @@ command.execute = async (message, args, database, bot) => {
         user = bot.users.cache.find(u => u.username === name);
       }
       if (!user) {
-        if (discrim) {
-          id = `The user ${name}#${discrim} was not found!`;
-        }
-        else {
-          id = `The user ${name} was not found!`;
-        }
+        response = `The user ${args[0]} was not found!`;
       }
       else {
-        id = user.id;
+        response = user.id;
       }
     }
   }
 
-  await message.channel.send(id);
+  await message.channel.send(response);
 };
 
 module.exports = command;
