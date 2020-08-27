@@ -17,8 +17,7 @@ exports.event = async (database, old, newMsg) => {
   for (let part of diff) {
 
     //escape formatting in message
-    part.value = part.value.replace(/[\_]/g,'\\_');
-    part.value = part.value.replace(/[\~]/g,'\\~');
+    part.value = part.value.replace(/([_~])/g,'\\$1');
 
     let maxPartLength = maxLength - formatted.length;
     if (part.added) {
@@ -39,7 +38,7 @@ exports.event = async (database, old, newMsg) => {
     .setColor(util.color.orange)
     .setAuthor(`Message by ${old.author.username}#${old.author.discriminator} in #${old.channel.name} was edited`,old.author.avatarURL())
     .setDescription(
-      'Changes: ' + formatted.substring(0,1991)
+      'Changes: ' + formatted
     )
     .setFooter(`ID: ${old.author.id}`);
 
