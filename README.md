@@ -12,22 +12,23 @@ Modbot is a Moderation Bot specifically for the [Aternos Discord](https://chat.a
 
 ### Setup
 
-1. Install [Node.js](https://nodejs.org/en/)
-2. Clone or download the repository
-3. create a discord Application [here](https://discordapp.com/developers/applications/)
-4. add a Bot to it and copy the auth token
-5. rename the example.config.json to config.json and enter the auth token
-6. run this command in the directory
+1. Install [Node.js](https://nodejs.org/en/) and [Mysql](https://www.mysql.com/)
+2. create a user and databse for the bot
+3. Clone or download the repository
+4. create a discord Application [here](https://discordapp.com/developers/applications/)
+5. add a Bot to it and copy the auth token
+6. copy the example.config.json to config.json and enter the auth token and mysql login
+7. run this command in the directory
 
    ```bash
    node bot.js
    ```
-7. to invite the bot to your server replace ID with your applications Client ID https://discordapp.com/oauth2/authorize?client_id=ID&scope=bot&permissions=11264 and open the link
+8. to invite the bot to your server replace ID with your applications Client ID https://discordapp.com/oauth2/authorize?client_id=ID&scope=bot&permissions=11264 and open the link
 
-8. (optional) Set up a logchannel by using ,logchannel #channel
+9. (optional) Set up a logchannel by using ,logchannel #channel
 
 Now you can use our bot!
-If you need help with the commands you can look them up [here](https://github.com/aternosorg/modbot/wiki/Commands)
+If you need help with the commands use !help to list them and !help <command> to get more info
 
 ### Contributing
 
