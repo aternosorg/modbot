@@ -38,7 +38,7 @@ exports.event = async (database, old, newMsg) => {
     .setColor(util.color.orange)
     .setAuthor(`Message by ${old.author.username}#${old.author.discriminator} in #${old.channel.name} was edited`,old.author.avatarURL())
     .setDescription(
-      'Changes: ' + formatted
+      formatted
     )
     .setFooter(`ID: ${old.author.id}`);
 
