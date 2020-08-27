@@ -39,7 +39,7 @@ command.execute = async (message, args, database, bot) => {
       }
     }
   }
-  console.log(id);
+
   await message.channel.send(id);
 };
 
