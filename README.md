@@ -15,7 +15,7 @@ Modbot is a Moderation Bot specifically for the [Aternos Discord](https://chat.a
 1. Install [Node.js](https://nodejs.org/en/download/) and [MySQL](https://dev.mysql.com/downloads/mysql/)
 2. Create a MySQL user and database for the bot
 3. Clone or download the repository
-4. run `npm install`
+4. Run `npm install`
 5. Create a [Discord application](https://discordapp.com/developers/applications/)
 6. Add a bot to it and copy the auth token
 7. Copy the example.config.json to config.json, add the auth token and configure mysql
