@@ -15,6 +15,11 @@ exports.event = async (database, old, newMsg) => {
   let formatted = '';
   let maxLength = 1985;
   for (let part of diff) {
+
+    //escape formatting in message
+    part.value = part.value.replace(/[\_]/g,'\\_');
+    part.value = part.value.replace(/[\~]/g,'\\~');
+
     let maxPartLength = maxLength - formatted.length;
     if (part.added) {
       formatted += `__${part.value.substr(0, maxPartLength - 4)}__`;
