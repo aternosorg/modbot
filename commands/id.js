@@ -17,7 +17,7 @@ command.execute = async (message, args, database, bot) => {
   }
   else {
     try {
-      id = await bot.users.fetch(util.userMentionToId(args[0]));
+      id = (await bot.users.fetch(util.userMentionToId(args[0]))).id;
     } catch {
       let [name,discrim] = args[0].split('#');
       if (discrim) {
@@ -27,7 +27,12 @@ command.execute = async (message, args, database, bot) => {
         user = bot.users.cache.find(u => u.username === name);
       }
       if (!user) {
-        id = `The user ${name}#${discrim} was not found!`;
+        if (discrim) {
+          id = `The user ${name}#${discrim} was not found!`;
+        }
+        else {
+          id = `The user ${name} was not found!`;
+        }
       }
       else {
         id = user.id;
