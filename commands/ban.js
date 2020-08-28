@@ -13,7 +13,7 @@ command.execute = async (message, args, database, bot) => {
     await message.react(util.icons.error);
     return;
   }
-  let users = await util.userMentions(args.join(' '));
+  let users = await util.userMentions(args);
 
   if (!users.length) {
     await message.channel.send(await util.usage(message, command.names[0]));
