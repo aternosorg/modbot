@@ -21,9 +21,6 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  for (let i = 0; i < users.length; i++) {
-    args.shift();
-  }
   let reason = args.join(' ');
 
   for (let userId of users) {

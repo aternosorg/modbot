@@ -20,9 +20,6 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  for (let i = 0; i < users.length; i++) {
-    args.shift();
-  }
   let duration = util.timeToSec(args.join(' '));
 
   while (util.isTime(args[0])){
