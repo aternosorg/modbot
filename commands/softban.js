@@ -21,6 +21,8 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
+  let reason = args.join(' ');
+
   for (let userId of users) {
     let member;
     try {
@@ -44,7 +46,7 @@ command.execute = async (message, args, database, bot) => {
       continue;
     }
 
-    await command.softban(message.guild, member, message.author, args.join(' '), message.channel);
+    await command.softban(message.guild, member, message.author, reason, message.channel);
   }
 };
 
