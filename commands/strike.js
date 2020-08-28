@@ -20,43 +20,55 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let count = 1;
-  try {
-    await bot.users.fetch(util.userMentionToId(args[0]));
-  } catch (e) {
-    count = Math.abs(parseInt(args.shift()));
-    if (count > maxStrikesAtOnce) {
-      await message.channel.send(`You can't give more than ${maxStrikesAtOnce} strikes at once!`);
-      return;
-    }
-  }
-
-  let user;
-  try {
-    user = await bot.users.fetch(util.userMentionToId(args.shift()));
-  } catch (e) {
+  if (!args.length) {
     await message.channel.send(await util.usage(message, command.names[0]));
     return;
   }
 
-  if (user.bot) {
-    await message.react(util.icons.error);
-    await message.channel.send("You can't interact with bots!");
+  let count = 1;
+
+  if (parseInt(args[0]) < 1000) {
+    count = parseInt(args.shift());
+    if (count > maxStrikesAtOnce) {
+      await message.channel.send(`You can't pardon more than ${maxStrikesAtOnce} strikes at once!`);
+      return;
+    }
+  }
+
+  let users = await util.userMentions(args);
+
+  if (!users.length) {
+    await message.channel.send(await util.usage(message, command.names[0]));
     return;
   }
 
-  //highest role check
-  let member;
-  try {
-    member = await message.guild.members.fetch(user);
-    if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
-      await message.react(util.icons.error);
-      await message.channel.send("You don't have the permission to strike that member!");
-      return;
-    }
-  } catch (e) {}
+  let reason = args.join(' ');
 
-  await command.add(message.guild, user, count, message.author, args.join(' '), message.channel, database, bot);
+  for (let userId of users) {
+    let user;
+    try {
+      user = await bot.users.fetch(util.userMentionToId(userId));
+    } catch (e) {}
+
+    if (user.bot) {
+      await message.react(util.icons.error);
+      await message.channel.send("You can't interact with bots!");
+      continue;
+    }
+
+    //highest role check
+    let member;
+    try {
+      member = await message.guild.members.fetch(user);
+      if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
+        await message.react(util.icons.error);
+        await message.channel.send("You don't have the permission to strike that member!");
+        continue;
+      }
+    } catch (e) {}
+
+    await command.add(message.guild, user, count, message.author, args.join(' '), message.channel, database, bot);
+  }
 };
 
 command.add = async (guild, user, count, moderator, reason, channel, database, bot) => {
