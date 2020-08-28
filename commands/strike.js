@@ -62,7 +62,7 @@ command.execute = async (message, args, database, bot) => {
       member = await message.guild.members.fetch(user);
       if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
         await message.react(util.icons.error);
-        await message.channel.send("You don't have the permission to strike that member!");
+        await message.channel.send(`You don't have the permission to strike <@${member.id}>!`);
         continue;
       }
     } catch (e) {}

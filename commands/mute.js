@@ -29,14 +29,7 @@ command.execute = async (message, args, database, bot) => {
   let reason = args.join(' ');
 
   for (let userId of users) {
-    let user;
-    try {
-      user = await bot.users.fetch(userId);
-    } catch (e) {
-      await message.react(util.icons.error);
-      await message.channel.send("User not found!");
-      continue;
-    }
+    let user = await bot.users.fetch(userId);
 
     if (user.bot) {
       await message.react(util.icons.error);

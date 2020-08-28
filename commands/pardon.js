@@ -41,10 +41,7 @@ command.execute = async (message, args, database, bot) => {
   let reason = args.join(' ') || 'No reason provided.';
 
   for (let userId of users) {
-    let user;
-    try {
-      user = await bot.users.fetch(util.userMentionToId(userId));
-    } catch (e) {}
+    let user = await bot.users.fetch(util.userMentionToId(userId));
 
     if (user.bot) {
       await message.react(util.icons.error);
