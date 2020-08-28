@@ -58,37 +58,34 @@ command.execute = async (message, args, database, bot) => {
   await Promise.all(bans);
 };
 
-command.ban = async (guild, user, moderator, reason, duration, channel) => {
-  new Promise(async(resolve,reject) => {
-    reason = reason || 'No reason provided.';
-    let time = util.secToTime(duration);
+command.ban = async(guild, user, moderator, reason, duration, channel) => {
+  reason = reason || 'No reason provided.';
+  let time = util.secToTime(duration);
 
-    //this try catch only finishes for the first user. Why?
-    try {
-      //taking out the following line processes both bans
-      let member = await guild.members.fetch(user.id);
-      if (duration) {
-         await member.send(`You were banned from \`${guild.name}\` for ${time} | ${reason}`);
-      }
-      else {
-        await member.send(`You were permanently banned from \`${guild.name}\` | ${reason}`);
-      }
-    } catch (e) {}
-
+  //this try catch only finishes for the first user. Why?
+  try {
+    //taking out the following line processes both bans
+    let member = await guild.members.fetch(user.id);
     if (duration) {
-      await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} (${time}), Reason:` + reason});
+       await member.send(`You were banned from \`${guild.name}\` for ${time} | ${reason}`);
     }
     else {
-      await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} | ` + reason});
+      await member.send(`You were permanently banned from \`${guild.name}\` | ${reason}`);
     }
+  } catch (e) {}
 
-    let insert = await util.moderationDBAdd(guild.id, user.id, "ban", reason, duration, moderator.id);
-    if (channel) {
-      await util.chatSuccess(channel, user, reason, "banned", time);
-    }
-    await util.logMessageModeration(guild.id, moderator, user, reason, insert, "Ban", time);
-    resolve();
-  });
+  if (duration) {
+    await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} (${time}), Reason:` + reason});
+  }
+  else {
+    await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} | ` + reason});
+  }
+
+  let insert = await util.moderationDBAdd(guild.id, user.id, "ban", reason, duration, moderator.id);
+  if (channel) {
+    await util.chatSuccess(channel, user, reason, "banned", time);
+  }
+  await util.logMessageModeration(guild.id, moderator, user, reason, insert, "Ban", time);
 };
 
 module.exports = command;
