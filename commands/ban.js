@@ -30,8 +30,6 @@ command.execute = async (message, args, database, bot) => {
   }
   let reason = args.join(' ');
 
-  let bans = [];
-
   for (let user of users) {
     user = await bot.users.fetch(util.userMentionToId(user));
 
@@ -52,10 +50,8 @@ command.execute = async (message, args, database, bot) => {
       }
     } catch (e) {}
 
-
-    bans.push(command.ban(message.guild, user, message.author, reason, duration, message.channel));
+    await command.ban(message.guild, user, message.author, reason, duration, message.channel);
   }
-  await Promise.all(bans);
 };
 
 command.ban = async(guild, user, moderator, reason, duration, channel) => {
@@ -65,7 +61,6 @@ command.ban = async(guild, user, moderator, reason, duration, channel) => {
   //this try catch only finishes for the first user. Why?
   try {
     //taking out the following line processes both bans
-    let member = await guild.members.fetch(user.id);
     if (duration) {
        await member.send(`You were banned from \`${guild.name}\` for ${time} | ${reason}`);
     }
