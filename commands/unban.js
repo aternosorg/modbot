@@ -4,7 +4,7 @@ const command = {};
 
 command.description = 'Unban a user';
 
-command.usage = '@user|userId <reason>';
+command.usage = '@user|id <@user|id…> <reason>';
 
 command.names = ['unban'];
 

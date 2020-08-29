@@ -4,7 +4,7 @@ const command = {};
 
 command.description = 'Ban a user';
 
-command.usage = '@user|userid <duration> <reason>';
+command.usage = '@user|id <@user|id…> <duration> <reason>';
 
 command.names = ['ban'];
 

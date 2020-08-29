@@ -4,7 +4,7 @@ const command = {};
 
 command.description = 'Mute a user';
 
-command.usage = '@user|userId <duration> <reason>';
+command.usage = '@user|id <@user|id…> <duration> <reason>';
 
 command.names = ['mute'];
 

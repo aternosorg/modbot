@@ -4,7 +4,7 @@ const command = {};
 
 command.description = 'Softban a user (kick and delete messages)';
 
-command.usage = '@member|memberId <reason>';
+command.usage = '@member|id <@member|id…> <reason>';
 
 command.names = ['softban'];
 

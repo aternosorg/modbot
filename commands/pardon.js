@@ -6,7 +6,7 @@ const command = {};
 
 command.description = 'Pardon strikes of a user';
 
-command.usage = '<count> @user|userId <reason>';
+command.usage = '<count> @user|id <@user|id…> <reason>';
 
 command.names = ['pardon'];
 
