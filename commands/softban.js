@@ -48,8 +48,6 @@ command.execute = async (message, args, database, bot) => {
 command.softban = async (guild, member, moderator, reason, channel) => {
   reason = reason || 'No reason provided.';
 
-  let insert = await util.moderationDBAdd(guild.id, member.id, "softban", reason, null, moderator.id);
-
   try {
     await member.send(`You were softbanned from \`${guild.name}\` | ${reason}`);
   } catch (e) {}
@@ -59,6 +57,7 @@ command.softban = async (guild, member, moderator, reason, channel) => {
   if (channel) {
     await util.chatSuccess(channel, member.user, reason, "softbanned");
   }
+  let insert = await util.moderationDBAdd(guild.id, member.id, "softban", reason, null, moderator.id);
   await util.logMessageModeration(guild.id, moderator, member.user, reason, insert, "Softban");
 };
 
