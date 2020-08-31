@@ -61,10 +61,10 @@ command.mute = async (guild, user, moderator, reason, duration, channel) => {
   let config = await util.getGuildConfig(guild.id);
   let mutedRole = config.mutedRole;
   if (!mutedRole) {
-      if (channel) {
-        await channel.send("No muted role specified!");
-      }
-      return;
+    if (channel) {
+      await channel.send("No muted role specified!");
+    }
+    return;
   }
 
   try {
