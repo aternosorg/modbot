@@ -1,4 +1,5 @@
 const util = require('../lib/util.js');
+const Discord = require('discord.js');
 
 const command = {};
 
@@ -16,6 +17,7 @@ command.execute = async (message, args, database, bot) => {
   }
 
   let channels = await util.channelMentions(message.guild,args);
+  let embed = new Discord.MessageEmbed().setTitle('This channel has been locked!').setDescription(args.join(' ')).setColor(util.color.red);
   let everyone = message.guild.roles.everyone.id;
 
   if (channels.length) {
@@ -25,6 +27,7 @@ command.execute = async (message, args, database, bot) => {
       let config = await util.getChannelConfig(channel.id);
       let permissions = channel.permissionsFor(everyone);
 
+      let con = true;
       for(const p of ['SEND_MESSAGES', 'ADD_REACTIONS']) {
         if (permissions.has(p)) {
           if (channel.permissionOverwrites.get(everyone)) {
@@ -36,13 +39,24 @@ command.execute = async (message, args, database, bot) => {
           let o = {};
           o[p] = false;
           await channel.updateOverwrite(everyone, o);
+          con = false;
         }
       }
 
+      if (con) {
+        continue;
+      }
+
+      await channel.send(embed);
       await util.saveChannelConfig(config);
       updates += `<#${channel.id}>, `;
     }
-    await message.channel.send(`Locked ${updates.substring(0,updates.length - 2)}!`);
+    if (updates.length) {
+      await message.channel.send(`Locked ${updates.substring(0,updates.length - 2)}!`);
+    }
+    else {
+      await message.channel.send(`No channels to lock!`);
+    }
   }
   else {
     //lock all channels with @e write

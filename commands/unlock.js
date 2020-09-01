@@ -1,4 +1,5 @@
 const util = require('../lib/util.js');
+const Discord = require('discord.js');
 
 const command = {};
 
@@ -16,6 +17,7 @@ command.execute = async (message, args, database, bot) => {
   }
 
   let channels = await util.channelMentions(message.guild,args);
+  let embed = new Discord.MessageEmbed().setTitle('This channel has been unlocked!').setDescription(args.join(' ')).setColor(util.color.green);
   let everyone = message.guild.roles.everyone;
 
   if (channels.length) {
@@ -23,12 +25,11 @@ command.execute = async (message, args, database, bot) => {
     for(let channel of channels) {
       channel = message.guild.channels.resolve(channel);
       let config = await util.getChannelConfig(channel.id);
-      let permissions = channel.permissionsFor(everyone);
 
-      for(const p of ['SEND_MESSAGES', 'ADD_REACTIONS']) {
-        await channel.updateOverwrite(everyone.id, config.lock);
-      }
+      await channel.updateOverwrite(everyone.id, config.lock);
+      config.lock = {};
 
+      await channel.send(embed);
       await util.saveChannelConfig(config);
       updates += `<#${channel.id}>, `;
     }
