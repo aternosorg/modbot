@@ -54,6 +54,14 @@ command.execute = async (message, args, database, bot) => {
   }
 };
 
+/**
+ * unlock - unlocks a channel
+ *
+ * @param  {Discord.TextChannel}          channel  the channel to unlock
+ * @param  {Discord.Snowflake}            everyone the id of the @everyone role
+ * @param  {Discord.MessageEmbed|String}  message  the message to send to the channel
+ * @return {Boolean}                      was the channel locked?
+ */
 async function unlock(channel, everyone, message) {
   let config = await util.getChannelConfig(channel.id);
 

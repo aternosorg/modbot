@@ -60,6 +60,14 @@ command.execute = async (message, args, database, bot) => {
   }
 };
 
+/**
+ * lock - locks a channel
+ *
+ * @param  {Discord.TextChannel}          channel  the channel to lock
+ * @param  {Discord.Snowflake}            everyone the id of the @everyone role
+ * @param  {Discord.MessageEmbed|String}  message  the message to send to the channel
+ * @return {Boolean}                      did the channel have to be locked?
+ */
 async function lock(channel, everyone, message) {
   let config = await util.getChannelConfig(channel.id);
   let permissions = channel.permissionsFor(everyone);
