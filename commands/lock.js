@@ -72,6 +72,10 @@ async function lock(channel, everyone, message) {
   let config = await util.getChannelConfig(channel.id);
   let permissions = channel.permissionsFor(everyone);
 
+  if (!permissions.has('VIEW_CHANNEL')) {
+    return false;
+  }
+
   let con = true;
   for(const p of ['SEND_MESSAGES', 'ADD_REACTIONS']) {
     if (permissions.has(p)) {
