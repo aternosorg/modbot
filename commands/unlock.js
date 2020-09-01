@@ -5,7 +5,7 @@ const command = {};
 
 command.description = 'Unlock a channel';
 
-command.usage = '<#channel|id...> message';
+command.usage = '<global|#channel|id...> message';
 
 command.names = ['unlock'];
 
