@@ -31,7 +31,7 @@ command.execute = async (message, args, database, bot) => {
   }
   else if (args.length && ['all','global'].includes(args[0].toLowerCase())){
     args = args.slice(1);
-    let embed = new Discord.MessageEmbed().setTitle('This channel has been unlocked!').setDescription(args.join(' ')).setColor(util.color.red);
+    let embed = new Discord.MessageEmbed().setTitle('This channel has been unlocked!').setDescription(args.join(' ')).setColor(util.color.green);
     channels = bot.guilds.cache.get(message.guild.id).channels.cache;
     let updates = '';
     for(let [id, channel] of channels) {
