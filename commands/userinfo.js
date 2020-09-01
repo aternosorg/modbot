@@ -43,7 +43,7 @@ command.execute = async (message, args, database, bot) => {
 
   embed.setDescription(embed.description + `**ID:** ${userId} \n`);
   embed.setDescription(embed.description + `**Created Account:** ${user.createdAt.toDateString()} \n`);
-  if (member) {
+  if (member && member.joinedAt) {
     embed.setDescription(embed.description + `**Joined Guild:** ${member.joinedAt.toDateString()} \n`);
   }
 
