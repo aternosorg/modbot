@@ -18,28 +18,55 @@ command.execute = async (message, args, database, bot) => {
 
   let channels = await util.channelMentions(message.guild,args);
   let embed = new Discord.MessageEmbed().setTitle('This channel has been unlocked!').setDescription(args.join(' ')).setColor(util.color.green);
-  let everyone = message.guild.roles.everyone;
+  let everyone = message.guild.roles.everyone.id;
 
   if (channels.length) {
     let updates = '';
     for(let channel of channels) {
       channel = message.guild.channels.resolve(channel);
-      let config = await util.getChannelConfig(channel.id);
-
-      await channel.updateOverwrite(everyone.id, config.lock);
-      config.lock = {};
-
-      await channel.send(embed);
-      await util.saveChannelConfig(config);
-      updates += `<#${channel.id}>, `;
+      if (await unlock(channel, everyone, embed))
+        updates += `<#${channel.id}>, `;
     }
     await message.channel.send(`Unlocked ${updates.substring(0,updates.length - 2)}!`);
   }
+  else if (args.length && ['all','global'].includes(args[0].toLowerCase())){
+    args = args.slice(1);
+    let embed = new Discord.MessageEmbed().setTitle('This channel has been unlocked!').setDescription(args.join(' ')).setColor(util.color.red);
+    channels = bot.guilds.cache.get(message.guild.id).channels.cache;
+    let updates = '';
+    for(let [id, channel] of channels) {
+      if (!(channel instanceof Discord.TextChannel)) {
+        continue;
+      }
+
+      if (await unlock(channel, everyone, embed))
+        updates += `<#${channel.id}>, `;
+    }
+    if (updates.length) {
+      await message.channel.send(`Unlocked ${updates.substring(0,updates.length - 2)}!`);
+    }
+    else {
+      await message.channel.send(`No channels to unlock!`);
+    }
+  }
   else {
-    //lock all channels with @e write
+    await message.channel.send(await util.usage(message, command.names[0]));
+  }
+};
+
+async function unlock(channel, everyone, message) {
+  let config = await util.getChannelConfig(channel.id);
+
+  if (Object.keys(config.lock).length === 0) {
+    return false;
   }
 
+  await channel.updateOverwrite(everyone, config.lock);
+  config.lock = {};
 
-};
+  await channel.send(message);
+  await util.saveChannelConfig(config);
+  return true;
+}
 
 module.exports = command;

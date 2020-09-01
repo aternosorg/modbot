@@ -35,7 +35,7 @@ command.execute = async (message, args, database, bot) => {
       await message.channel.send(`No channels to lock!`);
     }
   }
-  else if (args.length && ['all','global'].includes(args[0])){
+  else if (args.length && ['all','global'].includes(args[0].toLowerCase())){
     args = args.slice(1);
     let embed = new Discord.MessageEmbed().setTitle('This channel has been locked!').setDescription(args.join(' ')).setColor(util.color.red);
     channels = bot.guilds.cache.get(message.guild.id).channels.cache;
