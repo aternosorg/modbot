@@ -17,7 +17,7 @@ command.execute = async (message, args, database, bot) => {
   }
 
   let channels = await util.channelMentions(message.guild,args);
-  let embed = new Discord.MessageEmbed().setTitle('This channel is locked.').setDescription(args.join(' ')).setColor(util.color.red).setFooter('You are not muted, this channel is locked for everyone. Don't send direct messages to team members or moderators .');
+  let embed = new Discord.MessageEmbed().setTitle('This channel is locked.').setDescription(args.join(' ')).setColor(util.color.red).setFooter('You are not muted, this channel is locked for everyone. Don\'t send direct messages to team members or moderators .');
   let everyone = message.guild.roles.everyone.id;
 
   if (channels.length) {
@@ -37,10 +37,10 @@ command.execute = async (message, args, database, bot) => {
   }
   else if (args.length && ['all','global'].includes(args[0].toLowerCase())){
     args = args.slice(1);
-    let embed = new Discord.MessageEmbed().setTitle('This channel has been locked!').setDescription(args.join(' ')).setColor(util.color.red);
+    embed = embed.setDescription(args.join(''));
     channels = bot.guilds.cache.get(message.guild.id).channels.cache;
     let updates = [];
-    for(let [id, channel] of channels) {
+    for(let [, channel] of channels) {
       if (!(channel instanceof Discord.TextChannel)) {
         continue;
       }
@@ -77,17 +77,17 @@ async function lock(channel, everyone, message) {
   }
 
   let con = true;
-  for(const p of ['SEND_MESSAGES', 'ADD_REACTIONS']) {
-    if (permissions.has(p)) {
+  for(const perm of ['SEND_MESSAGES', 'ADD_REACTIONS']) {
+    if (permissions.has(perm)) {
       if (channel.permissionOverwrites.get(everyone)) {
-        config.lock[p] = channel.permissionOverwrites.get(everyone).allow.has(p) ? true : null;
+        config.lock[perm] = channel.permissionOverwrites.get(everyone).allow.has(perm) ? true : null;
       }
       else {
-        config.lock[p] = null;
+        config.lock[perm] = null;
       }
-      let o = {};
-      o[p] = false;
-      await channel.updateOverwrite(everyone, o);
+      let options = {};
+      options[perm] = false;
+      await channel.updateOverwrite(everyone, options);
       con = false;
     }
   }
