@@ -38,7 +38,7 @@ command.execute = async (message, args, database, bot) => {
         name: `Moderations for ${user.username}#${user.discriminator}`,
         iconURL: user.avatarURL()
       },
-      description: 'This user doesnt have any moderations!'
+      description: 'This user doesn\'t have any moderations!'
     });
     await message.channel.send(embed);
     return;
