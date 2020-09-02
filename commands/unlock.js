@@ -21,29 +21,29 @@ command.execute = async (message, args, database, bot) => {
   let everyone = message.guild.roles.everyone.id;
 
   if (channels.length) {
-    let updates = '';
+    let updates = [];
     for(let channel of channels) {
       channel = message.guild.channels.resolve(channel);
       if (await unlock(channel, everyone, embed))
-        updates += `<#${channel.id}>, `;
+        updates.push(`<#${channel.id}>`);
     }
-    await message.channel.send(`Unlocked ${updates.substring(0,updates.length - 2)}!`);
+    await message.channel.send(`Unlocked ${updates.join(', ')}!`);
   }
   else if (args.length && ['all','global'].includes(args[0].toLowerCase())){
     args = args.slice(1);
     let embed = new Discord.MessageEmbed().setTitle('This channel has been unlocked!').setDescription(args.join(' ')).setColor(util.color.green);
     channels = bot.guilds.cache.get(message.guild.id).channels.cache;
-    let updates = '';
+    let updates = [];
     for(let [id, channel] of channels) {
       if (!(channel instanceof Discord.TextChannel)) {
         continue;
       }
 
       if (await unlock(channel, everyone, embed))
-        updates += `<#${channel.id}>, `;
+        updates.push(`<#${channel.id}>`);
     }
     if (updates.length) {
-      await message.channel.send(`Unlocked ${updates.substring(0,updates.length - 2)}!`);
+      await message.channel.send(`Unlocked ${updates.join(', ')}!`);
     }
     else {
       await message.channel.send(`No channels to unlock!`);
