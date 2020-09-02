@@ -29,7 +29,7 @@ Modbot is a Moderation Bot specifically for the [Aternos Discord](https://chat.a
 10. (optional) Set up a log channel by using !logchannel #channel
 
 Now you can use our bot!
-If you need help with the commands use !help to list them and !help <command> to get more info
+If you need help with the commands use !help to list them and !help `<command>` to get more info
 
 ### Contributing
 
