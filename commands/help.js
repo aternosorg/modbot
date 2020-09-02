@@ -39,22 +39,22 @@ command.execute = async (message, args, database, bot) => {
   .setFooter(`Command executed by ${message.author.username}`)
   .setTimestamp();
   if (!args.length || args[0] === 'list') {
-      embed
-      .setAuthor(`Help Menu | Prefix: ${config.prefix}`)
-      .addFields(
-        { name: "Commands", value: commandList, inline: true}
-      );
+    embed
+    .setAuthor(`Help Menu | Prefix: ${config.prefix}`)
+    .addFields(
+      { name: "Commands", value: commandList, inline: true}
+    );
   }
   else {
-      if (commands[args[0]]) {
-        embed = await command.getUse(message, args[0]);
-      }
-      else {
-        embed
-        .setAuthor(`Help | Prefix: ${config.prefix}`)
-        .setColor(util.color.red)
-        .setDescription(`${args[0]} is not a valid command`);
-      }
+    if (commands[args[0]]) {
+      embed = await command.getUse(message, args[0]);
+    }
+    else {
+      embed
+      .setAuthor(`Help | Prefix: ${config.prefix}`)
+      .setColor(util.color.red)
+      .setDescription(`${args[0]} is not a valid command`);
+    }
   }
   message.channel.send(embed);
 
