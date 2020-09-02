@@ -4,7 +4,7 @@ const command = {};
 
 command.description = 'Mute a user';
 
-command.usage = '@user|userId <duration> <reason>';
+command.usage = '@user|id <@user|id…> <duration> <reason>';
 
 command.names = ['mute'];
 
@@ -14,44 +14,43 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let userId = util.userMentionToId(args.shift());
-  if (!userId) {
+  let users = await util.userMentions(args);
+
+  if (!users.length) {
     await message.channel.send(await util.usage(message, command.names[0]));
     return;
   }
 
-  let user;
-  try {
-    user = await bot.users.fetch(userId);
-  } catch (e) {
-    await message.react(util.icons.error);
-    await message.channel.send("User not found!");
-    return;
-  }
-
-  if (user.bot) {
-    await message.react(util.icons.error);
-    await message.channel.send("You can't interact with bots!");
-    return;
-  }
-  let member;
-  try {
-    member = await message.guild.members.fetch(userId);
-  }
-  catch{}
-
-  //highest role check
-  if(member && (message.member.roles.highest.comparePositionTo(message.guild.members.resolve(userId).roles.highest) <= 0 || await util.isMod(member))) {
-    await message.react(util.icons.error);
-    await message.channel.send("You don't have the permission to mute that member!");
-    return;
-  }
-
   let duration = util.timeToSec(args.join(' '));
-  while (util.isTime(args[0]))
-    args.shift();
 
-  await command.mute(message.guild, user, message.author, args.join(' '), duration, message.channel);
+  while (util.isTime(args[0])){
+    args.shift();
+  }
+  let reason = args.join(' ');
+
+  for (let userId of users) {
+    let user = await bot.users.fetch(userId);
+
+    if (user.bot) {
+      await message.react(util.icons.error);
+      await message.channel.send("You can't interact with bots!");
+      continue;
+    }
+    let member;
+    try {
+      member = await message.guild.members.fetch(userId);
+    }
+    catch{}
+
+    //highest role check
+    if(member && (message.member.roles.highest.comparePositionTo(message.guild.members.resolve(userId).roles.highest) <= 0 || await util.isMod(member))) {
+      await message.react(util.icons.error);
+      await message.channel.send(`You don't have the permission to mute <@${member.id}>!`);
+      continue;
+    }
+
+    await command.mute(message.guild, user, message.author, reason, duration, message.channel);
+  }
 };
 
 command.mute = async (guild, user, moderator, reason, duration, channel) => {
