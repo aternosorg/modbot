@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 
 const command = {};
 
-command.description = 'Dissallow users to send messages to a channel';
+command.description = 'Disallow users to send messages to one or multiple channels';
 
 command.usage = '<global|#channel|id…> message';
 
@@ -17,7 +17,7 @@ command.execute = async (message, args, database, bot) => {
   }
 
   let channels = await util.channelMentions(message.guild,args);
-  let embed = new Discord.MessageEmbed().setTitle('This channel has been locked!').setDescription(args.join(' ')).setColor(util.color.red);
+  let embed = new Discord.MessageEmbed().setTitle('This channel is locked.').setDescription(args.join(' ')).setColor(util.color.red).setFooter('You are not muted, this channel is locked for everyone. Don't send direct messages to team members or moderators .');
   let everyone = message.guild.roles.everyone.id;
 
   if (channels.length) {
