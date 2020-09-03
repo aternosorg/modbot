@@ -32,6 +32,18 @@ command.execute = async (message, args, database, bot) => {
 
   let moderations = await database.queryAll("SELECT id, action, created, value, expireTime - created AS duration, reason, moderator FROM moderations WHERE userid = ? AND guildid = ?",[userId,message.guild.id]);
 
+  if (moderations.length === 0) {
+    let embed = new Discord.MessageEmbed({
+      author: {
+        name: `Moderations for ${user.username}#${user.discriminator}`,
+        iconURL: user.avatarURL()
+      },
+      description: 'This user doesn\'t have any moderations!'
+    });
+    await message.channel.send(embed);
+    return;
+  }
+
   let text = '', i = 1;
   async function send(start, end) {
     let embed = new Discord.MessageEmbed({
