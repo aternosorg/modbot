@@ -27,7 +27,12 @@ command.execute = async (message, args, database, bot) => {
       if (await unlock(channel, everyone, embed))
         updates.push(`<#${channel.id}>`);
     }
-    await message.channel.send(`Unlocked ${updates.join(', ')}!`);
+    if (updates.length) {
+      await message.channel.send(`Unlocked ${updates.join(', ')}!`);
+    }
+    else {
+      await message.channel.send(`No channels to unlock!`);
+    }
   }
   else if (args.length && ['all','global'].includes(args[0].toLowerCase())){
     args = args.slice(1);
