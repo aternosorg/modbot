@@ -67,7 +67,7 @@ command.ban = async(guild, user, moderator, reason, duration, channel) => {
   } catch (e) {}
 
   if (duration) {
-    await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} (${time}), Reason:` + reason});
+    await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} (${time}) | ` + reason});
   }
   else {
     await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} | ` + reason});
