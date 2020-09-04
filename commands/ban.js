@@ -56,12 +56,11 @@ command.ban = async(guild, user, moderator, reason, duration, channel) => {
   let time = util.secToTime(duration);
 
   try {
-    let member = await guild.members.fetch(user.id);
     if (duration) {
-       await member.send(`You were banned from \`${guild.name}\` for ${time} | ${reason}`);
+       await user.send(`You were banned from \`${guild.name}\` for ${time} | ${reason}`);
     }
     else {
-      await member.send(`You were permanently banned from \`${guild.name}\` | ${reason}`);
+      await user.send(`You were permanently banned from \`${guild.name}\` | ${reason}`);
     }
   } catch (e) {}
 
