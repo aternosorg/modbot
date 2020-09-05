@@ -55,14 +55,12 @@ command.ban = async(guild, user, moderator, reason, duration, channel) => {
   reason = reason || 'No reason provided.';
   let time = util.secToTime(duration);
 
-  //this try catch only finishes for the first user. Why?
   try {
-    //taking out the following line processes both bans
     if (duration) {
-       await member.send(`You were banned from \`${guild.name}\` for ${time} | ${reason}`);
+       await user.send(`You were banned from \`${guild.name}\` for ${time} | ${reason}`);
     }
     else {
-      await member.send(`You were permanently banned from \`${guild.name}\` | ${reason}`);
+      await user.send(`You were permanently banned from \`${guild.name}\` | ${reason}`);
     }
   } catch (e) {}
 
