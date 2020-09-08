@@ -65,10 +65,10 @@ command.ban = async(guild, user, moderator, reason, duration, channel) => {
   } catch (e) {}
 
   if (duration) {
-    await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} (${time}) | ` + reason});
+    await guild.members.ban(user.id, {days: 1, reason: `${moderator.username}#${moderator.discriminator} (${time}) | ` + reason});
   }
   else {
-    await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} | ` + reason});
+    await guild.members.ban(user.id, {days: 1, reason: `${moderator.username}#${moderator.discriminator} | ` + reason});
   }
 
   let insert = await util.moderationDBAdd(guild.id, user.id, "ban", reason, duration, moderator.id);
