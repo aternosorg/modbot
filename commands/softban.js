@@ -56,7 +56,7 @@ command.softban = async (guild, member, moderator, reason, channel) => {
   try {
     await member.send(`You were softbanned from \`${guild.name}\` | ${reason}`);
   } catch (e) {}
-  await guild.members.ban(member.id,{days: 7, reason: `${moderator.username}#${moderator.discriminator} | `+reason});
+  await guild.members.ban(member.id,{days: 1, reason: `${moderator.username}#${moderator.discriminator} | `+reason});
   await guild.members.unban(member.id,`Softban`);
 
   if (channel) {
