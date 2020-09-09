@@ -1,6 +1,6 @@
 # Aternos/modbot
 
-Modbot is a Moderation Bot specifically for the [Aternos Discord](https://chat.aternos.org), made using the [discord.js](https://discord.js.org/) Library and [node.js](https://nodejs.org/).
+Modbot is a Moderation Bot specifically for the [Aternos Discord](https://chat.aternos.org), made using the [discord.js](https://discord.js.org/) Library and [node.js](https://nodejs.org/). [![Discord](https://img.shields.io/discord/107936397578489856?style=plastic)](https://chat.aternos.org/)
 
 ### Features
 - delete messages with .aternos.me IPs in specified channels
