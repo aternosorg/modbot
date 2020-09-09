@@ -36,3 +36,11 @@ If you need help with the commands use !help to list them and !help `<command>` 
 If you want to contribute you need to [fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the repository, then add your changes to your fork and then create a [pull request](https://github.com/aternosorg/modbot/compare). We recommend looking at the [Documentation](https://discord.js.org/#/docs/) of discord.js.
 
 If you need help with the Bot create an [Issue](https://github.com/aternosorg/modbot/issues).
+
+[![GitHub issues](https://img.shields.io/github/issues/aternosorg/modbot?style=plastic)](https://github.com/aternosorg/modbot/issues)
+[![GitHub closed issues](https://img.shields.io/github/issues-closed/aternosorg/modbot?style=plastic)](https://github.com/aternosorg/modbot/issues?q=is%3Aissue+is%3Aclosed)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/aternosorg/modbot?style=plastic)](https://github.com/aternosorg/modbot/pulls)
+[![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/aternosorg/modbot?style=plastic)](https://github.com/aternosorg/modbot/pulls?q=is%3Apr+is%3Aclosed)
+[![GitHub](https://img.shields.io/github/license/aternosorg/modbot?style=plastic)](https://github.com/aternosorg/modbot/blob/master/LICENSE)
+[![GitHub contributors](https://img.shields.io/github/contributors/aternosorg/modbot?style=plastic)](https://github.com/aternosorg/modbot/graphs/contributors)
+[![GitHub last commit](https://img.shields.io/github/last-commit/aternosorg/modbot?style=plastic)](https://github.com/aternosorg/modbot/commits/)
