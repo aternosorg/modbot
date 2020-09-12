@@ -7,6 +7,6 @@
     "database": "modbot",
     "charset": "utf8mb4"
   },
-  "prefix": ",",
+  "prefix": "!",
   "googleapikey":"google API Key"
 }

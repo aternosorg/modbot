@@ -4,7 +4,7 @@ const command = {};
 
 command.description = 'Softban a user (kick and delete messages)';
 
-command.usage = '@member|memberId <reason>';
+command.usage = '@member|id <@member|id…> <reason>';
 
 command.names = ['softban'];
 
@@ -14,41 +14,44 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let userId = util.userMentionToId(args.shift());
-  if (!userId) {
+  let users = await util.userMentions(args);
+
+  if (!users.length) {
     await message.channel.send(await util.usage(message, command.names[0]));
     return;
   }
 
-  let member;
-  try {
-    member = await message.guild.members.fetch(userId);
-  } catch (e) {
-    await message.react(util.icons.error);
-    await message.channel.send("User not found or not in guild!");
-    return;
-  }
+  let reason = args.join(' ');
 
-  if (member.user.bot) {
-    await message.react(util.icons.error);
-    await message.channel.send("You can't interact with bots!");
-    return;
-  }
+  for (let userId of users) {
+    let member;
+    try {
+      member = await message.guild.members.fetch(userId);
+    } catch (e) {
+      await message.react(util.icons.error);
+      await message.channel.send("User not found or not in guild!");
+      continue;
+    }
 
-  //highest role check
-  if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
-    await message.react(util.icons.error);
-    await message.channel.send("You don't have the Permission to softban that Member!");
-    return;
-  }
+    if (member.user.bot) {
+      await message.react(util.icons.error);
+      await message.channel.send("You can't interact with bots!");
+      continue;
+    }
 
-  await command.softban(message.guild, member, message.author, args.join(' '), message.channel);
+    //highest role check
+    if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
+      await message.react(util.icons.error);
+      await message.channel.send("You don't have the Permission to softban that Member!");
+      continue;
+    }
+
+    await command.softban(message.guild, member, message.author, reason, message.channel);
+  }
 };
 
 command.softban = async (guild, member, moderator, reason, channel) => {
   reason = reason || 'No reason provided.';
-
-  let insert = await util.moderationDBAdd(guild.id, member.id, "softban", reason, null, moderator.id);
 
   try {
     await member.send(`You were softbanned from \`${guild.name}\` | ${reason}`);
@@ -59,6 +62,7 @@ command.softban = async (guild, member, moderator, reason, channel) => {
   if (channel) {
     await util.chatSuccess(channel, member.user, reason, "softbanned");
   }
+  let insert = await util.moderationDBAdd(guild.id, member.id, "softban", reason, null, moderator.id);
   await util.logMessageModeration(guild.id, moderator, member.user, reason, insert, "Softban");
 };
 

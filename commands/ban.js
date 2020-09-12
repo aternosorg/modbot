@@ -4,7 +4,7 @@ const command = {};
 
 command.description = 'Ban a user';
 
-command.usage = '@user|userid <duration> <reason>';
+command.usage = '@user|id <@user|id…> <duration> <reason>';
 
 command.names = ['ban'];
 
@@ -13,50 +13,53 @@ command.execute = async (message, args, database, bot) => {
     await message.react(util.icons.error);
     return;
   }
+  let users = await util.userMentions(args);
 
-  if (!util.userMentionToId(args[0])) {
+  if (!users.length) {
     await message.channel.send(await util.usage(message, command.names[0]));
-    return;
-  }
-
-  let user;
-  try {
-    user = await bot.users.fetch(util.userMentionToId(args.shift()));
-  } catch (e) {
-    await message.channel.send(await util.usage(message, command.names[0]));
-    return;
-  }
-
-  if (user.bot) {
-    await message.react(util.icons.error);
-    await message.channel.send("You can't interact with bots!");
     return;
   }
 
   let duration = util.timeToSec(args.join(' '));
-  let member = await message.guild.members.resolve(user);
-  //highest role & mod check
-  if(message.guild.members.resolve(user)) {
-    if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)) {
-      await message.react(util.icons.error);
-      await message.channel.send("You don't have the permission to ban that member!");
-      return;
-    }
-  }
-  while (util.isTime(args[0]))
-    args.shift();
 
-  await command.ban(message.guild, user, message.author, args.join(' '), duration, message.channel);
+  while (util.isTime(args[0])){
+    args.shift();
+  }
+  let reason = args.join(' ');
+
+  for (let user of users) {
+    user = await bot.users.fetch(util.userMentionToId(user));
+
+    if (user.bot) {
+      await message.react(util.icons.error);
+      await message.channel.send("You can't interact with bots!");
+      continue;
+    }
+
+    let member;
+    try {
+      member = await message.guild.members.resolve(user);
+      //highest role & mod check
+      if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)) {
+        await message.react(util.icons.error);
+        await message.channel.send(`You don't have the permission to ban <@${user.id}>!`);
+        continue;
+      }
+    } catch (e) {}
+
+    await command.ban(message.guild, user, message.author, reason, duration, message.channel);
+  }
 };
 
-command.ban = async (guild, user, moderator, reason, duration, channel) => {
+command.ban = async(guild, user, moderator, reason, duration, channel) => {
   reason = reason || 'No reason provided.';
   let time = util.secToTime(duration);
 
+  //this try catch only finishes for the first user. Why?
   try {
-    let member = await guild.members.fetch(user.id);
+    //taking out the following line processes both bans
     if (duration) {
-      await member.send(`You were banned from \`${guild.name}\` for ${time} | ${reason}`);
+       await member.send(`You were banned from \`${guild.name}\` for ${time} | ${reason}`);
     }
     else {
       await member.send(`You were permanently banned from \`${guild.name}\` | ${reason}`);
@@ -64,7 +67,7 @@ command.ban = async (guild, user, moderator, reason, duration, channel) => {
   } catch (e) {}
 
   if (duration) {
-    await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} (${time}), Reason:` + reason});
+    await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} (${time}) | ` + reason});
   }
   else {
     await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} | ` + reason});
