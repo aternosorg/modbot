@@ -28,7 +28,7 @@ command.execute = async (message, args, database, bot) => {
         user = bot.users.cache.find(u => u.username === name);
       }
       if (!user) {
-        response = `The user ${name} was not found!`;
+        response = `The user ${fullname} was not found!`;
       }
       else {
         response = user.id;
