@@ -7,10 +7,17 @@ exports.event = async (database, message) => {
   if (message.author.bot || ignore.has(message.id)) {
     return;
   }
+
+  let content = message.content.substring(0,2048);
+  for (const [,attachment] of message.attachments) {
+    if (content.length + attachment.url.length > 2048) {break;}
+    content += ` ${attachment.url}`;
+  }
+
   let embed = new Discord.MessageEmbed()
     .setColor(util.color.red)
     .setAuthor(`Message by ${message.author.username}#${message.author.discriminator} in #${message.channel.name} was deleted`,message.author.avatarURL())
-    .setDescription(message.content.substring(0,2048))
+    .setDescription(content)
     .setFooter(`ID: ${message.author.id}`);
 
   await util.logMessageEmbed(message, '', embed);
