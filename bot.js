@@ -42,7 +42,6 @@ const database = new Database(config.db);
     }
 
     // FEATURES
-    const features = {};
     for (let folder of await fs.readdir(`${__dirname}/features`)) {
         let folderPath = `${__dirname}/features/${folder}`;
         if (!(await fs.lstat(folderPath)).isDirectory()) {
