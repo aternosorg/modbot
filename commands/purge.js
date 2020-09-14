@@ -25,7 +25,6 @@ command.execute = async (message, args, database, bot) => {
     count: null
   };
 
-  let i;
   for (let [index, arg] of args.entries()) {
     //purge @user
     //purge userid
