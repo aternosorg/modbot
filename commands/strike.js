@@ -109,7 +109,7 @@ async function punish(guild, user, total, bot) {
 
   switch (punishment.action) {
     case 'ban':
-      await ban.ban(guild, user, bot.user, `Reaching ${total} strikes`, punishment.duration);
+      await ban.ban(guild, user, bot.user, `Reaching ${total} ${total === 1 ? "strike" : "strikes"}`, punishment.duration);
       break;
     case 'kick':
       try {
@@ -117,10 +117,10 @@ async function punish(guild, user, total, bot) {
       } catch (e) {
         return;
       }
-      await kick.kick(guild, member, bot.user, `Reaching ${total} strikes`);
+      await kick.kick(guild, member, bot.user, `Reaching ${total} ${total === 1 ? "strike" : "strikes"}`);
       break;
     case 'mute':
-      await mute.mute(guild, user, bot.user, `Reaching ${total} strikes`, punishment.duration);
+      await mute.mute(guild, user, bot.user, `Reaching ${total} ${total === 1 ? "strike" : "strikes"}`, punishment.duration);
       break;
     case 'softban':
       try {
@@ -128,7 +128,7 @@ async function punish(guild, user, total, bot) {
       } catch (e) {
         return;
       }
-      await softban.softban(guild, member, bot.user, `Reaching ${total} strikes`);
+      await softban.softban(guild, member, bot.user, `Reaching ${total} ${total === 1 ? "strike" : "strikes"}`);
       break;
   }
 }
