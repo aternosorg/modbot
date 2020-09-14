@@ -48,8 +48,7 @@ const database = new Database(config.db);
         if (!(await fs.lstat(folderPath)).isDirectory()) {
             continue;
         }
-        let feature = features[folder];
-        feature = [];
+        let feature = [];
         for (let file of await fs.readdir(folderPath)) {
           let path = `${__dirname}/features/${folder}/${file}`;
           if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
