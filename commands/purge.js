@@ -110,10 +110,12 @@ command.execute = async (message, args, database, bot) => {
         incl = true;
       }
       if (msg.embeds.length) {
-        for (let embed of msg.embeds) {
-          if (embed.description.includes(filter.string)) {
-            incl = true;
-          }
+        if (msg.embeds.some(e => {
+          return e.description && e.description.includes(filter.string) || e.fields.some(e => {
+            return e.name.includes(filter.string) || e.value.includes(filter.string)
+          });
+        })) {
+          incl = true;
         }
       }
       if (!incl) {
