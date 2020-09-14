@@ -30,7 +30,6 @@ command.execute = async (message, args, database, bot) => {
     }
     let mode = getMode(args.shift());
 
-    let guildConfig = await util.getGuildConfig(message);
     let channelConfig = await util.getChannelConfig(channel);
     if (mode === undefined) {
       delete channelConfig.invites;
