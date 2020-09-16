@@ -1,4 +1,3 @@
-const config = require('../config.json');
 const util = require('../lib/util.js');
 const axios = require('axios');
 
