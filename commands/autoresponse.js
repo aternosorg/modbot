@@ -39,9 +39,9 @@ command.execute = async (message, args, database, bot) => {
 
         case 'add':
             await message.channel.send("Please enter your trigger type (regex, include or match)!");
-            let trigger = {};
+            let type, content, flags;
             try {
-                trigger.type = (await message.channel.awaitMessages(response => {
+                type = (await message.channel.awaitMessages(response => {
                     return response.author.id === message.author.id && AutoResponse.triggerTypes.includes(response.content.toLowerCase())
                 }, { max: 1, time: 15000, errors: ['time'] })).first().content;
             }
@@ -51,7 +51,7 @@ command.execute = async (message, args, database, bot) => {
 
             await message.channel.send("Please enter your trigger (/regex/flags or String)!");
             try {
-                trigger.content = (await message.channel.awaitMessages(response => {
+                content = (await message.channel.awaitMessages(response => {
                     return response.author.id === message.author.id
                 }, { max: 1, time: 15000, errors: ['time'] })).first().content;
             }
@@ -59,17 +59,23 @@ command.execute = async (message, args, database, bot) => {
                 return await message.channel.send("You took to long to respond.");
             }
 
-            if (trigger.type === 'regex') {
-                let regex = trigger.content.split('/');
+            if (type === 'regex') {
+                let regex = content.split('/').slice(1,3);
                 try {
                     new RegExp(regex[0],regex[1]);
                 }
-                catch {
+                catch (e) {
                     return await message.channel.send("Invalid regex");
                 }
+                content = regex[0];
+                flags = regex[1];
             }
             let options = {
-                trigger: trigger
+                trigger: {
+                    type: type,
+                    content: content,
+                    flags: flags
+                }
             };
 
             await message.channel.send("Please enter your response!");
