@@ -6,7 +6,7 @@ const command = {};
 
 command.description = 'Adds and lists auto-responses';
 
-command.usage = '<list|add|edit|remove> <id>';
+command.usage = '<list|add|info|remove> <id>';
 
 command.names = ['autoresponse','response'];
 
@@ -22,6 +22,7 @@ command.execute = async (message, args, database, bot) => {
 
     let guildConfig = await util.getGuildConfig(message);
     let responses = guildConfig.responses;
+    let id, response;
 
     switch (args.shift().toLowerCase()) {
         case 'list':
@@ -117,15 +118,15 @@ command.execute = async (message, args, database, bot) => {
 
         case 'remove':
             if (!args.length) {
-                await message.channel.send("Provide the id of the response you want to add");
+                await message.channel.send("Provide the id of the response you want to remove");
                 return;
             }
-            let id = parseInt(args.shift());
+            id = parseInt(args.shift());
             if (!responses[id]) {
                 await message.channel.send("Invalid id!");
                 return;
             }
-            let response = responses[id];
+            response = responses[id];
 
             let confirmation = await message.channel.send("Do you really want to delete this response?",new Discord.MessageEmbed()
                 .setTitle("Added new auto-response")
@@ -156,6 +157,28 @@ command.execute = async (message, args, database, bot) => {
             guildConfig.responses = responses.slice(0, id).concat(responses.slice(id + 1, responses.length));
             await util.saveGuildConfig(guildConfig);
             await message.channel.send("Removed!");
+            break;
+
+        case "info":
+            if (!args.length) {
+                await message.channel.send("Provide the id of the response you want to view");
+                return;
+            }
+            id = parseInt(args.shift());
+            if (!responses[id]) {
+                await message.channel.send("Invalid id!");
+                return;
+            }
+            response = responses[id];
+
+            await message.channel.send("Do you really want to delete this response?",new Discord.MessageEmbed()
+                .setTitle("Added new auto-response")
+                .setColor(util.color.green)
+                .addFields([
+                    {name: "Trigger", value: `${response.trigger.type}: ${response.trigger.content}`},
+                    {name: "Response", value: response.response.substring(0,1000)},
+                    {name: "Channels", value: response.global ? "global" : '<#' + response.channels.join('>, <#') + '>'}
+                ]));
             break;
 
         default:
