@@ -20,31 +20,29 @@ command.execute = async (message, args, database, bot) => {
         return await message.channel.send(await util.usage(message,command.names[0]));
     }
 
-    let guildconfig = await util.getGuildConfig(message);
-    let responses = guildconfig.responses;
+    let guildConfig = await util.getGuildConfig(message);
+    let responses = guildConfig.responses;
 
     switch (args[0].toLowerCase()) {
         case 'list':
-            console.log(responses);
             if (!responses.length) {
                 return await message.channel.send("No auto-responses!");
             }
 
             let text = '';
             for (const response of responses) {
-                text += response.triggers[0];
+                text += `${response.trigger.type}: \`${response.trigger.content.replace('`','\`')}\`, `;
             }
-            await message.reply(text.substring(0, 2000))
+            await message.channel.send(text.substring(0, 2000));
             break;
 
         case 'add':
-
             await message.channel.send("Please enter your trigger type (regex, include or match)!");
             let trigger = {};
             try {
                 trigger.type = (await message.channel.awaitMessages(response => {
                     return response.author.id === message.author.id && AutoResponse.triggerTypes.includes(response.content.toLowerCase())
-                }, { max: 1, time: 15000, errors: ['time'] })).first();
+                }, { max: 1, time: 15000, errors: ['time'] })).first().content;
             }
             catch {
                 return await message.channel.send("You took to long to respond.");
@@ -54,7 +52,7 @@ command.execute = async (message, args, database, bot) => {
             try {
                 trigger.content = (await message.channel.awaitMessages(response => {
                     return response.author.id === message.author.id
-                }, { max: 1, time: 15000, errors: ['time'] })).first();
+                }, { max: 1, time: 15000, errors: ['time'] })).first().content;
             }
             catch {
                 return await message.channel.send("You took to long to respond.");
@@ -78,7 +76,7 @@ command.execute = async (message, args, database, bot) => {
             try {
                 channels = (await message.channel.awaitMessages(async response => {
                     return response.author.id === message.author.id && (await util.channelMentions(message.guild,response.content.split(" "))).length || response.content.toLowerCase() === 'global'
-                }, { max: 1, time: 15000, errors: ['time'] })).first().content.split(" ");
+                }, { max: 1, time: 15000, errors: ['time'] })).first().content;
             }
             catch {
                 return await message.channel.send("You took to long to respond.");
@@ -88,7 +86,7 @@ command.execute = async (message, args, database, bot) => {
             }
             else {
                 options.global = false;
-                options.channels = await util.channelMentions(message.guild,channels);
+                options.channels = await util.channelMentions(message.guild,channels.split(" "));
             }
 
             await message.channel.send("Please enter your response!");
@@ -101,9 +99,9 @@ command.execute = async (message, args, database, bot) => {
                 return await message.channel.send("You took to long to respond.");
             }
 
-            guildconfig.responses.push(new AutoResponse(message.guild.id, options));
+            guildConfig.responses.push(new AutoResponse(message.guild.id, options));
 
-            await util.saveGuildConfig(guildconfig);
+            await util.saveGuildConfig(guildConfig);
 
             let embed = new Discord.MessageEmbed()
                 .setTitle("Added new auto-response")
@@ -111,23 +109,23 @@ command.execute = async (message, args, database, bot) => {
                 .addFields([
                     {name: "Trigger", value: `${options.trigger.type}: ${options.trigger.content}`},
                     {name: "Response", value: options.response.substring(0,1000)},
-                    {name: "Channels", value: options.channels.length ? '<#' + options.channels.join('>, <#') + '>' : "global"}
+                    {name: "Channels", value: options.channels ? '<#' + options.channels.join('>, <#') + '>' : "global"}
                 ]);
 
             await message.channel.send(embed);
             break;
 
         case 'edit':
-
+            await message.channel.send("WIP!");
             break;
 
         case 'remove':
-
+            await message.channel.send("WIP!");
             break;
 
         default:
             return await message.channel.send(await util.usage(message,command.names[0]));
-    }
+    };
 };
 
 module.exports = command;

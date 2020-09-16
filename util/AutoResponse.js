@@ -50,31 +50,31 @@ class AutoResponse {
 
   /**
    * matches - does this message match this auto-response
-   * @param   {String}            content text in the message
-   * @param   {Discord.Snowflake} channel channel id
+   * @param   {Discord.Message} message
+   * @param   {AutoResponse}    response
    * @returns {boolean}
    */
-  matches(content, channel) {
-    if (!global && !channels.includes(channel)) {
+  static matches(message, response) {
+    if (!response.global && !response.channels.includes(message.channel.id)) {
       return false;
     }
 
-    switch (trigger.type) {
-      case "includes":
-        if (content.toLowerCase().includes(trigger.content)) {
+    switch (response.trigger.type) {
+      case "include":
+        if (message.content.toLowerCase().includes(response.trigger.content.toLowerCase())) {
           return true;
         }
         break;
 
       case "matches":
-        if (content.toLowerCase() === trigger.content) {
+        if (message.content.toLowerCase() === response.trigger.content) {
           return true;
         }
         break;
 
       case "regex":
-        let regex = new RegExp(trigger.content,trigger.flags);
-        if (regex.test(content)) {
+        let regex = new RegExp(response.trigger.content,response.trigger.flags);
+        if (regex.test(message.content)) {
           return true;
         }
         break;
