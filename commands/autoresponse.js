@@ -71,6 +71,16 @@ command.execute = async (message, args, database, bot) => {
                 trigger: trigger
             };
 
+            await message.channel.send("Please enter your response!");
+            try {
+                options.response = (await message.channel.awaitMessages(response => {
+                    return response.author.id === message.author.id
+                }, { max: 1, time: 15000, errors: ['time'] })).first().content;
+            }
+            catch {
+                return await message.channel.send("You took to long to respond.");
+            }
+
             await message.channel.send("Please select the channels this auto-response should work in (#mention, channelid or global)!");
             let channels;
             try {
@@ -87,16 +97,6 @@ command.execute = async (message, args, database, bot) => {
             else {
                 options.global = false;
                 options.channels = await util.channelMentions(message.guild,channels.split(" "));
-            }
-
-            await message.channel.send("Please enter your response!");
-            try {
-                options.response = (await message.channel.awaitMessages(response => {
-                    return response.author.id === message.author.id
-                }, { max: 1, time: 15000, errors: ['time'] })).first().content;
-            }
-            catch {
-                return await message.channel.send("You took to long to respond.");
             }
 
             guildConfig.responses.push(new AutoResponse(message.guild.id, options));
