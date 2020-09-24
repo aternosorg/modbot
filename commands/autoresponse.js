@@ -32,7 +32,7 @@ command.execute = async (message, args, database, bot) => {
 
             let text = '';
             for (const [key, response] of responses.entries()) {
-                text += `[${key}] (${response.trigger.type}): \`${response.trigger.content.replace('`','\`')}\` \n`;
+                text += `[${key}] (${response.trigger.type}): \`${response.trigger.content.replaceAll('`','\`')}\` \n`;
             }
             await message.channel.send(text.substring(0, 2000));
             break;
