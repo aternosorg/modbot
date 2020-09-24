@@ -10,9 +10,8 @@ command.usage = '<global|#channel|id…> message';
 command.names = ['lock'];
 
 command.execute = async (message, args, database, bot) => {
-  return;
   //Permission check
-  if (!util.isMod(message.member) && !message.member.hasPermission('MANAGE_CHANNELS')) {
+  if (!await util.isMod(message.member) && !message.member.hasPermission('MANAGE_CHANNELS')) {
     await message.react(util.icons.error);
     return;
   }
