@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
 
-
 /**
  * A trigger for an AutoResponse this can be:
  * * a string that has to be included

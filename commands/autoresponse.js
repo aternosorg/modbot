@@ -20,8 +20,7 @@ command.execute = async (message, args, database, bot) => {
         return await message.channel.send(await util.usage(message,command.names[0]));
     }
 
-    let guildConfig = await util.getGuildConfig(message);
-    let responses = guildConfig.responses;
+    let responses = await util.getResponses(message);
     let id, response;
 
     switch (args.shift().toLowerCase()) {
