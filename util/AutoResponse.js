@@ -23,16 +23,17 @@ class AutoResponse {
 
   /**
    * constructor - create a channel config
-   *
    * @param {Discord.Snowflake}     gid       guild ID
    * @param {Object}                json      options
    * @param {AutoResponseTrigger}   json.trigger   filter that triggers the response
    * @param {String}                json.response  message to send to the channel
    * @param {Boolean}               json.global    does this apply to all channels in this guild
    * @param {Discord.Snowflake[]}   [json.channels]  channels that this applies to
+   * @param {Number}                [id]        id in DB
    * @return {AutoResponse} the auto response
    */
-  constructor(gid, json) {
+  constructor(gid, json, id) {
+    this.id;
     this.gid = gid;
 
     if (json) {
