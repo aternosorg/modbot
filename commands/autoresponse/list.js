@@ -5,13 +5,13 @@
  * @returns {Promise<void>}
  */
 module.exports = async (responses, message) => {
-    if (!responses.length) {
+    if (!responses.size) {
         return await message.channel.send("No auto-responses!");
     }
 
     let text = '';
-    for (const [key, response] of responses.entries()) {
-        text += `[${key}] (${response.trigger.type}): \`${response.trigger.content.replaceAll('`','\`')}\` \n`;
+    for (const [id, response] of responses) {
+        text += `[${id}] (${response.trigger.type}): \`${response.trigger.content}\` \n`;
     }
     await message.channel.send(text.substring(0, 2000));
 };

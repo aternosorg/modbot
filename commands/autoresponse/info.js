@@ -1,4 +1,6 @@
 const Discord = require("discord.js");
+const util = require('../../lib/util.js');
+
 /**
  * get info about an autoresponse
  * @param {Object} responses
@@ -11,12 +13,11 @@ module.exports = async (responses, message, args) => {
         await message.channel.send("Provide the id of the response you want to view");
         return;
     }
-    let id = parseInt(args.shift());
-    if (!responses[id]) {
+    let response = responses.get(parseInt(args.shift()));
+    if (!response) {
         await message.channel.send("Invalid id!");
         return;
     }
-    let response = responses[id];
 
     await message.channel.send(new Discord.MessageEmbed()
         .setTitle("Auto-response")

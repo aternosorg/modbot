@@ -9,7 +9,7 @@ const util = require('../../lib/util.js');
  * @returns {Promise<void>}
  */
 module.exports = async (responses, message) => {
-    await message.channel.send("Please enter your trigger type (regex, include or match)!");
+    await message.channel.send("Please enter your trigger type (\`regex\`, \`include\` or \`match\`)!");
     let type, content, flags;
     try {
         type = (await message.channel.awaitMessages(response => {
@@ -20,7 +20,7 @@ module.exports = async (responses, message) => {
         return await message.channel.send("You took to long to respond.");
     }
 
-    await message.channel.send("Please enter your trigger (/regex/flags or String)!");
+    await message.channel.send("Please enter your trigger (\`example trigger\` or \`/regex/flags\`)!");
     try {
         content = (await message.channel.awaitMessages(response => {
             return response.author.id === message.author.id
@@ -59,7 +59,7 @@ module.exports = async (responses, message) => {
         return await message.channel.send("You took to long to respond.");
     }
 
-    await message.channel.send("Please select the channels this auto-response should work in (#mention, channelid or global)!");
+    await message.channel.send("Please select the channels this auto-response should work in (\`#mention\`, \`channelid\` or \`global\`)!");
     let channels;
     try {
         channels = (await message.channel.awaitMessages(async response => {

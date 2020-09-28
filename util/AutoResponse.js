@@ -66,7 +66,7 @@ class AutoResponse {
         }
         break;
 
-      case "matches":
+      case "match":
         if (message.content.toLowerCase() === response.trigger.content) {
           return true;
         }

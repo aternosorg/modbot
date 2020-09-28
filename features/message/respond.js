@@ -6,9 +6,8 @@ exports.event = async (database, message) => {
     return;
   }
 
-  let guildConfig = await util.getGuildConfig(message);
-  let responses = guildConfig.responses;
-  for (let response of responses) {
+  let responses = await util.getAutoResponses(message);
+  for (let [,response] of responses) {
     if (AutoResponse.matches(message, response)) {
       await message.channel.send(response.response);
       return;

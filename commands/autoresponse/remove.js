@@ -1,4 +1,6 @@
 const Discord = require("discord.js");
+const util = require('../../lib/util.js');
+
 /**
  * remove an auto-response
  * @param {Object} responses
@@ -12,12 +14,11 @@ module.exports = async (responses, message, args, database) => {
         await message.channel.send("Provide the id of the response you want to remove");
         return;
     }
-    let id = parseInt(args.shift());
-    if (!responses[id]) {
+    let response = responses.get(parseInt(args.shift()));
+    if (!response) {
         await message.channel.send("Invalid id!");
         return;
     }
-    let response = responses[id];
 
     let confirmation = await message.channel.send("Do you really want to delete this response?",new Discord.MessageEmbed()
         .setTitle("Remove auto-response")

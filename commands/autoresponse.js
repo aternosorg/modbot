@@ -24,7 +24,7 @@ command.execute = async (message, args, database, bot) => {
         return await message.channel.send(await util.usage(message,command.names[0]));
     }
 
-    let responses = await util.getAutoResponse(message);
+    let responses = await util.getAutoResponses(message);
 
     switch (args.shift().toLowerCase()) {
         case 'list':
