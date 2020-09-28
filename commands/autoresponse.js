@@ -1,4 +1,3 @@
-const Discord = require("discord.js");
 const util = require('../lib/util.js');
 
 const list = require('./autoresponse/list');
