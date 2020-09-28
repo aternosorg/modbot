@@ -55,22 +55,20 @@ command.ban = async(guild, user, moderator, reason, duration, channel) => {
   reason = reason || 'No reason provided.';
   let time = util.secToTime(duration);
 
-  //this try catch only finishes for the first user. Why?
   try {
-    //taking out the following line processes both bans
     if (duration) {
-       await member.send(`You were banned from \`${guild.name}\` for ${time} | ${reason}`);
+       await user.send(`You were banned from \`${guild.name}\` for ${time} | ${reason}`);
     }
     else {
-      await member.send(`You were permanently banned from \`${guild.name}\` | ${reason}`);
+      await user.send(`You were permanently banned from \`${guild.name}\` | ${reason}`);
     }
   } catch (e) {}
 
   if (duration) {
-    await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} (${time}) | ` + reason});
+    await guild.members.ban(user.id, {days: 1, reason: `${moderator.username}#${moderator.discriminator} (${time}) | ` + reason});
   }
   else {
-    await guild.members.ban(user.id, {days: 7, reason: `${moderator.username}#${moderator.discriminator} | ` + reason});
+    await guild.members.ban(user.id, {days: 1, reason: `${moderator.username}#${moderator.discriminator} | ` + reason});
   }
 
   let insert = await util.moderationDBAdd(guild.id, user.id, "ban", reason, duration, moderator.id);

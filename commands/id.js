@@ -19,7 +19,8 @@ command.execute = async (message, args, database, bot) => {
     try {
       response = (await bot.users.fetch(util.userMentionToId(args[0]))).id;
     } catch {
-      let [name,discrim] = args[0].split('#');
+      let fullname = args.join(' ');
+      let user,[name,discrim] = fullname.split('#');
       if (discrim) {
         user = bot.users.cache.find(u => u.username === name && u.discriminator === discrim);
       }
@@ -27,7 +28,7 @@ command.execute = async (message, args, database, bot) => {
         user = bot.users.cache.find(u => u.username === name);
       }
       if (!user) {
-        response = `The user ${args[0]} was not found!`;
+        response = `The user ${fullname} was not found!`;
       }
       else {
         response = user.id;

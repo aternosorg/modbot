@@ -11,7 +11,7 @@ command.names = ['lock'];
 
 command.execute = async (message, args, database, bot) => {
   //Permission check
-  if (!util.isMod(message.member) && !message.member.hasPermission('MANAGE_CHANNELS')) {
+  if (!await util.isMod(message.member) && !message.member.hasPermission('MANAGE_CHANNELS')) {
     await message.react(util.icons.error);
     return;
   }
@@ -37,7 +37,7 @@ command.execute = async (message, args, database, bot) => {
   }
   else if (args.length && ['all','global'].includes(args[0].toLowerCase())){
     args = args.slice(1);
-    embed = embed.setDescription(args.join(''));
+    embed = embed.setDescription(args.join(' '));
     channels = bot.guilds.cache.get(message.guild.id).channels.cache;
     let updates = [];
     for(let [, channel] of channels) {
