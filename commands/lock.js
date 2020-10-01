@@ -5,7 +5,7 @@ const command = {};
 
 command.description = 'Disallow users to send messages to one or multiple channels';
 
-command.usage = '<global|#channel|id…> message';
+command.usage = '<global|#channel...|id…> message';
 
 command.names = ['lock'];
 
