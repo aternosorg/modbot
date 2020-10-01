@@ -30,7 +30,7 @@ command.execute = async (message, args, database, bot) => {
   if (parseInt(args[0]) < 1000) {
     count = parseInt(args.shift());
     if (count > maxStrikesAtOnce) {
-      await message.channel.send(`You can't pardon more than ${maxStrikesAtOnce} strikes at once!`);
+      await message.channel.send(`You can't give more than ${maxStrikesAtOnce} strikes at once!`);
       return;
     }
   }
