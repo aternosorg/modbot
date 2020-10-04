@@ -14,6 +14,8 @@ exports.event = async (database, message) => {
     content += ` ${attachment.url}`;
   }
 
+  if (content.length === 0) {return;}
+
   let embed = new Discord.MessageEmbed()
     .setColor(util.color.red)
     .setAuthor(`Message by ${message.author.username}#${message.author.discriminator} in #${message.channel.name} was deleted`,message.author.avatarURL())
