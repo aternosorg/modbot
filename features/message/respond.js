@@ -8,7 +8,6 @@ exports.event = async (database, message) => {
 
   let responses = await util.getAutoResponses(message.channel.id, message.guild.id);
   for (let [,response] of responses) {
-    console.log(response)
     if (AutoResponse.matches(message, response)) {
       await message.channel.send(response.response);
       return;
