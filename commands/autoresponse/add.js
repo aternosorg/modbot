@@ -10,26 +10,24 @@ const util = require('../../lib/util.js');
  */
 module.exports = async (responses, message) => {
     await message.channel.send("Please enter your trigger type (\`regex\`, \`include\` or \`match\`)!");
-    let type, content, flags;
-    try {
-        type = (await message.channel.awaitMessages(response => {
-            return response.author.id === message.author.id && AutoResponse.triggerTypes.includes(response.content.toLowerCase())
-        }, { max: 1, time: 15000, errors: ['time'] })).first().content;
+    let type = await getResponse(message.channel,message.author.id);
+
+    if (type === null) {
+        return;
     }
-    catch {
-        return await message.channel.send("You took to long to respond.");
+
+    if (!AutoResponse.triggerTypes.includes(type)) {
+        return await message.channel.send("Not a valid trigger type!");
     }
 
     await message.channel.send("Please enter your trigger (\`example trigger\` or \`/regex/flags\`)!");
-    try {
-        content = (await message.channel.awaitMessages(response => {
-            return response.author.id === message.author.id
-        }, { max: 1, time: 15000, errors: ['time'] })).first().content;
-    }
-    catch {
-        return await message.channel.send("You took to long to respond.");
+    let content = await getResponse(message.channel,message.author.id);
+
+    if (content === null) {
+        return;
     }
 
+    let flags;
     if (type === 'regex') {
         let regex = content.split('/').slice(1,3);
         try {
@@ -50,25 +48,23 @@ module.exports = async (responses, message) => {
     };
 
     await message.channel.send("Please enter your response!");
-    try {
-        options.response = (await message.channel.awaitMessages(response => {
-            return response.author.id === message.author.id
-        }, { max: 1, time: 60000, errors: ['time'] })).first().content;
-    }
-    catch {
-        return await message.channel.send("You took to long to respond.");
+    options.response = await getResponse(message.channel, message.author.id, 60000);
+
+    if (options.response === null) {
+        return;
     }
 
     await message.channel.send("Please select the channels this auto-response should work in (\`#mention\`, \`channelid\` or \`global\`)!");
-    let channels;
-    try {
-        channels = (await message.channel.awaitMessages(async response => {
-            return response.author.id === message.author.id && (await util.channelMentions(message.guild,response.content.split(" "))).length || response.content.toLowerCase() === 'global'
-        }, { max: 1, time: 60000, errors: ['time'] })).first().content;
+    let channels = await getResponse(message.channel, message.author.id);
+
+    if (channels === null) {
+        return;
     }
-    catch {
-        return await message.channel.send("You took to long to respond.");
+
+    if ((await util.channelMentions(message.guild,channels.split(" "))).length === 0 && channels.toLowerCase() !== 'global') {
+        return await message.channel.send("Invalid channels. (#channel|channelId|global)")
     }
+
     if (channels === 'global') {
         options.global = true;
     }
@@ -89,4 +85,15 @@ module.exports = async (responses, message) => {
         ]);
 
     await message.channel.send(embed);
+}
+
+async function getResponse(channel, author, timeout = 15000) {
+    try {
+        let result = await channel.awaitMessages(message => { return message.author.id === author; }, { max: 1, time: timeout, errors: ['time'] });
+        return result.first().content;
+    }
+    catch {
+        await channel.send("You took to long to respond.");
+        return null;
+    }
 }
