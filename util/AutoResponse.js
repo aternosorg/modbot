@@ -23,13 +23,13 @@ class AutoResponse {
 
   /**
    * constructor - create a channel config
-   * @param {Discord.Snowflake}     gid       guild ID
-   * @param {Object}                json      options
-   * @param {AutoResponseTrigger}   json.trigger   filter that triggers the response
-   * @param {String}                json.response  message to send to the channel
-   * @param {Boolean}               json.global    does this apply to all channels in this guild
-   * @param {Discord.Snowflake[]}   [json.channels]  channels that this applies to
-   * @param {Number}                [id]        id in DB
+   * @param {Discord.Snowflake}     gid               guild ID
+   * @param {Object}                json              options
+   * @param {AutoResponseTrigger}   json.trigger      filter that triggers the response
+   * @param {String}                json.response     message to send to the channel
+   * @param {Boolean}               json.global       does this apply to all channels in this guild
+   * @param {Discord.Snowflake[]}   [json.channels]   channels that this applies to
+   * @param {Number}                [id]              id in DB
    * @return {AutoResponse} the auto response
    */
   constructor(gid, json, id) {
@@ -39,13 +39,17 @@ class AutoResponse {
     if (json) {
       this.trigger = json.trigger;
       this.response = json.response;
-      this.global = json.global;
+      this.global = json.global ? true : false;
       this.channels = json.channels;
     }
 
     if (!this.channels) {
       this.channels = [];
     }
+  }
+
+  static destruct(response) {
+    return [response.gid, JSON.stringify(response.trigger), response.response, response.global, response.channels.join(',')];
   }
 
   /**
@@ -55,10 +59,6 @@ class AutoResponse {
    * @returns {boolean}
    */
   static matches(message, response) {
-    if (!response.global && !response.channels.includes(message.channel.id)) {
-      return false;
-    }
-
     switch (response.trigger.type) {
       case "include":
         if (message.content.toLowerCase().includes(response.trigger.content.toLowerCase())) {
