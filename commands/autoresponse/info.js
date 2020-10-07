@@ -19,8 +19,6 @@ module.exports = async (responses, message, args) => {
         return;
     }
 
-    console.log(response.channels)
-
     await message.channel.send(new Discord.MessageEmbed()
         .setTitle("Auto-response")
         .setColor(util.color.green)
