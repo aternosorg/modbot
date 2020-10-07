@@ -33,7 +33,7 @@ class AutoResponse {
    * @return {AutoResponse} the auto response
    */
   constructor(gid, json, id) {
-    this.id;
+    this.id = id;
     this.gid = gid;
 
     if (json) {
@@ -48,6 +48,11 @@ class AutoResponse {
     }
   }
 
+  /**
+   * destruct a response
+   * @param response
+   * @returns {(*|string)[]}
+   */
   static destruct(response) {
     return [response.gid, JSON.stringify(response.trigger), response.response, response.global, response.channels.join(',')];
   }
