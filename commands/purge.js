@@ -146,7 +146,7 @@ command.execute = async (message, args, database, bot) => {
   let guildConfig = await util.getGuildConfig(message);
   const logembed = new Discord.MessageEmbed()
   .setColor(util.color.orange)
-  .setAuthor(`${message.author.username}#${message.author.discriminator} purged  ${messages.size} ${messages.size === 1 ? 'message' : 'messages'}.`)
+  .setAuthor(`${message.author.username}#${message.author.discriminator} purged ${messages.size} ${messages.size === 1 ? 'message' : 'messages'}.`)
   .setTimestamp()
   .addFields(
     { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
