@@ -11,7 +11,7 @@ command.names = ['mutedrole','muterole'];
 command.execute = async (message, args, database, bot) => {
   //Permission check
   if (!message.member.hasPermission('MANAGE_GUILD')) {
-    await message.channel.send('You need the "Manage Server" Permission to use this command.');
+    await message.channel.send('You need the "Manage Server" permission to use this command.');
     return;
   }
 
@@ -44,7 +44,7 @@ command.execute = async (message, args, database, bot) => {
     //Get role
     role = message.guild.roles.resolve(util.roleMentionToId(args.shift()));
     if (!role) {
-      await message.channel.send("Please specify a role(@Mention or ID), or use the subcommands 'create' or 'disable'!");
+      await message.channel.send("Please specify a role (@Mention or ID), or use the subcommands 'create' or 'disable'!");
       return;
     }
   }
