@@ -46,13 +46,8 @@ module.exports = async (responses, message, args, database) => {
     if (!confirmed) {
         return await message.channel.send("Cancelled!");
     }
-    await database.query("DELETE FROM responses WHERE id = ?",[response.id]);
 
-    if (response.global) {
-        await util.refreshGuildResponses(message.guild.id);
-    }
-    else {
-        await util.refreshChannelResponses(message.channel.id);
-    }
+    await util.removeResponse(response);
+
     await message.channel.send(`Removed the response with the id ${response.id}!`);
 }
