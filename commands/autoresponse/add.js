@@ -10,7 +10,7 @@ const util = require('../../lib/util.js');
  */
 module.exports = async (responses, message) => {
     await message.channel.send("Please enter your trigger type (\`regex\`, \`include\` or \`match\`)!");
-    let type = await getResponse(message.channel,message.author.id);
+    let type = await util.getResponse(message.channel,message.author.id);
 
     if (type === null) {
         return;
@@ -21,7 +21,7 @@ module.exports = async (responses, message) => {
     }
 
     await message.channel.send("Please enter your trigger (\`example trigger\` or \`/regex/flags\`)!");
-    let content = await getResponse(message.channel,message.author.id);
+    let content = await util.getResponse(message.channel,message.author.id);
 
     if (content === null) {
         return;
@@ -48,14 +48,14 @@ module.exports = async (responses, message) => {
     };
 
     await message.channel.send("Please enter your response!");
-    options.response = await getResponse(message.channel, message.author.id, 60000);
+    options.response = await util.getResponse(message.channel, message.author.id, 60000);
 
     if (options.response === null) {
         return;
     }
 
     await message.channel.send("Please select the channels this auto-response should work in (\`#mention\`, \`channelid\` or \`global\`)!");
-    let channels = await getResponse(message.channel, message.author.id);
+    let channels = await util.getResponse(message.channel, message.author.id);
 
     if (channels === null) {
         return;
@@ -85,15 +85,4 @@ module.exports = async (responses, message) => {
         ]);
 
     await message.channel.send(embed);
-}
-
-async function getResponse(channel, author, timeout = 15000) {
-    try {
-        let result = await channel.awaitMessages(message => { return message.author.id === author; }, { max: 1, time: timeout, errors: ['time'] });
-        return result.first().content;
-    }
-    catch {
-        await channel.send("You took to long to respond.");
-        return null;
-    }
 }
