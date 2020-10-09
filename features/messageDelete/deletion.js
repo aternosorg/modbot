@@ -13,12 +13,25 @@ exports.event = async (database, message) => {
     if (content.length + attachment.url.length > 2048) {break;}
     content += ` ${attachment.url}`;
   }
-
-  let embed = new Discord.MessageEmbed()
-    .setColor(util.color.red)
-    .setAuthor(`Message by ${message.author.username}#${message.author.discriminator} in #${message.channel.name} was deleted`,message.author.avatarURL())
-    .setDescription(content)
-    .setFooter(`ID: ${message.author.id}`);
+  let embed;
+  if (message.system) {
+    embed = new Discord.MessageEmbed()
+        .setColor(util.color.red)
+        .setAuthor(`A system message in #${message.channel.name} was deleted`)
+  }
+  else if(content.length === 0) {
+    embed = new Discord.MessageEmbed()
+        .setColor(util.color.red)
+        .setAuthor(`Empty message by ${message.author.username}#${message.author.discriminator} in #${message.channel.name} was deleted`,message.author.avatarURL())
+        .setFooter(`ID: ${message.author.id}`);
+  }
+  else{
+    embed = new Discord.MessageEmbed()
+        .setColor(util.color.red)
+        .setAuthor(`Message by ${message.author.username}#${message.author.discriminator} in #${message.channel.name} was deleted`,message.author.avatarURL())
+        .setDescription(content)
+        .setFooter(`ID: ${message.author.id}`);
+  }
 
   await util.logMessageEmbed(message, '', embed);
 };
