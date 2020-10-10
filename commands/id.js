@@ -23,9 +23,10 @@ command.execute = async (message, args, database, bot) => {
       let user,[name,discrim] = fullname.split('#');
       if (discrim) {
         user = bot.users.cache.find(u => u.username === name && u.discriminator === discrim);
-      }
-      else {
+        if (!user) { user = bot.users.cache.find(u => u.username.toLowerCase() === name.toLowerCase() && u.discriminator === discrim); }
+      } else {
         user = bot.users.cache.find(u => u.username === name);
+        if (!user) {user = bot.users.cache.find(u => u.username.toLowerCase() === name.toLowerCase());}
       }
       if (!user) {
         response = `The user ${fullname} was not found!`;
