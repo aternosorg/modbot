@@ -20,7 +20,7 @@ module.exports = async (responses, message) => {
         return await message.channel.send("Not a valid trigger type!");
     }
 
-    await message.channel.send("Please enter your trigger (\`example trigger\` or \`/regex/flags\`)!");
+    await message.channel.send(`Please enter your trigger (${ type === 'regex' ? '`/regex/flags`' :'`example trigger`'})!`);
     let content = await util.getResponse(message.channel,message.author.id);
 
     if (content === null) {
