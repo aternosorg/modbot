@@ -77,7 +77,7 @@ module.exports = async (responses, message) => {
     }
 
     const response = new AutoResponse(message.guild.id, options);
-    await util.saveResponse(response);
+    response.id = await util.saveResponse(response);
 
     await message.channel.send(util.responseEmbed(response,"Added new auto-response",util.color.green));
 };
