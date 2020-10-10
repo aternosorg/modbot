@@ -39,7 +39,7 @@ class AutoResponse {
     if (json) {
       this.trigger = json.trigger;
       this.response = json.response;
-      this.global = json.global ? true : false;
+      this.global = json.global;
       this.channels = json.channels;
     }
 

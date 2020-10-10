@@ -30,6 +30,9 @@ module.exports = async (responses, message) => {
     let flags;
     if (type === 'regex') {
         let regex = content.split('/').slice(1,3);
+        if (regex.length < 1) {
+            return await message.channel.send("Invalid regex");
+        }
         try {
             new RegExp(regex[0],regex[1]);
         }
