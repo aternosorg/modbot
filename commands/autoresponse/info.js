@@ -19,12 +19,5 @@ module.exports = async (responses, message, args) => {
         return;
     }
 
-    await message.channel.send(new Discord.MessageEmbed()
-        .setTitle("Auto-response")
-        .setColor(util.color.green)
-        .addFields([
-            {name: "Trigger", value: `${response.trigger.type}: ${response.trigger.content}`},
-            {name: "Response", value: response.response.substring(0,1000)},
-            {name: "Channels", value: response.global ? "global" : '<#' + response.channels.join('>, <#') + '>'}
-        ]));
-}
+    await message.channel.send(util.responseEmbed(response,"Auto-response",util.color.green));
+};

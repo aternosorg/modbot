@@ -62,7 +62,7 @@ module.exports = async (responses, message) => {
     }
 
     if ((await util.channelMentions(message.guild,channels.split(" "))).length === 0 && channels.toLowerCase() !== 'global') {
-        return await message.channel.send("Invalid channels. (#channel|channelId|global)")
+        return await message.channel.send("Invalid channels. (#channel|channelId|global)");
     }
 
     if (channels === 'global') {
@@ -75,14 +75,6 @@ module.exports = async (responses, message) => {
 
     await util.saveResponse(new AutoResponse(message.guild.id, options));
 
-    let embed = new Discord.MessageEmbed()
-        .setTitle("Added new auto-response")
-        .setColor(util.color.green)
-        .addFields([
-            {name: "Trigger", value: `${options.trigger.type}: ${options.trigger.content}`},
-            {name: "Response", value: options.response.substring(0,1000)},
-            {name: "Channels", value: options.channels ? '<#' + options.channels.join('>, <#') + '>' : "global"}
-        ]);
+    await message.channel.send(util.responseEmbed(responses,"Added new auto-response",util.color.green));
+};
 
-    await message.channel.send(embed);
-}

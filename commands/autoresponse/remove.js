@@ -20,14 +20,7 @@ module.exports = async (responses, message, args, database) => {
         return;
     }
 
-    let confirmation = await message.channel.send("Do you really want to delete this response?",new Discord.MessageEmbed()
-        .setTitle("Remove auto-response")
-        .setColor(util.color.red)
-        .addFields([
-            {name: "Trigger", value: `${response.trigger.type}: ${response.trigger.content}`},
-            {name: "Response", value: response.response.substring(0,1000)},
-            {name: "Channels", value: response.global ? "global" : '<#' + response.channels.join('>, <#') + '>'}
-        ]));
+    let confirmation = await message.channel.send("Do you really want to delete this response?", util.responseEmbed(response,"Remove auto-response", util.color.red));
     {
         let yes = confirmation.react(util.icons.yes);
         let no = confirmation.react(util.icons.no);
@@ -50,4 +43,4 @@ module.exports = async (responses, message, args, database) => {
     await util.removeResponse(response);
 
     await message.channel.send(`Removed the response with the id ${response.id}!`);
-}
+};
