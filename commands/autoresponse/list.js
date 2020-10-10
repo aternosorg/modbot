@@ -6,7 +6,7 @@
  */
 module.exports = async (responses, message) => {
     if (!responses.size) {
-        return await message.channel.send("No auto-responses!");
+        return await message.channel.send("No autoresponses!");
     }
 
     let text = '';

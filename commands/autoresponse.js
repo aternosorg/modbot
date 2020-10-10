@@ -39,7 +39,7 @@ command.execute = async (message, args, database, bot) => {
             await remove(responses, message, args, database);
             break;
 
-        case "info":
+        case 'info':
             await info(responses, message, args);
             break;
 

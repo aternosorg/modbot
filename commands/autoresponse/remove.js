@@ -11,7 +11,7 @@ const util = require('../../lib/util.js');
  */
 module.exports = async (responses, message, args, database) => {
     if (!args.length) {
-        await message.channel.send("Provide the id of the response you want to remove");
+        await message.channel.send("Provide the id of the autoresponse you want to remove");
         return;
     }
     let response = responses.get(parseInt(args.shift()));
@@ -20,7 +20,7 @@ module.exports = async (responses, message, args, database) => {
         return;
     }
 
-    let confirmation = await message.channel.send("Do you really want to delete this response?", util.responseEmbed(response,"Remove auto-response", util.color.red));
+    let confirmation = await message.channel.send("Do you really want to delete this autoresponse?", util.responseEmbed(response,"Remove autoresponse", util.color.red));
     {
         let yes = confirmation.react(util.icons.yes);
         let no = confirmation.react(util.icons.no);
@@ -42,5 +42,5 @@ module.exports = async (responses, message, args, database) => {
 
     await util.removeResponse(response);
 
-    await message.channel.send(`Removed the response with the id ${response.id}!`);
+    await message.channel.send(`Removed the autoresponse with the id ${response.id}!`);
 };

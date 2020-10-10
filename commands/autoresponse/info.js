@@ -10,7 +10,7 @@ const util = require('../../lib/util.js');
  */
 module.exports = async (responses, message, args) => {
     if (!args.length) {
-        await message.channel.send("Provide the id of the response you want to view");
+        await message.channel.send("Provide the id of the autoresponse you want to view");
         return;
     }
     let response = responses.get(parseInt(args.shift()));
@@ -19,5 +19,5 @@ module.exports = async (responses, message, args) => {
         return;
     }
 
-    await message.channel.send(util.responseEmbed(response,"Auto-response",util.color.green));
+    await message.channel.send(util.responseEmbed(response,"Autoresponse",util.color.green));
 };
