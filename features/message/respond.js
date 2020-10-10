@@ -1,4 +1,4 @@
-const util = require('../../lib/util');
+const AutoResponse = require('../../util/AutoResponse');
 
 exports.event = async (database, message) => {
   if (!message.guild || message.author.bot) {
@@ -7,7 +7,7 @@ exports.event = async (database, message) => {
 
   const triggered = [];
 
-  const responses = await util.getAutoResponses(message.channel.id, message.guild.id);
+  const responses = await AutoResponse.getAutoResponses(message.channel.id, message.guild.id);
   for (let [,response] of responses) {
     if (response.matches(message)) {
       triggered.push(response.response);

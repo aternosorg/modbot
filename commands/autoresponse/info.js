@@ -19,5 +19,5 @@ module.exports = async (responses, message, args) => {
         return;
     }
 
-    await message.channel.send(util.responseEmbed(response,"Autoresponse",util.color.green));
+    await message.channel.send(response.embed("Autoresponse",util.color.green));
 };

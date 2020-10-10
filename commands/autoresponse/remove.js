@@ -20,7 +20,7 @@ module.exports = async (responses, message, args, database) => {
         return;
     }
 
-    let confirmation = await message.channel.send("Do you really want to delete this autoresponse?", util.responseEmbed(response,"Remove autoresponse", util.color.red));
+    let confirmation = await message.channel.send("Do you really want to delete this autoresponse?", response.embed("Remove autoresponse", util.color.red));
     {
         let yes = confirmation.react(util.icons.yes);
         let no = confirmation.react(util.icons.no);
@@ -40,7 +40,7 @@ module.exports = async (responses, message, args, database) => {
         return await message.channel.send("Canceled!");
     }
 
-    await util.removeResponse(response);
+    await response.remove();
 
     await message.channel.send(`Removed the autoresponse with the id ${response.id}!`);
 };

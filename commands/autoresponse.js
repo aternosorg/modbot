@@ -1,4 +1,5 @@
 const util = require('../lib/util.js');
+const AutoResponse = require('../util/AutoResponse');
 
 const list = require('./autoresponse/list');
 const add = require('./autoresponse/add');
@@ -23,7 +24,7 @@ command.execute = async (message, args, database, bot) => {
         return await message.channel.send(await util.usage(message,command.names[0]));
     }
 
-    let responses = await util.getAllAutoResponses(message.guild.id);
+    let responses = await AutoResponse.getAllAutoResponses(message.guild.id);
 
     switch (args.shift().toLowerCase()) {
         case 'list':
