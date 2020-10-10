@@ -11,7 +11,7 @@ command.description = 'Adds and lists auto-responses';
 
 command.usage = '<list|add|info|remove> <id>';
 
-command.names = ['autoresponse','response'];
+command.names = ['autoresponse','response','responses','autoresponses'];
 
 command.execute = async (message, args, database, bot) => {
     //Permission check
@@ -34,6 +34,7 @@ command.execute = async (message, args, database, bot) => {
             await add(responses, message);
             break;
 
+        case 'delete':
         case 'remove':
             await remove(responses, message, args, database);
             break;
