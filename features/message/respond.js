@@ -13,7 +13,7 @@ exports.event = async (database, message) => {
       triggered.push(response.response);
     }
   }
-  
+
   if (triggered.length) {
     await message.channel.send(triggered[Math.floor(Math.random() * triggered.length)]);
   }
