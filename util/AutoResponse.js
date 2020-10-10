@@ -49,36 +49,34 @@ class AutoResponse {
   }
 
   /**
-   * destruct a response
-   * @param response
+   * serialize the response
    * @returns {(*|string)[]}
    */
-  static destruct(response) {
-    return [response.gid, JSON.stringify(response.trigger), response.response, response.global, response.channels.join(',')];
+  serialize() {
+    return [this.gid, JSON.stringify(this.trigger), this.response, this.global, this.channels.join(',')];
   }
 
   /**
    * matches - does this message match this auto-response
    * @param   {Discord.Message} message
-   * @param   {AutoResponse}    response
    * @returns {boolean}
    */
-  static matches(message, response) {
-    switch (response.trigger.type) {
+  matches(message) {
+    switch (this.trigger.type) {
       case "include":
-        if (message.content.toLowerCase().includes(response.trigger.content.toLowerCase())) {
+        if (message.content.toLowerCase().includes(this.trigger.content.toLowerCase())) {
           return true;
         }
         break;
 
       case "match":
-        if (message.content.toLowerCase() === response.trigger.content) {
+        if (message.content.toLowerCase() === this.trigger.content) {
           return true;
         }
         break;
 
       case "regex":
-        let regex = new RegExp(response.trigger.content,response.trigger.flags);
+        let regex = new RegExp(this.trigger.content,this.trigger.flags);
         if (regex.test(message.content)) {
           return true;
         }

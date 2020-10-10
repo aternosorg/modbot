@@ -30,7 +30,7 @@ module.exports = async (responses, message, args, database) => {
     let confirmed;
     try {
         confirmed = (await confirmation.awaitReactions((reaction, user) => {
-            return user.id === message.author.id && (reaction.emoji.name === util.icons.yes || reaction.emoji.name === util.icons.no)
+            return user.id === message.author.id && (reaction.emoji.name === util.icons.yes || reaction.emoji.name === util.icons.no);
         }, { max: 1, time: 15000, errors: ['time'] })).first().emoji.name === util.icons.yes;
     }
     catch {
