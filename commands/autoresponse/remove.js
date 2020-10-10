@@ -37,7 +37,7 @@ module.exports = async (responses, message, args, database) => {
         return await message.channel.send("You took to long to react!");
     }
     if (!confirmed) {
-        return await message.channel.send("Cancelled!");
+        return await message.channel.send("Canceled!");
     }
 
     await util.removeResponse(response);
