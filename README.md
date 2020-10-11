@@ -5,15 +5,18 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/aternosorg/modbot?style=plastic)](https://github.com/aternosorg/modbot/commits/)
 
 ---
-Modbot is a Moderation Bot specifically for the [Aternos Discord](https://chat.aternos.org), made using the [discord.js](https://discord.js.org/) Library and [node.js](https://nodejs.org/).
+Modbot is a moderation bot that is mainly used in the [Aternos Discord](https://chat.aternos.org).
+It was made using the [discord.js](https://discord.js.org/) Library and [node.js](https://nodejs.org/).
+
+
 
 ### Features
-- delete messages with .aternos.me IPs in specified channels
-- delete messages without .aternos.me IPs in specified channels
-- set a cooldown on .aternos.me IPs in specified channels
-- find articles from the [Aternos Help Center](https://support.aternos.org/hc/en-us)
-- find our [tutorials](https://www.youtube.com/playlist?list=PLHn1eAE9tVwzD2pnhzfvCj9h-e06MfH2N)
-- log it's actions (message deletions etc.) in a configurable channel.
+- Moderation commands (ban, kick, mute, softban, strike)
+- Import strikes, tempmutes and tempbans from Vortex 
+- Auto moderation (Discord invites, linkcooldown)
+- Find articles from your Zendesk helpcenter and videos from a Youtube playlist
+- Lock (all or specific) channels
+- Log message edits and deletions
 
 ### Setup
 
@@ -24,7 +27,7 @@ Modbot is a Moderation Bot specifically for the [Aternos Discord](https://chat.a
 5. Create a [Discord application](https://discordapp.com/developers/applications/)
 6. Add a bot to it and copy the auth token
 7. Copy the example.config.json to config.json, add the auth token and configure mysql
-8. Run this command in the directory
+8. Run the following command in the directory
 
    ```bash
    node bot.js
@@ -34,7 +37,7 @@ Modbot is a Moderation Bot specifically for the [Aternos Discord](https://chat.a
 10. (optional) Set up a log channel by using !logchannel #channel
 
 Now you can use our bot!
-If you need help with the commands use !help to list them and !help `<command>` to get more info
+If you need help with the commands use !help to list them and !help `<command>` to get more info.
 
 ### Contributing
 
