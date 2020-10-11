@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 const jsdiff = require('diff');
 
 exports.event = async (database, old, newMsg) => {
-  if (old.author.bot) {
+  if (old.author.bot || !old.guild) {
     return;
   }
   if (old.content === newMsg.content) {
