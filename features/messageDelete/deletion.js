@@ -4,7 +4,7 @@ const Discord = require('discord.js');
 let ignore = new Discord.Collection();
 const cache = 30*1000;
 exports.event = async (database, message) => {
-  if (message.author.bot || ignore.has(message.id)) {
+  if (!message.guild || message.author.bot || ignore.has(message.id)) {
     return;
   }
 
@@ -17,7 +17,7 @@ exports.event = async (database, message) => {
   if (message.system) {
     embed = new Discord.MessageEmbed()
         .setColor(util.color.red)
-        .setAuthor(`A system message in #${message.channel.name} was deleted`)
+        .setAuthor(`A system message in #${message.channel.name} was deleted`);
   }
   else if(content.length === 0) {
     embed = new Discord.MessageEmbed()
