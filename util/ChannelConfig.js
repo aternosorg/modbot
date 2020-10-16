@@ -11,7 +11,6 @@ class ChannelConfig {
      * @param  {Discord.Snowflake} id             channel id
      * @param  {Object}           [json]          options
      * @param  {Number}           [json.mode]     ip automod mode (0 => disabled, 1 => required, 2 => forbidden)
-     * @param  {Number}           [json.cooldown] ip cooldown in seconds
      * @param  {Boolean}          [json.invites]  allow invites
      * @param  {Object}           [json.lock]     permissions before locking (only affected perms)
      * @return {channelConfig} the config of the channel
@@ -22,7 +21,6 @@ class ChannelConfig {
 
         if (json) {
           this.mode = json.mode;
-          this.cooldown = json.cooldown;
           this.invites = json.invites;
           this.lock = json.lock;
         }
