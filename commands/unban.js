@@ -40,7 +40,7 @@ command.execute = async (message, args, database, bot) => {
     }
     if(!await database.query("SELECT * FROM moderations WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'ban'", [message.guild.id, userId]) && !ban) {
       await message.react(util.icons.error);
-      await message.channel.send(`<@${member.id}> isn't banned here!`);
+      await message.channel.send(`<@${user.id}> isn't banned here!`);
       continue;
     }
     let now = Math.floor(Date.now()/1000);
