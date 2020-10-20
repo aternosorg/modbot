@@ -9,12 +9,6 @@ const util = require('../../lib/util');
  */
 const commands = [];
 
-/**
- * discord Client
- * @type {Discord.Client}
- */
-let bot;
-
 (async () => {
     for (let file of await fs.readdir(`${__dirname}/../../commands`)) {
         let path = `${__dirname}/../../commands/${file}`;
@@ -31,11 +25,11 @@ let bot;
 
 /**
  *
- * @param {Database} database
+ * @param {Object} options
  * @param {Discord.Message} message
  * @return {Promise<void>}
  */
-exports.event = async(database, message) => {
+exports.event = async(options, message) => {
     if (!message.guild || message.author.bot) return;
     let guild = await util.getGuildConfig(message);
     const args = util.split(message.content,' ');
@@ -48,7 +42,7 @@ exports.event = async(database, message) => {
     for (let command of commands) {
         if (command.names.includes(cmd)) {
             try {
-                await Promise.resolve(command.execute(message, args, database, bot));
+                await Promise.resolve(command.execute(message, args, options.database, options.bot));
             } catch (e) {
                 let embed = new Discord.MessageEmbed({
                     color: util.color.red,

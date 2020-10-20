@@ -2,7 +2,7 @@ const util = require('../../lib/util.js');
 const Discord = require('discord.js');
 const jsdiff = require('diff');
 
-exports.event = async (database, old, newMsg) => {
+exports.event = async (options, old, newMsg) => {
   if (old.author.bot || !old.guild) {
     return;
   }

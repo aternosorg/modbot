@@ -42,16 +42,13 @@ const database = new Database(config.db);
           try {
               let f = require(path);
               feature.push(f);
-              if (f.init) {
-                  await f.init(bot);
-              }
           } catch (e) {
               console.error(`Failed to load message feature '${file}'`, e);
           }
         }
         bot.on(folder, async (...args) => {
           for (let f of feature) {
-              await Promise.resolve(f.event(database, ...args));
+              await Promise.resolve(f.event({database,bot}, ...args));
           }
         });
     }

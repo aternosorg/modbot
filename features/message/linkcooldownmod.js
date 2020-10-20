@@ -1,7 +1,7 @@
 const util = require('../../lib/util');
 let users = {};
 
-exports.event = async (database, message) => {
+exports.event = async (options, message) => {
   if (!message.guild || await util.ignoresAutomod(message)) {
     return;
   }
