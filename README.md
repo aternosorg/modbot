@@ -16,6 +16,7 @@ It was made using the [discord.js](https://discord.js.org/) Library and [node.js
 - Find articles from your Zendesk helpcenter and videos from a Youtube playlist
 - Lock (all or specific) channels
 - Log message edits and deletions
+- Autoresponses
 
 ### Setup
 1. Install [Node.js](https://nodejs.org/en/download/) and [MySQL](https://dev.mysql.com/downloads/mysql/)
