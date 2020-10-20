@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 const Database = require('./lib/Database');
 const util = require('./lib/util');
-
 const fs = require('fs').promises;
 
 const config = require('./config');
@@ -52,6 +51,7 @@ const database = new Database(config.db);
           }
         });
     }
+    
     // load checks
     for (let file of await fs.readdir(`${__dirname}/checks`)) {
         let path = `${__dirname}/checks/${file}`;
