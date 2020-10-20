@@ -39,8 +39,7 @@ const database = new Database(config.db);
               continue;
           }
           try {
-              let f = require(path);
-              feature.push(f);
+              feature.push(require(path));
           } catch (e) {
               console.error(`Failed to load message feature '${file}'`, e);
           }
@@ -51,7 +50,7 @@ const database = new Database(config.db);
           }
         });
     }
-    
+
     // load checks
     for (let file of await fs.readdir(`${__dirname}/checks`)) {
         let path = `${__dirname}/checks/${file}`;
