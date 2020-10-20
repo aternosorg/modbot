@@ -26,6 +26,8 @@ const commands = [];
 /**
  *
  * @param {Object} options
+ * @param {Database} options.database
+ * @param {Discord.Client} options.bot
  * @param {Discord.Message} message
  * @return {Promise<void>}
  */
