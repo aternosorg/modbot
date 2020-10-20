@@ -19,8 +19,8 @@ class GuildConfig {
      * @param  {String}               [json.helpcenter]   subdomain of the zendesk help center
      * @param  {Boolean}              [json.invites]      allow invites (can be overwritten per channel)
      * @param  {Number}               [json.linkCooldown] cooldown on links in s (user based)
-     * @param  {Number}               [json.prefix] alternative prefix for command
-     * @return {type} description
+     * @param  {String}               [json.prefix]       alternative prefix for commands
+     * @return {GuildConfig}
      */
     constructor(id, json) {
         this.id = id;
