@@ -1,6 +1,6 @@
 const AutoResponse = require('../../util/AutoResponse');
 
-exports.event = async (database, message) => {
+exports.event = async (options, message) => {
   if (!message.guild || message.author.bot) {
     return;
   }

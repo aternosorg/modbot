@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 const Database = require('./lib/Database');
 const util = require('./lib/util');
-
 const fs = require('fs').promises;
 
 const config = require('./config');
@@ -27,20 +26,6 @@ const database = new Database(config.db);
 
     await bot.login(config.auth_token);
 
-    // load commands
-    const commands = [];
-    for (let file of await fs.readdir(`${__dirname}/commands`)) {
-        let path = `${__dirname}/commands/${file}`;
-        if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
-            continue;
-        }
-        try {
-            commands.push(require(path));
-        } catch (e) {
-            console.error(`Failed to load command '${file}'`, e);
-        }
-    }
-
     // FEATURES
     for (let folder of await fs.readdir(`${__dirname}/features`)) {
         let folderPath = `${__dirname}/features/${folder}`;
@@ -61,10 +46,11 @@ const database = new Database(config.db);
         }
         bot.on(folder, async (...args) => {
           for (let f of feature) {
-              await Promise.resolve(f.event(database, ...args));
+              await Promise.resolve(f.event({database,bot}, ...args));
           }
         });
     }
+
     // load checks
     for (let file of await fs.readdir(`${__dirname}/checks`)) {
         let path = `${__dirname}/checks/${file}`;
@@ -79,34 +65,6 @@ const database = new Database(config.db);
             console.error(`Failed to load feature '${file}'`, e);
         }
     }
-
-    // commands
-    bot.on('message', async (message) => {
-        if (!message.guild || message.author.bot) return;
-        let guild = await util.getGuildConfig(message);
-        const args = util.split(message.content,' ');
-        let prefix = util.startsWithMultiple(message.content.toLowerCase(),guild.prefix.toLowerCase(), config.prefix.toLowerCase());
-        if (!prefix) {
-          return ;
-        }
-        let cmd = args.shift().slice(prefix.length).toLowerCase();
-
-        for (let command of commands) {
-            if (command.names.includes(cmd)) {
-                try {
-                  await Promise.resolve(command.execute(message, args, database, bot));
-                } catch (e) {
-                  let embed = new Discord.MessageEmbed({
-                    color: util.color.red,
-                    description: `An error occurred while executing that command!`
-                  });
-                  await message.channel.send(embed);
-                  console.error(`An error occurred while executing command ${command.names[0]}:`,e);
-                }
-                break;
-            }
-        }
-    });
 
     // errors
     bot.on('error', async (error) => {

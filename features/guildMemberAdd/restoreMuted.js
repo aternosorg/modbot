@@ -1,7 +1,7 @@
 const util = require('../../lib/util');
 
-exports.event = async (database, member) => {
-  let result = await database.query("SELECT * FROM moderations WHERE action = 'mute' AND active = TRUE AND userid = ? AND guildid = ?",[member.id,member.guild.id]);
+exports.event = async (options, member) => {
+  let result = await options.database.query("SELECT * FROM moderations WHERE action = 'mute' AND active = TRUE AND userid = ? AND guildid = ?",[member.id,member.guild.id]);
   if (result) {
     let guildConfig = await util.getGuildConfig(member.guild);
     await member.roles.add(guildConfig.mutedRole);

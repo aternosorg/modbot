@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 
 let ignore = new Discord.Collection();
 const cache = 30*1000;
-exports.event = async (database, message) => {
+exports.event = async (options, message) => {
   if (!message.guild || message.author.bot || ignore.has(message.id)) {
     return;
   }
