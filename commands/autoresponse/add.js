@@ -16,7 +16,7 @@ module.exports = async (responses, message) => {
         return;
     }
 
-    if (!AutoResponse.triggerTypes.includes(type)) {
+    if (!AutoResponse.triggerTypes.includes(type.toLowerCase())) {
         return await message.channel.send("Not a valid trigger type!");
     }
 
@@ -26,6 +26,8 @@ module.exports = async (responses, message) => {
     if (content === null) {
         return;
     }
+
+    content = content.replace(/^`(.*)`$/,(a,b) => b);
 
     let flags;
     if (type === 'regex') {
