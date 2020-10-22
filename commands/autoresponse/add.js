@@ -16,7 +16,9 @@ module.exports = async (responses, message) => {
         return;
     }
 
-    if (!AutoResponse.triggerTypes.includes(type.toLowerCase())) {
+    type = type.toLowerCase();
+
+    if (!AutoResponse.triggerTypes.includes(type)) {
         return await message.channel.send("Not a valid trigger type!");
     }
 
