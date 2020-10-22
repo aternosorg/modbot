@@ -94,7 +94,7 @@ class AutoResponse {
         break;
 
       case "match":
-        if (message.content.toLowerCase() === this.trigger.content) {
+        if (message.content.toLowerCase() === this.trigger.content.toLowerCase()) {
           return true;
         }
         break;
