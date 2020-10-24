@@ -689,7 +689,7 @@ util.split = (str, ...splitAt) => {
  * @return {Discord.MessageEmbed}
  */
 util.usage = async(message, command) => {
-  const help = require('../commands/help.js');
+  const help = require('./commands/help.js');
   return await help.getUse(message, command);
 };
 
@@ -809,7 +809,7 @@ util.startsWithMultiple = (str, ...starts) => {
  * @returns {Promise<Discord.Message>}
  */
 util.delete = async(message, options) => {
-  const deleteLog = require('../features/messageDelete/deletion.js');
+  const deleteLog = require('./features/messageDelete/deletion.js');
   deleteLog.ignore(message.id);
   try {
     return await util.retry(message.delete, message, [options]);
