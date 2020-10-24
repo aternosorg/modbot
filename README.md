@@ -31,7 +31,7 @@ It was made using the [discord.js](https://discord.js.org/) Library and [node.js
    ```bash
    node bot.js
    ```
-9. To invite the bot to your server replace `ID` with the client ID of your application https://discordapp.com/oauth2/authorize?client_id=ID&scope=bot&permissions=11264 and open the link
+9. To invite the bot to your server replace `ID` with the client ID of your application https://discordapp.com/oauth2/authorize?client_id=ID&scope=bot&permissions=268446806 and open the link
 
 10. (optional) Set up a log channel by using `!logchannel <#channel>`
 
