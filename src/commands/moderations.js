@@ -1,6 +1,21 @@
 const util = require('../util.js');
 const Discord = require('discord.js');
 
+/**
+ *
+ * @typedef {Object} ModerationData
+ * @property {Number} id
+ * @property {module:"discord.js".Snowflake} guildid
+ * @property {module:"discord.js".Snowflake} userid
+ * @property {String} action
+ * @property {Number} created
+ * @property {Number} value
+ * @property {Number|null} expireTime
+ * @property {String} reason
+ * @property {module:"discord.js".Snowflake} moderator
+ * @property {boolean} active
+ */
+
 const command = {};
 
 command.description = 'List all moderations for a user';
@@ -55,7 +70,7 @@ command.execute = async (message, args, database, bot) => {
     });
     await message.channel.send(embed);
   }
-  for (let [key,moderation] of moderations.entries()) {
+  for (let [key,/** @type {ModerationData} */ moderation] of moderations.entries()) {
     if (text.length > 1800) {
       await send(i, key);
       text = '';

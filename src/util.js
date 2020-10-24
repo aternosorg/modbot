@@ -202,7 +202,7 @@ util.isUserMention = async(mention) => {
 util.isUser = async (id) => {
   let notUser;
   try {
-    await bot.users.fetch(id);
+    await bot.users.fetch(/** @type {Snowflake} */ id);
   } catch (e) {
     notUser = true;
   }
@@ -228,7 +228,7 @@ util.isChannelMention = (guild, mention) => {
  * @return {Boolean}
  */
 util.isChannel = (guild, id) => {
-  return !!guild.channels.resolve(id);
+  return !!guild.channels.resolve(/** @type {Snowflake} */ id);
 };
 
 /**
@@ -273,7 +273,7 @@ util.timeToSec = (time) => {
 
 /**
  * Converts seconds ("1d 5h 2s") to a time string. Supported time values: s, m, h, d, M, y
- * @param {Number} seconds time in seconds
+ * @param {Number|String} seconds time in seconds
  * @return {String} a time string ("1d 5h 2s")
  */
 util.secToTime = (seconds) => {
@@ -331,7 +331,7 @@ util.resolveGuild = async (guildInfo) => {
     return guildInfo;
   }
   try {
-    return await bot.guilds.fetch(guildInfo);
+    return await bot.guilds.fetch(/** @type {Snowflake} */ guildInfo);
   } catch (e) {
     return null;
   }
@@ -438,9 +438,9 @@ util.logMessageModeration = async (guildInfo, moderator, user, reason, insertId,
   .setFooter(`ID: ${user.id}`)
   .setTimestamp()
   .addFields(
-    { name: "User", value: `<@${user.id}>`, inline: true},
-    { name: "Moderator", value: `<@${moderator.id}>`, inline: true},
-    { name: "Reason", value: reason.substring(0, 1024), inline: true}
+        /** @type {any} */ { name: "User", value: `<@${user.id}>`, inline: true},
+        /** @type {any} */ { name: "Moderator", value: `<@${moderator.id}>`, inline: true},
+        /** @type {any} */ { name: "Reason", value: reason.substring(0, 1024), inline: true}
   );
   if (time) {
     logembed.addField("Duration", time, true);
@@ -497,8 +497,8 @@ util.logMessageChecks = async (guildInfo, user, reason, insertId, type) => {
   .setFooter(`ID: ${user.id}`)
   .setTimestamp()
   .addFields(
-    { name: "User", value: `<@${user.id}>`, inline: true},
-    { name: "Reason", value: reason.substring(0, 512), inline: true}
+      /** @type {any}*/ { name: "User", value: `<@${user.id}>`, inline: true},
+      /** @type {any}*/ { name: "Reason", value: reason.substring(0, 512), inline: true}
   );
 
   return await guild.channels.resolve(guildConfig.logChannel).send(logembed);
@@ -619,7 +619,7 @@ util.refreshChannelConfig  = async (channelId) => {
 util.isMod = async (member) => {
   let guildConfig = await util.getGuildConfig(member.guild);
   for (let [key] of member.roles.cache) {
-    if (guildConfig.isModRole(key))
+    if (guildConfig.isModRole(/** @type {module:"discord.js".Snowflake} */ key))
       return true;
   }
   return false;
@@ -703,14 +703,14 @@ util.usage = async(message, command) => {
 */
 util.getMessages = async (channel, options) => {
   if (options.before) {
-    return messagesBefore(channel, options.before, options.limit);
+    return messagesBefore(channel, /** @type {module:"discord.js".Snowflake} */ options.before, options.limit);
   }
   else if (options.after) {
-    return messagesAfter(channel, options.before, options.limit);
+    return messagesAfter(channel, /** @type {module:"discord.js".Snowflake} */ options.before, options.limit);
   }
   else if (options.around) {
-    let before = await messagesBefore(channel, options.around, Math.floor(options.limit / 2));
-    return before.concat(await messagesAfter(channel, options.around, Math.floor(options.limit / 2)));
+    let before = await messagesBefore(channel, /** @type {module:"discord.js".Snowflake} */ options.around, Math.floor(options.limit / 2));
+    return before.concat(await messagesAfter(channel, /** @type {module:"discord.js".Snowflake} */ options.around, Math.floor(options.limit / 2)));
   }
   else {
     return messagesBefore(channel, undefined, options.limit);
@@ -729,7 +729,7 @@ async function messagesBefore(channel, message, limit) {
   let before = message;
   let messages = new Discord.Collection();
   for (let remaining = limit; remaining > 0; remaining -= 100) {
-    let res = await channel.messages.fetch({
+    let res = await channel.messages.fetch( /** @type {module:"discord.js".Snowflake} */{
       before: before,
       limit: remaining > 100 ? 100: remaining
     }, false);
@@ -751,7 +751,7 @@ async function messagesAfter(channel, message, limit) {
   let after = message;
   let messages = new Discord.Collection();
   for (let remaining = limit; remaining > 0; remaining -= 100) {
-    let res = await channel.messages.fetch({
+    let res = await channel.messages.fetch(/** @type {module:"discord.js".Snowflake} */ {
       after: after,
       limit: remaining > 100 ? 100: remaining
     }, false);
@@ -780,10 +780,10 @@ util.ignoresAutomod = async (message) => {
  * @return {Promise.<Array.<module:"discord.js".Collection.<module:"discord.js".Message>>>} deleted messages
  */
 util.bulkDelete = async (channel, messages) => {
-  messages = messages.keyArray();
+  const keys = messages.keyArray();
   let requests = [];
-  for (let start = 0; start < messages.length; start += 100) {
-    requests.push(channel.bulkDelete(messages.slice(start,start+100)));
+  for (let start = 0; start < keys.length; start += 100) {
+    requests.push(channel.bulkDelete(keys.slice(start,start+100)));
   }
   return Promise.all(requests);
 };
@@ -791,7 +791,7 @@ util.bulkDelete = async (channel, messages) => {
 /**
  * Does the string start with any of the substrings
  * @param {String}    str     String to test
- * @param {String[]}  starts  possible starts
+ * @param {String}  starts  possible starts
  * @return {String|Boolean} first matching string or false
  */
 util.startsWithMultiple = (str, ...starts) => {

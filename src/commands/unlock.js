@@ -44,7 +44,7 @@ command.execute = async (message, args, database, bot) => {
         continue;
       }
 
-      if (await unlock(channel, everyone, embed))
+      if (await unlock(/** @type {module:"discord.js".TextChannel} */ channel, everyone, embed))
         updates.push(`<#${channel.id}>`);
     }
     if (updates.length) {
@@ -63,12 +63,12 @@ command.execute = async (message, args, database, bot) => {
  * unlock - unlocks a channel
  *
  * @param  {module:"discord.js".TextChannel}          channel  the channel to unlock
- * @param  {module:"discord.js".Snowflake}            everyone the id of the @everyone role
+ * @param  {Snowflake}                                everyone the id of the @everyone role
  * @param  {module:"discord.js".MessageEmbed|String}  message  the message to send to the channel
  * @return {Boolean}                      was the channel locked?
  */
 async function unlock(channel, everyone, message) {
-  let config = await util.getChannelConfig(channel.id);
+  let config = await util.getChannelConfig(/** @type {module:"discord.js".Snowflake} */ channel.id);
 
   if (Object.keys(config.lock).length === 0) {
     return false;

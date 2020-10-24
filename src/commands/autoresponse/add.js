@@ -82,7 +82,7 @@ module.exports = async (responses, message) => {
         options.channels = await util.channelMentions(message.guild,channels.split(" "));
     }
 
-    const response = new AutoResponse(message.guild.id, options);
+    const response = new AutoResponse(/** @type {module:"discord.js".Snowflake} */message.guild.id, options);
     response.id = await response.save();
 
     await message.channel.send(response.embed("Added new autoresponse",util.color.green));

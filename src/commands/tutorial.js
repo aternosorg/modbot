@@ -31,7 +31,7 @@ command.execute = async (message, args, database, bot) => {
     console.log(`Refreshing video cache in ${message.guild.name}...`);
     // noinspection JSValidateTypes
     let service = google.youtube('v3');
-    let response = await service.playlistItems.list({
+    let response = await service.playlistItems.list(/** @type {Params$Resource$Playlists$List} */ {
       auth: config.googleapikey,
       part: 'snippet,contentDetails,id',
       playlistId: guildConfig.playlist,

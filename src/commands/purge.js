@@ -66,7 +66,7 @@ command.execute = async (message, args, database, bot) => {
     return ;
   }
 
-  let messages = await util.getMessages(message.channel,{
+  let messages = await util.getMessages(message.channel,/** @type {module:"discord.js".ChannelLogsQueryOptions} */ {
     before: message.id,
     limit: filter.count || 100
   });
@@ -148,8 +148,8 @@ command.execute = async (message, args, database, bot) => {
   .setAuthor(`${message.author.username}#${message.author.discriminator} purged ${messages.size} ${messages.size === 1 ? 'message' : 'messages'}.`)
   .setTimestamp()
   .addFields(
-    { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
-    { name: "Channel", value: `<#${message.channel.id}>`, inline: true}
+      /** @type {any} */ { name: "Moderator", value: `<@${message.author.id}>`, inline: true},
+      /** @type {any} */ { name: "Channel", value: `<#${message.channel.id}>`, inline: true}
   );
   if (filter.users.length) {
     let s = '';
