@@ -13,7 +13,7 @@ class ChannelConfig {
      * @param  {Number}           [json.mode]     ip automod mode (0 => disabled, 1 => required, 2 => forbidden)
      * @param  {Boolean}          [json.invites]  allow invites
      * @param  {Object}           [json.lock]     permissions before locking (only affected perms)
-     * @return {channelConfig} the config of the channel
+     * @return {ChannelConfig} the config of the channel
      */
 
     constructor(id, json) {

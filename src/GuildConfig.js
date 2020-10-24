@@ -1,5 +1,4 @@
 const config = require('../config.json');
-const Discord = require('discord.js');
 
 /**
  * Class representing the config of a guild
@@ -9,11 +8,11 @@ class GuildConfig {
     /**
      * Constructor - create a guild config
      *
-     * @param  {Discord.Snowflake}    id                  guild id
+     * @param  {module:"discord.js".Snowflake}    id                  guild id
      * @param  {Object}               [json]              options
-     * @param  {Discord.Snowflake}    [json.logChannel]   id of the log channel
-     * @param  {Discord.Snowflake}    [json.mutedRole]    id of the muted role
-     * @param  {Discord.Snowflake[]}  [json.modRoles]     array with ids of the moderator roles
+     * @param  {module:"discord.js".Snowflake}    [json.logChannel]   id of the log channel
+     * @param  {module:"discord.js".Snowflake}    [json.mutedRole]    id of the muted role
+     * @param  {module:"discord.js".Snowflake[]}  [json.modRoles]     array with ids of the moderator roles
      * @param  {Object}               [json.punishments]  automatic punishments for strikes
      * @param  {String}               [json.playlist]     id of youtube playlist for tutorials
      * @param  {String}               [json.helpcenter]   subdomain of the zendesk help center
@@ -53,7 +52,7 @@ class GuildConfig {
     /**
      * Is this a moderator role?
      *
-     * @param  {Discord.Snowflake} role role id
+     * @param  {module:"discord.js".Snowflake} role role id
      * @return {Boolean}
      */
     isModRole(role) {
@@ -63,7 +62,7 @@ class GuildConfig {
     /**
      * Add this role to the moderator roles
      *
-     * @param  {Discord.Snowflake} role role id
+     * @param  {module:"discord.js".Snowflake} role role id
      */
     addModRole(role) {
       this.modRoles.push(role);
@@ -72,12 +71,12 @@ class GuildConfig {
     /**
      * Remove this role from the moderator roles
      *
-     * @param  {Discord.Snowflake} role role id
+     * @param  {module:"discord.js".Snowflake} role role id
      */
     removeModRole(role) {
       let newRoles = [];
       for (let modRole of this.modRoles) {
-        if (modRole != role)
+        if (modRole !== role)
           newRoles.push(modRole);
       }
       this.modRoles = newRoles;

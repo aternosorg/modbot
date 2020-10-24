@@ -33,6 +33,7 @@ command.execute = async (message, args, database, bot) => {
     delete guildConfig.playlist;
   }
   else {
+    // noinspection JSValidateTypes
     let service = google.youtube('v3');
     let response = await service.playlists.list({
       auth: config.googleapikey,

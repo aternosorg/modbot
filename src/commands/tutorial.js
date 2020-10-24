@@ -29,6 +29,7 @@ command.execute = async (message, args, database, bot) => {
 
   if(!videos.has(message.guild.id)){
     console.log(`Refreshing video cache in ${message.guild.name}...`);
+    // noinspection JSValidateTypes
     let service = google.youtube('v3');
     let response = await service.playlistItems.list({
       auth: config.googleapikey,

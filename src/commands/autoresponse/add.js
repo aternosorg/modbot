@@ -1,11 +1,10 @@
 const AutoResponse = require('../../AutoResponse');
-const Discord = require("discord.js");
 const util = require('../../util.js');
 
 /**
  * add an autoresponse
  * @param {Object} responses
- * @param {Discord.Message} message
+ * @param {module:"discord.js".Message} message
  * @returns {Promise<void>}
  */
 module.exports = async (responses, message) => {
@@ -51,7 +50,10 @@ module.exports = async (responses, message) => {
             type: type,
             content: content,
             flags: flags
-        }
+        },
+        response: null,
+        global: null,
+        channels: []
     };
 
     await message.channel.send("Please enter your response!");

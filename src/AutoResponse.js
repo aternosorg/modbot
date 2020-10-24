@@ -9,7 +9,7 @@ const Discord = require('discord.js');
  * @property {String} type the type of the trigger possible types:
  * * regex
  * * include
- * * matche
+ * * match
  * @property {String} content the string or regex
  * @property {String} [flags] flags for regex's
  */
@@ -28,13 +28,13 @@ const cacheDuration = 10*60*1000;
 
 /**
  * channel wide autoresponses
- * @type {Discord.Collection}
+ * @type {module:"discord.js".Collection}
  */
 const channelResponses = new Discord.Collection();
 
 /**
  * guild wide autoresponses
- * @type {Discord.Collection}
+ * @type {module:"discord.js".Collection}
  */
 const guildResponses = new Discord.Collection();
 
@@ -47,12 +47,12 @@ class AutoResponse {
 
   /**
    * constructor - create a channel config
-   * @param {Discord.Snowflake}     gid               guild ID
+   * @param {module:"discord.js".Snowflake}     gid               guild ID
    * @param {Object}                json              options
    * @param {AutoResponseTrigger}   json.trigger      filter that triggers the response
    * @param {String}                json.response     message to send to the channel
    * @param {Boolean}               json.global       does this apply to all channels in this guild
-   * @param {Discord.Snowflake[]}   [json.channels]   channels that this applies to
+   * @param {module:"discord.js".Snowflake[]}   [json.channels]   channels that this applies to
    * @param {Number}                [id]              id in DB
    * @return {AutoResponse} the auto response
    */
@@ -82,7 +82,7 @@ class AutoResponse {
 
   /**
    * matches - does this message match this auto-response
-   * @param   {Discord.Message} message
+   * @param   {module:"discord.js".Message} message
    * @returns {boolean}
    */
   matches(message) {
@@ -158,9 +158,10 @@ class AutoResponse {
    * generate an Embed displaying the info of this response
    * @param {String}        title
    * @param {Number}        color
-   * @returns {Discord.MessageEmbed}
+   * @returns {module:"discord.js".MessageEmbed}
    */
   embed(title, color) {
+    // noinspection JSCheckFunctionSignatures
     return new Discord.MessageEmbed()
         .setTitle(title + ` [${this.id}]`)
         .setColor(color)
@@ -182,9 +183,9 @@ class AutoResponse {
   /**
    * Get responses for a channel
    * @async
-   * @param {Discord.Snowflake} channelId
-   * @param {Discord.Snowflake} guildId
-   * @return {Discord.Collection<Number,AutoResponse>}
+   * @param {module:"discord.js".Snowflake} channelId
+   * @param {module:"discord.js".Snowflake} guildId
+   * @return {module:"discord.js".Collection<Number,AutoResponse>}
    */
   static async getAutoResponses (channelId, guildId) {
 
@@ -202,8 +203,8 @@ class AutoResponse {
   /**
    * Get all responses for a guild
    * @async
-   * @param {Discord.Snowflake} guildId
-   * @return {Discord.Collection<Number,AutoResponse>}
+   * @param {module:"discord.js".Snowflake} guildId
+   * @return {module:"discord.js".Collection<Number,AutoResponse>}
    */
   static async getAllAutoResponses (guildId) {
 
@@ -225,7 +226,7 @@ class AutoResponse {
   /**
    * Reload responses cache for a channel
    * @async
-   * @param {Discord.Snowflake} guildId
+   * @param {module:"discord.js".Snowflake} guildId
    */
   static async refreshGuildResponses(guildId) {
     const result = await database.queryAll("SELECT * FROM responses WHERE guildid = ? AND global = TRUE", [guildId]);
@@ -249,7 +250,7 @@ class AutoResponse {
   /**
    * Reload responses cache for a channel
    * @async
-   * @param {Discord.Snowflake} channelId
+   * @param {module:"discord.js".Snowflake} channelId
    */
   static async refreshChannelResponses(channelId) {
     const result = await database.queryAll("SELECT * FROM responses WHERE channels LIKE ?", [`%${channelId}%`]);

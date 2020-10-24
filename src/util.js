@@ -8,7 +8,7 @@ const ChannelConfig = require('./ChannelConfig.js');
 * * A Message object
 * * A Guild object
 * * A Snowflake
-* @typedef {Discord.Message|Discord.Guild|Discord.Snowflake} GuildInfo
+* @typedef {module:"discord.js".Message|module:"discord.js".Guild|module:"discord.js".Snowflake} GuildInfo
 */
 
 /**
@@ -19,13 +19,13 @@ const cacheDuration = 10*60*1000;
 
 /**
  * Guilds and their configs
- * @type {Discord.Collection}
+ * @type {module:"discord.js".Collection}
  */
 const guilds = new Discord.Collection();
 
 /**
  * Channels and their configs
- * @type {Discord.Collection}
+ * @type {module:"discord.js".Collection}
  */
 const channels = new Discord.Collection();
 
@@ -37,7 +37,7 @@ let database;
 
 /**
  * Discord client
- * @type {Discord.Client}
+ * @type {module:"discord.js".Client}
  */
 let bot;
 
@@ -45,8 +45,8 @@ const util = {};
 
 /**
  * Init - saves database and discord client
- * @param  {Database}       db      the database storing moderations, guilds, channels etc.
- * @param  {Discord.Client} client  the Discord client of the bot
+ * @param  {Database}                   db      the database storing moderations, guilds, channels etc.
+ * @param  {module:"discord.js".Client} client  the Discord client of the bot
  */
 util.init = (db, client) => {
   database = db;
@@ -134,11 +134,12 @@ util.retry = async (fn, thisArg, args = [], maxRetries = 5, returnValMatch = nul
 
 /**
  * Converts a channel mention (<#channelId>) or channel id to a channel id
- * @param {String|Discord.Snowflake} mention channel mention (<#channelId>) or channel id
- * @return {Discord.Snowflake|null} channel id or null
+ * @param {String|module:"discord.js".Snowflake}  mention channel mention (<#channelId>) or channel id
+ * @return {module:"discord.js".Snowflake|null}   channel id or null
  */
 util.channelMentionToId = (mention) => {
   if (/^<#\d+>$/.test(mention)) {
+    // noinspection JSValidateTypes
     return mention.match(/^<#(\d+)>$/)[1];
   }
   else if(/^\d+$/.test(mention)) {
@@ -151,11 +152,12 @@ util.channelMentionToId = (mention) => {
 
 /**
  * Converts a role mention (<@&roleId>) or role id to a role id
- * @param {String|Discord.Snowflake} mention role mention (<@&roleId>) or role id
- * @return {Discord.Snowflake|null} role id or null
+ * @param {String|module:"discord.js".Snowflake}  mention role mention (<@&roleId>) or role id
+ * @return {module:"discord.js".Snowflake|null}   role id or null
  */
 util.roleMentionToId = (mention) => {
   if (/^<@&\d+>$/.test(mention)) {
+    // noinspection JSValidateTypes
     return mention.match(/^<@&?(\d+)>$/)[1];
   }
   else if(/^\d+$/.test(mention)) {
@@ -168,11 +170,12 @@ util.roleMentionToId = (mention) => {
 
 /**
  * Converts a user mention (<@!userId> or <@userId>) or user id to a user id
- * @param {String|Discord.Snowflake} mention user mention (<@!userId> or <@userId>) or user id
- * @return {Discord.Snowflake|null} user id or null
+ * @param {String|module:"discord.js".Snowflake}  mention user mention (<@!userId> or <@userId>) or user id
+ * @return {module:"discord.js".Snowflake|null}   user id or null
  */
 util.userMentionToId = (mention) => {
   if (/^<@!?\d+>$/.test(mention)) {
+    // noinspection JSValidateTypes
     return mention.match(/^<@!?(\d+)>$/)[1];
   }
   else if(/^\d+$/.test(mention)) {
@@ -186,18 +189,18 @@ util.userMentionToId = (mention) => {
 /**
  * Is this mention a valid user mention?
  * @async
- * @param {String|Discord.Snowflake} mention user mention (<@!userId> or <@userId>) or user id
- * @return {Boolean}
+ * @param {String|module:"discord.js".Snowflake} mention user mention (<@!userId> or <@userId>) or user id
+ * @return {Promise<Boolean>}
  */
 util.isUserMention = async(mention) => {
-  return await util.isUser(util.userMentionToId(mention));
+  return util.isUser(util.userMentionToId(mention));
 };
 
 /**
  * Is this id a valid user id?
  * @async
- * @param {Discord.Snowflake} id user id
- * @return {Boolean}
+ * @param {module:"discord.js".Snowflake} id user id
+ * @return {Promise<Boolean>}
  */
 util.isUser = async (id) => {
   let notUser;
@@ -206,29 +209,29 @@ util.isUser = async (id) => {
   } catch (e) {
     notUser = true;
   }
-  return notUser ? false : true;
+  return !notUser;
 };
 
 /**
  * Is this mention a valid channel mention?
  * @async
- * @param {Discord.Guild} guild the guild that should have this channel
- * @param {String|Discord.Snowflake} mention channel mention (<#channelId>) or channel id
- * @return {Boolean}
+ * @param {module:"discord.js".Guild}             guild the guild that should have this channel
+ * @param {String|module:"discord.js".Snowflake}  mention channel mention (<#channelId>) or channel id
+ * @return {Promise<Boolean>}
  */
 util.isChannelMention = async(guild, mention) => {
-  return await util.isChannel(guild, util.channelMentionToId(mention));
+  return util.isChannel(guild, util.channelMentionToId(mention));
 };
 
 /**
  * Is this id a valid channel id?
  * @async
- * @param {Discord.Guild} guild the guild that should have this channel
- * @param {Discord.Snowflake} id channel id
+ * @param {module:"discord.js".Guild}     guild the guild that should have this channel
+ * @param {module:"discord.js".Snowflake} id channel id
  * @return {Boolean}
  */
-util.isChannel = async (guild, id) => {
-  return await guild.channels.resolve(id) ? true : false;
+util.isChannel = (guild, id) => {
+  return !!guild.channels.resolve(id);
 };
 
 /**
@@ -321,7 +324,7 @@ util.isTime = (word) => {
  * Resolves a guildInfo to a guild
  * @async
  * @param {GuildInfo} guildInfo
- * @return {Discord.Guild}
+ * @return {module:"discord.js".Guild}
  */
 util.resolveGuild = async (guildInfo) => {
   if (guildInfo instanceof Discord.Message){
@@ -343,7 +346,7 @@ util.resolveGuild = async (guildInfo) => {
  * @async
  * @param {GuildInfo} guildInfo guild
  * @param {String}    message   message to log
- * @return {Discord.Message} log message
+ * @return {module:"discord.js".Message} log message
  */
 util.logMessage = async (guildInfo, message) => {
   let guild = await util.resolveGuild(guildInfo);
@@ -361,33 +364,33 @@ util.logMessage = async (guildInfo, message) => {
  * @async
  * @param message deleted message
  * @param reason  reason for the deletion
- * @return {Discord.Message} log message
+ * @return {Promise<module:"discord.js".Message>} log message
  */
 util.logMessageDeletion = async (message, reason) => {
-  return await util.logMessageEmbed(message, `Message in <#${message.channel.id}> deleted`, {
-      footer: {
-        text: `${message.author.username}#${message.author.discriminator}`,
-        iconURL: message.author.avatarURL()
-      },
-      color: util.color.orange,
-      fields: [{
-        name: 'Message',
-        value: message.content.substring(0,1024)
-      },
+  return util.logMessageEmbed(message, `Message in <#${message.channel.id}> deleted`, {
+    footer: {
+      text: `${message.author.username}#${message.author.discriminator}`,
+      iconURL: message.author.avatarURL()
+    },
+    color: util.color.orange,
+    fields: [{
+      name: 'Message',
+      value: message.content.substring(0, 1024)
+    },
       {
-        name:'Reason',
-        value: reason.substring(0,512)
+        name: 'Reason',
+        value: reason.substring(0, 512)
       }]
-    });
+  });
 };
 
 /**
  * Logs a message and an embed to the guilds log channel (if specified)
  * @async
- * @param {GuildInfo}                   guildInfo guild
- * @param {String}                      message   message to log
- * @param {Discord.MessageEmbed|Object} embed     embed to log
- * @return {Discord.Message} log message
+ * @param {GuildInfo}                               guildInfo guild
+ * @param {String}                                  message   message to log
+ * @param {module:"discord.js".MessageEmbed|Object} embed     embed to log
+ * @return {module:"discord.js".Message} log message
  */
 util.logMessageEmbed = async (guildInfo, message, embed) => {
   let guild = await util.resolveGuild(guildInfo);
@@ -403,9 +406,9 @@ util.logMessageEmbed = async (guildInfo, message, embed) => {
 /**
  * Sends an embed to the channel
  * @async
- * @param {Discord.TextBasedChannel}    channel
- * @param {Discord.MessageEmbed|Object} options options for the embed
- * @return {Discord.Message}
+ * @param {module:"discord.js".TextBasedChannel}    channel
+ * @param {module:"discord.js".MessageEmbed|Object} options options for the embed
+ * @return {module:"discord.js".Message}
  */
 util.sendEmbed = async (channel, options) => {
   return await channel.send(new Discord.MessageEmbed(options));
@@ -415,15 +418,15 @@ util.sendEmbed = async (channel, options) => {
  * Log a moderation
  * @async
  * @param {GuildInfo}     guildInfo
- * @param {Discord.User}  moderator user that started the moderation
- * @param {Discord.User}  user      user that was moderated
- * @param {String}        reason    reason for the moderation
- * @param {Number}        insertId  id in the moderations table of the db
- * @param {String}        type      moderation action
- * @param {String}        [time]    duration of the moderation as a time string
- * @param {Number}        [amount]  amount of strikes that were given/pardoned
- * @param {Number}        [total]   total strike count
- * @return {Discord.Message}
+ * @param {module:"discord.js".User}  moderator user that started the moderation
+ * @param {module:"discord.js".User}  user      user that was moderated
+ * @param {String}        reason      reason for the moderation
+ * @param {Number}        insertId    id in the moderations table of the db
+ * @param {String}        type        moderation action
+ * @param {String}        [time]      duration of the moderation as a time string
+ * @param {Number}        [amount]    amount of strikes that were given/pardoned
+ * @param {Number}        [total]     total strike count
+ * @return {module:"discord.js".Message}
  */
 util.logMessageModeration = async (guildInfo, moderator, user, reason, insertId, type, time, amount, total) => {
   let guild = await util.resolveGuild(guildInfo);
@@ -455,12 +458,12 @@ util.logMessageModeration = async (guildInfo, moderator, user, reason, insertId,
 /**
  * Respond with an embed
  * @async
- * @param {Discord.Channel} channel
- * @param {Discord.User}    user    user that was moderated
- * @param {String}          reason  reason for the moderation
- * @param {String}          type    moderation action
- * @param {String}          [time]  duration of the moderation as a time string
- * @return {Discord.Message}
+ * @param {module:"discord.js".TextChannel} channel
+ * @param {module:"discord.js".User}    user    user that was moderated
+ * @param {String}                      reason  reason for the moderation
+ * @param {String}                      type    moderation action
+ * @param {String}                      [time]  duration of the moderation as a time string
+ * @return {module:"discord.js".Message}
  */
 util.chatSuccess = async (channel, user, reason, type, time) => {
   let embedColor = util.color.resolve(type);
@@ -478,12 +481,12 @@ util.chatSuccess = async (channel, user, reason, type, time) => {
 /**
  * Log automatic unbans etc.
  * @async
- * @param {GuildInfo}     guildInfo
- * @param {Discord.User}  user      user that was moderated
- * @param {String}        reason    reason for the moderation
- * @param {Number}        insertId  id in the moderations table of the db
- * @param {String}        type      moderation action
- * @return {Discord.Message}
+ * @param {GuildInfo}                 guildInfo
+ * @param {module:"discord.js".User}  user      user that was moderated
+ * @param {String}                    reason    reason for the moderation
+ * @param {Number}                    insertId  id in the moderations table of the db
+ * @param {String}                    type      moderation action
+ * @return {module:"discord.js".Message}
  */
 util.logMessageChecks = async (guildInfo, user, reason, insertId, type) => {
   let guild = await util.resolveGuild(guildInfo);
@@ -525,7 +528,7 @@ util.getGuildConfig = async (guildInfo) => {
 /**
 * Get a channels config from cache or db
 * @async
-* @param {Discord.Snowflake} channelId
+* @param {module:"discord.js".Snowflake} channelId
 * @return {ChannelConfig}
 */
 util.getChannelConfig = async (channelId) => {
@@ -579,7 +582,7 @@ util.saveChannelConfig = async (config) => {
 /**
  * Reload guild config cache for a guild
  * @async
- * @param {Discord.Snowflake} guildId the guild's id
+ * @param {module:"discord.js".Snowflake} guildId the guild's id
  * @return {Boolean} was there a config for this guild
  */
 util.refreshGuildConfig = async(guildId) => {
@@ -596,7 +599,7 @@ util.refreshGuildConfig = async(guildId) => {
 /**
  * Reload channel config cache for a channel
  * @async
- * @param {Discord.Snowflake} channelId the channel's id
+ * @param {module:"discord.js".Snowflake} channelId the channel's id
  * @return {Boolean} was there a config for this channel
  */
 util.refreshChannelConfig  = async (channelId) => {
@@ -613,7 +616,7 @@ util.refreshChannelConfig  = async (channelId) => {
 /**
  * Is this member a mod
  * @async
- * @param {Discord.Member} member member object of the user in the specific guild
+ * @param {module:"discord.js".GuildMember} member member object of the user in the specific guild
  * @return {Boolean}
  */
 util.isMod = async (member) => {
@@ -628,12 +631,12 @@ util.isMod = async (member) => {
 /**
  * Save a moderation to the database
  * @async
- * @param {Discord.Snowflake} guildId       id of the guild
- * @param {Discord.Snowflake} userId        id of the moderated user
- * @param {String}            action        moderation type
- * @param {String}            reason        reason for the moderation
- * @param {Number}            [duration]    duration of the moderation
- * @param {Discord.Snowflake} [moderatorId] id of the moderator
+ * @param {module:"discord.js".Snowflake} guildId       id of the guild
+ * @param {module:"discord.js".Snowflake} userId        id of the moderated user
+ * @param {String}                        action        moderation type
+ * @param {String}                        reason        reason for the moderation
+ * @param {Number}                        [duration]    duration of the moderation
+ * @param {module:"discord.js".Snowflake} [moderatorId] id of the moderator
  * @return {Number} the id of the moderation
  */
 util.moderationDBAdd = async (guildId, userId, action, reason, duration, moderatorId) => {
@@ -685,8 +688,9 @@ util.split = (str, ...splitAt) => {
 
 /**
  * Get an Embed showing the usage of a command
- * @param {String} command the name of the command
- * @return {Discord.MessageEmbed}
+ * @param {module:"discord.js".Message} message
+ * @param {String}                      command the name of the command
+ * @return {module:"discord.js".MessageEmbed}
  */
 util.usage = async(message, command) => {
   const help = require('./commands/help.js');
@@ -696,33 +700,33 @@ util.usage = async(message, command) => {
 /**
 * Fetch messages (even more than 100) from a channel
 * @async
-* @param {Discord.TextChannel|Discord.DMChannel} channel
-* @param {Discord.ChannelLogsQueryOptions}       options
-* @return {Discord.Collection} fetched messages
+* @param {module:"discord.js".TextChannel|module:"discord.js".DMChannel}  channel
+* @param {module:"discord.js".ChannelLogsQueryOptions}                    options
+* @return {Promise<module:"discord.js".Collection>} fetched messages
 */
 util.getMessages = async (channel, options) => {
   if (options.before) {
-    return await messagesBefore(channel, options.before, options.limit);
+    return messagesBefore(channel, options.before, options.limit);
   }
   else if (options.after) {
-    return await messagesAfter(channel, options.before, options.limit);
+    return messagesAfter(channel, options.before, options.limit);
   }
   else if (options.around) {
     let before = await messagesBefore(channel, options.around, Math.floor(options.limit / 2));
     return before.concat(await messagesAfter(channel, options.around, Math.floor(options.limit / 2)));
   }
   else {
-    return await messagesBefore(channel, undefined, options.limit);
+    return messagesBefore(channel, undefined, options.limit);
   }
 };
 
 /**
  * Fetch messages before this message
  * @async
- * @param  {Discord.TextChannel|Discord.DMChannel}  channel
- * @param  {Discord.Snowflake}                      message last message
- * @param  {Number}                                 limit   max message count
- * @return {Discord.Collection} fetched messages
+ * @param  {module:"discord.js".TextChannel|module:"discord.js".DMChannel}  channel
+ * @param  {module:"discord.js".Snowflake}                                  message last message
+ * @param  {Number}                                                         limit   max message count
+ * @return {module:"discord.js".Collection} fetched messages
  */
 async function messagesBefore(channel, message, limit) {
   let before = message;
@@ -741,10 +745,10 @@ async function messagesBefore(channel, message, limit) {
 /**
  * Fetch messages after this message
  * @async
- * @param  {Discord.TextChannel|Discord.DMChannel}  channel
- * @param  {Discord.Snowflake}                      message first message
- * @param  {Number}                                 limit   max message count
- * @return {Discord.Collection} fetched messages
+ * @param  {module:"discord.js".TextChannel|module:"discord.js".DMChannel}  channel
+ * @param  {module:"discord.js".Snowflake}                      message first message
+ * @param  {Number}                                             limit   max message count
+ * @return {module:"discord.js".Collection} fetched messages
  */
 async function messagesAfter(channel, message, limit) {
   let after = message;
@@ -764,7 +768,7 @@ async function messagesAfter(channel, message, limit) {
 /**
  * Is this message ignored by auto-moderation
  * @async
- * @param {Discord.Message} message
+ * @param {module:"discord.js".Message} message
  * @return {Boolean}
  */
 util.ignoresAutomod = async (message) => {
@@ -774,9 +778,9 @@ util.ignoresAutomod = async (message) => {
 /**
  * Delete messages (even more than 100)
  * @async
- * @param {Discord.TextBasedChannel}              channel
- * @param {Discord.Collection.<Discord.Message>}  messages messages to delete
- * @return {Promise.<Array.<Discord.Collection.<Discord.Message>>>} deleted messages
+ * @param {module:"discord.js".TextBasedChannel}                          channel
+ * @param {module:"discord.js".Collection.<module:"discord.js".Message>}  messages messages to delete
+ * @return {Promise.<Array.<module:"discord.js".Collection.<module:"discord.js".Message>>>} deleted messages
  */
 util.bulkDelete = async (channel, messages) => {
   messages = messages.keyArray();
@@ -804,9 +808,9 @@ util.startsWithMultiple = (str, ...starts) => {
 
 /**
  * delete - deletes a message and ignores it in message logs
- * @param {Discord.Message} message
- * @param {Object} [options] options to pass to the delete function
- * @returns {Promise<Discord.Message>}
+ * @param {module:"discord.js".Message} message
+ * @param {Object}                      [options] options to pass to the delete function
+ * @returns {Promise<module:"discord.js".Message>}
  */
 util.delete = async(message, options) => {
   const deleteLog = require('./features/messageDelete/deletion.js');
@@ -824,7 +828,7 @@ util.delete = async(message, options) => {
 /**
  * get all mentioned users
  * @param {String[]}  mentions array of strings with a user mention or id
- * @return {Discord.Snowflake[]} user ids
+ * @return {module:"discord.js".Snowflake[]} user ids
  */
 util.userMentions = async(mentions) => {
   let res = [];
@@ -836,9 +840,9 @@ util.userMentions = async(mentions) => {
 
 /**
  * get all mentioned channels
- * @param {Discord.Guild} guild the guild that should have this channel
- * @param {String[]}  mentions array of strings with a channel mention or id
- * @return {Discord.Snowflake[]} channel ids
+ * @param {module:"discord.js".Guild} guild     the guild that should have this channel
+ * @param {String[]}                  mentions  array of strings with a channel mention or id
+ * @return {module:"discord.js".Snowflake[]} channel ids
  */
 util.channelMentions = async(guild, mentions) => {
   let res = [];

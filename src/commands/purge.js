@@ -58,7 +58,6 @@ command.execute = async (message, args, database, bot) => {
       else {
         filter.count = parseInt(arg);
       }
-      continue;
     }
   }
 

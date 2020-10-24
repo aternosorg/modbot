@@ -39,7 +39,7 @@ command.execute = async (message, args, database, bot) => {
     let embed = new Discord.MessageEmbed().setTitle('This channel has been unlocked!').setDescription(args.join(' ')).setColor(util.color.green);
     channels = bot.guilds.cache.get(message.guild.id).channels.cache;
     let updates = [];
-    for(let [id, channel] of channels) {
+    for(let [, channel] of channels) {
       if (!(channel instanceof Discord.TextChannel)) {
         continue;
       }
@@ -62,9 +62,9 @@ command.execute = async (message, args, database, bot) => {
 /**
  * unlock - unlocks a channel
  *
- * @param  {Discord.TextChannel}          channel  the channel to unlock
- * @param  {Discord.Snowflake}            everyone the id of the @everyone role
- * @param  {Discord.MessageEmbed|String}  message  the message to send to the channel
+ * @param  {module:"discord.js".TextChannel}          channel  the channel to unlock
+ * @param  {module:"discord.js".Snowflake}            everyone the id of the @everyone role
+ * @param  {module:"discord.js".MessageEmbed|String}  message  the message to send to the channel
  * @return {Boolean}                      was the channel locked?
  */
 async function unlock(channel, everyone, message) {

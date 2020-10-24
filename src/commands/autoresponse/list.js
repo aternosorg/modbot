@@ -1,7 +1,7 @@
 /**
  * list auto responses
  * @param {Object} responses
- * @param {Discord.Message} message
+ * @param {module:"discord.js".Message} message
  * @returns {Promise<void>}
  */
 module.exports = async (responses, message) => {
