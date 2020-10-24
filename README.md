@@ -29,7 +29,7 @@ It was made using the [discord.js](https://discord.js.org/) Library and [node.js
 8. Run the following command in the directory
 
    ```bash
-   node bot.js
+   node index.js
    ```
 9. To invite the bot to your server replace `ID` with the client ID of your application https://discordapp.com/oauth2/authorize?client_id=ID&scope=bot&permissions=268446806 and open the link
 
