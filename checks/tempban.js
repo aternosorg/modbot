@@ -1,4 +1,4 @@
-const util = require('../lib/util.js');
+const util = require('../src/util.js');
 
 exports.check = async (database, bot) => {
   let results = await database.queryAll("SELECT * FROM moderations WHERE action = 'ban' AND active = TRUE AND expireTime IS NOT NULL AND expireTime <= ?", [Math.floor(Date.now()/1000)]);

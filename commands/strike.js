@@ -1,4 +1,4 @@
-const util = require('../lib/util.js');
+const util = require('../src/util.js');
 const ban = require('./ban.js');
 const kick = require('./kick.js');
 const mute = require('./mute.js');

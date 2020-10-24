@@ -1,4 +1,4 @@
-const util = require('../../lib/util');
+const util = require('../../src/util');
 
 exports.event = async (options, guild, user) => {
   let result = await options.database.query("SELECT * FROM moderations WHERE action = 'ban' AND active = TRUE AND userid = ? AND guildid = ?",[user.id,guild.id]);

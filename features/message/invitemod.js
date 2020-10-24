@@ -1,4 +1,4 @@
-const util = require('../../lib/util');
+const util = require('../../src/util');
 
 exports.event = async (options, message) => {
   if (!message.guild || message.author.bot || message.member.hasPermission('MANAGE_MESSAGES')) {

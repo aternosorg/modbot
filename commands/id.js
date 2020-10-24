@@ -1,6 +1,6 @@
 const command = {};
 
-const util = require('../lib/util');
+const util = require('../src/util');
 
 command.description = 'Find a user\'s ID';
 
