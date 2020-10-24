@@ -139,8 +139,7 @@ util.retry = async (fn, thisArg, args = [], maxRetries = 5, returnValMatch = nul
  */
 util.channelMentionToId = (mention) => {
   if (/^<#\d+>$/.test(mention)) {
-    // noinspection JSValidateTypes
-    return mention.match(/^<#(\d+)>$/)[1];
+    return /** @type {module:"discord.js".Snowflake|null} */ mention.match(/^<#(\d+)>$/)[1];
   }
   else if(/^\d+$/.test(mention)) {
     return mention;
@@ -157,8 +156,7 @@ util.channelMentionToId = (mention) => {
  */
 util.roleMentionToId = (mention) => {
   if (/^<@&\d+>$/.test(mention)) {
-    // noinspection JSValidateTypes
-    return mention.match(/^<@&?(\d+)>$/)[1];
+    return /** @type {module:"discord.js".Snowflake|null} */ mention.match(/^<@&?(\d+)>$/)[1];
   }
   else if(/^\d+$/.test(mention)) {
     return mention;
@@ -175,8 +173,7 @@ util.roleMentionToId = (mention) => {
  */
 util.userMentionToId = (mention) => {
   if (/^<@!?\d+>$/.test(mention)) {
-    // noinspection JSValidateTypes
-    return mention.match(/^<@!?(\d+)>$/)[1];
+    return /** @type {module:"discord.js".Snowflake|null} */ mention.match(/^<@!?(\d+)>$/)[1];
   }
   else if(/^\d+$/.test(mention)) {
     return mention;
@@ -217,9 +214,9 @@ util.isUser = async (id) => {
  * @async
  * @param {module:"discord.js".Guild}             guild the guild that should have this channel
  * @param {String|module:"discord.js".Snowflake}  mention channel mention (<#channelId>) or channel id
- * @return {Promise<Boolean>}
+ * @return {Boolean}
  */
-util.isChannelMention = async(guild, mention) => {
+util.isChannelMention = (guild, mention) => {
   return util.isChannel(guild, util.channelMentionToId(mention));
 };
 

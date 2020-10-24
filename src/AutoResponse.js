@@ -161,11 +161,11 @@ class AutoResponse {
    * @returns {module:"discord.js".MessageEmbed}
    */
   embed(title, color) {
-    // noinspection JSCheckFunctionSignatures
     return new Discord.MessageEmbed()
         .setTitle(title + ` [${this.id}]`)
         .setColor(color)
-        .addFields([
+        .addFields(
+            /** @type {any} */[
           {name: "Trigger", value: `${this.trigger.type}: \`${this.trigger.type === 'regex' ? '/' + this.trigger.content + '/' + this.trigger.flags : this.trigger.content}\``},
           {name: "Response", value: this.response.substring(0,1000)},
           {name: "Channels", value: this.global ? "global" : this.channels.map(c => `<#${c}>`).join(', ')}
