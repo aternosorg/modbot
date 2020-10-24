@@ -1,4 +1,4 @@
-const util = require('../lib/util.js');
+const util = require('../src/util.js');
 const axios = require('axios');
 
 const command = {};

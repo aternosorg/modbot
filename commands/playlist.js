@@ -1,4 +1,4 @@
-const util = require('../lib/util.js');
+const util = require('../src/util.js');
 const tutorial = require('./tutorial.js');
 const {google} = require('googleapis');
 const config = require('../config.json');

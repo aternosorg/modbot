@@ -1,4 +1,4 @@
-const util = require('../../lib/util');
+const util = require('../../src/util');
 let users = {};
 
 exports.event = async (options, message) => {

@@ -1,6 +1,6 @@
 const config = require('../config.json');
 const Discord = require('discord.js');
-const util = require('../lib/util.js');
+const util = require('../src/util.js');
 const {google} = require('googleapis');
 const Fuse = require('fuse.js');
 let videos = new Discord.Collection();

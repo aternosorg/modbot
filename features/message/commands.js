@@ -1,7 +1,7 @@
 const fs = require('fs').promises;
 const config = require('../../config');
 const Discord = require('discord.js');
-const util = require('../../lib/util');
+const util = require('../../src/util');
 
 /**
  * loaded commands

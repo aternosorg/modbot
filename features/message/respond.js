@@ -1,4 +1,4 @@
-const AutoResponse = require('../../util/AutoResponse');
+const AutoResponse = require('../../src/AutoResponse');
 
 exports.event = async (options, message) => {
   if (!message.guild || message.author.bot) {

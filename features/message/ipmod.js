@@ -1,4 +1,4 @@
-const util = require('../../lib/util');
+const util = require('../../src/util');
 
 //removes messages with(out) IPs in specific channels
 exports.event = async (options, message) => {

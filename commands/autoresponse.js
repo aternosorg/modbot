@@ -1,5 +1,5 @@
-const util = require('../lib/util.js');
-const AutoResponse = require('../util/AutoResponse');
+const util = require('../src/util.js');
+const AutoResponse = require('../src/AutoResponse');
 
 const list = require('./autoresponse/list');
 const add = require('./autoresponse/add');

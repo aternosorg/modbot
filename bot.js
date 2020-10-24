@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
-const Database = require('./lib/Database');
-const util = require('./lib/util');
+const Database = require('./src/Database');
+const util = require('./src/util');
 const fs = require('fs').promises;
 
 const config = require('./config');

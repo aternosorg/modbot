@@ -1,6 +1,6 @@
-const AutoResponse = require('../../util/AutoResponse');
+const AutoResponse = require('../../src/AutoResponse');
 const Discord = require("discord.js");
-const util = require('../../lib/util.js');
+const util = require('../../src/util.js');
 
 /**
  * add an autoresponse

@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const util = require('../../lib/util.js');
+const util = require('../../src/util.js');
 
 /**
  * remove an auto-response

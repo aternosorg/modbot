@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
-const GuildConfig = require('../util/GuildConfig.js');
-const AutoResponse = require('../util/AutoResponse');
-const ChannelConfig = require('../util/ChannelConfig.js');
+const GuildConfig = require('./GuildConfig.js');
+const AutoResponse = require('./AutoResponse');
+const ChannelConfig = require('./ChannelConfig.js');
 
 /**
 * Data that resolves to give a Guild object. This can be:
