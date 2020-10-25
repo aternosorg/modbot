@@ -15,7 +15,7 @@ module.exports = async (responses, message) => {
             await message.channel.send(text);
             text = '';
         }
-        text += `[${id}] ${response.global ? "global" : response.channels.map(c => `<#${c}>`).join(', ')} (${response.trigger.type}): \`${response.trigger.content}\` \n`;
+        text += `[${id}] ${response.global ? "global" : response.channels.map(c => `<#${c}>`).join(', ')} (${response.trigger.type}): \`${response.trigger.type === 'regex' ? '/' + response.trigger.content + '/' + response.trigger.flags : response.trigger.content}\` \n`;
     }
     await message.channel.send(text.substring(0, 2000));
 };
