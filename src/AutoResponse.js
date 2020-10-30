@@ -46,7 +46,7 @@ class AutoResponse {
   static triggerTypes = ['regex','include','match'];
 
   /**
-   * constructor - create a channel config
+   * constructor - create an auto response
    * @param {module:"discord.js".Snowflake}     gid               guild ID
    * @param {Object}                            json              options
    * @param {AutoResponseTrigger}               json.trigger      filter that triggers the response
@@ -113,7 +113,7 @@ class AutoResponse {
   /**
    * Save this response to db and cache
    * @async
-   * @return {Number} id in db
+   * @return {Promise<Number>} id in db
    */
   async save() {
     if (!this.channels) {this.channels = null;}
@@ -224,7 +224,7 @@ class AutoResponse {
   }
 
   /**
-   * Reload responses cache for a channel
+   * Reload responses cache for a guild
    * @async
    * @param {module:"discord.js".Snowflake} guildId
    */
