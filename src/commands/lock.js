@@ -45,7 +45,7 @@ command.execute = async (message, args, database, bot) => {
         continue;
       }
 
-      if (await lock(channel, everyone, embed))
+      if (await lock(/** @type {module:"discord.js".TextChannel} */ channel, everyone, embed))
         updates.push(`<#${channel.id}>`);
     }
     if (updates.length) {
@@ -63,21 +63,21 @@ command.execute = async (message, args, database, bot) => {
 /**
  * lock - locks a channel
  *
- * @param  {Discord.TextChannel}          channel  the channel to lock
- * @param  {Discord.Snowflake}            everyone the id of the @everyone role
- * @param  {Discord.MessageEmbed|String}  message  the message to send to the channel
+ * @param  {module:"discord.js".TextChannel}          channel  the channel to lock
+ * @param  {Snowflake}                                everyone the id of the @everyone role
+ * @param  {module:"discord.js".MessageEmbed|String}  message  the message to send to the channel
  * @return {Boolean}                      did the channel have to be locked?
  */
 async function lock(channel, everyone, message) {
-  let config = await util.getChannelConfig(channel.id);
-  let permissions = channel.permissionsFor(everyone);
+  let config = await util.getChannelConfig(/** @type {module:"discord.js".Snowflake} */ channel.id);
+  let permissions = channel.permissionsFor(/** @type {RoleResolvable} */ everyone);
 
   if (!permissions.has('VIEW_CHANNEL')) {
     return false;
   }
 
   let con = true;
-  for(const perm of ['SEND_MESSAGES', 'ADD_REACTIONS']) {
+  for(const /** @type {PermissionResolvable} */ perm of ['SEND_MESSAGES', 'ADD_REACTIONS']) {
     if (permissions.has(perm)) {
       if (channel.permissionOverwrites.get(everyone)) {
         config.lock[perm] = channel.permissionOverwrites.get(everyone).allow.has(perm) ? true : null;

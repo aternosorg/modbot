@@ -42,7 +42,7 @@ command.execute = async (message, args, database, bot) => {
     embed
     .setAuthor(`Help Menu | Prefix: ${config.prefix}`)
     .addFields(
-      { name: "Commands", value: commandList, inline: true}
+        /** @type {any} */ { name: "Commands", value: commandList, inline: true}
     );
   }
   else {
@@ -67,14 +67,14 @@ command.getUse = async (message, cmd) => {
     .setAuthor(`Help for ${cmd} | Prefix: ${config.prefix}`)
     .setFooter(`Command executed by ${message.author.username}`)
     .addFields(
-      { name: "Usage", value: `\`${config.prefix}${cmd} ${command.usage}\``, inline: true},
-      { name: "Description", value: command.description, inline: true}
+        /** @type {any} */ { name: "Usage", value: `\`${config.prefix}${cmd} ${command.usage}\``, inline: true},
+        /** @type {any} */ { name: "Description", value: command.description, inline: true}
     )
     .setColor(util.color.green)
     .setTimestamp();
     if (command.comment) {
       embed.addFields(
-        { name: "Comment", value: `${command.comment}`, inline: false});
+          /** @type {any} */{ name: "Comment", value: `${command.comment}`, inline: false});
     }
     if (command.names.length > 1) {
       let aliases = '';
@@ -84,7 +84,7 @@ command.getUse = async (message, cmd) => {
         }
       }
       embed.addFields(
-        { name: "Aliases", value: aliases.substring(0,aliases.length - 2), inline: false});
+          /** @type {any} */{ name: "Aliases", value: aliases.substring(0,aliases.length - 2), inline: false});
     }
   return embed;
 };

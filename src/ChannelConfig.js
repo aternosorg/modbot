@@ -1,5 +1,3 @@
-const Discord = require('discord.js');
-
 /**
  * Class representing the config of a channel
  */
@@ -8,12 +6,12 @@ class ChannelConfig {
     /**
      * Constructor - create a channel config
      *
-     * @param  {Discord.Snowflake} id             channel id
-     * @param  {Object}           [json]          options
-     * @param  {Number}           [json.mode]     ip automod mode (0 => disabled, 1 => required, 2 => forbidden)
-     * @param  {Boolean}          [json.invites]  allow invites
-     * @param  {Object}           [json.lock]     permissions before locking (only affected perms)
-     * @return {channelConfig} the config of the channel
+     * @param  {module:"discord.js".Snowflake}  id             channel id
+     * @param  {Object}                         [json]          options
+     * @param  {Number}                         [json.mode]     ip automod mode (0 => disabled, 1 => required, 2 => forbidden)
+     * @param  {Boolean}                        [json.invites]  allow invites
+     * @param  {Object}                         [json.lock]     permissions before locking (only affected perms)
+     * @return {ChannelConfig} the config of the channel
      */
 
     constructor(id, json) {

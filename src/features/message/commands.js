@@ -27,8 +27,8 @@ const commands = [];
  *
  * @param {Object} options
  * @param {Database} options.database
- * @param {Discord.Client} options.bot
- * @param {Discord.Message} message
+ * @param {module:"discord.js".Client} options.bot
+ * @param {module:"discord.js".Message} message
  * @return {Promise<void>}
  */
 exports.event = async(options, message) => {

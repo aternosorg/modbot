@@ -1,3 +1,7 @@
+/**
+ * @typedef {{tempmutes: Object, strikes: Object, tempbans: Object}} VortexData
+ */
+
 const axios = require('axios');
 const util = require('../util.js');
 
@@ -26,6 +30,7 @@ command.execute = async (message, args, database, bot) => {
   let time = Date.now();
 
   let data = await axios.get(message.attachments.first().url);
+  /** @type {VortexData} */
   data = data.data;
 
   let response = await message.channel.send('Importing mutes...');
@@ -36,7 +41,7 @@ command.execute = async (message, args, database, bot) => {
     successful: 0,
     total: Object.keys(data.tempmutes).length
   };
-  for (let key of Object.keys(data.tempmutes)) {
+  for (let /** @type {module:"discord.js".Snowflake} */ key of Object.keys(data.tempmutes)) {
     if (mutes.successful / mutes.total * 100  > percent + 0.5) {
       percent = mutes.successful / mutes.total * 100;
       response.edit(`Importing mutes (${percent.toFixed(1)}%)...`).catch(console.error);
@@ -81,7 +86,7 @@ command.execute = async (message, args, database, bot) => {
     successful: 0,
     total: Object.keys(data.tempbans).length
   };
-  for (let key of Object.keys(data.tempbans)) {
+  for (let /** @type {module:"discord.js".Snowflake} */ key of Object.keys(data.tempbans)) {
     if (bans.successful / bans.total * 100  > percent + 0.5) {
       percent = bans.successful / bans.total * 100;
       response.edit(`Importing bans (${percent.toFixed(1)}%)...`).catch(console.error);

@@ -42,8 +42,6 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let reason = args.join(' ');
-
   for (let userId of users) {
     let user;
     try {

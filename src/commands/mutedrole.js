@@ -78,7 +78,7 @@ command.execute = async (message, args, database, bot) => {
 
   await response.edit(`Updating channel overwrites...`);
 
-  for (let [key, channel] of message.guild.channels.cache) {
+  for (let [, channel] of message.guild.channels.cache) {
     if (!channel.permissionsFor(bot.user.id).has('MANAGE_CHANNELS') || !channel.permissionsFor(bot.user.id).has('VIEW_CHANNEL')) {
       continue;
     }

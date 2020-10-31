@@ -52,6 +52,11 @@ command.execute = async (message, args, database, bot) => {
   }
 };
 
+/**
+ *
+ * @param string
+ * @return {null|number}
+ */
 function getMode(string) {
   if (['require','required'].includes(string)) {
     return 1;

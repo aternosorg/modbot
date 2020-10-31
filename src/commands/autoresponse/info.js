@@ -1,10 +1,9 @@
-const Discord = require("discord.js");
 const util = require('../../util.js');
 
 /**
  * get info about an autoresponse
  * @param {Object} responses
- * @param {Discord.Message} message
+ * @param {module:"discord.js".Message} message
  * @param {String[]} args
  * @returns {Promise<void>}
  */

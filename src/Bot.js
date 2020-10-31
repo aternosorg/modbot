@@ -12,12 +12,12 @@ class Bot{
     }
 
     /**
-     * @type module:"discord.js".Client
+     * @type {module:"discord.js".Client}
      */
     #client;
 
     /**
-     * @type Database
+     * @type {Database}
      */
     #database;
 

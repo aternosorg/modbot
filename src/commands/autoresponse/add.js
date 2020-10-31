@@ -1,11 +1,10 @@
 const AutoResponse = require('../../AutoResponse');
-const Discord = require("discord.js");
 const util = require('../../util.js');
 
 /**
  * add an autoresponse
  * @param {Object} responses
- * @param {Discord.Message} message
+ * @param {module:"discord.js".Message} message
  * @returns {Promise<void>}
  */
 module.exports = async (responses, message) => {
@@ -51,7 +50,10 @@ module.exports = async (responses, message) => {
             type: type,
             content: content,
             flags: flags
-        }
+        },
+        response: null,
+        global: null,
+        channels: []
     };
 
     await message.channel.send("Please enter your response!");
@@ -80,7 +82,7 @@ module.exports = async (responses, message) => {
         options.channels = await util.channelMentions(message.guild,channels.split(" "));
     }
 
-    const response = new AutoResponse(message.guild.id, options);
+    const response = new AutoResponse(/** @type {module:"discord.js".Snowflake} */message.guild.id, options);
     response.id = await response.save();
 
     await message.channel.send(response.embed("Added new autoresponse",util.color.green));

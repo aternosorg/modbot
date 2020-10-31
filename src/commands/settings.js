@@ -34,9 +34,9 @@ command.execute = async (message, args, database, bot) => {
   let embed = new Discord.MessageEmbed()
   .setTitle(`Settings | Prefix: ${guild.prefix}`)
   .addFields(
-    {name: `Moderation`, value: moderation, inline: false},
-    {name: `Support`, value: support, inline: false},
-    {name: `Automod`, value: automod, inline: false }
+      /** @type {any} */ {name: `Moderation`, value: moderation, inline: false},
+      /** @type {any} */ {name: `Support`, value: support, inline: false},
+      /** @type {any} */ {name: `Automod`, value: automod, inline: false }
   );
 
   await message.channel.send(embed);
