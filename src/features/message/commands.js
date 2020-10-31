@@ -1,5 +1,5 @@
 const fs = require('fs').promises;
-const config = require('../../../config.json');
+const { prefix } = require('../../../config.json');
 const Discord = require('discord.js');
 const util = require('../../util');
 
@@ -32,28 +32,38 @@ const commands = [];
  * @return {Promise<void>}
  */
 exports.event = async(options, message) => {
-    if (!message.guild || message.author.bot) return;
+    const [command,args] = await exports.getCommand(message);
+    if (command === null) return;
+
+    try {
+        await Promise.resolve(command.execute(message, args, options.database, options.bot));
+    } catch (e) {
+        let embed = new Discord.MessageEmbed({
+            color: util.color.red,
+            description: `An error occurred while executing that command!`
+        });
+        await message.channel.send(embed);
+        console.error(`An error occurred while executing command ${command.names[0]}:`,e);
+    }
+}
+
+/**
+ * is this message a command
+ * @param {module:"discord.js".Message} message
+ * @return {Promise<[Object,String[]]|null[]>}
+ */
+exports.getCommand = async (message) => {
+    if (!message.guild || message.author.bot) return [null];
     let guild = await util.getGuildConfig(message);
     const args = util.split(message.content,' ');
-    let prefix = util.startsWithMultiple(message.content.toLowerCase(),guild.prefix.toLowerCase(), config.prefix.toLowerCase());
-    if (!prefix) {
-        return ;
-    }
-    let cmd = args.shift().slice(prefix.length).toLowerCase();
+    let usedPrefix = util.startsWithMultiple(message.content.toLowerCase(),guild.prefix.toLowerCase(), prefix.toLowerCase());
+    if (!usedPrefix) return [null];
 
+    let cmd = args.shift().slice(usedPrefix.length).toLowerCase();
     for (let command of commands) {
         if (command.names.includes(cmd)) {
-            try {
-                await Promise.resolve(command.execute(message, args, options.database, options.bot));
-            } catch (e) {
-                let embed = new Discord.MessageEmbed({
-                    color: util.color.red,
-                    description: `An error occurred while executing that command!`
-                });
-                await message.channel.send(embed);
-                console.error(`An error occurred while executing command ${command.names[0]}:`,e);
-            }
-            break;
+            return [command,args];
         }
     }
+    return [null];
 }
