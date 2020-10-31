@@ -2,6 +2,7 @@ const fs = require('fs').promises;
 const { prefix } = require('../../../config.json');
 const Discord = require('discord.js');
 const util = require('../../util');
+const GuildConfig = require('../../GuildConfig');
 
 /**
  * loaded commands
@@ -54,7 +55,7 @@ exports.event = async(options, message) => {
  */
 exports.getCommand = async (message) => {
     if (!message.guild || message.author.bot) return [null];
-    let guild = await util.getGuildConfig(message);
+    let guild = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */ message.guild.id);
     const args = util.split(message.content,' ');
     let usedPrefix = util.startsWithMultiple(message.content.toLowerCase(),guild.prefix.toLowerCase(), prefix.toLowerCase());
     if (!usedPrefix) return [null];

@@ -1,5 +1,5 @@
-const util = require('../util.js');
 const config = require('../../config.json');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -18,7 +18,7 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let guild = await util.getGuildConfig(message);
+  let guild = await GuildConfig.get(message.guild.id);
   if (args.length === 0) {
     await message.channel.send(`The prefix is \`${guild.prefix}\``);
     return;
@@ -38,7 +38,7 @@ command.execute = async (message, args, database, bot) => {
   }
 
   guild.prefix = prefix;
-  await util.saveGuildConfig(guild);
+  await guild.save();
 
   await message.channel.send(`Set prefix to \`${prefix}\`. Note: The default prefix(\`${config.prefix}\`) will still work.`);
 };

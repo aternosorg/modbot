@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -30,7 +31,7 @@ command.execute = async (message, args, database, bot) => {
     try {
       member = await message.guild.members.fetch(userId);
     } catch (e) {}
-    let guildConfig = await util.getGuildConfig(message);
+    let guildConfig = await GuildConfig.get(message.guild.id);
 
     if (user.bot) {
       await message.react(util.icons.error);
