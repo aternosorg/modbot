@@ -26,7 +26,7 @@ exports.event = async (options, message) => {
       }
       return;
     }
-    if (mode === 2 && (message.content.toLowerCase().includes('.aternos.me') || message.content.toLowerCase().includes('add.aternos.org'))) {
+    if (mode === 2 && (message.content.toLowerCase().includes('.aternos.me') || message.content.toLowerCase().includes('add.aternos.org'))) || message.content.toLowerCase().includes('.aternos.host') {
       //Delete IPs in no IP channels
       let response = await message.channel.send(`**${util.icons.forbidden} <@${message.author.id}> don't advertise your server here! ${util.icons.forbidden}**`);
       try {
