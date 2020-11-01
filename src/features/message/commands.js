@@ -48,7 +48,7 @@ exports.event = async(options, message) => {
 }
 
 /**
- * is this message a command
+ * get the command in this message
  * @param {module:"discord.js".Message} message
  * @return {Promise<[Object,String[]]|null[]>}
  */
@@ -66,4 +66,13 @@ exports.getCommand = async (message) => {
         }
     }
     return [null];
+}
+
+/**
+ * is this message a command
+ * @param {module:"discord.js".Message} message
+ * @return {Promise<Boolean>}
+ */
+exports.isCommand = async (message) => {
+    return (await exports.getCommand(message))[0] === null;
 }
