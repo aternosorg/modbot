@@ -31,13 +31,15 @@ class BadWord {
 
   static triggerTypes = ['regex','include','match'];
 
+  static punishmentTypes = ['none','ban','kick','mute','softban','strike'];
+
   /**
    * constructor - create a bad word
    * @param {module:"discord.js".Snowflake}     gid               guild ID
    * @param {Object}                            json              options
    * @param {Trigger}                           json.trigger      filter that triggers the bad word
    * @param {Punishment}                        json.punishment   punishment for the members which trigger this
-   * @param {String}                            json.response     a message that gets send this filter triggers. automatically deletes after 5 seconds
+   * @param {String}                            [json.response]   a message that is send by this filter. It's automatically deleted after 5 seconds
    * @param {Boolean}                           json.global       does this apply to all channels in this guild
    * @param {module:"discord.js".Snowflake[]}   [json.channels]   channels that this applies to
    * @param {Number}                            [id]              id in DB
@@ -195,7 +197,7 @@ class BadWord {
    * @param {module:"discord.js".Snowflake} guildId
    * @return {module:"discord.js".Collection<Number,BadWord>}
    */
-  static async getAllAutoResponses (guildId) {
+  static async getAllBadWords (guildId) {
 
     const result = await database.queryAll("SELECT * FROM badWords WHERE guildid = ?", [guildId]);
 
