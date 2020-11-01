@@ -113,12 +113,12 @@ class BadWord {
     this.id = dbentry.insertId;
 
     if (this.global) {
+      if (!guilds.has(this.gid)) guilds.set(this.gid, new Discord.Collection())
       guilds.get(this.gid).set(this.id, this);
     }
     else {
       for (const channel of this.channels) {
-        if(!channels.has(channel))
-          channels.set(channel, new Discord.Collection());
+        if(!channels.has(channel)) channels.set(channel, new Discord.Collection());
         channels.get(channel).set(this.id, this);
       }
     }
@@ -157,7 +157,7 @@ class BadWord {
         .addFields(
             /** @type {any} */[
           {name: "Trigger", value: `${this.trigger.type}: \`${this.trigger.type === 'regex' ? '/' + this.trigger.content + '/' + this.trigger.flags : this.trigger.content}\``},
-          {name: "Punishment", value: `${this.punishment.type} for ${this.punishment.duration}`},
+          {name: "Punishment", value: `${this.punishment.action} for ${this.punishment.duration}`},
           {name: "Response", value: this.response.substring(0,1000)},
           {name: "Channels", value: this.global ? "global" : this.channels.map(c => `<#${c}>`).join(', ')}
         ]);
@@ -253,6 +253,7 @@ class BadWord {
       newBadWords.set(res.id, new BadWord(res.guildid, {
         trigger: JSON.parse(res.trigger),
         response: res.response,
+        punishment: res.punishment,
         global: false,
         channels: res.channels.split(',')
       }, res.id));

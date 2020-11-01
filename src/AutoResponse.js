@@ -109,12 +109,12 @@ class AutoResponse {
     this.id = dbentry.insertId;
 
     if (this.global) {
+      if (!guildResponses.has(this.gid)) guildResponses.set(this.gid, new Discord.Collection())
       guildResponses.get(this.gid).set(this.id, this);
     }
     else {
       for (const channel of this.channels) {
-        if(!channelResponses.has(channel))
-          channelResponses.set(channel, new Discord.Collection());
+        if(!channelResponses.has(channel)) channelResponses.set(channel, new Discord.Collection());
         channelResponses.get(channel).set(this.id, this);
       }
     }

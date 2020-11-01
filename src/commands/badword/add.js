@@ -47,7 +47,7 @@ module.exports = async (message) => {
             flags: flags
         },
         punishment: {
-            type: null,
+            action: null,
             duration: null
         },
         global: null,
@@ -62,11 +62,11 @@ module.exports = async (message) => {
     punishmentInfo = util.split(punishmentInfo,' ');
 
     options.punishment = {
-        type: punishmentInfo.shift().toLowerCase(),
+        action: punishmentInfo.shift().toLowerCase(),
         duration: punishmentInfo.join(' ')
     };
 
-    if (!BadWord.punishmentTypes.includes(options.punishment.type)) {
+    if (!BadWord.punishmentTypes.includes(options.punishment.action)) {
         return await message.channel.send("Not a valid punishment type!");
     }
 

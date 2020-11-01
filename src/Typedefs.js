@@ -45,7 +45,7 @@
 
 /**
  * @typedef {Object} Punishment
- * @property {String} type possible values:
+ * @property {String} action possible values:
  * * ban
  * * kick
  * * mute
