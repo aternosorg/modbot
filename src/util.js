@@ -45,6 +45,7 @@ util.init = (db, client) => {
   database = db;
   bot = client;
   AutoResponse.init(db);
+  BadWord.init(db);
 };
 
 /**
