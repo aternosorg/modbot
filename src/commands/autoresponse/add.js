@@ -3,11 +3,10 @@ const util = require('../../util.js');
 
 /**
  * add an autoresponse
- * @param {Object} responses
  * @param {module:"discord.js".Message} message
  * @returns {Promise<void>}
  */
-module.exports = async (responses, message) => {
+module.exports = async (message) => {
     await message.channel.send("Please enter your trigger type (\`regex\`, \`include\` or \`match\`)!");
     let type = await util.getResponse(message.channel,message.author.id);
 

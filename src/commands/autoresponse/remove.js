@@ -2,13 +2,12 @@ const util = require('../../util.js');
 
 /**
  * remove an auto-response
- * @param {Object} responses
- * @param {module:"discord.js".Message} message
- * @param {String[]} args
- * @param {Database} database
+ * @param {module:"discord.js".Collection}  responses
+ * @param {module:"discord.js".Message}     message
+ * @param {String[]}                        args
  * @returns {Promise<void>}
  */
-module.exports = async (responses, message, args, database) => {
+module.exports = async (responses, message, args) => {
     if (!args.length) {
         await message.channel.send("Provide the id of the autoresponse you want to remove");
         return;

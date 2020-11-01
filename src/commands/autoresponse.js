@@ -8,7 +8,7 @@ const info = require('./autoresponse/info');
 
 const command = {};
 
-command.description = 'Adds and lists auto-responses';
+command.description = 'Adds, removes and lists auto responses';
 
 command.usage = '<list|add|info|remove> <id>';
 
@@ -32,7 +32,7 @@ command.execute = async (message, args, database, bot) => {
             break;
 
         case 'add':
-            await add(responses, message);
+            await add(message);
             break;
 
         case 'delete':
