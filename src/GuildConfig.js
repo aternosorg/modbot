@@ -8,17 +8,17 @@ class GuildConfig {
     /**
      * Constructor - create a guild config
      *
-     * @param  {module:"discord.js".Snowflake}    id                  guild id
-     * @param  {Object}               [json]              options
-     * @param  {module:"discord.js".Snowflake}    [json.logChannel]   id of the log channel
-     * @param  {module:"discord.js".Snowflake}    [json.mutedRole]    id of the muted role
-     * @param  {module:"discord.js".Snowflake[]}  [json.modRoles]     array with ids of the moderator roles
-     * @param  {Object}               [json.punishments]  automatic punishments for strikes
-     * @param  {String}               [json.playlist]     id of youtube playlist for tutorials
-     * @param  {String}               [json.helpcenter]   subdomain of the zendesk help center
-     * @param  {Boolean}              [json.invites]      allow invites (can be overwritten per channel)
-     * @param  {Number}               [json.linkCooldown] cooldown on links in s (user based)
-     * @param  {String}               [json.prefix]       alternative prefix for commands
+     * @param  {module:"discord.js".Snowflake}      id                  guild id
+     * @param  {Object}                             [json]              options
+     * @param  {module:"discord.js".Snowflake}      [json.logChannel]   id of the log channel
+     * @param  {module:"discord.js".Snowflake}      [json.mutedRole]    id of the muted role
+     * @param  {module:"discord.js".Snowflake[]}    [json.modRoles]     array with ids of the moderator roles
+     * @param  {Object}                             [json.punishments]  automatic punishments for strikes
+     * @param  {String}                             [json.playlist]     id of youtube playlist for tutorials
+     * @param  {String}                             [json.helpcenter]   subdomain of the zendesk help center
+     * @param  {Boolean}                            [json.invites]      allow invites (can be overwritten per channel)
+     * @param  {Number}                             [json.linkCooldown] cooldown on links in s (user based)
+     * @param  {String}                             [json.prefix]       alternative prefix for commands
      * @return {GuildConfig}
      */
     constructor(id, json) {

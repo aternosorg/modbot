@@ -1,20 +1,6 @@
 const Discord = require('discord.js');
 
 /**
- * A trigger for an AutoResponse this can be:
- * * a string that has to be included
- * * a string that has to match the message
- * * a regex
- * @typedef {Object} AutoResponseTrigger
- * @property {String} type the type of the trigger possible types:
- * * regex
- * * include
- * * match
- * @property {String} content the string or regex
- * @property {String} [flags] flags for regex's
- */
-
-/**
  * Database
  * @type {Database}
  */
@@ -49,7 +35,7 @@ class AutoResponse {
    * constructor - create an auto response
    * @param {module:"discord.js".Snowflake}     gid               guild ID
    * @param {Object}                            json              options
-   * @param {AutoResponseTrigger}               json.trigger      filter that triggers the response
+   * @param {Trigger}                           json.trigger      filter that triggers the response
    * @param {String}                            json.response     message to send to the channel
    * @param {Boolean}                           json.global       does this apply to all channels in this guild
    * @param {module:"discord.js".Snowflake[]}   [json.channels]   channels that this applies to
@@ -137,7 +123,7 @@ class AutoResponse {
   }
 
   /**
-   * remove a response from cache and db
+   * remove this response from cache and db
    * @async
    * @returns {Promise<void>}
    */

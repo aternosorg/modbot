@@ -2,14 +2,7 @@ const Discord = require('discord.js');
 const GuildConfig = require('./GuildConfig.js');
 const AutoResponse = require('./AutoResponse');
 const ChannelConfig = require('./ChannelConfig.js');
-
-/**
-* Data that resolves to give a Guild object. This can be:
-* * A Message object
-* * A Guild object
-* * A Snowflake
-* @typedef {module:"discord.js".Message|module:"discord.js".Guild|module:"discord.js".Snowflake} GuildInfo
-*/
+const BadWord = require('./BadWord');
 
 /**
  * Config cache time (ms)
