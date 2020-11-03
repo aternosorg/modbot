@@ -37,7 +37,7 @@ command.execute = async (message, args, database, bot) => {
 
         case 'delete':
         case 'remove':
-            await remove(responses, message, args, database);
+            await remove(responses, message, args);
             break;
 
         case 'info':

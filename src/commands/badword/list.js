@@ -10,12 +10,12 @@ module.exports = async (badWords, message) => {
     }
 
     let text = '';
-    for (const [id, response] of badWords) {
+    for (const [id, badWord] of badWords) {
         if(text.length > 1500){
             await message.channel.send(text);
             text = '';
         }
-        text += `[${id}] ${response.global ? "global" : response.channels.map(c => `<#${c}>`).join(', ')} (${response.trigger.type}): \`${response.trigger.type === 'regex' ? '/' + response.trigger.content + '/' + response.trigger.flags : response.trigger.content}\` \n`;
+        text += `[${id}] ${badWord.global ? "global" : badWord.channels.map(c => `<#${c}>`).join(', ')} (${badWord.trigger.type}): \`${badWord.trigger.type === 'regex' ? '/' + badWord.trigger.content + '/' + badWord.trigger.flags : badWord.trigger.content}\` \n`;
     }
     await message.channel.send(text.substring(0, 2000));
 };

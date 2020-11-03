@@ -23,11 +23,11 @@ command.execute = async (message, args, database, bot) => {
         return await message.channel.send(await util.usage(message,command.names[0]));
     }
 
-    let responses = await BadWord.getAllBadWords(message.guild.id);
+    let badWords = await BadWord.getAllBadWords(message.guild.id);
 
     switch (args.shift().toLowerCase()) {
         case 'list':
-            await list(responses,message);
+            await list(badWords,message);
             break;
 
         case 'add':
@@ -36,11 +36,11 @@ command.execute = async (message, args, database, bot) => {
 
         case 'delete':
         case 'remove':
-            await remove(responses, message, args);
+            await remove(badWords, message, args);
             break;
 
         case 'info':
-            await info(responses, message, args);
+            await info(badWords, message, args);
             break;
 
         default:

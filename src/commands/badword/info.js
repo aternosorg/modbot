@@ -9,14 +9,14 @@ const util = require('../../util.js');
  */
 module.exports = async (badWords, message, args) => {
     if (!args.length) {
-        await message.channel.send("Provide the id of the autoresponse you want to view");
+        await message.channel.send("Provide the id of the bad word you want to view");
         return;
     }
-    let response = badWords.get(parseInt(args.shift()));
-    if (!response) {
+    let badWord = badWords.get(parseInt(args.shift()));
+    if (!badWord) {
         await message.channel.send("Invalid id!");
         return;
     }
 
-    await message.channel.send(response.embed("Bad word",util.color.green));
+    await message.channel.send(badWord.embed("Bad word",util.color.green));
 };
