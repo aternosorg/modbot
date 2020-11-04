@@ -7,7 +7,7 @@ command.description = 'Change the prefix';
 
 command.usage = '<newPrefix>';
 
-command.comment = 'The default prefix (\`${config.prefix}\`) will still work (in addition to your specified prefix)';
+command.comment = `The default prefix (\`${config.prefix}\`) will still work (in addition to your specified prefix)`;
 
 command.names = ['prefix'];
 

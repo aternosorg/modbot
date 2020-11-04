@@ -8,7 +8,7 @@ command.names = ['ping'];
 
 command.execute = async (message, args, database, bot) => {
   let pong = await message.channel.send(`Pinging...`);
-  await pong.edit(`Ping: ${pong.createdTimestamp-message.createdTimestamp}ms \nWebsocket: ${bot.ws.ping}ms`);
+  await pong.edit(`Ping: ${pong.createdTimestamp-message.createdTimestamp}ms \nWebsocket: ${bot.ws.ping}ms\n*This is the bot's ping*`);
 };
 
 module.exports = command;
