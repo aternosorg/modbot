@@ -142,7 +142,7 @@ class AutoResponse extends ChatTriggeredFeature {
    * @param {module:"discord.js".Snowflake} guildId
    * @return {module:"discord.js".Collection<Number,AutoResponse>}
    */
-  static async getAutoResponses (channelId, guildId) {
+  static async getAutoResponses(channelId, guildId) {
 
     if (!channelResponses.has(channelId)) {
       await AutoResponse.refreshChannelResponses(channelId);
@@ -161,7 +161,7 @@ class AutoResponse extends ChatTriggeredFeature {
    * @param {module:"discord.js".Snowflake} guildId
    * @return {module:"discord.js".Collection<Number,AutoResponse>}
    */
-  static async getAllAutoResponses (guildId) {
+  static async getAllAutoResponses(guildId) {
 
     const result = await database.queryAll("SELECT * FROM responses WHERE guildid = ?", [guildId]);
 

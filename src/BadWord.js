@@ -164,7 +164,7 @@ class BadWord extends ChatTriggeredFeature {
    * @param {module:"discord.js".Snowflake} guildId
    * @return {module:"discord.js".Collection<Number,BadWord>}
    */
-  static async getAllBadWords (guildId) {
+  static async getAllBadWords(guildId) {
 
     const result = await database.queryAll("SELECT * FROM badWords WHERE guildid = ?", [guildId]);
 
