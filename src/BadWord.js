@@ -1,3 +1,4 @@
+const ChatTriggeredFeature = require('./ChatTriggeredFeature');
 const Discord = require('discord.js');
 
 /**
@@ -27,9 +28,7 @@ const guilds = new Discord.Collection();
 /**
  * Class representing a bad word
  */
-class BadWord {
-
-  static triggerTypes = ['regex','include','match'];
+class BadWord extends ChatTriggeredFeature {
 
   static punishmentTypes = ['none','ban','kick','mute','softban','strike'];
 
@@ -45,7 +44,7 @@ class BadWord {
    * @return {BadWord}
    */
   constructor(gid, json, id) {
-    this.id = id;
+    super(id);
     this.gid = gid;
 
     if (json) {
@@ -66,36 +65,6 @@ class BadWord {
    */
   serialize() {
     return [this.gid, JSON.stringify(this.trigger), JSON.stringify(this.punishment), this.global, this.channels.join(',')];
-  }
-
-  /**
-   * matches - does this message match this bad word
-   * @param   {module:"discord.js".Message} message
-   * @returns {boolean}
-   */
-  matches(message) {
-    switch (this.trigger.type) {
-      case "include":
-        if (message.content.toLowerCase().includes(this.trigger.content.toLowerCase())) {
-          return true;
-        }
-        break;
-
-      case "match":
-        if (message.content.toLowerCase() === this.trigger.content.toLowerCase()) {
-          return true;
-        }
-        break;
-
-      case "regex":
-        let regex = new RegExp(this.trigger.content,this.trigger.flags);
-        if (regex.test(message.content)) {
-          return true;
-        }
-        break;
-    }
-
-    return false;
   }
 
   /**
@@ -176,7 +145,7 @@ class BadWord {
    * @param {module:"discord.js".Snowflake} guildId
    * @return {module:"discord.js".Collection<Number,BadWord>}
    */
-  static async get (channelId, guildId) {
+  static async get(channelId, guildId) {
 
     if (!channels.has(channelId)) {
       await BadWord.refreshChannels(channelId);

@@ -1,3 +1,4 @@
+const ChatTriggeredFeature = require('./ChatTriggeredFeature');
 const Discord = require('discord.js');
 
 /**
@@ -27,9 +28,7 @@ const guildResponses = new Discord.Collection();
 /**
  * Class representing an auto response
  */
-class AutoResponse {
-
-  static triggerTypes = ['regex','include','match'];
+class AutoResponse extends ChatTriggeredFeature {
 
   /**
    * constructor - create an auto response
@@ -43,7 +42,7 @@ class AutoResponse {
    * @return {AutoResponse} the auto response
    */
   constructor(gid, json, id) {
-    this.id = id;
+    super(id);
     this.gid = gid;
 
     if (json) {
@@ -64,36 +63,6 @@ class AutoResponse {
    */
   serialize() {
     return [this.gid, JSON.stringify(this.trigger), this.response, this.global, this.channels.join(',')];
-  }
-
-  /**
-   * matches - does this message match this auto-response
-   * @param   {module:"discord.js".Message} message
-   * @returns {boolean}
-   */
-  matches(message) {
-    switch (this.trigger.type) {
-      case "include":
-        if (message.content.toLowerCase().includes(this.trigger.content.toLowerCase())) {
-          return true;
-        }
-        break;
-
-      case "match":
-        if (message.content.toLowerCase() === this.trigger.content.toLowerCase()) {
-          return true;
-        }
-        break;
-
-      case "regex":
-        let regex = new RegExp(this.trigger.content,this.trigger.flags);
-        if (regex.test(message.content)) {
-          return true;
-        }
-        break;
-    }
-
-    return false;
   }
 
   /**
