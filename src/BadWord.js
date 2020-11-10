@@ -32,12 +32,15 @@ class BadWord extends ChatTriggeredFeature {
 
   static punishmentTypes = ['none','ban','kick','mute','softban','strike'];
 
+  static defaultResponse = 'Your message includes words/phrases that are not allowed here!';
+
   /**
    * constructor - create a bad word
    * @param {module:"discord.js".Snowflake}     gid               guild ID
    * @param {Object}                            json              options
    * @param {Trigger}                           json.trigger      filter that triggers the bad word
    * @param {Punishment}                        json.punishment   punishment for the members which trigger this
+   * @param {String}                            [json.response]   a message that is send by this filter. It's automatically deleted after 5 seconds
    * @param {Boolean}                           json.global       does this apply to all channels in this guild
    * @param {module:"discord.js".Snowflake[]}   [json.channels]   channels that this applies to
    * @param {Number}                            [id]              id in DB
@@ -50,6 +53,7 @@ class BadWord extends ChatTriggeredFeature {
     if (json) {
       this.trigger = json.trigger;
       this.punishment = json.punishment;
+      this.response = json.response;
       this.global = json.global;
       this.channels = json.channels;
     }
@@ -64,7 +68,7 @@ class BadWord extends ChatTriggeredFeature {
    * @returns {(*|string)[]}
    */
   serialize() {
-    return [this.gid, JSON.stringify(this.trigger), JSON.stringify(this.punishment), this.global, this.channels.join(',')];
+    return [this.gid, JSON.stringify(this.trigger), JSON.stringify(this.punishment), this.response, this.global, this.channels.join(',')];
   }
 
   /**
@@ -75,7 +79,7 @@ class BadWord extends ChatTriggeredFeature {
   async save() {
     if (!this.channels) {this.channels = null;}
 
-    let dbentry = await database.queryAll("INSERT INTO badWords (`guildid`, `trigger`, `punishment`, `global`, `channels`) VALUES (?,?,?,?,?)",this.serialize());
+    let dbentry = await database.queryAll("INSERT INTO badWords (`guildid`, `trigger`, `punishment`, `response`, `global`, `channels`) VALUES (?,?,?,?,?,?)",this.serialize());
 
     this.id = dbentry.insertId;
 
@@ -126,6 +130,7 @@ class BadWord extends ChatTriggeredFeature {
             /** @type {any} */[
           {name: "Trigger", value: `${this.trigger.type}: \`${this.trigger.type === 'regex' ? '/' + this.trigger.content + '/' + this.trigger.flags : this.trigger.content}\``},
           {name: "Punishment", value: `${this.punishment.action} for ${this.punishment.duration}`},
+          {name: "Response", value: this.response === 'default' ? BadWord.defaultResponse :this.response.substring(0,1000)},
           {name: "Channels", value: this.global ? "global" : this.channels.map(c => `<#${c}>`).join(', ')}
         ]);
   }
@@ -173,6 +178,7 @@ class BadWord extends ChatTriggeredFeature {
       badWords.set(res.id, new BadWord(res.guildid, {
         trigger: JSON.parse(res.trigger),
         punishment: JSON.parse(res.punishment),
+        response: res.response,
         global: res.global === 1,
         channels: res.channels.split(',')
       }, res.id));
@@ -194,6 +200,7 @@ class BadWord extends ChatTriggeredFeature {
       const o = new BadWord(res.guildid, {
         trigger: JSON.parse(res.trigger),
         punishment: JSON.parse(res.punishment),
+        response: res.response,
         global: true,
         channels: []
       }, res.id);
@@ -217,6 +224,7 @@ class BadWord extends ChatTriggeredFeature {
     for (const res of result) {
       newBadWords.set(res.id, new BadWord(res.guildid, {
         trigger: JSON.parse(res.trigger),
+        response: res.response,
         punishment: res.punishment,
         global: false,
         channels: res.channels.split(',')

@@ -54,7 +54,7 @@ module.exports = async (message) => {
         channels: []
     };
 
-    await message.channel.send(`Please enter your punishment type (\`${BadWord.punishmentTypes.join('\`, \`')}\`) and duration!`);
+    await message.channel.send(`Please enter your punishment type (\`${BadWord.punishmentTypes.join('\`, \`')}\`)!`);
     let punishmentInfo = await util.getResponse(message.channel,message.author.id);
 
     if (punishmentInfo === null) return;
@@ -69,6 +69,12 @@ module.exports = async (message) => {
     if (!BadWord.punishmentTypes.includes(options.punishment.action)) {
         return await message.channel.send("Not a valid punishment type!");
     }
+
+    await message.channel.send("Please enter \`default\`, \`disabled\` or a message that will be shown to the user");
+    options.response = await util.getResponse(message.channel, message.author.id, 60000);
+
+    if (options.response === null) return;
+    if (['disabled','default'].includes(options.response.toLowerCase())) options.response = options.response.toLowerCase();
 
     await message.channel.send("Please select the channels this word should be forbidden in (\`#mention\`, \`channelid\` or \`global\`)!");
     let channels = await util.getResponse(message.channel, message.author.id);
@@ -87,8 +93,8 @@ module.exports = async (message) => {
         options.channels = await util.channelMentions(message.guild,channels.split(" "));
     }
 
-    const badWord = new BadWord(/** @type {module:"discord.js".Snowflake} */message.guild.id, options);
-    badWord.id = await badWord.save();
+    const response = new BadWord(/** @type {module:"discord.js".Snowflake} */message.guild.id, options);
+    response.id = await response.save();
 
-    await message.channel.send(badWord.embed("Added new bad word",util.color.green));
+    await message.channel.send(response.embed("Added new bad word",util.color.green));
 };

@@ -10,9 +10,11 @@ exports.event = async (options, message) => {
     if (word.matches(message)) {
       const reason = `bad word (ID:${word.id})`;
       await util.delete(message, { reason: reason } );
-      const response = await message.reply("Your message includes words/phrases that are not allowed here!");
+      if (word.response !== 'disabled') {
+        const response = await message.reply(word.response === 'default' ? BadWord.defaultResponse : word.response);
+        await util.delete(response, { timeout: 3000 });
+      }
       await util.logMessageDeletion(message, reason);
-      await util.delete(response, { timeout: 3000 });
       if (word.punishment.action !== 'none') {
         await strike.executePunishment(word.punishment, message.guild, message.author, options.bot, options.database, reason);
       }
