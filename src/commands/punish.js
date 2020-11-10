@@ -56,7 +56,7 @@ command.execute = async (message, args, database, bot) => {
 
   let action = args.shift();
   if (!action) {
-    message.channel.send("USAGE: 'punish strikeCount action options' OR 'punish strikeCount disabled'");
+    message.channel.send(util.usage(message,command.names[0]));
     return;
   }
   switch (action) {
