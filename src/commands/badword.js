@@ -23,7 +23,7 @@ command.execute = async (message, args, database, bot) => {
         return await message.channel.send(await util.usage(message,command.names[0]));
     }
 
-    let responses = await BadWord.getAllBadWords(message.guild.id);
+    let responses = await BadWord.getAll(message.guild.id);
 
     switch (args.shift().toLowerCase()) {
         case 'list':
