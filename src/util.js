@@ -1,8 +1,6 @@
 const Discord = require('discord.js');
 const GuildConfig = require('./GuildConfig.js');
-const AutoResponse = require('./AutoResponse');
 const ChannelConfig = require('./ChannelConfig.js');
-const BadWord = require('./BadWord');
 const ChatTriggeredFeature = require('./ChatTriggeredFeature')
 
 /**
