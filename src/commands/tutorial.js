@@ -3,7 +3,9 @@ const Discord = require('discord.js');
 const util = require('../util.js');
 const {google} = require('googleapis');
 const Fuse = require('fuse.js');
-let videos = new Discord.Collection();
+const GuildConfig = require('../GuildConfig');
+
+const videos = new Discord.Collection();
 
 const command = {};
 
@@ -15,7 +17,7 @@ command.names = ['tutorial','video'];
 
 command.execute = async (message, args, database, bot) => {
 
-  let guildConfig = await util.getGuildConfig(message);
+  let guildConfig = await GuildConfig.get(message.guild.id);
   if (!guildConfig.playlist) {
     await message.channel.send('No playlist configured!');
     return ;

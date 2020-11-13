@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -34,9 +35,9 @@ command.execute = async (message, args, database, bot) => {
     });
   }
   else if (args[0] === 'disable'){
-    let config = await util.getGuildConfig(message);
+    let config = await GuildConfig.get(message.guild.id);
     delete config.mutedRole;
-    await util.saveGuildConfig(config);
+    await config.save();
     await message.channel.send(`Disabled muted role!`);
     return;
   }
@@ -54,10 +55,10 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let config = await util.getGuildConfig(message);
+  let config = await GuildConfig.get(message.guild.id);
   let oldRole = config.mutedRole;
   config.mutedRole = role.id;
-  await util.saveGuildConfig(config);
+  await config.save();
   let response = await message.channel.send(`Updating current mutes...`);
 
   if (oldRole !== role.id) {

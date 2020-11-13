@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -22,14 +23,14 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let config = await util.getGuildConfig(message);
+  let config = await GuildConfig.get(message.guild.id);
   if (duration) {
     config.linkCooldown = duration;
   }
   else {
     delete config.linkCooldown;
   }
-  await util.saveGuildConfig(config);
+  await config.save();
 
   if (duration) {
     await message.channel.send(`Set link cooldown to ${util.secToTime(duration)}!`);

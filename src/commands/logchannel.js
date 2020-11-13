@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -16,9 +17,9 @@ command.execute = async (message, args, database, bot) => {
   }
 
   if (['off','disabled'].includes(args[0].toLowerCase())) {
-    let config = await util.getGuildConfig(message);
+    let config = await GuildConfig.get(message.guild.id);
     delete config.logChannel;
-    await util.saveGuildConfig(config);
+    await config.save();
     await message.channel.send(`Disabled log!`);
     return;
   }
@@ -35,9 +36,9 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let config = await util.getGuildConfig(message);
+  let config = await GuildConfig.get(message.guild.id);
   config.logChannel = channelId;
-  await util.saveGuildConfig(config);
+  await config.save();
   await message.channel.send(`Set log channel to <#${channelId}>!`);
 };
 

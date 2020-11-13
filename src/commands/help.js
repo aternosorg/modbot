@@ -1,6 +1,7 @@
 const util = require('../util.js');
 const Discord = require('discord.js');
 const fs = require('fs').promises;
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -33,7 +34,7 @@ let commandList = '';
 })();
 
 command.execute = async (message, args, database, bot) => {
-  let config = await util.getGuildConfig(message);
+  let config = await GuildConfig.get(message.guild.id);
   let embed = new Discord.MessageEmbed()
   .setColor(util.color.green)
   .setFooter(`Command executed by ${message.author.username}`)
@@ -62,7 +63,7 @@ command.execute = async (message, args, database, bot) => {
 
 command.getUse = async (message, cmd) => {
   let command = commands[cmd];
-  let config = await util.getGuildConfig(message);
+  let config = await GuildConfig.get(message.guild.id);
   let embed = new Discord.MessageEmbed()
     .setAuthor(`Help for ${cmd} | Prefix: ${config.prefix}`)
     .setFooter(`Command executed by ${message.author.username}`)
