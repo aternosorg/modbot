@@ -1,5 +1,6 @@
 const util = require('../util.js');
 const axios = require('axios');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -28,7 +29,7 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let config = await util.getGuildConfig(message);
+  let config = await GuildConfig.get(message.guild.id);
   if (["off","disabled","none"].includes(subdomain)) {
     delete config.helpcenter;
   }
@@ -41,7 +42,7 @@ command.execute = async (message, args, database, bot) => {
     }
     config.helpcenter = subdomain;
   }
-  await util.saveGuildConfig(config);
+  await config.save();
 
   if (!["off","disabled","none"].includes(subdomain)) {
     await message.channel.send(`Set helpcenter to https://${subdomain}.zendesk.com`);

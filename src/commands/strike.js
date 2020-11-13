@@ -3,6 +3,7 @@ const ban = require('./ban.js');
 const kick = require('./kick.js');
 const mute = require('./mute.js');
 const softban = require('./softban.js');
+const GuildConfig = require('../GuildConfig');
 
 const maxStrikesAtOnce = 5;
 
@@ -100,8 +101,8 @@ command.add = async (guild, user, count, moderator, reason, channel, database, b
  * @param {Database}                    database
  * @return {Promise<void>}
  */
-async function punish(guild, user, total, bot, database) {
-  let config = await util.getGuildConfig(guild);
+async function punish(guild, user, total, bot) {
+  let config = await GuildConfig.get(guild.id);
   let punishment;
   let count = total;
   do {

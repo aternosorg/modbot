@@ -1,5 +1,6 @@
 const util = require('../util.js');
 const Discord = require('discord.js');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -16,7 +17,7 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let guild = await util.getGuildConfig(message);
+  let guild = await GuildConfig.get(message.guild.id);
 
   let moderation = '';
   moderation += `Log: ${guild.logChannel ? `<#${guild.logChannel}>` : `disabled`} \n`;

@@ -3,18 +3,13 @@ const GuildConfig = require('./GuildConfig.js');
 const AutoResponse = require('./AutoResponse');
 const ChannelConfig = require('./ChannelConfig.js');
 const BadWord = require('./BadWord');
+const ChatTriggeredFeature = require('./ChatTriggeredFeature')
 
 /**
  * Config cache time (ms)
  * @type {Number}
  */
 const cacheDuration = 10*60*1000;
-
-/**
- * Guilds and their configs
- * @type {module:"discord.js".Collection}
- */
-const guilds = new Discord.Collection();
 
 /**
  * Channels and their configs
@@ -44,8 +39,8 @@ const util = {};
 util.init = (db, client) => {
   database = db;
   bot = client;
-  AutoResponse.init(db);
-  BadWord.init(db);
+  ChatTriggeredFeature.init(db);
+  GuildConfig.init({database});
 };
 
 /**
@@ -342,7 +337,7 @@ util.resolveGuild = async (guildInfo) => {
 util.logMessage = async (guildInfo, message) => {
   let guild = await util.resolveGuild(guildInfo);
 
-  let guildConfig = await util.getGuildConfig(guildInfo);
+  let guildConfig = await GuildConfig.get(guild.id);
   if (!guildConfig.logChannel) {
     return;
   }
@@ -386,7 +381,7 @@ util.logMessageDeletion = async (message, reason) => {
 util.logMessageEmbed = async (guildInfo, message, embed) => {
   let guild = await util.resolveGuild(guildInfo);
 
-  let guildConfig = await util.getGuildConfig(guildInfo);
+  let guildConfig = await GuildConfig.get(guild.id);
   if (!guildConfig.logChannel) {
     return;
   }
@@ -421,7 +416,7 @@ util.sendEmbed = async (channel, options) => {
  */
 util.logMessageModeration = async (guildInfo, moderator, user, reason, insertId, type, time, amount, total) => {
   let guild = await util.resolveGuild(guildInfo);
-  let guildConfig = await util.getGuildConfig(guildInfo);
+  let guildConfig = await GuildConfig.get(guild.id);
   if (!guildConfig.logChannel) {
     return ;
   }
@@ -481,7 +476,7 @@ util.chatSuccess = async (channel, user, reason, type, time) => {
  */
 util.logMessageChecks = async (guildInfo, user, reason, insertId, type) => {
   let guild = await util.resolveGuild(guildInfo);
-  let guildConfig = await util.getGuildConfig(guildInfo);
+  let guildConfig = await GuildConfig.get(guild.id);
   if (!guildConfig.logChannel) {
     return ;
   }
@@ -499,24 +494,6 @@ util.logMessageChecks = async (guildInfo, user, reason, insertId, type) => {
 };
 
 /**
- * Get a guilds config from cache or db
- * @async
- * @param {GuildInfo} guildInfo
- * @return {GuildConfig}
- */
-util.getGuildConfig = async (guildInfo) => {
-  let guild = await util.resolveGuild(guildInfo);
-
-  if (!guilds.has(guild.id)) {
-    if (!await util.refreshGuildConfig(guild.id))
-      return new GuildConfig(guild.id);
-  }
-
-  return guilds.get(guild.id);
-};
-
-
-/**
 * Get a channels config from cache or db
 * @async
 * @param {module:"discord.js".Snowflake} channelId
@@ -528,26 +505,6 @@ util.getChannelConfig = async (channelId) => {
       return new ChannelConfig(channelId);
   }
   return channels.get(channelId);
-};
-
-/**
- * Save a guilds config to db and refresh cache
- * @async
- * @param {GuildConfig} config
- */
-util.saveGuildConfig = async (config) => {
-  if(Object.keys(config).length <= 1) {
-    await database.query("DELETE FROM guilds WHERE id = ?",config.id);
-    return;
-  }
-  let result = await database.query("SELECT * FROM guilds WHERE id = ?",[config.id]);
-  if(result){
-    await database.query("UPDATE guilds SET config = ? WHERE id = ?",[JSON.stringify(config),config.id]);
-  }
-  else {
-    await database.query("INSERT INTO guilds (config,id) VALUES (?,?)",[JSON.stringify(config),config.id]);
-  }
-  await util.refreshGuildConfig(config.id);
 };
 
 /**
@@ -568,23 +525,6 @@ util.saveChannelConfig = async (config) => {
     await database.query("INSERT INTO channels (config,id) VALUES (?,?)",[JSON.stringify(config),config.id]);
   }
   await util.refreshChannelConfig(config.id);
-};
-
-/**
- * Reload guild config cache for a guild
- * @async
- * @param {module:"discord.js".Snowflake} guildId the guild's id
- * @return {Boolean} was there a config for this guild
- */
-util.refreshGuildConfig = async(guildId) => {
-  let result = await database.query("SELECT * FROM guilds WHERE id = ?", guildId);
-  if(!result)
-    return false;
-  guilds.set(result.id, new GuildConfig(result.id, JSON.parse(result.config)));
-  setTimeout(() => {
-    guilds.delete(result.id);
-  },cacheDuration);
-  return true;
 };
 
 /**
@@ -611,7 +551,7 @@ util.refreshChannelConfig  = async (channelId) => {
  * @return {Boolean}
  */
 util.isMod = async (member) => {
-  let guildConfig = await util.getGuildConfig(member.guild);
+  let guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */member.guild.id);
   for (let [key] of member.roles.cache) {
     if (guildConfig.isModRole(/** @type {module:"discord.js".Snowflake} */ key))
       return true;

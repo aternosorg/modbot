@@ -1,4 +1,5 @@
 const util = require('../../util');
+const GuildConfig = require('../../GuildConfig');
 
 exports.event = async (options, message) => {
   if (!message.guild || message.author.bot || message.member.hasPermission('MANAGE_MESSAGES')) {
@@ -9,7 +10,7 @@ exports.event = async (options, message) => {
     return ;
   }
 
-  let guildConfig = await util.getGuildConfig(message);
+  let guildConfig = await GuildConfig.get(message.guild.id);
   let channelConfig = await util.getChannelConfig(message.channel.id);
   let allowed;
 
