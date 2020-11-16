@@ -1,5 +1,6 @@
 const util = require('../util.js');
 const Discord = require('discord.js');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -55,7 +56,7 @@ command.execute = async (message, args, database, bot) => {
   strikes = parseInt(strikes.sum);
   embed.setDescription(embed.description + `**Strikes:** ${strikes || 0} \n`);
 
-  let guildConfig = await util.getGuildConfig(message);
+  let guildConfig = await GuildConfig.get(message.guild.id);
   let muteInfo = await database.query("SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = 'mute'",[userId,message.guild.id]);
   if (muteInfo) {
     if(muteInfo.expireTime) {

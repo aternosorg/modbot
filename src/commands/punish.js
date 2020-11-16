@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -15,7 +16,7 @@ command.execute = async (message, args, database, bot) => {
     message.channel.send("You don't have the permission to execute this command.");
     return;
   }
-  let config = await util.getGuildConfig(message);
+  let config = await GuildConfig.get(message.guild.id);
   if (!config.punishments) {
     config.punishments = {};
   }
@@ -63,7 +64,7 @@ command.execute = async (message, args, database, bot) => {
     case 'off':
     case 'disabled':
       delete config.punishments[count];
-      await util.saveGuildConfig(config);
+      await config.save();
       await message.channel.send(`Disabled punishment at ${count}!`);
       break;
     default:
@@ -77,7 +78,7 @@ command.execute = async (message, args, database, bot) => {
         action: action,
         duration: duration
       };
-      await util.saveGuildConfig(config);
+      await config.save;
       if (duration) {
         await message.channel.send(`Set punishment for ${count} ${count === 1 ? "strike" : "strikes"} to ${action} for ${util.secToTime(duration)}!`);
       }

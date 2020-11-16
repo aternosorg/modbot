@@ -1,4 +1,6 @@
 const util = require('../../util');
+const GuildConfig = require('../../GuildConfig');
+
 let users = {};
 
 exports.event = async (options, message) => {
@@ -10,7 +12,7 @@ exports.event = async (options, message) => {
     return;
   }
 
-  let guild = await util.getGuildConfig(message.guild.id);
+  let guild = await GuildConfig.get(message.guild.id);
 
   if (!guild.linkCooldown) {
     return;

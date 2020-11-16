@@ -2,6 +2,7 @@ const fs = require('fs').promises;
 const { prefix } = require('../../../config.json');
 const Discord = require('discord.js');
 const util = require('../../util');
+const GuildConfig = require('../../GuildConfig');
 
 /**
  * loaded commands
@@ -32,8 +33,9 @@ const commands = [];
  * @return {Promise<void>}
  */
 exports.event = async(options, message) => {
-    const [command,args] = await exports.getCommand(message);
-    if (command === null) return;
+    let foundCommand = await exports.getCommand(message);
+    if (foundCommand === null) return;
+    const [command,args] = foundCommand;
 
     try {
         await Promise.resolve(command.execute(message, args, options.database, options.bot));
@@ -48,16 +50,16 @@ exports.event = async(options, message) => {
 }
 
 /**
- * is this message a command
+ * get the command in this message
  * @param {module:"discord.js".Message} message
- * @return {Promise<[Object,String[]]|null[]>}
+ * @return {Promise<[Object,String[]]|null>}
  */
 exports.getCommand = async (message) => {
-    if (!message.guild || message.author.bot) return [null];
-    let guild = await util.getGuildConfig(message);
+    if (!message.guild || message.author.bot) return null;
+    let guild = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */ message.guild.id);
     const args = util.split(message.content,' ');
     let usedPrefix = util.startsWithMultiple(message.content.toLowerCase(),guild.prefix.toLowerCase(), prefix.toLowerCase());
-    if (!usedPrefix) return [null];
+    if (!usedPrefix) return null;
 
     let cmd = args.shift().slice(usedPrefix.length).toLowerCase();
     for (let command of commands) {
@@ -65,5 +67,5 @@ exports.getCommand = async (message) => {
             return [command,args];
         }
     }
-    return [null];
+    return null;
 }
