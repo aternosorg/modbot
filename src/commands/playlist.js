@@ -2,6 +2,7 @@ const util = require('../util.js');
 const tutorial = require('./tutorial.js');
 const {google} = require('googleapis');
 const config = require('../../config.json');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -28,7 +29,7 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let guildConfig = await util.getGuildConfig(message);
+  let guildConfig = await GuildConfig.get(message.guild.id);
   if (["off","disabled","none"].includes(playlist)) {
     delete guildConfig.playlist;
   }
@@ -49,7 +50,7 @@ command.execute = async (message, args, database, bot) => {
     guildConfig.playlist = playlist;
   }
 
-  await util.saveGuildConfig(guildConfig);
+  await guildConfig.save();
 
   tutorial.clearCache(message.guild);
 

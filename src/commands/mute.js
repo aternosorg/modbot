@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -57,7 +58,7 @@ command.mute = async (guild, user, moderator, reason, duration, channel) => {
   reason = reason || 'No reason provided.';
   let time = util.secToTime(duration);
 
-  let config = await util.getGuildConfig(guild.id);
+  let config = await GuildConfig.get(guild.id);
   let mutedRole = config.mutedRole;
   if (!mutedRole) {
     if (channel) {

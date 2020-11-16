@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -15,7 +16,7 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let config = await util.getGuildConfig(message);
+  let config = await GuildConfig.get(message.guild.id);
   let role;
   switch (args.shift()) {
     case 'add':
@@ -26,7 +27,7 @@ command.execute = async (message, args, database, bot) => {
         return;
       }
       config.addModRole(role.id);
-      await util.saveGuildConfig(config);
+      await config.save();
       await message.channel.send(`Added \`${role.name}\` as a moderator role!`);
       break;
 
@@ -44,7 +45,7 @@ command.execute = async (message, args, database, bot) => {
       }
 
       config.removeModRole(role.id);
-      await util.saveGuildConfig(config);
+      await config.save();
       await message.channel.send(`Removed \`${role.name}\` from moderator roles!`);
       break;
 

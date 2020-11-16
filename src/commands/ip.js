@@ -55,7 +55,7 @@ command.execute = async (message, args, database, bot) => {
 /**
  *
  * @param string
- * @return {null|number}
+ * @return {Number|null}
  */
 function getMode(string) {
   if (['require','required'].includes(string)) {

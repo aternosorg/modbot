@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -50,9 +51,9 @@ command.execute = async (message, args, database, bot) => {
   }
   let mode = getMode(args.shift());
 
-  let guildConfig = await util.getGuildConfig(message);
+  let guildConfig = await GuildConfig.get(message.guild.id);
   guildConfig.invites = mode;
-  await util.saveGuildConfig(guildConfig);
+  await guildConfig.save();
 
   await message.channel.send(`Invites are now ${mode === true ? 'allowed' : 'forbidden'}`);
 };

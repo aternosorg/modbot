@@ -1,5 +1,6 @@
 const util = require('../util.js');
 const axios = require('axios');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -11,7 +12,7 @@ command.names = ['article'];
 
 command.execute = async (message, args, database, bot) => {
 
-  let guildConfig = await util.getGuildConfig(message);
+  let guildConfig = await GuildConfig.get(message.guild.id);
   if (!guildConfig.helpcenter) {
     await message.channel.send('No help center configured!');
     return ;

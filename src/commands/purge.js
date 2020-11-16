@@ -1,5 +1,6 @@
 const util = require('../util.js');
 const Discord = require('discord.js');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -142,7 +143,7 @@ command.execute = async (message, args, database, bot) => {
     await util.delete(response,{timeout: 3000});
   } catch (e) {}
 
-  let guildConfig = await util.getGuildConfig(message);
+  let guildConfig = await GuildConfig.get(message.guild.id);
   const logembed = new Discord.MessageEmbed()
   .setColor(util.color.orange)
   .setAuthor(`${message.author.username}#${message.author.discriminator} purged ${messages.size} ${messages.size === 1 ? 'message' : 'messages'}.`)
