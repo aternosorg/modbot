@@ -1,13 +1,16 @@
 const util = require('../../util');
+const GuildConfig = require('../../GuildConfig');
 
 exports.event = async (options, message) => {
-    if (!message.guild || message.author.bot || await util.isMod(message.member) || message.member.hasPermission("MANAGE_MESSAGES")) return;
+    if (!message.guild || message.author.bot || await util.isMod(message.member) || message.member.hasPermission("MANAGE_MESSAGES") || (await GuildConfig.get(message.guild.id)).caps === false) return;
 
-    const uppercase = message.content.match(/[A-Z]+/g).join().length;
-    const lowercase = message.content.match(/[a-z]+/g).join().length;
+    let uppercase = message.content.match(/[A-Z]+/g);
+    if (uppercase) uppercase = uppercase.join().length;
+    let lowercase = message.content.match(/[a-z]+/g);
+    if (lowercase) lowercase = lowercase.join().length;
 
-    if (uppercase / lowercase >= 0.70) {
-        const reason = `Too much caps`;
+    if (uppercase / (lowercase + uppercase) >= 0.7) {
+        const reason = `Too many caps`;
         await util.delete(message, { reason: reason } );
         await util.logMessageDeletion(message, reason);
     }
