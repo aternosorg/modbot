@@ -11,6 +11,7 @@ exports.event = async (options, message) => {
 
     if (uppercase / (lowercase + uppercase) >= 0.7) {
         const reason = `Too many caps`;
+        await message.reply('don\'t use so many caps!')
         await util.delete(message, { reason: reason } );
         await util.logMessageDeletion(message, reason);
     }
