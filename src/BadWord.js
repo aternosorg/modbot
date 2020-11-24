@@ -32,7 +32,7 @@ class BadWord extends ChatTriggeredFeature {
 
     if (json) {
       this.trigger = json.trigger;
-      this.punishment = json.punishment instanceof String ? JSON.parse(json.punishment) : json.punishment;
+      this.punishment = typeof(json.punishment) === 'string' ? JSON.parse(json.punishment) : json.punishment;
       this.response = json.response;
       this.global = json.global;
       this.channels = json.channels;
@@ -67,8 +67,9 @@ class BadWord extends ChatTriggeredFeature {
           {name: "Response", value: this.response === 'default' ? BadWord.defaultResponse :this.response.substring(0,1000)},
           {name: "Channels", value: this.global ? "global" : this.channels.map(c => `<#${c}>`).join(', ')}
         ]);
+    console.log(this.punishment)
     if (this.punishment.action) {
-      embed.addField("Punishment", `${this.punishment.action} for ${this.punishment.duration}`)
+      embed.addField("Punishment", `${this.punishment.action} ${this.punishment.duration ? `for ${this.punishment.duration}` : ''}`)
     }
     return embed;
   }
