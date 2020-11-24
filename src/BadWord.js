@@ -67,7 +67,6 @@ class BadWord extends ChatTriggeredFeature {
           {name: "Response", value: this.response === 'default' ? BadWord.defaultResponse :this.response.substring(0,1000)},
           {name: "Channels", value: this.global ? "global" : this.channels.map(c => `<#${c}>`).join(', ')}
         ]);
-    console.log(this.punishment)
     if (this.punishment.action) {
       embed.addField("Punishment", `${this.punishment.action} ${this.punishment.duration ? `for ${this.punishment.duration}` : ''}`)
     }
