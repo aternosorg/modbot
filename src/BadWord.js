@@ -32,7 +32,7 @@ class BadWord extends ChatTriggeredFeature {
 
     if (json) {
       this.trigger = json.trigger;
-      this.punishment = json.punishment instanceof String ? JSON.parse(json.punishment) : json.punishment;
+      this.punishment = typeof(json.punishment) === 'string' ? JSON.parse(json.punishment) : json.punishment;
       this.response = json.response;
       this.global = json.global;
       this.channels = json.channels;
@@ -58,16 +58,19 @@ class BadWord extends ChatTriggeredFeature {
    * @returns {module:"discord.js".MessageEmbed}
    */
   embed(title, color) {
-    return new Discord.MessageEmbed()
+    const embed = new Discord.MessageEmbed()
         .setTitle(title + ` [${this.id}]`)
         .setColor(color)
         .addFields(
             /** @type {any} */[
           {name: "Trigger", value: `${this.trigger.type}: \`${this.trigger.type === 'regex' ? '/' + this.trigger.content + '/' + this.trigger.flags : this.trigger.content}\``},
-          {name: "Punishment", value: `${this.punishment.action} for ${this.punishment.duration}`},
           {name: "Response", value: this.response === 'default' ? BadWord.defaultResponse :this.response.substring(0,1000)},
           {name: "Channels", value: this.global ? "global" : this.channels.map(c => `<#${c}>`).join(', ')}
         ]);
+    if (this.punishment.action) {
+      embed.addField("Punishment", `${this.punishment.action} ${this.punishment.duration ? `for ${this.punishment.duration}` : ''}`)
+    }
+    return embed;
   }
 }
 

@@ -101,7 +101,7 @@ command.add = async (guild, user, count, moderator, reason, channel, database, b
  * @param {Database}                    database
  * @return {Promise<void>}
  */
-async function punish(guild, user, total, bot) {
+async function punish(guild, user, total, bot, database) {
   let config = await GuildConfig.get(guild.id);
   let punishment;
   let count = total;

@@ -12,24 +12,30 @@ let database;
  */
 const cacheDuration = 10*60*1000;
 
-/**
- * channel specific features
- * @type {module:"discord.js".Collection}
- */
-const channels = new Discord.Collection();
-
-/**
- * guild wide features
- * @type {module:"discord.js".Collection}
- */
-const guilds = new Discord.Collection();
-
 class ChatTriggeredFeature {
 
+    /**
+     * Cache for all chat triggered features by tableName
+     * @type {{}}
+     */
+    static cache = {}
+
+    /**
+     * Possible trigger types
+     * @type {String[]}
+     */
     static triggerTypes = ['regex', 'include', 'match'];
 
+    /**
+     * table name
+     * @type {String}
+     */
     static tableName;
 
+    /**
+     * column names
+     * @type {String[]}
+     */
     static columns;
 
     /**
@@ -45,6 +51,35 @@ class ChatTriggeredFeature {
      */
     static init(db) {
         database = db;
+    }
+
+    static getCache() {
+        let cache = this.cache[this.tableName];
+        if (!cache) {
+            cache = {
+                /**
+                 * channel specific features
+                 * @type {module:"discord.js".Collection}
+                 */
+                channels: new Discord.Collection(),
+
+                /**
+                 * guild wide features
+                 * @type {module:"discord.js".Collection}
+                 */
+                guilds: new Discord.Collection()
+            };
+            this.cache[this.tableName] = cache;
+        }
+        return cache;
+    }
+
+    static getChannelCache() {
+        return this.getCache().channels;
+    }
+
+    static getGuildCache() {
+        return this.getCache().guilds;
     }
 
     /**
@@ -90,13 +125,13 @@ class ChatTriggeredFeature {
         this.id = dbentry.insertId;
 
         if (this.global) {
-            if (!guilds.has(this.gid)) guilds.set(this.gid, new Discord.Collection())
-            guilds.get(this.gid).set(this.id, this);
+            if (!this.constructor.getGuildCache().has(this.gid)) this.constructor.getGuildCache().set(this.gid, new Discord.Collection())
+            this.constructor.getGuildCache().get(this.gid).set(this.id, this);
         }
         else {
             for (const channel of this.channels) {
-                if(!channels.has(channel)) channels.set(channel, new Discord.Collection());
-                channels.get(channel).set(this.id, this);
+                if(!this.constructor.getChannelCache().has(channel)) this.constructor.getChannelCache().set(channel, new Discord.Collection());
+                this.constructor.getChannelCache().get(channel).set(this.id, this);
             }
         }
 
@@ -112,12 +147,12 @@ class ChatTriggeredFeature {
         await database.query(`DELETE FROM ${database.escapeId(this.constructor.tableName)} WHERE id = ?`,[this.id]);
 
         if (this.global) {
-            if (guilds.has(this.gid))
-                guilds.get(this.gid).delete(this.id);
+            if (this.constructor.getGuildCache().has(this.gid))
+                this.constructor.getGuildCache().get(this.gid).delete(this.id);
         }
         else {
             for (const channel of this.channels) {
-                channels.get(channel).delete(this.id);
+                this.constructor.getChannelCache().get(channel).delete(this.id);
             }
         }
     }
@@ -131,15 +166,15 @@ class ChatTriggeredFeature {
      */
     static async get(channelId, guildId) {
 
-        if (!channels.has(channelId)) {
+        if (!this.getChannelCache().has(channelId)) {
             await this.refreshChannel(channelId);
         }
 
-        if (!guilds.has(guildId)) {
+        if (!this.getGuildCache().has(guildId)) {
             await this.refreshGuild(guildId);
         }
 
-        return channels.get(channelId).concat(guilds.get(guildId)).sort((a, b) => a.id - b.id);
+        return this.getChannelCache().get(channelId).concat(this.getGuildCache().get(guildId)).sort((a, b) => a.id - b.id);
     }
 
     /**
@@ -184,9 +219,9 @@ class ChatTriggeredFeature {
             }, res.id);
             newItems.set(res.id, o);
         }
-        guilds.set(guildId, newItems);
+        this.getGuildCache().set(guildId, newItems);
         setTimeout(() => {
-            guilds.delete(guildId);
+            this.getGuildCache().delete(guildId);
         },cacheDuration);
     }
 
@@ -208,9 +243,9 @@ class ChatTriggeredFeature {
                 channels: res.channels.split(',')
             }, res.id));
         }
-        channels.set(channelId, newItems);
+        this.getChannelCache().set(channelId, newItems);
         setTimeout(() => {
-            channels.delete(channelId);
+            this.getChannelCache().delete(channelId);
         },cacheDuration);
     }
 
