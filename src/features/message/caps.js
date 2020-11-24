@@ -11,7 +11,7 @@ exports.event = async (options, message) => {
 
     if (uppercase / (lowercase + uppercase) >= 0.7) {
         const reason = `Too many caps`;
-        const response = await message.channel.send("Don't use that many capital letters!")
+        const response = await message.channel.send(`<@!${message.author.id} don't use that many capital letters!`)
         await util.delete(message, { reason: reason } );
         await util.logMessageDeletion(message, reason);
         await response.delete({timeout: 3000})
