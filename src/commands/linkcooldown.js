@@ -19,7 +19,7 @@ command.execute = async (message, args, database, bot) => {
   //Get channel
   let duration = util.timeToSec(args.join(' '));
   if (!duration && (args[0] !== 'off' || args[0] !== 'disabled')) {
-    await message.channel.send("USAGE: duration|off!");
+    await message.channel.send(util.usage(message,command.names[0]));
     return;
   }
 
