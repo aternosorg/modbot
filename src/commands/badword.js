@@ -1,18 +1,17 @@
-const util = require('../util.js');
-const AutoResponse = require('../AutoResponse');
-
-const list = require('./autoresponse/list');
-const add = require('./autoresponse/add');
-const remove = require('./autoresponse/remove');
-const info = require('./autoresponse/info');
-
 const command = {};
+const BadWord = require('../BadWord');
+const util = require('../util');
 
-command.description = 'Adds, removes and lists auto responses';
+const list = require('./badword/list');
+const add = require('./badword/add');
+const remove = require('./badword/remove');
+const info = require('./badword/info');
+
+command.description = 'Adds, removes and lists bad words';
 
 command.usage = '<list|add|info|remove> <id>';
 
-command.names = ['autoresponse','response','responses','autoresponses'];
+command.names = ['badword','badwords','blacklist'];
 
 command.execute = async (message, args, database, bot) => {
     //Permission check
@@ -24,7 +23,7 @@ command.execute = async (message, args, database, bot) => {
         return await message.channel.send(await util.usage(message,command.names[0]));
     }
 
-    let responses = await AutoResponse.getAll(message.guild.id);
+    let responses = await BadWord.getAll(message.guild.id);
 
     switch (args.shift().toLowerCase()) {
         case 'list':
@@ -47,6 +46,6 @@ command.execute = async (message, args, database, bot) => {
         default:
             return await message.channel.send(await util.usage(message,command.names[0]));
     }
-};
+}
 
 module.exports = command;

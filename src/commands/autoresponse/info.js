@@ -2,9 +2,9 @@ const util = require('../../util.js');
 
 /**
  * get info about an autoresponse
- * @param {Object} responses
- * @param {module:"discord.js".Message} message
- * @param {String[]} args
+ * @param {module:"discord.js".Collection}  responses
+ * @param {module:"discord.js".Message}     message
+ * @param {String[]}                        args
  * @returns {Promise<void>}
  */
 module.exports = async (responses, message, args) => {

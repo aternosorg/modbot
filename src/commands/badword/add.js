@@ -1,8 +1,8 @@
-const AutoResponse = require('../../AutoResponse');
+const BadWord = require('../../BadWord');
 const util = require('../../util.js');
 
 /**
- * add an autoresponse
+ * add a bad word
  * @param {module:"discord.js".Message} message
  * @returns {Promise<void>}
  */
@@ -10,22 +10,18 @@ module.exports = async (message) => {
     await message.channel.send("Please enter your trigger type (\`regex\`, \`include\` or \`match\`)!");
     let type = await util.getResponse(message.channel,message.author.id);
 
-    if (type === null) {
-        return;
-    }
+    if (type === null) return;
 
     type = type.toLowerCase();
 
-    if (!AutoResponse.triggerTypes.includes(type)) {
+    if (!BadWord.triggerTypes.includes(type)) {
         return await message.channel.send("Not a valid trigger type!");
     }
 
     await message.channel.send(`Please enter your trigger (${ type === 'regex' ? '`/regex/flags`' :'`example trigger`'})!`);
     let content = await util.getResponse(message.channel,message.author.id);
 
-    if (content === null) {
-        return;
-    }
+    if (content === null) return;
 
     content = content.replace(/^`(.*)`$/,(a,b) => b);
 
@@ -50,24 +46,40 @@ module.exports = async (message) => {
             content: content,
             flags: flags
         },
-        response: null,
+        punishment: {
+            action: null,
+            duration: null
+        },
         global: null,
         channels: []
     };
 
-    await message.channel.send("Please enter your response!");
+    await message.channel.send(`Please enter your punishment type (\`${BadWord.punishmentTypes.join('\`, \`')}\`)!`);
+    let punishmentInfo = await util.getResponse(message.channel,message.author.id);
+
+    if (punishmentInfo === null) return;
+
+    punishmentInfo = util.split(punishmentInfo,' ');
+
+    options.punishment = {
+        action: punishmentInfo.shift().toLowerCase(),
+        duration: punishmentInfo.join(' ')
+    };
+
+    if (!BadWord.punishmentTypes.includes(options.punishment.action)) {
+        return await message.channel.send("Not a valid punishment type!");
+    }
+
+    await message.channel.send("Please enter \`default\`, \`disabled\` or a message that will be shown to the user");
     options.response = await util.getResponse(message.channel, message.author.id, 60000);
 
-    if (options.response === null) {
-        return;
-    }
+    if (options.response === null) return;
+    if (['disabled','default'].includes(options.response.toLowerCase())) options.response = options.response.toLowerCase();
 
-    await message.channel.send("Please select the channels this auto-response should work in (\`#mention\`, \`channelid\` or \`global\`)!");
+    await message.channel.send("Please select the channels this word should be forbidden in (\`#mention\`, \`channelid\` or \`global\`)!");
     let channels = await util.getResponse(message.channel, message.author.id);
 
-    if (channels === null) {
-        return;
-    }
+    if (channels === null) return;
 
     if ((await util.channelMentions(message.guild,channels.split(" "))).length === 0 && channels.toLowerCase() !== 'global') {
         return await message.channel.send("Invalid channels. (#channel|channelId|global)");
@@ -81,8 +93,8 @@ module.exports = async (message) => {
         options.channels = await util.channelMentions(message.guild,channels.split(" "));
     }
 
-    const response = new AutoResponse(/** @type {module:"discord.js".Snowflake} */message.guild.id, options);
+    const response = new BadWord(/** @type {module:"discord.js".Snowflake} */message.guild.id, options);
     response.id = await response.save();
 
-    await message.channel.send(response.embed("Added new autoresponse",util.color.green));
+    await message.channel.send(response.embed("Added new bad word",util.color.green));
 };
