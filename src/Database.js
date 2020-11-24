@@ -119,6 +119,31 @@ class Database {
     async query(...args) {
         return (await this.queryAll(...args))[0] || null;
     }
+
+    /**
+     * Escape table/column names
+     *
+     * @param args  arguments to forward to the mysql escapeId function
+     * @return {string}
+     */
+    escapeId(...args) {
+        return mysql.escapeId(...args);
+    }
+
+    /**
+     * Escape an array of table/column names
+     *
+     * @param array values that should be escaped
+     * @param args  arguments to forward to the mysql escapeId function
+     * @return {[]}
+     */
+    escapeIdArray(array, ...args) {
+        const escaped = [];
+        for (const element of array) {
+            escaped.push(this.escapeId(element, ...args));
+        }
+        return escaped;
+    }
 }
 
 module.exports = Database;

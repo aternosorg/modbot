@@ -6,9 +6,9 @@ const Discord = require('discord.js');
  */
 class AutoResponse extends ChatTriggeredFeature {
 
-  static tableName = `responses`;
+  static tableName = 'responses';
 
-  static columns = ['`guildid`', '`trigger`', '`response`', '`global`', '`channels`'];
+  static columns = ['guildid', 'trigger', 'response', 'global', 'channels'];
 
   /**
    * constructor - create an auto response
