@@ -12,7 +12,7 @@ class BadWord extends ChatTriggeredFeature {
 
   static tableName = 'badWords';
 
-  static columns = ['`guildid`', '`trigger`', '`punishment`', '`response`', '`global`', '`channels`'];
+  static columns = ['guildid', 'trigger', 'punishment', 'response', 'global', 'channels'];
 
   /**
    * constructor - create a bad word
