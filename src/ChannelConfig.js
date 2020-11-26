@@ -1,7 +1,11 @@
+const Config = require('./Config');
+
 /**
  * Class representing the config of a channel
  */
-class ChannelConfig {
+class ChannelConfig extends Config {
+
+    static tableName = 'channels';
 
     /**
      * Constructor - create a channel config
@@ -15,7 +19,7 @@ class ChannelConfig {
      */
 
     constructor(id, json) {
-        this.id = id;
+        super(id);
 
         if (json) {
           this.mode = json.mode;

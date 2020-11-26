@@ -1,5 +1,6 @@
 const util = require('../util.js');
 const GuildConfig = require('../GuildConfig');
+const ChannelConfig = require('../ChannelConfig');
 
 const command = {};
 
@@ -30,14 +31,14 @@ command.execute = async (message, args, database, bot) => {
     }
     let mode = getMode(args.shift());
 
-    let channelConfig = await util.getChannelConfig(channel);
+    let channelConfig = await ChannelConfig.get(channel);
     if (mode === undefined) {
       delete channelConfig.invites;
     }
     else {
       channelConfig.invites = mode;
     }
-    await util.saveChannelConfig(channelConfig);
+    await channelConfig.save();
 
     await message.channel.send(`Invites are now ${mode === undefined ? 'server default' : mode === true ? 'allowed' : 'forbidden'} in <#${channel}>`);
 
