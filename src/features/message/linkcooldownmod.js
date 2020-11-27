@@ -22,7 +22,7 @@ exports.event = async (options, message) => {
   if (users[message.author.id] && users[message.author.id] + guild.linkCooldown > now) {
     await util.delete(message);
     await util.logMessageDeletion(message, `link cooldown`);
-    let response = await message.channel.send(`<@!${message.author.id}> You can post a link again in ${util.secToTime(users[message.author.id] + guild.linkCooldown - now)}!`);
+    const response = await message.channel.send(`<@!${message.author.id}> You can post a link again in ${util.secToTime(users[message.author.id] + guild.linkCooldown - now) || '1s'}!`);
     await util.delete(response, {timeout:3000});
   }
   else {
