@@ -1,4 +1,5 @@
 const util = require('../../util');
+const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
 
 exports.event = async (options, message) => {
@@ -30,7 +31,7 @@ exports.event = async (options, message) => {
 
   if (!allowed) {
     await util.delete(message, {reason: 'Invites are not allowed here'});
-    await util.logMessageDeletion(message, 'Invites are not allowed here');
+    await Log.logMessageDeletion(message, 'Invites are not allowed here');
     let response = await message.channel.send(`<@!${message.author.id}> Invites are not allowed here!`);
     await util.delete(response, {timeout: 5000});
   }

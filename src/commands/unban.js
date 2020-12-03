@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const Log = require('../Log');
 
 const command = {};
 
@@ -53,7 +54,7 @@ command.execute = async (message, args, database, bot) => {
     let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, moderator, active) VALUES (?,?,?,?,?,?,?)",[message.guild.id, userId, 'unban', now, reason, message.author.id, false]);
 
     await util.chatSuccess(message.channel, user, reason, "unbanned");
-    await util.logMessageModeration(message.guild.id, message.author, user, reason, insert.insertId, "Unban");
+    await Log.logModeration(message.guild.id, message.author, user, reason, insert.insertId, "Unban");
   }
 };
 

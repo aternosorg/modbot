@@ -117,7 +117,7 @@ class GuildConfig {
      * Get a guilds config from cache or db
      * @async
      * @param {module:"discord.js".Snowflake} guild guildid
-     * @return {GuildConfig}
+     * @return {Promise<GuildConfig>|GuildConfig}
      */
     static async get (guild) {
         if (!guilds.has(guild)) {

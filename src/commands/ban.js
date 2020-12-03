@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const Log = require('../Log');
 
 const command = {};
 
@@ -75,7 +76,7 @@ command.ban = async(guild, user, moderator, reason, duration, channel) => {
   if (channel) {
     await util.chatSuccess(channel, user, reason, "banned", time);
   }
-  await util.logMessageModeration(guild.id, moderator, user, reason, insert, "Ban", time);
+  await Log.logModeration(guild.id, moderator, user, reason, insert, "Ban", {time});
 };
 
 module.exports = command;

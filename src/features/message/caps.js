@@ -1,4 +1,5 @@
 const util = require('../../util');
+const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
 
 exports.event = async (options, message) => {
@@ -13,7 +14,7 @@ exports.event = async (options, message) => {
         const reason = `Too many caps`;
         const response = await message.channel.send(`<@!${message.author.id}> Don't use that many capital letters!`)
         await util.delete(message, { reason: reason } );
-        await util.logMessageDeletion(message, reason);
+        await Log.logMessageDeletion(message, reason);
         await response.delete({timeout: 3000})
     }
 };
