@@ -1,7 +1,3 @@
-/**
- * @typedef {{tempmutes: Object, strikes: Object, tempbans: Object}} VortexData
- */
-
 const axios = require('axios');
 const util = require('../util.js');
 

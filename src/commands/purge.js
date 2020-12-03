@@ -8,7 +8,7 @@ command.description = 'Purge messages';
 
 command.usage = '</regex/flags> <@users> <userIds> <text> <count>';
 
-command.comment = 'Count specifes the amount of messages that will be tested for your filters (not the amount that will be deleted) and defaults to 100';
+command.comment = 'Count specifies the amount of messages that will be tested for your filters (not the amount that will be deleted) and defaults to 100';
 
 command.names = ['purge','clean'];
 

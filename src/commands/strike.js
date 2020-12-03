@@ -90,25 +90,45 @@ command.add = async (guild, user, count, moderator, reason, channel, database, b
     await util.chatSuccess(channel, user, reason, "striked");
   }
   await util.logMessageModeration(guild, moderator, user, reason, insert.insertId, "Strike", null, count, total);
-  await punish(guild, user, total, bot);
+  await punish(guild, user, total, bot, database);
 };
 
-async function punish(guild, user, total, bot) {
+/**
+ * @param {module:"discord.js".Guild}   guild
+ * @param {module:"discord.js".User}    user
+ * @param {Number}                      total
+ * @param {module:"discord.js".Client}  bot
+ * @param {Database}                    database
+ * @return {Promise<void>}
+ */
+async function punish(guild, user, total, bot, database) {
   let config = await GuildConfig.get(guild.id);
-  let punishment, member;
+  let punishment;
   let count = total;
   do {
     punishment = config.punishments[count];
     count --;
   } while (!punishment && count > 0);
 
-  if (!punishment) {
-    return ;
-  }
+  if (!punishment) return;
 
+  await command.executePunishment(punishment, guild, user, bot, database,`Reaching ${total} ${total === 1 ? "strike" : "strikes"}`);
+}
+
+/**
+ * @param {Punishment}                  punishment
+ * @param {module:"discord.js".Guild}   guild
+ * @param {module:"discord.js".User}    user
+ * @param {module:"discord.js".Client}  bot
+ * @param {Database}                    database
+ * @param {String}                      reason
+ * @return {Promise<void>}
+ */
+command.executePunishment = async (punishment, guild, user, bot, database, reason) => {
+  let member;
   switch (punishment.action) {
     case 'ban':
-      await ban.ban(guild, user, bot.user, `Reaching ${total} ${total === 1 ? "strike" : "strikes"}`, punishment.duration);
+      await ban.ban(guild, user, bot.user, reason, punishment.duration);
       break;
     case 'kick':
       try {
@@ -116,10 +136,10 @@ async function punish(guild, user, total, bot) {
       } catch (e) {
         return;
       }
-      await kick.kick(guild, member, bot.user, `Reaching ${total} ${total === 1 ? "strike" : "strikes"}`);
+      await kick.kick(guild, member, bot.user, reason);
       break;
     case 'mute':
-      await mute.mute(guild, user, bot.user, `Reaching ${total} ${total === 1 ? "strike" : "strikes"}`, punishment.duration);
+      await mute.mute(guild, user, bot.user, reason, punishment.duration);
       break;
     case 'softban':
       try {
@@ -127,7 +147,11 @@ async function punish(guild, user, total, bot) {
       } catch (e) {
         return;
       }
-      await softban.softban(guild, member, bot.user, `Reaching ${total} ${total === 1 ? "strike" : "strikes"}`);
+      await softban.softban(guild, member, bot.user, reason);
+      break;
+
+    case 'strike':
+      await command.add(guild,user, 1, bot.user, reason, null, database, bot);
       break;
   }
 }

@@ -1,24 +1,24 @@
 const util = require('../../util.js');
 
 /**
- * remove an auto-response
- * @param {module:"discord.js".Collection}  responses
+ * remove a bad word
+ * @param {module:"discord.js".Collection}  badWords
  * @param {module:"discord.js".Message}     message
  * @param {String[]}                        args
  * @returns {Promise<void>}
  */
-module.exports = async (responses, message, args) => {
+module.exports = async (badWords, message, args) => {
     if (!args.length) {
-        await message.channel.send("Provide the id of the autoresponse you want to remove");
+        await message.channel.send("Provide the id of the bad word you want to remove");
         return;
     }
-    let response = responses.get(parseInt(args.shift()));
-    if (!response) {
+    let badWord = badWords.get(parseInt(args.shift()));
+    if (!badWord) {
         await message.channel.send("Invalid id!");
         return;
     }
 
-    let confirmation = await message.channel.send("Do you really want to delete this autoresponse?", response.embed("Remove autoresponse", util.color.red));
+    let confirmation = await message.channel.send("Do you really want to delete this bad word?", badWord.embed("Remove bad word", util.color.red));
     {
         let yes = confirmation.react(util.icons.yes);
         let no = confirmation.react(util.icons.no);
@@ -38,7 +38,7 @@ module.exports = async (responses, message, args) => {
         return await message.channel.send("Canceled!");
     }
 
-    await response.remove();
+    await badWord.remove();
 
-    await message.channel.send(`Removed the autoresponse with the id ${response.id}!`);
+    await message.channel.send(`Removed the bad word with the id ${badWord.id}!`);
 };

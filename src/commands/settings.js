@@ -20,24 +20,25 @@ command.execute = async (message, args, database, bot) => {
   let guild = await GuildConfig.get(message.guild.id);
 
   let moderation = '';
-  moderation += `Log: ${guild.logChannel ? `<#${guild.logChannel}>` : `disabled`} \n`;
-  moderation += `Muted role: ${guild.mutedRole ? `<@&${guild.mutedRole}>` : `disabled`} \n`;
-  moderation += `Mod roles: ${guild.modRoles.length ? `<@&${guild.modRoles.join('>, <@&')}>` : `none`} \n`;
+  moderation += `Log: ${guild.logChannel ? `<#${guild.logChannel}>` : 'disabled'} \n`;
+  moderation += `Muted role: ${guild.mutedRole ? `<@&${guild.mutedRole}>` : 'disabled'} \n`;
+  moderation += `Mod roles: ${guild.modRoles.length ? `<@&${guild.modRoles.join('>, <@&')}>` : 'none'} \n`;
 
   let support = '';
-  support += `Playlist: ${guild.playlist ? `https://www.youtube.com/playlist?list=${guild.playlist}` : `disabled`} \n`;
-  support += `Helpcenter: ${guild.helpcenter ? `https://${guild.helpcenter}.zendesk.com/` : `disabled`} \n`;
+  support += `Playlist: ${guild.playlist ? `https://www.youtube.com/playlist?list=${guild.playlist}` : 'disabled'} \n`;
+  support += `Helpcenter: ${guild.helpcenter ? `https://${guild.helpcenter}.zendesk.com/` : 'disabled'} \n`;
 
   let automod = '';
-  automod += `Invites: ${guild.invites === false ? `forbidden` : `allowed`} \n`;
-  automod += `Link cooldown: ${guild.linkCooldown > 0 ? util.secToTime(guild.linkCooldown) : `disabled`} \n`;
+  automod += `Invites: ${guild.invites === false ? 'forbidden' : 'allowed'} \n`;
+  automod += `Link cooldown: ${guild.linkCooldown > 0 ? util.secToTime(guild.linkCooldown) : 'disabled'} \n`;
+  automod += `Caps: ${guild.caps === true ? 'enabled' : 'disabled'} \n`;
 
   let embed = new Discord.MessageEmbed()
   .setTitle(`Settings | Prefix: ${guild.prefix}`)
   .addFields(
-      /** @type {any} */ {name: `Moderation`, value: moderation, inline: false},
-      /** @type {any} */ {name: `Support`, value: support, inline: false},
-      /** @type {any} */ {name: `Automod`, value: automod, inline: false }
+      /** @type {any} */ {name: 'Moderation', value: moderation, inline: false},
+      /** @type {any} */ {name: 'Support', value: support, inline: false},
+      /** @type {any} */ {name: 'Automod', value: automod, inline: false }
   );
 
   await message.channel.send(embed);
