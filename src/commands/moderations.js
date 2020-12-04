@@ -5,7 +5,7 @@ const command = {};
 
 command.description = 'List all moderations for a user';
 
-command.usage = '@user|userId';
+command.usage = '<@user|userId>';
 
 command.names = ['moderations','modlog','modlogs'];
 
