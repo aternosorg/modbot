@@ -15,7 +15,7 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let userId = util.userMentionToId(args.shift());
+  const userId = util.userMentionToId(args.shift());
   if (!userId) {
     await message.channel.send(await util.usage(message, command.names[0]));
     return;
@@ -30,10 +30,11 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let moderations = await database.queryAll("SELECT id, action, created, value, expireTime - created AS duration, reason, moderator FROM moderations WHERE userid = ? AND guildid = ?",[userId,message.guild.id]);
+  /** @type {ModerationData[]} */
+  const moderations = await database.queryAll("SELECT id, action, created, value, expireTime - created AS duration, reason, moderator FROM moderations WHERE userid = ? AND guildid = ?",[userId,message.guild.id]);
 
   if (moderations.length === 0) {
-    let embed = new Discord.MessageEmbed({
+    const embed = new Discord.MessageEmbed({
       author: {
         name: `Moderations for ${user.username}#${user.discriminator}`,
         iconURL: user.avatarURL()
@@ -44,30 +45,57 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let text = '', i = 1;
-  async function send(start, end) {
-    let embed = new Discord.MessageEmbed({
-      author: {
-        name: `Moderations for ${user.username}#${user.discriminator} (${start} to ${end} of ${moderations.length})`,
-        iconURL: user.avatarURL()
-      },
-      description: text
-    });
-    await message.channel.send(embed);
-  }
-  for (let [key,/** @type {ModerationData} */ moderation] of moderations.entries()) {
-    if (text.length > 1800) {
-      await send(i, key);
-      text = '';
-      i = key + 1;
+  let index = 0;
+  /** @type {module:"discord.js".Message} */
+  const response = await message.channel.send(generateEmbed(moderations,user,0));
+
+  await response.react(util.icons.left)
+  await response.react(util.icons.right)
+
+  const reactionCollector = response.createReactionCollector(async (reaction, user) => {
+    const member = message.guild.member(user);
+    return await util.isMod(member) || member.hasPermission('MANAGE_MESSAGES') && [util.icons.left,util.icons.right].includes(reaction.emoji.name)
+  })
+
+  reactionCollector.on('collect', async (reaction, reactingUser) => {
+    if (reaction.emoji.name === util.icons.right) {
+      if (index < Math.floor(moderations.length / 10)) {
+        index++;
+        await response.edit(generateEmbed(moderations, user, index*10));
+      }
+      await reaction.users.remove(reactingUser);
     }
-    let timestamp = new Date(moderation.created*1000);
+    else {
+      if (index > 0) {
+        index--;
+        await response.edit(generateEmbed(moderations, user, index*10));
+      }
+      await reaction.users.remove(reactingUser);
+    }
+  })
+};
+
+/**
+ * generate embed with up to 10 moderations
+ * @param {ModerationData[]}          moderations
+ * @param {module:"discord.js".User}  user  who's moderations are this?
+ * @param {Number}                    start first moderation
+ * @return {module:"discord.js".MessageEmbed}
+ */
+function generateEmbed(moderations, user, start) {
+  let text = '', i = 1;
+  for (const [key,/** @type {ModerationData} */ moderation] of moderations.entries()) {
+
+    if (key < start) continue;
+    if (i > 10) break;
+
+    const timestamp = new Date(moderation.created*1000);
     text += `**${moderation.action.toUpperCase()}** [#${moderation.id}] - *${timestamp.toUTCString()}*\n`;
     if (moderation.action === 'strike') {
       text += `Strikes: ${moderation.value} \n`;
     }
-    else if (moderation === 'pardon') {
-      text += `Pardoned strikes: ${moderation.value} \n`;
+    else if (moderation.action === 'pardon') {
+      text += `Pardoned strikes: ${-moderation.value} \n`;
     }
     if (moderation.duration) {
       text += `Duration: ${util.secToTime(moderation.duration)} \n`;
@@ -75,9 +103,16 @@ command.execute = async (message, args, database, bot) => {
     if (moderation.moderator) {
       text += `Moderator: <@!${moderation.moderator}> \n`;
     }
-    text += `Reason: ${moderation.reason} \n\n`;
+    text += `Reason: ${moderation.reason.substring(0, 90)} \n\n`;
+    i++;
   }
-  await send(i, moderations.length);
-};
+  return new Discord.MessageEmbed({
+    author: {
+      name: `Moderations for ${user.username}#${user.discriminator} (${start + 1} to ${start + 10 > moderations.length ? moderations.length : start + 10} of ${moderations.length})`,
+      iconURL: user.avatarURL()
+    },
+    description: text
+  });
+}
 
 module.exports = command;
