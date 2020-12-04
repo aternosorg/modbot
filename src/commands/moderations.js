@@ -45,7 +45,7 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let index = 0;
+  let index = 0, lastModified = Date.now();
   /** @type {module:"discord.js".Message} */
   const response = await message.channel.send(generateEmbed(moderations,user,0));
 
@@ -63,16 +63,23 @@ command.execute = async (message, args, database, bot) => {
         index++;
         await response.edit(generateEmbed(moderations, user, index*10));
       }
-      await reaction.users.remove(reactingUser);
     }
     else {
       if (index > 0) {
         index--;
         await response.edit(generateEmbed(moderations, user, index*10));
       }
-      await reaction.users.remove(reactingUser);
     }
-  })
+    await reaction.users.remove(reactingUser);
+    lastModified = Date.now();
+  });
+
+  const interval = setInterval(()=>{
+    if (Date.now() > (lastModified + 15000)) {
+      reactionCollector.stop("TIME");
+      clearInterval(interval);
+    }
+  },5000)
 };
 
 /**
