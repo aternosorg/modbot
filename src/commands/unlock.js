@@ -77,11 +77,9 @@ async function unlock(channel, everyone, message) {
   await util.retry(channel.updateOverwrite,channel,[everyone,config.lock],3, (/** @type {module:"discord.js".GuildChannel} */ channel) => {
     for (const key of Object.keys(config.lock)) {
       if (channel.permissionOverwrites.get(everyone).deny.has(/** @type {PermissionResolvable} */ key)) {
-        console.log('denied')
         return false;
       }
       if (config.lock[key] === true && !channel.permissionOverwrites.get(everyone).allow.has(/** @type {PermissionResolvable} */ key)) {
-        console.log('not allowed')
         return false;
       }
     }
