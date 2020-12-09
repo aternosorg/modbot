@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 
 const command = {};
 
-command.description = 'Search articles in the help center';
+command.description = 'Show someones avatar';
 
 command.usage = '<@user|id>';
 
