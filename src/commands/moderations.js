@@ -52,9 +52,13 @@ command.execute = async (message, args, database, bot) => {
   await response.react(util.icons.left)
   await response.react(util.icons.right)
 
-  const reactionCollector = response.createReactionCollector(async (reaction, user) => {
-    const member = message.guild.member(user);
-    return await util.isMod(member) || member.hasPermission('MANAGE_MESSAGES') && [util.icons.left,util.icons.right].includes(reaction.emoji.name)
+  const reactionCollector = response.createReactionCollector(async (reaction, reactingUser) => {
+    if (message.author.id === reactingUser.id && [util.icons.left,util.icons.right].includes(reaction.emoji.name))
+      return true;
+    else {
+      await reaction.users.remove(reactingUser);
+      return false;
+    }
   })
 
   reactionCollector.on('collect', async (reaction, reactingUser) => {
