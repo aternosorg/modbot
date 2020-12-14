@@ -1,29 +1,12 @@
 const config = require('../config.json');
-const Discord = require('discord.js');
-
-/**
- * Config cache time (ms)
- * @type {Number}
- */
-const cacheDuration = 10*60*1000;
-
-/**
- * Guilds and their configs
- * @type {module:"discord.js".Collection}
- */
-const guilds = new Discord.Collection();
-
-/**
- * Database
- * @type {Database}
- */
-let database;
-
+const Config = require('./Config');
 
 /**
  * Class representing the config of a guild
  */
-class GuildConfig {
+class GuildConfig extends Config {
+
+    static tableName = 'guilds';
 
     /**
      * Constructor - create a guild config
@@ -43,7 +26,7 @@ class GuildConfig {
      * @return {GuildConfig}
      */
     constructor(id, json) {
-        this.id = id;
+        super(id);
 
         if (json) {
           this.logChannel = json.logChannel;
@@ -69,15 +52,6 @@ class GuildConfig {
         if (!this.prefix) {
           this.prefix = config.prefix;
         }
-    }
-
-    /**
-     * save database
-     * @param {Object}      options
-     * @param {Database}    options.database
-     */
-    static init(options) {
-        database = options.database;
     }
 
     /**
@@ -112,45 +86,6 @@ class GuildConfig {
       }
       this.modRoles = newRoles;
     }
-
-    /**
-     * Get a guilds config from cache or db
-     * @async
-     * @param {module:"discord.js".Snowflake} guild guildid
-     * @return {GuildConfig}
-     */
-    static async get (guild) {
-        if (!guilds.has(guild)) {
-            let result = await database.query("SELECT * FROM guilds WHERE id = ?", guild);
-            if(!result) return new GuildConfig(guild);
-            guilds.set(result.id, new GuildConfig(result.id, JSON.parse(result.config)));
-            setTimeout(() => {
-                guilds.delete(result.id);
-            },cacheDuration);
-        }
-
-        return guilds.get(guild);
-    };
-
-    /**
-     * Save a guilds config to db and cache
-     * @async
-     */
-    async save() {
-        if(Object.keys(this).length <= 1) {
-            await database.query("DELETE FROM guilds WHERE id = ?",this.id);
-            guilds.delete(this.id);
-            return;
-        }
-        let result = await database.query("SELECT * FROM guilds WHERE id = ?",[this.id]);
-        if(result){
-            await database.query("UPDATE guilds SET config = ? WHERE id = ?",[JSON.stringify(this),this.id]);
-        }
-        else {
-            await database.query("INSERT INTO guilds (config,id) VALUES (?,?)",[JSON.stringify(this),this.id]);
-            guilds.set(this.id, this);
-        }
-    };
 }
 
 module.exports = GuildConfig;
