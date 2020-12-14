@@ -34,7 +34,7 @@ command.execute = async (message, args, database, bot) => {
 
     if (user.bot) {
       await message.react(util.icons.error);
-      await message.channel.send("You can't interact with bots!");
+      await message.channel.send("I can't interact with bots!");
       continue;
     }
     let member;

@@ -1,19 +1,7 @@
 const Discord = require('discord.js');
 const GuildConfig = require('./GuildConfig.js');
-const ChannelConfig = require('./ChannelConfig.js');
-const ChatTriggeredFeature = require('./ChatTriggeredFeature')
-
-/**
- * Config cache time (ms)
- * @type {Number}
- */
-const cacheDuration = 10*60*1000;
-
-/**
- * Channels and their configs
- * @type {module:"discord.js".Collection}
- */
-const channels = new Discord.Collection();
+const ChatTriggeredFeature = require('./ChatTriggeredFeature');
+const Config = require('./Config');
 
 /**
  * Database
@@ -38,7 +26,7 @@ util.init = (db, client) => {
   database = db;
   bot = client;
   ChatTriggeredFeature.init(db);
-  GuildConfig.init({database});
+  Config.init(db);
 };
 
 /**
@@ -48,7 +36,9 @@ util.icons = {
   error: String.fromCodePoint(128721),
   forbidden: String.fromCodePoint(9940),
   no: String.fromCodePoint(10060),
-  yes: String.fromCodePoint(9989)
+  yes: String.fromCodePoint(9989),
+  left: String.fromCodePoint(11013),
+  right: String.fromCodePoint(10145),
 };
 
 /**
@@ -489,57 +479,6 @@ util.logMessageChecks = async (guildInfo, user, reason, insertId, type) => {
   );
 
   return await guild.channels.resolve(guildConfig.logChannel).send(logembed);
-};
-
-/**
-* Get a channels config from cache or db
-* @async
-* @param {module:"discord.js".Snowflake} channelId
-* @return {ChannelConfig}
-*/
-util.getChannelConfig = async (channelId) => {
-  if (!channels.has(channelId)) {
-    if (!await util.refreshChannelConfig(channelId))
-      return new ChannelConfig(channelId);
-  }
-  return channels.get(channelId);
-};
-
-/**
- * Save a channels config to db and refresh cache
- * @async
- * @param {ChannelConfig} config
- */
-util.saveChannelConfig = async (config) => {
-  if(Object.keys(config).length <= 1) {
-    await database.query("DELETE FROM channels WHERE id = ?",config.id);
-    return;
-  }
-  let result = await database.query("SELECT * FROM channels WHERE id = ?",[config.id]);
-  if(result){
-    await database.query("UPDATE channels SET config = ? WHERE id = ?",[JSON.stringify(config),config.id]);
-  }
-  else {
-    await database.query("INSERT INTO channels (config,id) VALUES (?,?)",[JSON.stringify(config),config.id]);
-  }
-  await util.refreshChannelConfig(config.id);
-};
-
-/**
- * Reload channel config cache for a channel
- * @async
- * @param {module:"discord.js".Snowflake} channelId the channel's id
- * @return {Boolean} was there a config for this channel
- */
-util.refreshChannelConfig  = async (channelId) => {
-  let result = await database.query("SELECT * FROM channels WHERE id = ?", channelId);
-  if(!result)
-    return false;
-  channels.set(result.id, new ChannelConfig(result.id, JSON.parse(result.config)));
-  setTimeout(() => {
-    channels.delete(result.id);
-  },cacheDuration);
-  return true;
 };
 
 /**

@@ -1,5 +1,6 @@
 const util = require('../util.js');
 const Discord = require('discord.js');
+const ChannelConfig = require('../ChannelConfig');
 
 const command = {};
 
@@ -69,7 +70,7 @@ command.execute = async (message, args, database, bot) => {
  * @return {Boolean}                      did the channel have to be locked?
  */
 async function lock(channel, everyone, message) {
-  let config = await util.getChannelConfig(/** @type {module:"discord.js".Snowflake} */ channel.id);
+  let config = await ChannelConfig.get(/** @type {module:"discord.js".Snowflake} */ channel.id);
   let permissions = channel.permissionsFor(/** @type {RoleResolvable} */ everyone);
 
   if (!permissions.has('VIEW_CHANNEL')) {
@@ -99,7 +100,7 @@ async function lock(channel, everyone, message) {
   }
 
   await channel.send(message);
-  await util.saveChannelConfig(config);
+  await config.save();
 
   return true;
 }

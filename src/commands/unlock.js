@@ -1,5 +1,6 @@
 const util = require('../util.js');
 const Discord = require('discord.js');
+const ChannelConfig = require('../ChannelConfig');
 
 const command = {};
 
@@ -68,7 +69,7 @@ command.execute = async (message, args, database, bot) => {
  * @return {Boolean}                      was the channel locked?
  */
 async function unlock(channel, everyone, message) {
-  const config = await util.getChannelConfig(/** @type {module:"discord.js".Snowflake} */ channel.id);
+  const config = await ChannelConfig.get(/** @type {module:"discord.js".Snowflake} */ channel.id);
 
   if (Object.keys(config.lock).length === 0) {
     return false;
@@ -88,7 +89,7 @@ async function unlock(channel, everyone, message) {
   config.lock = {};
 
   await channel.send(message);
-  await util.saveChannelConfig(config);
+  await config.save();
   return true;
 }
 
