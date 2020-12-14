@@ -67,7 +67,7 @@ command.execute = async (message, args, database, bot) => {
       muteInfo = `${util.icons.yes} - ${muteInfo.reason}`;
   }
   else if (member && member.roles.cache.get(guildConfig.mutedRole)) {
-    muteInfo = `${util.icons.yes} - unknown reason and timer`;
+    muteInfo = `${util.icons.yes} - Unknown reason and time`;
   }
   else {
     muteInfo = `${util.icons.no}`;
@@ -88,7 +88,7 @@ command.execute = async (message, args, database, bot) => {
   else {
     try {
       banInfo = await message.guild.fetchBan(/** @type {UserResolvable} */ userId);
-      banInfo = `${util.icons.yes} - ${decodeURIComponent(banInfo.reason || 'unknown reason')}`;
+      banInfo = `${util.icons.yes} - ${decodeURIComponent(banInfo.reason || 'Unknown reason')}`;
       embed.setDescription(embed.description + `**Banned:** ${banInfo}`);
     } catch (e) {
       embed.setDescription(embed.description + `**Banned:** ${util.icons.no}`);
