@@ -88,7 +88,9 @@ async function lock(channel, everyone, message) {
       }
       let options = {};
       options[perm] = false;
-      await channel.updateOverwrite(everyone, options);
+      await util.retry(channel.updateOverwrite, channel, [everyone, options], 3, (/** @type module:"discord.js".GuildChannel*/ result) => {
+        return !result.permissionsFor(everyone).has(perm);
+      });
       con = false;
     }
   }
