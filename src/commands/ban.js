@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -9,7 +10,9 @@ command.usage = '@user|id <@user|id…> <duration> <reason>';
 command.names = ['ban'];
 
 command.execute = async (message, args, database, bot) => {
-  if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
+  /** @type {GuildConfig} */
+  const guildconfig = await GuildConfig.get(message.guild.id);
+  if(!await guildconfig.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     await message.react(util.icons.error);
     return;
   }
@@ -40,7 +43,7 @@ command.execute = async (message, args, database, bot) => {
     try {
       member = await message.guild.members.fetch(user);
       //highest role & mod check
-      if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)) {
+      if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || guildconfig.isProtected(member)) {
         await message.react(util.icons.error);
         await message.channel.send(`You don't have the permission to ban <@${user.id}>!`);
         continue;

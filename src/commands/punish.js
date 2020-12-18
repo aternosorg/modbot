@@ -12,7 +12,9 @@ command.comment = 'If there is no punishment for the current strike count the la
 command.names = ['punish','punishment','punishments'];
 
 command.execute = async (message, args, database, bot) => {
-  if (!await util.isMod(message.member) && !message.member.hasPermission('MANAGE_GUILD')) {
+  /** @type {GuildConfig} */
+  const guildconfig = await GuildConfig.get(message.guild.id);
+  if (!guildconfig.isMod(message.member) && !message.member.hasPermission('MANAGE_GUILD')) {
     message.channel.send("You don't have the permission to execute this command.");
     return;
   }

@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -9,7 +10,9 @@ command.usage = 'moderationId <reason>';
 command.names = ['reason','edit'];
 
 command.execute = async (message, args, database, bot) => {
-  if(!await util.isMod(message.member) && !message.member.hasPermission('VIEW_AUDIT_LOG')) {
+  /** @type {GuildConfig} */
+  const guildconfig = await GuildConfig.get(message.guild.id);
+  if(!await guildconfig.isMod(message.member) && !message.member.hasPermission('VIEW_AUDIT_LOG')) {
     await message.react(util.icons.error);
     return;
   }

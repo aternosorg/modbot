@@ -2,7 +2,7 @@ const util = require('../../util');
 const GuildConfig = require('../../GuildConfig');
 
 exports.event = async (options, message) => {
-    if (!message.guild || message.author.bot || await util.isMod(message.member) || message.member.hasPermission("MANAGE_MESSAGES") || (await GuildConfig.get(message.guild.id)).caps === false) return;
+    if (!message.guild || await util.ignoresAutomod(message) || (await GuildConfig.get(message.guild.id)).caps === false) return;
 
     let uppercase = message.content.match(/[A-Z]+/g);
     if (uppercase) uppercase = uppercase.join().length;

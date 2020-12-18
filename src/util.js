@@ -482,21 +482,6 @@ util.logMessageChecks = async (guildInfo, user, reason, insertId, type) => {
 };
 
 /**
- * Is this member a mod
- * @async
- * @param {module:"discord.js".GuildMember} member member object of the user in the specific guild
- * @return {Boolean}
- */
-util.isMod = async (member) => {
-  let guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */member.guild.id);
-  for (let [key] of member.roles.cache) {
-    if (guildConfig.isModRole(/** @type {module:"discord.js".Snowflake} */ key))
-      return true;
-  }
-  return false;
-};
-
-/**
  * Save a moderation to the database
  * @async
  * @param {module:"discord.js".Snowflake} guildId       id of the guild
@@ -640,7 +625,9 @@ async function messagesAfter(channel, message, limit) {
  * @return {Boolean}
  */
 util.ignoresAutomod = async (message) => {
-  return message.author.bot || message.member.hasPermission('MANAGE_MESSAGES') || util.isMod(message.member);
+  /** @type {GuildConfig} */
+  const guildconfig = await GuildConfig.get(message.guild.id);
+  return message.author.bot || message.member.hasPermission('MANAGE_MESSAGES') || guildconfig.isProtected(message.member);
 };
 
 /**

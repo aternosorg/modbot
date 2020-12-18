@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -9,7 +10,9 @@ command.usage = '@member|id <@member|id…> <reason>';
 command.names = ['softban'];
 
 command.execute = async (message, args, database, bot) => {
-  if(!await util.isMod(message.member) && !message.member.hasPermission('KICK_MEMBERS')) {
+  /** @type {GuildConfig} */
+  const guildconfig = await GuildConfig.get(message.guild.id);
+  if(!guildconfig.isMod(message.member) && !message.member.hasPermission('KICK_MEMBERS')) {
     await message.react(util.icons.error);
     return;
   }
@@ -40,7 +43,7 @@ command.execute = async (message, args, database, bot) => {
     }
 
     //highest role check
-    if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
+    if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || guildconfig.isProtected(member)){
       await message.react(util.icons.error);
       await message.channel.send("You don't have the permission to softban that member!");
       continue;
