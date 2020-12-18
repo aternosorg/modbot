@@ -44,7 +44,7 @@ command.execute = async (message, args, database, bot) => {
     catch{}
 
     //highest role check
-    if(member && (message.member.roles.highest.comparePositionTo(message.guild.members.resolve(userId).roles.highest) <= 0 || await util.isMod(member))) {
+    if(member && (message.member.roles.highest.comparePositionTo(await message.guild.members.fetch(userId).roles.highest) <= 0 || await util.isMod(member))) {
       await message.react(util.icons.error);
       await message.channel.send(`You don't have the permission to mute <@${member.id}>!`);
       continue;

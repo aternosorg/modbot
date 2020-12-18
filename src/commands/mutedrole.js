@@ -50,7 +50,7 @@ command.execute = async (message, args, database, bot) => {
     }
   }
 
-  if (message.guild.members.resolve(bot.user.id).roles.highest.comparePositionTo(role) < 0) {
+  if (await message.guild.members.fetch(bot.user.id).roles.highest.comparePositionTo(role) < 0) {
     await message.channel.send("I'm not high enough (in the role list)!");
     return;
   }
@@ -63,7 +63,7 @@ command.execute = async (message, args, database, bot) => {
 
   if (oldRole !== role.id) {
     for (let mute of await database.queryAll("SELECT * FROM moderations WHERE action = 'mute' AND active = TRUE AND guildid = ?",[message.guild.id])) {
-      let member = message.guild.members.resolve(mute.userid);
+      const member = await message.guild.members.fetch(mute.userid);
       if (member) {
         try {
           await member.roles.add(role.id);
