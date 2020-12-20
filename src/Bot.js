@@ -11,6 +11,10 @@ class Bot{
         return this.instance;
     }
 
+const client = new Discord.Client({
+    allowedMentions: { parse: [] }
+});
+
     /**
      * @type {module:"discord.js".Client}
      */
