@@ -126,6 +126,10 @@ async function punish(guild, user, total, bot, database) {
  * @return {Promise<void>}
  */
 command.executePunishment = async (punishment, guild, user, bot, database, reason) => {
+  if (typeof(punishment.duration) === 'string') {
+    punishment.duration = util.timeToSec(punishment.duration);
+  }
+
   let member;
   switch (punishment.action) {
     case 'ban':
