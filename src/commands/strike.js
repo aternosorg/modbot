@@ -4,6 +4,7 @@ const kick = require('./kick.js');
 const mute = require('./mute.js');
 const softban = require('./softban.js');
 const GuildConfig = require('../GuildConfig');
+const Log = require('../Log');
 
 const maxStrikesAtOnce = 5;
 
@@ -89,7 +90,7 @@ command.add = async (guild, user, count, moderator, reason, channel, database, b
   if (channel) {
     await util.chatSuccess(channel, user, reason, "striked");
   }
-  await util.logMessageModeration(guild, moderator, user, reason, insert.insertId, "Strike", null, count, total);
+  await Log.logModeration(guild, moderator, user, reason, insert.insertId, "Strike", {amount: count, total});
   await punish(guild, user, total, bot, database);
 };
 

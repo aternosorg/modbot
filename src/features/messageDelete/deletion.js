@@ -1,4 +1,5 @@
 const util = require('../../util.js');
+const Log = require('../../Log');
 const Discord = require('discord.js');
 
 let ignore = new Discord.Collection();
@@ -33,7 +34,7 @@ exports.event = async (options, message) => {
         .setFooter(`ID: ${message.author.id}`);
   }
 
-  await util.logMessageEmbed(message, '', embed);
+  await Log.logEmbed(message, embed);
 };
 
 exports.ignore = (id) => {

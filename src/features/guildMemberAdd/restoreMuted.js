@@ -1,4 +1,5 @@
 const util = require('../../util');
+const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
 
 exports.event = async (options, member) => {
@@ -6,7 +7,7 @@ exports.event = async (options, member) => {
   if (result) {
     let guildConfig = await GuildConfig.get(member.guild.id);
     await member.roles.add(guildConfig.mutedRole);
-    await util.logMessageEmbed(member.guild, '', {
+    await Log.logEmbed(member.guild,{
       title: `Restored mute | ${member.user.username}#${member.user.discriminator}`,
       description: `Mute ID: ${result.id}`,
       footer: {text:`ID: ${member.id}`}

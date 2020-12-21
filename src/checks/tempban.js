@@ -1,4 +1,4 @@
-const util = require('../util.js');
+const Log = require('../Log');
 
 exports.check = async (database, bot) => {
   let results = await database.queryAll("SELECT * FROM moderations WHERE action = 'ban' AND active = TRUE AND expireTime IS NOT NULL AND expireTime <= ?", [Math.floor(Date.now()/1000)]);
@@ -11,8 +11,9 @@ exports.check = async (database, bot) => {
       await database.query("UPDATE moderations SET active = FALSE WHERE action = 'ban' AND userid = ? AND guildid = ?",[result.userid,result.guildid]);
 
       await bot.guilds.resolve(result.guildid).members.unban(result.userid, "Temporary ban completed!");
-      await util.logMessageChecks(result.guildid, user, reason, insert.insertId, "Unban");
-    } catch (e) {
+      await Log.logCheck(result.guildid, user, reason, insert.insertId, "Unban");
+    }
+    catch (e) {
       console.error(`Couldn't unban user ${result.userid} in ${result.guildid}`, e);
     }
   }

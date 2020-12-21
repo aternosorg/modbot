@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const Log = require('../Log');
 
 const command = {};
 
@@ -63,7 +64,7 @@ command.softban = async (guild, member, moderator, reason, channel) => {
     await util.chatSuccess(channel, member.user, reason, "softbanned");
   }
   let insert = await util.moderationDBAdd(guild.id, member.id, "softban", reason, null, moderator.id);
-  await util.logMessageModeration(guild.id, moderator, member.user, reason, insert, "Softban");
+  await Log.logModeration(guild.id, moderator, member.user, reason, insert, "Softban");
 };
 
 module.exports = command;

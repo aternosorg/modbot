@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const Log = require('../Log');
 
 const command = {};
 
@@ -63,7 +64,7 @@ command.kick = async (guild, member, moderator, reason, channel) => {
   if (channel) {
     await util.chatSuccess(channel, member.user, reason, "kicked");
   }
-  await util.logMessageModeration(guild.id, moderator, member.user, reason, insert, "Kick");
+  await Log.logModeration(guild.id, moderator, member.user, reason, insert, "Kick");
 };
 
 module.exports = command;
