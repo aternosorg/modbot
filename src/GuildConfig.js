@@ -56,7 +56,7 @@ class GuildConfig extends Config {
      * @return {Boolean}
      */
     isModRole(role) {
-      return this.#modRoles.includes(role);
+        return this.#modRoles.includes(role);
     }
 
     /**
@@ -79,7 +79,7 @@ class GuildConfig extends Config {
      * @param  {module:"discord.js".Snowflake} role role id
      */
     addModRole(role) {
-      this.#modRoles.push(role);
+        this.#modRoles.push(role);
     }
 
     /**
@@ -88,12 +88,12 @@ class GuildConfig extends Config {
      * @param  {module:"discord.js".Snowflake} role role id
      */
     removeModRole(role) {
-      let newRoles = [];
-      for (let modRole of this.#modRoles) {
-        if (modRole !== role)
-          newRoles.push(modRole);
-      }
-      this.#modRoles = newRoles;
+        const newRoles = [];
+        for (let modRole of this.#modRoles) {
+            if (modRole !== role)
+                newRoles.push(modRole);
+        }
+        this.#modRoles = newRoles;
     }
 
     /**
