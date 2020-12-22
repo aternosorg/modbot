@@ -17,8 +17,12 @@ It was made using the [discord.js](https://discord.js.org/) Library and [node.js
 - Lock (all or specific) channels
 - Log message edits and deletions
 - Autoresponses
+- Bad word filters
 
-### Setup
+### Invite the bot
+Click [this link](https://discordapp.com/oauth2/authorize?client_id=790967448111153153&scope=bot&permissions=268446806) to invite the bot to your own server
+
+### Self Hosting
 1. Install [Node.js](https://nodejs.org/en/download/) and [MySQL](https://dev.mysql.com/downloads/mysql/)
 2. Create a MySQL user and database for the bot
 3. Clone or download the repository
