@@ -14,7 +14,7 @@ command.execute = async (message, args, database, bot) => {
     await message.react(util.icons.error);
     return;
   }
-  const users = await util.userMentions(args);
+  let users = await util.userMentions(args);
 
   if (!users.length) {
     await message.channel.send(await util.usage(message, command.names[0]));
@@ -39,7 +39,7 @@ command.execute = async (message, args, database, bot) => {
 
     let member;
     try {
-      member = await message.guild.members.fetch(user);
+      member = await message.guild.members.resolve(user);
       //highest role & mod check
       if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)) {
         await message.react(util.icons.error);

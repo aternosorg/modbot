@@ -33,7 +33,7 @@ command.execute = async (message, args, database, bot) => {
 
   let member;
   try {
-    member = await message.guild.members.fetch(userId);
+    member = await message.guild.members.resolve(userId);
   } catch (e) {}
 
   let embed = new Discord.MessageEmbed({
