@@ -378,17 +378,6 @@ util.logMessageEmbed = async (guildInfo, message, embed) => {
 };
 
 /**
- * Sends an embed to the channel
- * @async
- * @param {module:"discord.js".TextBasedChannel}    channel
- * @param {module:"discord.js".MessageEmbed|Object} options options for the embed
- * @return {module:"discord.js".Message}
- */
-util.sendEmbed = async (channel, options) => {
-  return await channel.send(new Discord.MessageEmbed(options));
-};
-
-/**
  * Log a moderation
  * @async
  * @param {GuildInfo}     guildInfo

@@ -104,11 +104,12 @@ command.add = async (guild, user, count, moderator, reason, channel, database, b
  * @return {Promise<void>}
  */
 async function punish(guild, user, total, bot, database) {
-  let config = await GuildConfig.get(guild.id);
+  /** @type {GuildConfig} */
+  let config = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */ guild.id);
   let punishment;
   let count = total;
   do {
-    punishment = config.punishments[count];
+    punishment = config.getPunishment(count);
     count --;
   } while (!punishment && count > 0);
 

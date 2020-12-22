@@ -1,5 +1,6 @@
 const config = require('../config.json');
 const Config = require('./Config');
+const Discord = require('discord.js');
 
 /**
  * Class representing the config of a guild
@@ -8,7 +9,7 @@ class GuildConfig extends Config {
 
     static tableName = 'guilds';
 
-    punishments = {};
+    #punishments = {};
     #modRoles = [];
     #protectedRoles = [];
     prefix = config.prefix;
@@ -35,17 +36,21 @@ class GuildConfig extends Config {
         super(id);
 
         if (json) {
-          this.logChannel = json.logChannel;
-          this.mutedRole = json.mutedRole;
-          this.#modRoles = json.modRoles;
-          this.#protectedRoles = json.protecedRoles;
-          this.punishments = json.punishments;
-          this.playlist = json.playlist;
-          this.helpcenter = json.helpcenter;
-          this.invites = json.invites;
-          this.linkCooldown = json.linkCooldown;
-          this.prefix = json.prefix;
-          this.capsMod = json.capsMod || false;
+            this.logChannel = json.logChannel;
+            this.mutedRole = json.mutedRole;
+            if (json.modRoles instanceof Array)
+                this.#modRoles = json.modRoles;
+            if (json.protecedRoles instanceof Array)
+                this.#protectedRoles = json.protecedRoles;
+            if (json.punishments instanceof Object)
+                this.#punishments = json.punishments;
+            this.playlist = json.playlist;
+            this.helpcenter = json.helpcenter;
+            this.invites = json.invites;
+            this.linkCooldown = json.linkCooldown;
+            if (typeof(json.prefix) === 'string')
+                this.prefix = json.prefix;
+            this.capsMod = json.capsMod || false;
         }
     }
 
@@ -142,6 +147,51 @@ class GuildConfig extends Config {
                 newRoles.push(protectedRole);
         }
         this.#protectedRoles = newRoles;
+    }
+
+    /**
+     * get a specific punishment
+     * @param {Number} strikes
+     * @return {Punishment}
+     */
+    getPunishment(strikes) {
+        return this.#punishments[strikes];
+    }
+
+    /**
+     * set a punishment
+     * @param {Number} strikes
+     * @param {Punishment|null} punishment
+     * @return {Promise<>}
+     */
+    setPunishment(strikes, punishment) {
+        if (punishment === null)
+            delete this.#punishments[strikes]
+        else
+            this.#punishments[strikes] = punishment;
+        return this.save();
+    }
+
+    /**
+     * get all punishments
+     * @return {module:"discord.js".Collection<Number, Punishment>}
+     */
+    getPunishments() {
+        const punishments = new Discord.Collection();
+
+        for (const key of Object.keys(this.#punishments)) {
+            punishments.set(key, this.#punishments[key]);
+        }
+
+        return punishments;
+    }
+
+    toJSONString() {
+        const object = this;
+        object.punishments = this.#punishments;
+        object.modRoles = this.#modRoles;
+        object.protectedRoles = this.#protectedRoles;
+        return JSON.stringify(object);
     }
 }
 
