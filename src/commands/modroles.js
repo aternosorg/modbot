@@ -16,8 +16,7 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  /** @type {GuildConfig} */
-  const config = await GuildConfig.get(message.guild.id);
+  let config = await GuildConfig.get(message.guild.id);
   let role;
   switch (args.shift()) {
     case 'add':

@@ -77,10 +77,10 @@ class Config {
     }
 
     /**
-     * Get config
+     * Get items for a channel
      * @async
      * @param {module:"discord.js".Snowflake} id
-     * @return {Config}
+     * @return {module:"discord.js".Collection<Number,Config>}
      */
     static async get(id) {
 
