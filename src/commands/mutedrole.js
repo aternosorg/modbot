@@ -50,7 +50,7 @@ command.execute = async (message, args, database, bot) => {
     }
   }
 
-  if (await message.guild.members.fetch(bot.user.id).roles.highest.comparePositionTo(role) < 0) {
+  if ((await message.guild.members.fetch(bot.user.id)).roles.highest.comparePositionTo(role) < 0) {
     await message.channel.send("I'm not high enough (in the role list)!");
     return;
   }
