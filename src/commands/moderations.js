@@ -1,6 +1,12 @@
 const util = require('../util.js');
 const Discord = require('discord.js');
 
+/**
+ * timeout after last reaction in ms
+ * @type {number}
+ */
+const reactionTimeout = 60000;
+
 const command = {};
 
 command.description = 'List all moderations for a user';
@@ -49,6 +55,8 @@ command.execute = async (message, args, database, bot) => {
   /** @type {module:"discord.js".Message} */
   const response = await message.channel.send(generateEmbed(moderations,user,0));
 
+  if (moderations.length <= 10) return;
+
   await response.react(util.icons.left)
   await response.react(util.icons.right)
 
@@ -78,12 +86,17 @@ command.execute = async (message, args, database, bot) => {
     lastModified = Date.now();
   });
 
-  const interval = setInterval(()=>{
-    if (Date.now() > (lastModified + 15000)) {
+  function check () {
+    if (Date.now() > (lastModified + reactionTimeout)) {
       reactionCollector.stop("TIME");
-      clearInterval(interval);
+      response.reactions.removeAll();
     }
-  },5000)
+    else {
+      timeout = setTimeout(check, lastModified + reactionTimeout - Date.now())
+    }
+  }
+
+  let timeout = setTimeout(check,reactionTimeout)
 };
 
 /**
