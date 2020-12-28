@@ -35,12 +35,12 @@ If you need help with the commands use `!help` to list them and `!help <command>
 ### Self Hosting
 Requirements: [Node.js](https://nodejs.org/en/download/), a [MySQL](https://dev.mysql.com/downloads/mysql/) database
 1. Download the code and run `npm install`
-0. Create a [Discord application](https://discordapp.com/developers/applications/)
-0. Add a bot to the application and copy the auth token
-0. Create an API key in the [Google Cloud Console](https://console.cloud.google.com/) for the Youtube Data API v3
-0. Copy the example.config.json to config.json, and configure it
-0. Start the index.js file
-0. To invite the bot to your server replace `ID` with the client ID of your application https://discordapp.com/oauth2/authorize?client_id=ID&scope=bot&permissions=268446806 and open the link
+2. Create a [Discord application](https://discordapp.com/developers/applications/)
+3. Add a bot to the application and copy the auth token
+4. Create an API key in the [Google Cloud Console](https://console.cloud.google.com/) for the Youtube Data API v3
+5. Copy the example.config.json to config.json, and configure it
+6. Start the index.js file
+7. To invite the bot to your server replace `ID` with the client ID of your application https://discordapp.com/oauth2/authorize?client_id=ID&scope=bot&permissions=268446806 and open the link
 
 ### Contributing
 If you want to contribute you need to [fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the repository, then add your changes to your fork and then create a [pull request](https://github.com/aternosorg/modbot/compare). We recommend looking at the [Documentation](https://discord.js.org/#/docs/) of discord.js.
