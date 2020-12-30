@@ -11,7 +11,18 @@ command.names = ['avatar','av'];
 
 command.execute = async (message, args, database, bot) => {
     /** @type {module:"discord.js".User} */
-    const user = args.length ? await bot.users.fetch(util.userMentionToId(args[0])) : message.author;
+    let user = args.length ? util.userMentionToId(args[0]) : message.author;
+    if (!(user instanceof Discord.User)) {
+        try {
+            user = await bot.users.fetch(user);
+        }
+        catch (e) {
+            if (e.httpStatus === 404) {
+                await message.channel.send(await util.usage(message, command.names[0]));
+                return;
+            }
+        }
+    }
     const avatarEmbed = new Discord.MessageEmbed()
         .setTitle(`Avatar of ${user.username}`)
         .setImage(user.displayAvatarURL({dynamic: true, size: 512}))
