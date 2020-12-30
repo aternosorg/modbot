@@ -35,7 +35,9 @@ If you need help with the commands use `!help` to list them and `!help <command>
 ### Self Hosting
 Requirements: [Node.js](https://nodejs.org/en/download/), a [MySQL](https://dev.mysql.com/downloads/mysql/) database
 1. Download the code and run `npm install`
-2. Create a [Discord application](https://discordapp.com/developers/applications/)
+2. Create a [Discord application](https://discordapp.com/developers/applications/).
+   You also have to enable the SERVER MEMBERS intent.
+   The bot needs this to reassign the muted role when a muted user joins your server
 3. Add a bot to the application and copy the auth token
 4. Create an API key in the [Google Cloud Console](https://console.cloud.google.com/) for the Youtube Data API v3
 5. Copy the example.config.json to config.json, and configure it
