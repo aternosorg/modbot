@@ -7,7 +7,7 @@ command.description = 'Add or remove protected roles';
 
 command.usage = 'add|remove @role|roleId';
 
-command.names = ['protectedroles'];
+command.names = ['protectedroles','protectedrole','protected','protect'];
 
 command.execute = async (message, args, database, bot) => {
     //Permission check
