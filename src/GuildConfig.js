@@ -22,7 +22,7 @@ class GuildConfig extends Config {
      * @param  {module:"discord.js".Snowflake}    [json.logChannel]     id of the log channel
      * @param  {module:"discord.js".Snowflake}    [json.mutedRole]      id of the muted role
      * @param  {module:"discord.js".Snowflake[]}  [json.modRoles]       role ids that can execute commands
-     * @param  {module:"discord.js".Snowflake[]}  [json.protecedRoles]  role ids that can't be targeted by moderations
+     * @param  {module:"discord.js".Snowflake[]}  [json.protectedRoles]  role ids that can't be targeted by moderations
      * @param  {Object}                           [json.punishments]    automatic punishments for strikes
      * @param  {String}                           [json.playlist]       id of youtube playlist for tutorials
      * @param  {String}                           [json.helpcenter]     subdomain of the zendesk help center
@@ -40,8 +40,8 @@ class GuildConfig extends Config {
             this.mutedRole = json.mutedRole;
             if (json.modRoles instanceof Array)
                 this.#modRoles = json.modRoles;
-            if (json.protecedRoles instanceof Array)
-                this.#protectedRoles = json.protecedRoles;
+            if (json.protectedRoles instanceof Array)
+                this.#protectedRoles = json.protectedRoles;
             if (json.punishments instanceof Object)
                 this.#punishments = json.punishments;
             this.playlist = json.playlist;
