@@ -62,11 +62,6 @@ class Config {
      */
     async save() {
         const json = this.toJSONString();
-        if(Object.keys(json).length <= 1) {
-            await database.query("DELETE FROM guilds WHERE id = ?",this.id);
-            this.constructor.getCache().delete(this.id);
-            return;
-        }
         let result = await database.query(`SELECT * FROM ${database.escapeId(this.constructor.tableName)} WHERE id = ?`,[this.id]);
         if(result){
             await database.query(`UPDATE ${database.escapeId(this.constructor.tableName)} SET config = ? WHERE id = ?`,[json,this.id]);
