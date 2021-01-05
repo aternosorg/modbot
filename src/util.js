@@ -609,9 +609,14 @@ util.getResponse = async(channel, author, timeout = responseWaitTime*60*1000) =>
     else
       return result;
   }
-  catch {
-    await channel.send("You took to long to respond.");
-    return null;
+  catch (e) {
+    if (e instanceof Map && e.size === 0) {
+      await channel.send("You took to long to respond.");
+      return null;
+    }
+    else {
+      throw e;
+    }
   }
 }
 
