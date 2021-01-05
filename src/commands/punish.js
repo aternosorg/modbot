@@ -57,7 +57,7 @@ command.execute = async (message, args, database, bot) => {
   /** @type {String} */
   const action = args.shift();
   if (!action) {
-    message.channel.send(util.usage(message,command.names[0]));
+    message.channel.send(await util.usage(message,command.names[0]));
     return;
   }
   switch (action) {

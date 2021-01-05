@@ -1,5 +1,6 @@
 const util = require('../util.js');
 const GuildConfig = require('../GuildConfig');
+const Log = require('../Log');
 
 const maxStrikesAtOnce = 5;
 
@@ -82,7 +83,7 @@ command.execute = async (message, args, database, bot) => {
       } catch (e) {}
     }
     await util.chatSuccess(message.channel, user, reason, "pardoned");
-    await util.logMessageModeration(message, message.author, user, reason, insert.insertId, "Pardon", null, count, total);
+    await Log.logModeration(message, message.author, user, reason, insert.insertId, "Pardon", {amount: count, total});
   }
 };
 

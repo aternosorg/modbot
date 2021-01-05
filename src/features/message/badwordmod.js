@@ -1,5 +1,6 @@
 const BadWord = require('../../BadWord');
 const util = require('../../util');
+const Log = require('../../Log');
 const strike = require('../../commands/strike');
 
 exports.event = async (options, message) => {
@@ -14,7 +15,7 @@ exports.event = async (options, message) => {
         const response = await message.reply(word.response === 'default' ? BadWord.defaultResponse : word.response);
         await util.delete(response, { timeout: 3000 });
       }
-      await util.logMessageDeletion(message, reason);
+      await Log.logMessageDeletion(message, reason);
       if (word.punishment.action !== 'none') {
         await strike.executePunishment(word.punishment, message.guild, message.author, options.bot, options.database, reason);
       }

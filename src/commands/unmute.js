@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const Log = require('../Log');
 const GuildConfig = require('../GuildConfig');
 
 const command = {};
@@ -62,7 +63,7 @@ command.execute = async (message, args, database, bot) => {
     }
 
     await util.chatSuccess(message.channel, user, reason, "unmuted");
-    await util.logMessageModeration(message.guild.id, message.author, user, reason, insert.insertId, "Unmute");
+    await Log.logModeration(message.guild.id, message.author, user, reason, insert.insertId, "Unmute");
 
   }
 

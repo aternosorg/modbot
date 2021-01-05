@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const Log = require('../Log');
 const GuildConfig = require('../GuildConfig');
 
 const command = {};
@@ -46,7 +47,7 @@ command.execute = async (message, args, database, bot) => {
     catch{}
 
     //highest role check
-    if(member && (message.member.roles.highest.comparePositionTo(await message.guild.members.fetch(userId).roles.highest) <= 0 || guildconfig.isProtected(member))) {
+    if(member && (message.member.roles.highest.comparePositionTo((await message.guild.members.fetch(userId)).roles.highest) <= 0 || guildconfig.isProtected(member))) {
       await message.react(util.icons.error);
       await message.channel.send(`You don't have the permission to mute <@${member.id}>!`);
       continue;
@@ -85,7 +86,7 @@ command.mute = async (guild, user, moderator, reason, duration, channel) => {
   if (channel) {
     await util.chatSuccess(channel, user, reason, "muted", time);
   }
-  await util.logMessageModeration(guild.id, moderator, user, reason, insert, "Mute", time);
+  await Log.logModeration(guild.id, moderator, user, reason, insert, "Mute", {time});
 };
 
 module.exports = command;

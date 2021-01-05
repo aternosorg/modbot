@@ -17,26 +17,32 @@ It was made using the [discord.js](https://discord.js.org/) Library and [node.js
 - Lock (all or specific) channels
 - Log message edits and deletions
 - Autoresponses
+- Bad word filters
 
-### Setup
-1. Install [Node.js](https://nodejs.org/en/download/) and [MySQL](https://dev.mysql.com/downloads/mysql/)
-2. Create a MySQL user and database for the bot
-3. Clone or download the repository
-4. Run `npm install`
-5. Create a [Discord application](https://discordapp.com/developers/applications/)
-6. Add a bot to it and copy the auth token
-7. Copy the example.config.json to config.json, add the auth token and configure mysql
-8. Run the following command in the directory
+### Invite The Bot
+Click [this link](https://discordapp.com/oauth2/authorize?client_id=790967448111153153&scope=bot&permissions=268446806) to invite the bot to your own server
 
-   ```bash
-   node index.js
-   ```
-9. To invite the bot to your server replace `ID` with the client ID of your application https://discordapp.com/oauth2/authorize?client_id=ID&scope=bot&permissions=268446806 and open the link
-
-10. (optional) Set up a log channel by using `!logchannel <#channel>`
-
-Now you can use our bot!
 If you need help with the commands use `!help` to list them and `!help <command>` to get more info.
+
+### Getting Started
+- You can view the settings with `!settings`
+- If you have a Zendesk help center, use `!helpcenter <url>` to enable the `!article` command
+- To set up a log channel use `!logchannel <#channel>`
+- If you want to configure a Youtube playlist, you can use `!playlist <url>`
+- To add moderator roles use `!modrole add <@role>`
+- If you used Vortex before you can import strikes, mutes and bans using `!import`
+
+### Self Hosting
+Requirements: [Node.js](https://nodejs.org/en/download/), a [MySQL](https://dev.mysql.com/downloads/mysql/) database
+1. Download the code and run `npm install`
+2. Create a [Discord application](https://discordapp.com/developers/applications/).
+   You also have to enable the SERVER MEMBERS intent.
+   The bot needs this to reassign the muted role when a muted user joins your server
+3. Add a bot to the application and copy the auth token
+4. Create an API key in the [Google Cloud Console](https://console.cloud.google.com/) for the Youtube Data API v3
+5. Copy the example.config.json to config.json, and configure it
+6. Start the index.js file
+7. To invite the bot to your server replace `ID` with the client ID of your application https://discordapp.com/oauth2/authorize?client_id=ID&scope=bot&permissions=268446806 and open the link
 
 ### Contributing
 If you want to contribute you need to [fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the repository, then add your changes to your fork and then create a [pull request](https://github.com/aternosorg/modbot/compare). We recommend looking at the [Documentation](https://discord.js.org/#/docs/) of discord.js.

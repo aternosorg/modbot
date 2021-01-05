@@ -1,4 +1,5 @@
 const util = require('../../util.js');
+const Log = require('../../Log');
 const Discord = require('discord.js');
 const jsdiff = require('diff');
 
@@ -42,5 +43,5 @@ exports.event = async (options, old, newMsg) => {
     )
     .setFooter(`ID: ${old.author.id}`);
 
-  await util.logMessageEmbed(old, '', embed);
+  await Log.logEmbed(old, embed);
 };
