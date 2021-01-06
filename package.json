@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/aternosorg/modbot#readme",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "diff": "^4.0.2",
     "discord.js": "^12.4.0",
     "fuse.js": "^6.4.1",
