@@ -2,12 +2,6 @@ const util = require('../util.js');
 const Discord = require('discord.js');
 const moderations = require('./moderations');
 
-/**
- * timeout after last reaction in ms
- * @type {number}
- */
-const reactionTimeout = 60000;
-
 const command = {};
 
 command.description = 'Show information about a single moderation';
