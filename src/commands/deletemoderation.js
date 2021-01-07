@@ -33,6 +33,7 @@ command.execute = async (message, args, database, bot) => {
 
     /** @type {module:"discord.js".Message} */
     const response = await message.channel.send(`Are you sure you want to delete the moderation #${id}?`, new Discord.MessageEmbed({
+        title: `Moderation #${moderation.id}`,
         description: moderations.moderationText(moderation)
     }));
     await response.react(util.icons.yes);
