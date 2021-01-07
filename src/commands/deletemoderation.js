@@ -1,4 +1,6 @@
 const util = require('../util.js');
+const Discord = require('discord.js');
+const moderations = require('./moderations');
 
 const command = {};
 
@@ -22,7 +24,7 @@ command.execute = async (message, args, database, bot) => {
     const id = parseInt(regex[1]);
 
     /** @type {ModerationData|null} */
-    const moderation = await database.query("SELECT id FROM moderations WHERE id = ?",[id]);
+    const moderation = await database.query("SELECT id, action, created, value, expireTime - created AS duration, reason, moderator FROM moderations WHERE id = ?",[id]);
 
     if (moderation === null) {
         await message.channel.send('Moderation not found!');
@@ -30,7 +32,9 @@ command.execute = async (message, args, database, bot) => {
     }
 
     /** @type {module:"discord.js".Message} */
-    const response = await message.channel.send(`Are you sure you want to delete the moderation #${id}?`);
+    const response = await message.channel.send(`Are you sure you want to delete the moderation #${id}?`, new Discord.MessageEmbed({
+        description: moderations.moderationText(moderation)
+    }));
     await response.react(util.icons.yes);
     await response.react(util.icons.no);
     let confirmed;
