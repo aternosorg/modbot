@@ -1,7 +1,7 @@
 const BadWord = require('../../BadWord');
 const util = require('../../util');
 const Log = require('../../Log');
-const strike = require('../../commands/strike');
+const strike = require('../../commands/legacy/strike');
 
 exports.event = async (options, message) => {
   if (!message.guild || message.author.bot || await util.isMod(message.member) || message.member.hasPermission("MANAGE_MESSAGES")) return;
