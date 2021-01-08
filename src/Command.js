@@ -1,6 +1,8 @@
 const GuildConfig = require('./GuildConfig');
 const ChannelConfig = require('./ChannelConfig');
 const util = require('./util');
+const Discord = require('discord.js');
+const defaultPrefix = require('../config.json').prefix;
 
 class Command {
     /**
@@ -40,18 +42,57 @@ class Command {
     static botPerms = [];
 
     /**
+     * @type {module:"discord.js".Message}
+     */
+    message;
+
+    /**
+     * @type {Database}
+     */
+    database;
+
+    /**
+     * @type {module:"discord.js".Client}
+     */
+    bot;
+
+    /**
+     * arguments passed to the command
+     * @type {String[]}
+     */
+    args;
+
+    /**
+     * @type {GuildConfig}
+     */
+    guildConfig;
+
+    /**
+     * @type {ChannelConfig}
+     */
+    channelConfig;
+
+    /**
+     * the name of this command that was used to call it
+     * @type {String}
+     */
+    name;
+
+    /**
      * call this command
      * @param {module:"discord.js".Message} message
      * @param {Database}                    database
      * @param {module:"discord.js".Client}  bot
+     * @param {String} name
      */
-    constructor(message, database, bot) {
+    constructor(message, database, bot, name) {
         this.message = message;
         this.database = database;
         this.bot = bot;
         this.args = util.split(message.content,' ').slice(1);
         this.guildConfig = GuildConfig.get(/** @type {module:"discord.js".Snowflake} */message.guild.id);
         this.channelConfig = ChannelConfig.get(/** @type {module:"discord.js".Snowflake} */message.channel.id);
+        this.name = name;
     }
 
     /**
@@ -79,16 +120,51 @@ class Command {
         return missingPerms.length ? missingPerms : true;
     }
 
-    async execute() {
-
-    }
-
+    async execute() {}
 
     /**
      * Generate a usage embed
+     * @param {module:"discord.js".Message} message
+     * @param {String}                      cmd
+     * @param {GuildConfig}                 guildConfig
      * @return {module:"discord.js".MessageEmbed}
+     *
      */
-    static getUsage() {}
+    static async getUsage(message, cmd, guildConfig = GuildConfig.get(message.guild.id)) {
+        const prefix = guildConfig.prefix || defaultPrefix;
+        const embed = new Discord.MessageEmbed()
+            .setAuthor(`Help for ${cmd} | Prefix: ${prefix}`)
+            .setFooter(`Command executed by ${message.author.username}`)
+            .addFields(
+                /** @type {any} */ { name: "Usage", value: `\`${prefix}${cmd} ${this.usage}\``, inline: true},
+                /** @type {any} */ { name: "Description", value: this.description, inline: true}
+            )
+            .setColor(util.color.green)
+            .setTimestamp();
+        if (this.comment) {
+            embed.addFields(
+                /** @type {any} */{ name: "Comment", value: `${this.comment}`, inline: false});
+        }
+        if (this.names.length > 1) {
+            let aliases = '';
+            for (let name of this.names) {
+                if (name !== cmd) {
+                    aliases += `\`${name}\`, `;
+                }
+            }
+            embed.addFields(
+                /** @type {any} */{ name: "Aliases", value: aliases.substring(0,aliases.length - 2), inline: false});
+        }
+        return embed;
+    }
+
+    /**
+     * send help embed
+     * @return {Promise<void>}
+     */
+    async help() {
+        await this.message.channel.send(this.constructor.getUsage(this.message,this.name , this.guildConfig));
+    }
 }
 
 module.exports = Command

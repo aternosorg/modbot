@@ -7,7 +7,7 @@ const GuildConfig = require('../../GuildConfig');
 class CommandHandler {
     /**
      * loaded commands
-     * @type {Promise<Command[]>}
+     * @type {Promise<Object>}
      * @private
      */
     static #commands = this._loadCommands();
@@ -18,7 +18,7 @@ class CommandHandler {
      * @private
      */
     static async _loadCommands() {
-        const commands = [];
+        const commands = {};
         for (const folder of await fs.readdir(`${__dirname}/../../commands`)) {
             const dirPath = `${__dirname}/../../commands/${folder}`;
             if (!(await fs.lstat(dirPath)).isDirectory() || folder === "legacy") continue;
@@ -28,7 +28,10 @@ class CommandHandler {
                     continue;
                 }
                 try {
-                    commands.push(require(path));
+                    const command = require(path);
+                    for (const name of command.names) {
+                        commands[name] = command;
+                    }
                 } catch (e) {
                     console.error(`Failed to load command '${file}'`, e);
                 }
@@ -46,12 +49,13 @@ class CommandHandler {
      * @return {Promise<void>}
      */
     static async event(options, message) {
-        const Command = await this.getCommand(message);
-        if (Command === null) return;
+        const name = await this.getCommand(message);
+        const Command = this.#commands[name];
+        if (Command === undefined) return;
 
         try {
             /** @type {Command} */
-            const cmd = new Command(message, options.database, options.bot);
+            const cmd = new Command(message, options.database, options.bot, name);
             const userPerms = cmd.userHasPerms(), botPerms = cmd.botHasPerms();
             if (userPerms !== true) {
                 await message.channel.send(`You are missing the following permissions to execute this command: ${userPerms.join(', ')}`)
@@ -75,7 +79,7 @@ class CommandHandler {
     /**
      * get the command in this message
      * @param {module:"discord.js".Message} message
-     * @return {Promise<Command|null>}
+     * @return {Promise<String>}
      */
     static async getCommand(message) {
         if (!message.guild || message.author.bot) return null;
@@ -85,13 +89,7 @@ class CommandHandler {
         const prefix = util.startsWithMultiple(message.content.toLowerCase(), guild.prefix.toLowerCase(), defaultPrefix.toLowerCase());
         if (!prefix) return null;
 
-        const commandName = args[0].slice(prefix.length).toLowerCase();
-        for (let command of await this.#commands) {
-            if (command.names.includes(commandName)) {
-                return command;
-            }
-        }
-        return null;
+        return args[0].slice(prefix.length).toLowerCase();
     }
 }
 
