@@ -11,8 +11,8 @@ const GuildConfig = require('../../GuildConfig');
 const commands = [];
 
 (async () => {
-    for (let file of await fs.readdir(`${__dirname}/../../commands`)) {
-        let path = `${__dirname}/../../commands/${file}`;
+    for (let file of await fs.readdir(`${__dirname}/../../commands/legacy`)) {
+        let path = `${__dirname}/../../commands/legacy/${file}`;
         if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
             continue;
         }

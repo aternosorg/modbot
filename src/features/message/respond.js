@@ -1,5 +1,5 @@
 const AutoResponse = require('../../AutoResponse');
-const commands = require('./commands');
+const commands = require('./legacyCommands');
 
 exports.event = async (options, message) => {
   if (!message.guild || message.author.bot  || await commands.getCommand(message) !== null) return;
