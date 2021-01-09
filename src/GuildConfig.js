@@ -187,10 +187,19 @@ class GuildConfig extends Config {
     }
 
     toJSONString() {
-        const object = this;
+        //copy this to object
+        const object = {};
+        Object.assign(object,this);
+
+        //delete id property because it is stored in a different column
+        delete object.id;
+
+        //copy private properties
         object.punishments = this.#punishments;
         object.modRoles = this.#modRoles;
         object.protectedRoles = this.#protectedRoles;
+
+        //stringify
         return JSON.stringify(object);
     }
 }
