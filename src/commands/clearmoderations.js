@@ -30,7 +30,7 @@ command.execute = async (message, args, database, bot) => {
     }
 
     /** @type {ModerationData[]} */
-    const moderations = await database.queryAll("SELECT id FROM moderations WHERE userid = ? AND guildid = ?",[userId,message.guild.id]);
+    const moderations = await database.queryAll("SELECT COUNT(id) FROM moderations WHERE userid = ? AND guildid = ?",[userId,message.guild.id]);
 
     if (moderations.length === 0) {
         await message.channel.send('This user doesn\'t have any moderations!');
