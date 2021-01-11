@@ -163,7 +163,7 @@ command.executePunishment = async (punishment, guild, user, bot, database, reaso
     case 'dm':
       try {
         if (!punishment.message || punishment.message.length === 0) return;
-        await user.send(punishment.message);
+        await user.send(`Your message in \`${guild.name}\` was removed: ` + punishment.message);
       }
       catch (e) {
         const codes = [/* Cannot send messages to this user */50007]
