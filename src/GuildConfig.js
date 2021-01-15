@@ -38,7 +38,7 @@ class GuildConfig extends Config {
           this.invites = json.invites;
           this.linkCooldown = json.linkCooldown;
           this.prefix = json.prefix;
-          this.capsMod = json.capsMod || false;
+          this.caps = json.caps || false;
         }
 
         if (!this.punishments) {
