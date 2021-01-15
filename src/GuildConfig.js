@@ -22,7 +22,7 @@ class GuildConfig extends Config {
      * @param  {Boolean}                          [json.invites]      allow invites (can be overwritten per channel)
      * @param  {Number}                           [json.linkCooldown] cooldown on links in s (user based)
      * @param  {String}                           [json.prefix]       alternative prefix for commands
-     * @param  {Boolean}                          [json.capsMod]      should caps be automatically deleted
+     * @param  {Boolean}                          [json.caps]      should caps be automatically deleted
      * @return {GuildConfig}
      */
     constructor(id, json) {
@@ -38,7 +38,7 @@ class GuildConfig extends Config {
           this.invites = json.invites;
           this.linkCooldown = json.linkCooldown;
           this.prefix = json.prefix;
-          this.capsMod = json.capsMod || false;
+          this.caps = json.caps || false;
         }
 
         if (!this.punishments) {
