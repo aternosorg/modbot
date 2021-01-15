@@ -155,9 +155,23 @@ command.executePunishment = async (punishment, guild, user, bot, database, reaso
       await softban.softban(guild, member, bot.user, reason);
       break;
 
+    //punishments that cant be strike punishments
     case 'strike':
       await command.add(guild,user, 1, bot.user, reason, null, database, bot);
       break;
+
+    case 'dm':
+      try {
+        if (!punishment.message || punishment.message.length === 0) return;
+        await user.send(`Your message in \`${guild.name}\` was removed: ` + punishment.message);
+      }
+      catch (e) {
+        const codes = [/* Cannot send messages to this user */50007]
+        if (codes.includes(e.code)) return;
+        throw e;
+      }
+      break;
+
   }
 }
 
