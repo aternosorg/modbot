@@ -4,6 +4,12 @@ const ChatTriggeredFeature = require('./ChatTriggeredFeature');
 const Config = require('./Config');
 
 /**
+ * Default timeout for responses in minutes
+ * @type {number}
+ */
+const responseWaitTime = 30;
+
+/**
  * Database
  * @type {Database}
  */
@@ -594,14 +600,23 @@ util.channelMentions = async(guild, mentions) => {
  * @param timeout
  * @returns {Promise<string|null>}
  */
-util.getResponse = async(channel, author, timeout = 15000) => {
+util.getResponse = async(channel, author, timeout = responseWaitTime*60*1000) => {
   try {
     let result = await channel.awaitMessages(message => { return message.author.id === author; }, { max: 1, time: timeout, errors: ['time'] });
-    return result.first().content;
+    result = result.first().content;
+    if (result.toLowerCase() === "!cancel")
+      return null;
+    else
+      return result;
   }
-  catch {
-    await channel.send("You took to long to respond.");
-    return null;
+  catch (e) {
+    if (e instanceof Map && e.size === 0) {
+      await channel.send("You took to long to respond.");
+      return null;
+    }
+    else {
+      throw e;
+    }
   }
 }
 
