@@ -112,25 +112,9 @@ command.execute = async (message, args, database, bot) => {
 function generateEmbed(moderations, user, start) {
   let text = '', i = 1;
   for (const [key,/** @type {ModerationData} */ moderation] of moderations.entries()) {
-
     if (key < start) continue;
     if (i > 10) break;
-
-    const timestamp = new Date(moderation.created*1000);
-    text += `**${moderation.action.toUpperCase()}** [#${moderation.id}] - *${timestamp.toUTCString()}*\n`;
-    if (moderation.action === 'strike') {
-      text += `Strikes: ${moderation.value} \n`;
-    }
-    else if (moderation.action === 'pardon') {
-      text += `Pardoned strikes: ${-moderation.value} \n`;
-    }
-    if (moderation.duration) {
-      text += `Duration: ${util.secToTime(moderation.duration)} \n`;
-    }
-    if (moderation.moderator) {
-      text += `Moderator: <@!${moderation.moderator}> \n`;
-    }
-    text += `Reason: ${moderation.reason.substring(0, 90)} \n\n`;
+    text += moderationText(moderation);
     i++;
   }
   return new Discord.MessageEmbed({
@@ -141,5 +125,31 @@ function generateEmbed(moderations, user, start) {
     description: text
   });
 }
+
+/**
+ * generate info for a single moderation
+ * @param {ModerationData} moderation
+ * @return {string}
+ */
+function moderationText(moderation) {
+  let text = '';
+  const timestamp = new Date(moderation.created*1000);
+  text += `**${moderation.action.toUpperCase()}** [#${moderation.id}] - *${timestamp.toUTCString()}*\n`;
+  if (moderation.action === 'strike') {
+    text += `Strikes: ${moderation.value} \n`;
+  }
+  else if (moderation.action === 'pardon') {
+    text += `Pardoned strikes: ${-moderation.value} \n`;
+  }
+  if (moderation.duration) {
+    text += `Duration: ${util.secToTime(moderation.duration)} \n`;
+  }
+  if (moderation.moderator) {
+    text += `Moderator: <@!${moderation.moderator}> \n`;
+  }
+  text += `Reason: ${moderation.reason.substring(0, 90)} \n\n`;
+  return text;
+}
+command.moderationText = moderationText;
 
 module.exports = command;
