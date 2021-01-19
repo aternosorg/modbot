@@ -1,4 +1,5 @@
 const util = require('../util.js');
+const GuildConfig = require('../GuildConfig');
 const Log = require('../Log');
 
 const command = {};
@@ -10,12 +11,14 @@ command.usage = '@user|id <@user|id…> <reason>';
 command.names = ['kick'];
 
 command.execute = async (message, args, database, bot) => {
-  if(!await util.isMod(message.member) && !message.member.hasPermission('KICK_MEMBERS')) {
+  /** @type {GuildConfig} */
+  const guildconfig = await GuildConfig.get(message.guild.id);
+  if(!await guildconfig.isMod(message.member) && !message.member.hasPermission('KICK_MEMBERS')) {
     await message.react(util.icons.error);
     return;
   }
 
-  let users = await util.userMentions(args);
+  const users = await util.userMentions(args);
 
   if (!users.length) {
     await message.channel.send(await util.usage(message, command.names[0]));
@@ -41,7 +44,7 @@ command.execute = async (message, args, database, bot) => {
     }
 
     //highest role check
-    if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
+    if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || guildconfig.isProtected(member)){
       await message.react(util.icons.error);
       await message.channel.send(`You don't have the permission to kick <@${member.id}>!`);
       continue;

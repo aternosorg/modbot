@@ -11,7 +11,9 @@ command.usage = '@user|id <@user|id…> <duration> <reason>';
 command.names = ['mute'];
 
 command.execute = async (message, args, database, bot) => {
-  if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
+  /** @type {GuildConfig} */
+  const guildconfig = await GuildConfig.get(message.guild.id);
+  if(!guildconfig.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     await message.react(util.icons.error);
     return;
   }
@@ -45,7 +47,7 @@ command.execute = async (message, args, database, bot) => {
     catch{}
 
     //highest role check
-    if(member && (message.member.roles.highest.comparePositionTo((await message.guild.members.fetch(userId)).roles.highest) <= 0 || await util.isMod(member))) {
+    if(member && (message.member.roles.highest.comparePositionTo((await message.guild.members.fetch(userId)).roles.highest) <= 0 || guildconfig.isProtected(member))) {
       await message.react(util.icons.error);
       await message.channel.send(`You don't have the permission to mute <@${member.id}>!`);
       continue;

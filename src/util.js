@@ -321,11 +321,26 @@ util.resolveGuild = async (guildInfo) => {
 };
 
 /**
+<<<<<<< HEAD
+ * Log a moderation
+ * @async
+ * @param {GuildInfo}     guildInfo
+ * @param {module:"discord.js".User}  moderator user that started the moderation
+ * @param {module:"discord.js".User}  user      user that was moderated
+ * @param {String}        reason      reason for the moderation
+ * @param {Number}        insertId    id in the moderations table of the db
+ * @param {String}        type        moderation action
+ * @param {String}        [time]      duration of the moderation as a time string
+ * @param {Number}        [amount]    amount of strikes that were given/pardoned
+ * @param {Number}        [total]     total strike count
+ * @return {module:"discord.js".Message}
+=======
  * Sends an embed to the channel
  * @async
  * @param {module:"discord.js".TextBasedChannel}    channel
  * @param {module:"discord.js".MessageEmbed|Object} options options for the embed
  * @return {Promise<module:"discord.js".Message>}
+>>>>>>> master
  */
 util.sendEmbed = (channel, options) => {
   return channel.send(new Discord.MessageEmbed(options));
@@ -352,21 +367,6 @@ util.chatSuccess = async (channel, user, reason, type, time) => {
   }
 
   return await channel.send(responseEmbed);
-};
-
-/**
- * Is this member a mod
- * @async
- * @param {module:"discord.js".GuildMember} member member object of the user in the specific guild
- * @return {Boolean}
- */
-util.isMod = async (member) => {
-  let guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */member.guild.id);
-  for (let [key] of member.roles.cache) {
-    if (guildConfig.isModRole(/** @type {module:"discord.js".Snowflake} */ key))
-      return true;
-  }
-  return false;
 };
 
 /**
@@ -513,7 +513,9 @@ async function messagesAfter(channel, message, limit) {
  * @return {Boolean}
  */
 util.ignoresAutomod = async (message) => {
-  return message.author.bot || message.member.hasPermission('MANAGE_MESSAGES') || util.isMod(message.member);
+  /** @type {GuildConfig} */
+  const guildconfig = await GuildConfig.get(message.guild.id);
+  return message.author.bot || message.member.hasPermission('MANAGE_MESSAGES') || guildconfig.isProtected(message.member);
 };
 
 /**

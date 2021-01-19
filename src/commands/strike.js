@@ -17,7 +17,9 @@ command.usage = '<count> @user|id <@user|id…> <reason>';
 command.names = ['strike'];
 
 command.execute = async (message, args, database, bot) => {
-  if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
+  /** @type {GuildConfig} */
+  const guildconfig = await GuildConfig.get(message.guild.id);
+  if(!guildconfig.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     await message.react(util.icons.error);
     return;
   }
@@ -60,7 +62,7 @@ command.execute = async (message, args, database, bot) => {
     let member;
     try {
       member = await message.guild.members.fetch(user);
-      if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
+      if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || guildconfig.isProtected(member)){
         await message.react(util.icons.error);
         await message.channel.send(`You don't have the permission to strike <@${member.id}>!`);
         continue;
@@ -103,11 +105,12 @@ command.add = async (guild, user, count, moderator, reason, channel, database, b
  * @return {Promise<void>}
  */
 async function punish(guild, user, total, bot, database) {
-  let config = await GuildConfig.get(guild.id);
+  /** @type {GuildConfig} */
+  let config = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */ guild.id);
   let punishment;
   let count = total;
   do {
-    punishment = config.punishments[count];
+    punishment = config.getPunishment(count);
     count --;
   } while (!punishment && count > 0);
 
