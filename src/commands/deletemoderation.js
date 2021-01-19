@@ -12,7 +12,7 @@ command.usage = '<#moderationid>';
 command.names = ['deletemoderation','delmod'];
 
 command.execute = async (message, args, database, bot) => {
-    const guildConfig = GuildConfig.get(message.guild.id);
+    const guildConfig = await GuildConfig.get(message.guild.id);
     if(!guildConfig.isMod(message.member) && !message.member.hasPermission('VIEW_AUDIT_LOG')) {
         await message.react(util.icons.error);
         return;

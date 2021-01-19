@@ -10,7 +10,7 @@ command.usage = '<@user|userId>';
 command.names = ['clearmoderations','clearlogs'];
 
 command.execute = async (message, args, database, bot) => {
-    const guildconfig = GuildConfig.get(message.guild.id);
+    const guildconfig = await GuildConfig.get(message.guild.id);
     if(!guildconfig.isMod(message.member) && !message.member.hasPermission('VIEW_AUDIT_LOG')) {
         await message.react(util.icons.error);
         return;
