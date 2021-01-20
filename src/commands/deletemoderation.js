@@ -1,6 +1,7 @@
 const util = require('../util.js');
 const Discord = require('discord.js');
 const moderations = require('./moderations');
+const GuildConfig = require('../GuildConfig');
 
 const command = {};
 
@@ -11,7 +12,8 @@ command.usage = '<#moderationid>';
 command.names = ['deletemoderation','delmod'];
 
 command.execute = async (message, args, database, bot) => {
-    if(!await util.isMod(message.member) && !message.member.hasPermission('VIEW_AUDIT_LOG')) {
+    const guildConfig = await GuildConfig.get(message.guild.id);
+    if(!guildConfig.isMod(message.member) && !message.member.hasPermission('VIEW_AUDIT_LOG')) {
         await message.react(util.icons.error);
         return;
     }
