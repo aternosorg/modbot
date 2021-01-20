@@ -13,8 +13,9 @@ command.comment = 'Count specifies the amount of messages that will be tested fo
 command.names = ['purge','clean'];
 
 command.execute = async (message, args, database, bot) => {
-
-  if(!await util.isMod(message.member) && !message.member.hasPermission('MANAGE_MESSAGES')) {
+  /** @type {GuildConfig} */
+  const guildconfig = await GuildConfig.get(message.guild.id);
+  if(!await guildconfig.isMod(message.member) && !message.member.hasPermission('MANAGE_MESSAGES')) {
     await message.react(util.icons.error);
     return;
   }

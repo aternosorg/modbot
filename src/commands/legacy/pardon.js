@@ -1,5 +1,6 @@
 const util = require('../../util.js');
 const Log = require('../../Log');
+const GuildConfig = require('../../GuildConfig');
 
 const maxStrikesAtOnce = 5;
 
@@ -12,7 +13,9 @@ command.usage = '<count> @user|id <@user|id…> <reason>';
 command.names = ['pardon'];
 
 command.execute = async (message, args, database, bot) => {
-  if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
+  /** @type {GuildConfig} */
+  const guildconfig = await GuildConfig.get(message.guild.id);
+  if(!guildconfig.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     await message.react(util.icons.error);
     return;
   }
@@ -54,7 +57,7 @@ command.execute = async (message, args, database, bot) => {
     let member;
     try {
       member = await message.guild.members.fetch(user);
-      if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || await util.isMod(member)){
+      if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || guildconfig.isProtected(member)){
         await message.react(util.icons.error);
         await message.channel.send(`You don't have the permission to pardon strikes of <@${member.id}>!`);
         continue;

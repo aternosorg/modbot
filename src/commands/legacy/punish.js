@@ -1,5 +1,6 @@
 const util = require('../../util.js');
 const GuildConfig = require('../../GuildConfig');
+const Discord = require('discord.js');
 
 const command = {};
 
@@ -12,23 +13,21 @@ command.comment = 'If there is no punishment for the current strike count the la
 command.names = ['punish','punishment','punishments'];
 
 command.execute = async (message, args, database, bot) => {
-  if (!await util.isMod(message.member) && !message.member.hasPermission('MANAGE_GUILD')) {
+  /** @type {GuildConfig} */
+  const guildconfig = await GuildConfig.get(message.guild.id);
+  if (!guildconfig.isMod(message.member) && !message.member.hasPermission('MANAGE_GUILD')) {
     message.channel.send("You don't have the permission to execute this command.");
     return;
   }
-  let config = await GuildConfig.get(message.guild.id);
-  if (!config.punishments) {
-    config.punishments = {};
-  }
+
+  /** @type {GuildConfig} */
+  const config = await GuildConfig.get(message.guild.id);
 
   let count = parseInt(args.shift());
   if (!count) {
     let list = '';
-    for (let key in config.punishments) {
-      let value = config.punishments[key];
-      if (!value) {
-        continue;
-      }
+    const punishments = config.getPunishments();
+    for (const [key,value] of punishments) {
       if (value.duration) {
         list += `${key}: ${value.action} for ${util.secToTime(value.duration)} \n`;
       }
@@ -40,10 +39,10 @@ command.execute = async (message, args, database, bot) => {
       list = 'No punishments set up';
     }
 
-    util.sendEmbed(message.channel, {
+    await message.channel.send(new Discord.MessageEmbed({
       title: 'Punishments',
       description: list
-    });
+    }));
     return;
   }
   if (!message.member.hasPermission('MANAGE_GUILD')) {
@@ -55,7 +54,8 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  let action = args.shift();
+  /** @type {String} */
+  const action = args.shift();
   if (!action) {
     message.channel.send(await util.usage(message,command.names[0]));
     return;
@@ -63,8 +63,7 @@ command.execute = async (message, args, database, bot) => {
   switch (action) {
     case 'off':
     case 'disabled':
-      delete config.punishments[count];
-      await config.save();
+      await config.setPunishment(count, null);
       await message.channel.send(`Disabled punishment at ${count}!`);
       break;
     default:
@@ -74,11 +73,10 @@ command.execute = async (message, args, database, bot) => {
       }
 
       let duration = util.timeToSec(args.join(' '));
-      config.punishments[count] = {
+      await config.setPunishment(count, {
         action: action,
         duration: duration
-      };
-      await config.save;
+      });
       if (duration) {
         await message.channel.send(`Set punishment for ${count} ${count === 1 ? "strike" : "strikes"} to ${action} for ${util.secToTime(duration)}!`);
       }

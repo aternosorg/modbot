@@ -1,4 +1,5 @@
 const util = require('../../util.js');
+const GuildConfig = require('../../GuildConfig');
 
 const command = {};
 
@@ -9,7 +10,8 @@ command.usage = '<@user|userId>';
 command.names = ['clearmoderations','clearlogs'];
 
 command.execute = async (message, args, database, bot) => {
-    if(!await util.isMod(message.member) && !message.member.hasPermission('VIEW_AUDIT_LOG')) {
+    const guildconfig = await GuildConfig.get(message.guild.id);
+    if(!guildconfig.isMod(message.member) && !message.member.hasPermission('VIEW_AUDIT_LOG')) {
         await message.react(util.icons.error);
         return;
     }
@@ -30,9 +32,9 @@ command.execute = async (message, args, database, bot) => {
     }
 
     /** @type {ModerationData[]} */
-    const moderations = await database.queryAll("SELECT id, action, created, value, expireTime - created AS duration, reason, moderator FROM moderations WHERE userid = ? AND guildid = ?",[userId,message.guild.id]);
+    const moderations = await database.queryAll("SELECT COUNT(id) FROM moderations WHERE userid = ? AND guildid = ?",[userId,message.guild.id]);
 
-    if (moderations.length === 0) {
+    if (moderations[0]["COUNT(id)"] === 0) {
         await message.channel.send('This user doesn\'t have any moderations!');
         return;
     }

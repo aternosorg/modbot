@@ -1,6 +1,7 @@
 const util = require('../../util.js');
 const Discord = require('discord.js');
 const ChannelConfig = require('../../ChannelConfig');
+const GuildConfig = require('../../GuildConfig');
 
 const command = {};
 
@@ -11,8 +12,10 @@ command.usage = '<global|#channel…|id…> message';
 command.names = ['lock'];
 
 command.execute = async (message, args, database, bot) => {
+  /** @type {GuildConfig} */
+  const guildconfig = await GuildConfig.get(message.guild.id);
   //Permission check
-  if (!await util.isMod(message.member) && !message.member.hasPermission('MANAGE_CHANNELS')) {
+  if (!guildconfig.isMod(message.member) && !message.member.hasPermission('MANAGE_CHANNELS')) {
     await message.react(util.icons.error);
     return;
   }

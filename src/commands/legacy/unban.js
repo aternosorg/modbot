@@ -1,5 +1,6 @@
 const util = require('../../util.js');
 const Log = require('../../Log');
+const GuildConfig = require('../../GuildConfig');
 
 const command = {};
 
@@ -10,7 +11,9 @@ command.usage = '@user|id <@user|id…> <reason>';
 command.names = ['unban'];
 
 command.execute = async (message, args, database, bot) => {
-  if(!await util.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
+  /** @type {GuildConfig} */
+  const guildconfig = await GuildConfig.get(message.guild.id);
+  if(!guildconfig.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
     await message.react(util.icons.error);
     return;
   }

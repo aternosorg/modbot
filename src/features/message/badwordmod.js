@@ -4,7 +4,7 @@ const Log = require('../../Log');
 const strike = require('../../commands/legacy/strike');
 
 exports.event = async (options, message) => {
-  if (!message.guild || message.author.bot || await util.isMod(message.member) || message.member.hasPermission("MANAGE_MESSAGES")) return;
+  if (!message.guild || await util.ignoresAutomod(message)) return;
 
   const words = await BadWord.get(message.channel.id, message.guild.id);
   for (let [,word] of words) {
@@ -13,7 +13,7 @@ exports.event = async (options, message) => {
       await util.delete(message, { reason: reason } );
       if (word.response !== 'disabled') {
         const response = await message.reply(word.response === 'default' ? BadWord.defaultResponse : word.response);
-        await util.delete(response, { timeout: 3000 });
+        await util.delete(response, { timeout: 5000 });
       }
       await Log.logMessageDeletion(message, reason);
       if (word.punishment.action !== 'none') {

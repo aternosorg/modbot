@@ -61,17 +61,13 @@ class Config {
      * @return {Promise<>}
      */
     async save() {
-        if(Object.keys(this).length <= 1) {
-            await database.query("DELETE FROM guilds WHERE id = ?",this.id);
-            this.constructor.getCache().delete(this.id);
-            return;
-        }
+        const json = this.toJSONString();
         let result = await database.query(`SELECT * FROM ${database.escapeId(this.constructor.tableName)} WHERE id = ?`,[this.id]);
         if(result){
-            await database.query(`UPDATE ${database.escapeId(this.constructor.tableName)} SET config = ? WHERE id = ?`,[JSON.stringify(this),this.id]);
+            await database.query(`UPDATE ${database.escapeId(this.constructor.tableName)} SET config = ? WHERE id = ?`,[json,this.id]);
         }
         else {
-            await database.query(`INSERT INTO ${database.escapeId(this.constructor.tableName)} (config,id) VALUES (?,?)`,[JSON.stringify(this),this.id]);
+            await database.query(`INSERT INTO ${database.escapeId(this.constructor.tableName)} (config,id) VALUES (?,?)`,[json,this.id]);
             this.constructor.getCache().set(this.id, this);
         }
     }
@@ -94,6 +90,14 @@ class Config {
         }
 
         return this.getCache().get(id);
+    }
+
+    /**
+     * convert to JSON string
+     * @return {string}
+     */
+    toJSONString() {
+        return JSON.stringify(this);
     }
 }
 

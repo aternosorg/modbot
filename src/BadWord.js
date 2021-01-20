@@ -6,7 +6,7 @@ const Discord = require('discord.js');
  */
 class BadWord extends ChatTriggeredFeature {
 
-  static punishmentTypes = ['none','ban','kick','mute','softban','strike'];
+  static punishmentTypes = ['none','ban','kick','mute','softban','strike','dm'];
 
   static defaultResponse = 'Your message includes words/phrases that are not allowed here!';
 
@@ -34,6 +34,13 @@ class BadWord extends ChatTriggeredFeature {
       this.trigger = json.trigger;
       this.punishment = typeof(json.punishment) === 'string' ? JSON.parse(json.punishment) : json.punishment;
       this.response = json.response;
+      if (this.punishment && this.punishment.action === 'dm' && this.response && this.response !== 'disabled') {
+        if (this.response === 'default') {
+          this.punishment.message = BadWord.defaultResponse;
+        } else {
+          this.punishment.message = this.response;
+        }
+      }
       this.global = json.global;
       this.channels = json.channels;
     }
