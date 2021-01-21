@@ -18,7 +18,7 @@ command.execute = async (message, args, database, bot) => {
         return;
     }
 
-    const regex = args[0].match(/#?(\d+)/);
+    const regex = args.length ? args[0].match(/#?(\d+)/) : null;
     if (regex === null) {
         await message.channel.send(await util.usage(message, command.names[0]));
         return;
