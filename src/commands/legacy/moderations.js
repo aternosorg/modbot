@@ -1,6 +1,6 @@
 const util = require('../../util.js');
 const Discord = require('discord.js');
-const GuildConfig = require('../GuildConfig');
+const GuildConfig = require('../../GuildConfig');
 
 /**
  * timeout after last reaction in ms
