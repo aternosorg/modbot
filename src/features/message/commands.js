@@ -1,4 +1,4 @@
-const fs = require('fs').promises;
+const fs = require('fs');
 const defaultPrefix = require('../../../config.json').prefix;
 const Discord = require('discord.js');
 const util = require('../../util');
@@ -7,24 +7,24 @@ const GuildConfig = require('../../GuildConfig');
 class CommandHandler {
     /**
      * loaded commands
-     * @type {Promise<Object>}
+     * @type {Object}
      * @private
      */
     static #commands = this._loadCommands();
 
     /**
      * load commands
-     * @return {Promise<Command[]>}
+     * @return {Command[]}
      * @private
      */
-    static async _loadCommands() {
+    static _loadCommands() {
         const commands = {};
-        for (const folder of await fs.readdir(`${__dirname}/../../commands`)) {
+        for (const folder of fs.readdirSync(`${__dirname}/../../commands`)) {
             const dirPath = `${__dirname}/../../commands/${folder}`;
-            if (!(await fs.lstat(dirPath)).isDirectory() || folder === "legacy") continue;
-            for (const file of await fs.readdir(dirPath)) {
+            if (!fs.lstatSync(dirPath).isDirectory() || folder === "legacy") continue;
+            for (const file of fs.readdirSync(dirPath)) {
                 const path = `${dirPath}/${file}`;
-                if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
+                if (!file.endsWith('.js') || !fs.lstatSync(path).isFile()) {
                     continue;
                 }
                 try {
