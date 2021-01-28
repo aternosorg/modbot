@@ -102,6 +102,18 @@ class GuildConfig extends Config {
     }
 
     /**
+     * list all modroles
+     * @return {String}
+     */
+    listModRoles() {
+        let roles = '';
+        for (let role of this.#modRoles) {
+            roles += `<@&${role}>, `
+        }
+        return roles.length ? roles.substring(0, roles.length-2) : 'none';
+    }
+
+    /**
      * Is this a protected role?
      *
      * @param  {module:"discord.js".Snowflake} role role id
@@ -147,6 +159,18 @@ class GuildConfig extends Config {
                 newRoles.push(protectedRole);
         }
         this.#protectedRoles = newRoles;
+    }
+
+    /**
+     * list all protected roles
+     * @return {String}
+     */
+    listProtectedRoles() {
+        let roles = '';
+        for (let role of this.#protectedRoles) {
+            roles += `<@&${role}>, `
+        }
+        return roles.length ? roles.substring(0, roles.length-2) : 'none';
     }
 
     /**

@@ -17,12 +17,14 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
+  /** @type {GuildConfig} */
   let guild = await GuildConfig.get(message.guild.id);
 
   let moderation = '';
   moderation += `Log: ${guild.logChannel ? `<#${guild.logChannel}>` : 'disabled'} \n`;
   moderation += `Muted role: ${guild.mutedRole ? `<@&${guild.mutedRole}>` : 'disabled'} \n`;
-  moderation += `Mod roles: ${guild.modRoles.length ? `<@&${guild.modRoles.join('>, <@&')}>` : 'none'} \n`;
+  moderation += `Mod roles: ${guild.listModRoles()} \n`;
+  moderation += `Protected roles: ${guild.listProtectedRoles()} \n`;
 
   let support = '';
   support += `Playlist: ${guild.playlist ? `https://www.youtube.com/playlist?list=${guild.playlist}` : 'disabled'} \n`;
