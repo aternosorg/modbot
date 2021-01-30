@@ -69,7 +69,8 @@ module.exports = async (message) => {
         return;
     }
 
-    if ((await util.channelMentions(message.guild,channels.split(" "))).length === 0 && channels.toLowerCase() !== 'global') {
+    channels = channels.toLowerCase();
+    if ((await util.channelMentions(message.guild,channels.split(" "))).length === 0 && channels !== 'global') {
         return await message.channel.send("Invalid channels. (#channel|channelId|global)");
     }
 
