@@ -2,6 +2,7 @@ const util = require('../../util.js');
 const Discord = require('discord.js');
 const fs = require('fs').promises;
 const GuildConfig = require('../../GuildConfig');
+const CommandHandler = require('../../features/message/commands');
 
 const command = {};
 
@@ -33,6 +34,11 @@ let commandList = '';
   commandList = commandList.substring(0, commandList.length - 2);
 })();
 
+const newCommands = CommandHandler.getCommands();
+for (const cmd in newCommands) {
+  commandList += `\`${cmd}\`, `
+}
+
 command.execute = async (message, args, database, bot) => {
   let config = await GuildConfig.get(message.guild.id);
   let embed = new Discord.MessageEmbed()
@@ -47,8 +53,12 @@ command.execute = async (message, args, database, bot) => {
     );
   }
   else {
-    if (commands[args[0]]) {
-      embed = await command.getUse(message, args[0]);
+    const name = args[0];
+    if (newCommands[name]) {
+      embed = await newCommands[name].getUsage(message, name, config);
+    }
+    else if (commands[name]) {
+      embed = await command.getUse(message, name);
     }
     else {
       embed

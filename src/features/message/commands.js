@@ -40,6 +40,10 @@ class CommandHandler {
         return commands;
     }
 
+    static getCommands() {
+        return this.#commands;
+    }
+
     /**
      *
      * @param {Object} options

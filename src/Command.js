@@ -126,11 +126,12 @@ class Command {
      * Generate a usage embed
      * @param {module:"discord.js".Message} message
      * @param {String}                      cmd
-     * @param {GuildConfig}                 guildConfig
+     * @param {GuildConfig}                 [guildConfig]
      * @return {module:"discord.js".MessageEmbed}
      *
      */
-    static async getUsage(message, cmd, guildConfig = GuildConfig.get(message.guild.id)) {
+    static async getUsage(message, cmd, guildConfig) {
+        if (!guildConfig) guildConfig = await GuildConfig.get(message.guild.id);
         const prefix = guildConfig.prefix || defaultPrefix;
         const embed = new Discord.MessageEmbed()
             .setAuthor(`Help for ${cmd} | Prefix: ${prefix}`)
@@ -163,7 +164,7 @@ class Command {
      * @return {Promise<void>}
      */
     async help() {
-        await this.message.channel.send(this.constructor.getUsage(this.message,this.name , this.guildConfig));
+        await this.message.channel.send(await this.constructor.getUsage(this.message,this.name , this.guildConfig));
     }
 }
 
