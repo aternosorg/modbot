@@ -4,8 +4,6 @@ class PingCommand extends Command {
 
     static names = ['ping'];
 
-    static botPerms = ['MANAGE_GUILD'];
-
     async execute() {
         /** @type {module:"discord.js".Message} */
         const pong = await this.message.channel.send(`Pinging...`);
