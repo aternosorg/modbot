@@ -434,7 +434,7 @@ util.split = (str, ...splitAt) => {
  * @return {module:"discord.js".MessageEmbed}
  */
 util.usage = async(message, command) => {
-  const help = require('./commands/help.js');
+  const help = require('./commands/legacy/help.js');
   return await help.getUse(message, command);
 };
 

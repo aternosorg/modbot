@@ -1,71 +1,100 @@
-const fs = require('fs').promises;
-const { prefix } = require('../../../config.json');
+const fs = require('fs');
+const defaultPrefix = require('../../../config.json').prefix;
 const Discord = require('discord.js');
 const util = require('../../util');
 const GuildConfig = require('../../GuildConfig');
 
-/**
- * loaded commands
- * @type {*[]}
- */
-const commands = [];
+class CommandHandler {
+    /**
+     * loaded commands
+     * @type {Object}
+     * @private
+     */
+    static #commands = this._loadCommands();
 
-(async () => {
-    for (let file of await fs.readdir(`${__dirname}/../../commands`)) {
-        let path = `${__dirname}/../../commands/${file}`;
-        if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
-            continue;
+    /**
+     * load commands
+     * @return {Command[]}
+     * @private
+     */
+    static _loadCommands() {
+        const commands = {};
+        for (const folder of fs.readdirSync(`${__dirname}/../../commands`)) {
+            const dirPath = `${__dirname}/../../commands/${folder}`;
+            if (!fs.lstatSync(dirPath).isDirectory() || folder === "legacy") continue;
+            for (const file of fs.readdirSync(dirPath)) {
+                const path = `${dirPath}/${file}`;
+                if (!file.endsWith('.js') || !fs.lstatSync(path).isFile()) {
+                    continue;
+                }
+                try {
+                    const command = require(path);
+                    for (const name of command.names) {
+                        commands[name] = command;
+                    }
+                } catch (e) {
+                    console.error(`Failed to load command '${file}'`, e);
+                }
+            }
         }
+        return commands;
+    }
+
+    static getCommands() {
+        return this.#commands;
+    }
+
+    /**
+     *
+     * @param {Object} options
+     * @param {Database} options.database
+     * @param {module:"discord.js".Client} options.bot
+     * @param {module:"discord.js".Message} message
+     * @return {Promise<void>}
+     */
+    static async event(options, message) {
+        const name = await this.getCommand(message);
+        const Command = this.#commands[name];
+        if (Command === undefined) return;
+
         try {
-            commands.push(require(path));
+            /** @type {Command} */
+            const cmd = new Command(message, options.database, options.bot, name);
+            const userPerms = cmd.userHasPerms(), botPerms = cmd.botHasPerms();
+            if (userPerms !== true) {
+                await message.channel.send(`You are missing the following permissions to execute this command: ${userPerms.join(', ')}`)
+                return;
+            }
+            if (botPerms !== true) {
+                await message.channel.send(`I am missing the following permissions to execute this command: ${botPerms.join(', ')}`)
+                return;
+            }
+            await cmd.execute();
         } catch (e) {
-            console.error(`Failed to load command '${file}'`, e);
+            let embed = new Discord.MessageEmbed({
+                color: util.color.red,
+                description: `An error occurred while executing that command!`
+            });
+            await message.channel.send(embed);
+            console.error(`An error occurred while executing command ${Command.names[0]}:`,e);
         }
     }
-})()
 
-/**
- *
- * @param {Object} options
- * @param {Database} options.database
- * @param {module:"discord.js".Client} options.bot
- * @param {module:"discord.js".Message} message
- * @return {Promise<void>}
- */
-exports.event = async(options, message) => {
-    let foundCommand = await exports.getCommand(message);
-    if (foundCommand === null) return;
-    const [command,args] = foundCommand;
+    /**
+     * get the command in this message
+     * @param {module:"discord.js".Message} message
+     * @return {Promise<String>}
+     */
+    static async getCommand(message) {
+        if (!message.guild || message.author.bot) return null;
+        /** @type {GuildConfig} */
+        const guild = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */ message.guild.id);
+        const args = util.split(message.content,' ');
+        const prefix = util.startsWithMultiple(message.content.toLowerCase(), guild.prefix.toLowerCase(), defaultPrefix.toLowerCase());
+        if (!prefix) return null;
 
-    try {
-        await Promise.resolve(command.execute(message, args, options.database, options.bot));
-    } catch (e) {
-        let embed = new Discord.MessageEmbed({
-            color: util.color.red,
-            description: `An error occurred while executing that command!`
-        });
-        await message.channel.send(embed);
-        console.error(`An error occurred while executing command ${command.names[0]}:`,e);
+        return args[0].slice(prefix.length).toLowerCase();
     }
 }
 
-/**
- * get the command in this message
- * @param {module:"discord.js".Message} message
- * @return {Promise<[Object,String[]]|null>}
- */
-exports.getCommand = async (message) => {
-    if (!message.guild || message.author.bot) return null;
-    let guild = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */ message.guild.id);
-    const args = util.split(message.content,' ');
-    let usedPrefix = util.startsWithMultiple(message.content.toLowerCase(),guild.prefix.toLowerCase(), prefix.toLowerCase());
-    if (!usedPrefix) return null;
-
-    let cmd = args.shift().slice(usedPrefix.length).toLowerCase();
-    for (let command of commands) {
-        if (command.names.includes(cmd)) {
-            return [command,args];
-        }
-    }
-    return null;
-}
+module.exports = CommandHandler;

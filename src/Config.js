@@ -75,7 +75,7 @@ class Config {
     /**
      * Get config
      * @async
-     * @param {module:"discord.js".Snowflake} id
+     * @param {module:"discord.js".Snowflake|Snowflake} id
      * @return {Config}
      */
     static async get(id) {
