@@ -26,7 +26,7 @@ command.execute = async (message, args, database, bot) => {
     const id = parseInt(regex[1]);
 
     /** @type {ModerationData|null} */
-    const moderation = await database.query("SELECT id, action, created, value, expireTime - created AS duration, reason, moderator FROM moderations WHERE id = ?",[id]);
+    const moderation = await database.query("SELECT id, action, created, value, expireTime - created AS duration, reason, moderator FROM moderations WHERE id = ? AND guildid = ?",[id, message.guild.id]);
 
     if (moderation === null) {
         await message.channel.send('Moderation not found!');
