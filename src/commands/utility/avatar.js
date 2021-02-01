@@ -18,7 +18,7 @@ class AvatarCommand extends Command{
             }
             catch (e) {
                 if (e.httpStatus === 404) {
-                    await this.help();
+                    await this.sendUsage();
                     return;
                 }
                 throw e;

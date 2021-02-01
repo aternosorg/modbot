@@ -160,10 +160,10 @@ class Command {
     }
 
     /**
-     * send help embed
+     * send usage embed
      * @return {Promise<void>}
      */
-    async help() {
+    async sendUsage() {
         await this.message.channel.send(await this.constructor.getUsage(this.message,this.name , this.guildConfig));
     }
 }
