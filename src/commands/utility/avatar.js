@@ -1,5 +1,6 @@
 const Command = require('../../Command')
 const Discord = require('discord.js');
+const util = require('../../util');
 
 class AvatarCommand extends Command{
 
