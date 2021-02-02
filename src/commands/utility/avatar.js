@@ -27,7 +27,7 @@ class AvatarCommand extends Command{
         }
         const avatarEmbed = new Discord.MessageEmbed()
             .setTitle(`Avatar of ${user.username}`)
-            .setImage(user.displayAvatarURL({dynamic: true, size: 512}))
+            .setImage(user.displayAvatarURL({dynamic: true, size: 2048}))
             .setFooter(`Command executed by ${this.message.author.username}`)
             .setTimestamp();
 
