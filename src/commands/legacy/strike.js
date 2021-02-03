@@ -5,6 +5,7 @@ const mute = require('./mute.js');
 const softban = require('./softban.js');
 const GuildConfig = require('../../GuildConfig');
 const Log = require('../../Log');
+const RateLimiter = require('../../RateLimiter');
 
 const maxStrikesAtOnce = 5;
 
@@ -73,6 +74,16 @@ command.execute = async (message, args, database, bot) => {
   }
 };
 
+/**
+ *
+ * @param {module:"discord.js".Guild}       guild
+ * @param {module:"discord.js".User}        user
+ * @param {Number}                          count
+ * @param {module:"discord.js".User}        moderator
+ * @param {String}                          reason
+ * @param {module:"discord.js".TextChannel} channel
+ * @return {Promise<void>}
+ */
 command.add = async (guild, user, count, moderator, reason, channel, database, bot) => {
   reason = reason || 'No reason provided.';
   let now = Math.floor(Date.now()/1000);
@@ -87,7 +98,7 @@ command.add = async (guild, user, count, moderator, reason, channel, database, b
 
   try {
     member = await guild.members.fetch(user);
-    await member.send(`You received ${count} ${count === 1 ? "strike" : "strikes"} in \`${guild.name}\` | ${reason}\nYou now have ${total} ${total === 1 ? "strike" : "strikes"}`);
+    await RateLimiter.sendDM(guild, member, `You received ${count} ${count === 1 ? "strike" : "strikes"} in \`${guild.name}\` | ${reason}\nYou now have ${total} ${total === 1 ? "strike" : "strikes"}`);
   } catch{}
   if (channel) {
     await util.chatSuccess(channel, user, reason, "striked");
@@ -166,7 +177,7 @@ command.executePunishment = async (punishment, guild, user, bot, database, reaso
     case 'dm':
       try {
         if (!punishment.message || punishment.message.length === 0) return;
-        await user.send(`Your message in \`${guild.name}\` was removed: ` + punishment.message);
+        await RateLimiter.sendDM(guild, user, `Your message in \`${guild.name}\` was removed: ` + punishment.message);
       }
       catch (e) {
         const codes = [/* Cannot send messages to this user */50007]
