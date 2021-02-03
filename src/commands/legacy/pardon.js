@@ -1,7 +1,7 @@
 const util = require('../../util.js');
 const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
-
+const RateLimiter = require('../../RateLimiter');
 const maxStrikesAtOnce = 5;
 
 const command = {};
@@ -79,7 +79,7 @@ command.execute = async (message, args, database, bot) => {
 
     if (member) {
       try {
-        await member.send(`${count} ${count === 1 ? "strike was" : "strikes were"} pardoned in \`${message.guild.name}\` | ${reason}\nYou now have ${total} ${total === 1 ? "strike" : "strikes"}`);
+        await RateLimiter.sendDM(message.guild, member, `${count} ${count === 1 ? "strike was" : "strikes were"} pardoned in \`${message.guild.name}\` | ${reason}\nYou now have ${total} ${total === 1 ? "strike" : "strikes"}`);
       } catch (e) {}
     }
     await util.chatSuccess(message.channel, user, reason, "pardoned");

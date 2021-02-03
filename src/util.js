@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const GuildConfig = require('./GuildConfig.js');
 const ChatTriggeredFeature = require('./ChatTriggeredFeature');
 const Config = require('./Config');
+const RateLimiter = require('./RateLimiter');
 
 /**
  * Default timeout for responses in minutes
@@ -33,6 +34,7 @@ util.init = (db, client) => {
   bot = client;
   ChatTriggeredFeature.init(db);
   Config.init(db);
+  RateLimiter.init(db);
 };
 
 /**

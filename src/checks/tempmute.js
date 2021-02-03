@@ -1,5 +1,6 @@
 const Log = require('../Log');
 const GuildConfig = require('../GuildConfig');
+const RateLimiter = require('../RateLimiter');
 
 exports.check = async (database, bot) => {
   let results = await database.queryAll("SELECT * FROM moderations WHERE action = 'mute' AND active = TRUE AND expireTime IS NOT NULL AND expireTime <= ?", [Math.floor(Date.now()/1000)]);
@@ -7,12 +8,14 @@ exports.check = async (database, bot) => {
     try {
       let member;
       try {
-        member = await bot.guilds.resolve(result.guildid).members.fetch(result.userid);
+        /** @type {module:"discord.js".Guild} */
+        const guild = await bot.guilds.fetch(result.guildid);
+        member = await guild.members.fetch(result.userid);
         if (member) {
           let guildConfig = await GuildConfig.get(result.guildid);
           if (member.roles.cache.get(guildConfig.mutedRole)) {
             await member.roles.remove(guildConfig.mutedRole, "Temporary mute completed!");
-            await member.send(`You were unmuted in \`${bot.guilds.resolve(result.guildid).name}\` | Temporary mute completed!`);
+            await RateLimiter.sendDM(guild ,member, `You were unmuted in \`${bot.guilds.resolve(result.guildid).name}\` | Temporary mute completed!`);
           }
         }
       }
