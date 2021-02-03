@@ -90,9 +90,12 @@ class Command {
         this.database = database;
         this.bot = bot;
         this.args = util.split(message.content,' ').slice(1);
-        this.guildConfig = GuildConfig.get(/** @type {module:"discord.js".Snowflake} */message.guild.id);
-        this.channelConfig = ChannelConfig.get(/** @type {module:"discord.js".Snowflake} */message.channel.id);
         this.name = name;
+    }
+
+    async _loadConfigs() {
+        this.guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */this.message.guild.id);
+        this.channelConfig = await ChannelConfig.get(/** @type {module:"discord.js".Snowflake} */this.message.channel.id);
     }
 
     /**
