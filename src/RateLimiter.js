@@ -31,6 +31,7 @@ class RateLimiter {
      */
     static async sendDM(guild, user, message) {
         let count = this.#modCountCache.get(guild.id);
+        console.log(`cached: ${!!count}`)
         if (!count) {
             count = await database.query(`SELECT COUNT(*) AS count FROM moderations WHERE guildid = ${guild.id} AND created >= ${Math.floor(Date.now()/1000) - 60*60*24}`);
             count = count.count;
@@ -42,9 +43,10 @@ class RateLimiter {
             this.#modCountTimeouts.set(guild.id, setTimeout(() => {
                 this.#modCountCache.delete(guild.id);
                 this.#modCountTimeouts.delete(guild.id);
+                console.log("timeout ended")
             }, 5 * 60 * 1000));
         }
-        if (count <= guild.memberCount * 0.05 || count <= 5) {
+        if (count <= guild.memberCount * 0.05 || count <= 6) {
             await user.send(message);
         }
         else {
