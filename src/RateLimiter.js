@@ -20,6 +20,7 @@ class RateLimiter {
     }
 
     static #modCountCache = new Discord.Collection();
+    static #modCountTimeouts = new Discord.Collection();
 
     /**
      * send a user a direct message
@@ -37,9 +38,11 @@ class RateLimiter {
 
         count ++;
         this.#modCountCache.set(guild.id, count);
-        setTimeout(() => {
-            this.#modCountCache.delete(guild.id);
-        });
+        if (!this.#modCountTimeouts.has(guild.id)) {
+            this.#modCountTimeouts.set(guild.id, setTimeout(() => {
+                this.#modCountCache.delete(guild.id);
+            }, 5 * 60 * 1000));
+        }
         if (count <= guild.memberCount * 0.05 || count <= 5) {
             await user.send(message);
         }
