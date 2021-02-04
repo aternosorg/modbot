@@ -15,14 +15,14 @@ class ArticleCommand extends Command {
             return;
         }
 
-        let query = this.args.join(' ').toLowerCase();
+        const query = this.args.join(' ').toLowerCase();
         if(!query){
             await this.sendUsage();
+            return;
         }
 
 
-        let response = await axios.get(`https://${this.guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles/search.json?query=`+encodeURIComponent(query));
-
+        const response = await axios.get(`https://${this.guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles/search.json?query=`+encodeURIComponent(query));
         if(response.data.results[0]){
             await this.message.channel.send(response.data.results[0].html_url);
         }
