@@ -1,6 +1,7 @@
 const util = require('../../util.js');
 const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
+const RateLimiter = require('../../RateLimiter');
 const command = {};
 
 command.description = 'Ban a user';
@@ -54,17 +55,29 @@ command.execute = async (message, args, database, bot) => {
   }
 };
 
+/**
+ *
+ * @param {module:"discord.js".Guild}   guild
+ * @param {module:"discord.js".User}    user
+ * @param {module:"discord.js".User}    moderator
+ * @param {String}                      [reason]
+ * @param {Number}                      [duration]
+ * @param {module:"discord.js".Channel} [channel]
+ * @return {Promise<void>}
+ */
 command.ban = async(guild, user, moderator, reason, duration, channel) => {
   reason = reason || 'No reason provided.';
   let time = util.secToTime(duration);
 
   try {
-    if (duration) {
-       await user.send(`You were banned from \`${guild.name}\` for ${time} | ${reason}`);
-    }
-    else {
-      await user.send(`You were permanently banned from \`${guild.name}\` | ${reason}`);
-    }
+      let text;
+      if (duration) {
+        text = `You were banned from \`${guild.name}\` for ${time} | ${reason}`;
+      }
+      else {
+        text = `You were permanently banned from \`${guild.name}\` | ${reason}`;
+      }
+      await RateLimiter.sendDM(guild, user, text);
   } catch (e) {}
 
   if (duration) {

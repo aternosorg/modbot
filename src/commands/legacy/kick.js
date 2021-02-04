@@ -1,7 +1,7 @@
 const util = require('../../util.js');
 const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
-
+const RateLimiter = require('../../RateLimiter');
 const command = {};
 
 command.description = 'Kick a user';
@@ -54,13 +54,22 @@ command.execute = async (message, args, database, bot) => {
   }
 };
 
+/**
+ *
+ * @param {module:"discord.js".Guild}       guild
+ * @param {module:"discord.js".GuildMember} member
+ * @param {module:"discord.js".User}        moderator
+ * @param {String}                          [reason]
+ * @param {module:"discord.js".TextChannel} [channel]
+ * @return {Promise<void>}
+ */
 command.kick = async (guild, member, moderator, reason, channel) => {
   reason = reason || 'No reason provided.';
 
   let insert = await util.moderationDBAdd(guild.id, member.id, "kick", reason, null, moderator.id);
 
   try {
-    await member.send(`You were kicked from \`${guild.name}\` | ${reason}`);
+    await RateLimiter.sendDM(guild, member, `You were kicked from \`${guild.name}\` | ${reason}`);
   } catch (e) {}
   await member.kick(`${moderator.username}#${moderator.discriminator} | `+reason);
 

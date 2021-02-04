@@ -1,6 +1,7 @@
 const util = require('../../util.js');
 const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
+const RateLimiter = require('../../RateLimiter');
 
 const command = {};
 
@@ -58,7 +59,7 @@ command.execute = async (message, args, database, bot) => {
 
     if (member) {
       try {
-        await member.send(`You were unmuted in \`${message.guild.name}\` | ${reason}`);
+        await RateLimiter.sendDM(message.guild, user, `You were unmuted in \`${message.guild.name}\` | ${reason}`);
       } catch (e) {}
     }
 
