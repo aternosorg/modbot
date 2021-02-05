@@ -7,7 +7,7 @@ command.description = 'Delete all moderations for a user';
 
 command.usage = '<@user|userId>';
 
-command.names = ['clearmoderations','clearlogs'];
+command.names = ['clearmoderations','clearlogs', 'clearmods'];
 
 command.execute = async (message, args, database, bot) => {
     const guildconfig = await GuildConfig.get(message.guild.id);
