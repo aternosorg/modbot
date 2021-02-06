@@ -1,11 +1,12 @@
 const util = require('../../util.js');
 const GuildConfig = require('../../GuildConfig');
+const Discord = require('discord.js');
 
 const command = {};
 
 command.description = 'Add or remove modroles';
 
-command.usage = 'add|remove @role|roleId';
+command.usage = 'add|remove|list <[@role|roleId]>';
 
 command.names = ['modrole','modroles'];
 
@@ -27,6 +28,12 @@ command.execute = async (message, args, database, bot) => {
         await message.channel.send("Please specify a role! (@mention or ID)");
         return;
       }
+
+      if (config.isModRole(role.id)) {
+        await message.channel.send("That role is already a moderator role");
+        return;
+      }
+
       config.addModRole(role.id);
       await config.save();
       await message.channel.send(`Added \`${role.name}\` as a moderator role!`);
@@ -50,8 +57,16 @@ command.execute = async (message, args, database, bot) => {
       await message.channel.send(`Removed \`${role.name}\` from moderator roles!`);
       break;
 
+
+    case 'list':
+      await message.channel.send(new Discord.MessageEmbed({
+        title: 'Modroles',
+        description: config.listModRoles()
+      }));
+      break;
+
     default:
-      await message.channel.send("Valid subcommands: add, remove");
+      await message.channel.send("Valid subcommands: add, remove, list");
   }
 };
 
