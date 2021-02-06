@@ -53,7 +53,7 @@ class CommandHandler {
      * @return {Promise<void>}
      */
     static async event(options, message) {
-        const name = await this.getCommand(message);
+        const name = await this.getCommandName(message);
         const Command = this.#commands[name];
         if (Command === undefined) return;
 
@@ -86,7 +86,7 @@ class CommandHandler {
      * @param {module:"discord.js".Message} message
      * @return {Promise<String>}
      */
-    static async getCommand(message) {
+    static async getCommandName(message) {
         if (!message.guild || message.author.bot) return null;
         /** @type {GuildConfig} */
         const guild = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */ message.guild.id);
@@ -95,6 +95,15 @@ class CommandHandler {
         if (!prefix) return null;
 
         return args[0].slice(prefix.length).toLowerCase();
+    }
+
+    /**
+     * is this message a bot command
+     * @param {module:"discord.js".Message} message
+     * @return {Promise<boolean>}
+     */
+    static async isCommand(message) {
+        return this.#commands[await this.getCommandName(message)] !== undefined;
     }
 }
 
