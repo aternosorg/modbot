@@ -60,6 +60,7 @@ class CommandHandler {
         try {
             /** @type {Command} */
             const cmd = new Command(message, options.database, options.bot, name);
+            await cmd._loadConfigs();
             const userPerms = cmd.userHasPerms(), botPerms = cmd.botHasPerms();
             if (userPerms !== true) {
                 await message.channel.send(`You are missing the following permissions to execute this command: ${userPerms.join(', ')}`)
@@ -69,7 +70,6 @@ class CommandHandler {
                 await message.channel.send(`I am missing the following permissions to execute this command: ${botPerms.join(', ')}`)
                 return;
             }
-            await cmd._loadConfigs();
             await cmd.execute();
         } catch (e) {
             let embed = new Discord.MessageEmbed({
