@@ -27,14 +27,18 @@ class RaidModeCommand extends Command {
                 this.guildConfig.raidMode = true;
                 await this.guildConfig.save();
                 await this.message.channel.send("Enabled anti-raid-mode!");
-                await Log.log(/** @type {module:"discord.js".Snowflake} */this.message.guild.id, `${this.message.author.id} enabled anti-raid-mode!`)
+                await Log.logEmbed(/** @type {module:"discord.js".Snowflake} */this.message.guild.id, {
+                    description: `<@!${this.message.author.id}> enabled anti-raid-mode!`
+                });
                 break;
 
             case "off":
                 this.guildConfig.raidMode = false;
                 await this.guildConfig.save();
                 await this.message.channel.send("Disabled anti-raid-mode!")
-                await Log.log(/** @type {module:"discord.js".Snowflake} */this.message.guild.id, `${this.message.author.id} disabled anti-raid-mode!`)
+                await Log.logEmbed(/** @type {module:"discord.js".Snowflake} */this.message.guild.id, {
+                    description: `<@!${this.message.author.id}> disabled anti-raid-mode!`
+                });
                 break;
 
             case "status":
