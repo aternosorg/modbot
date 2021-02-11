@@ -5,7 +5,7 @@ const RateLimiter = require('../../RateLimiter');
 
 const command = {};
 
-command.description = 'Softban a user (kick and delete messages)';
+command.description = 'Softban a user (ban with immediate unban)';
 
 command.usage = '@member|id <@member|id…> <reason>';
 
