@@ -26,49 +26,46 @@ class RepeatedMessage {
     #messages = [];
 
     /**
-     * @type {String}
-     */
-    #content;
-
-    /**
-     * @type {Timeout}
-     */
-    #timeout;
-
-    /**
-     * @type {Number}
-     */
-    #count = 1;
-
-    /**
      * @param {module:"discord.js".Message} message
      */
     constructor(message) {
         this.#key = this.constructor.getKey(message);
         this.#messages.push(message);
-        this.#content = message.content;
-        this.#timeout = setTimeout(() => {
-            this.constructor.#members.delete(this.#key);
-        }, 30000);
     }
 
     /**
-     * Is this message similar enough?
-     * @param {module:"discord.js".Message} message
+     * Are these messages similar enough?
+     * @param {module:"discord.js".Message} messageA
+     * @param {module:"discord.js".Message} messageB
      * @return {boolean}
      */
-    similarEnough(message) {
-        const similarity = stringSimilarity.compareTwoStrings(message.content, this.#content);
+    similarEnough(messageA, messageB) {
+        const similarity = stringSimilarity.compareTwoStrings(messageA.content, messageB.content);
         return similarity > 0.75;
     }
 
     /**
-     * get count of repeated messages
+     * get count of similar messages
      * @return {number}
      */
-    getCount() {
-        return this.#count;
+    getSimilarMessageCount(newMessage) {
+        let similarMessages = 0;
+        for (const cachedMessage of this.#messages) {
+            if (this.similarEnough(newMessage, cachedMessage)) {
+                similarMessages++;
+            }
+        }
+        return similarMessages;
     }
+
+    /**
+     *  how many messages are cached for this member?
+     *  @return {Number}
+     */
+    getMessageCount() {
+        return this.#messages.length;
+    }
+
 
     /**
      * add a message
@@ -76,29 +73,25 @@ class RepeatedMessage {
      */
     add(message) {
         this.#messages.push(message);
-        this.#count++;
-    }
-
-    /**
-     * cancel the cache deletion
-     * only call this when you remove this item from the cache
-     */
-    cancelTimeout() {
-        clearTimeout(this.#timeout);
+        setTimeout(() => {
+            this.#messages.shift();
+            if (this.#messages.length === 0) {
+                this.constructor.#members.delete(this.#key);
+            }
+        }, 30000);
     }
 
     /**
      * @return {Promise<void>}
      */
     async delete() {
-        const reason = `Repeated ${this.#messages.length} times`;
+        const reason = `Message spam`;
         for (const message of this.#messages) {
             if (message.deletable) {
                 await util.delete(message, {reason});
                 await Log.logMessageDeletion(message, reason)
             }
         }
-        this.#messages = [];
     }
 
     /**
@@ -132,14 +125,10 @@ class RepeatedMessage {
 
         /** @type {RepeatedMessage} */
         const cache = this.#members.get(key);
-        if (cache.similarEnough(message)) {
-            cache.add(message)
-            return cache.getCount() >= 3;
-        } else {
-            cache.cancelTimeout();
-            this.#members.set(key, new RepeatedMessage(message));
-            return false;
-        }
+        cache.add(message);
+        const similar = cache.getSimilarMessageCount(message);
+
+        return similar >= 3 || cache.getMessageCount() >= 5;
     }
 }
 
