@@ -1,21 +1,38 @@
-const Command = require('../Command');
+const Command = require('../../Command');
 
 class ExampleCommand extends Command {
 
-    static description = 'describe the command';
+    static description = 'En-/disable message spam protection (deletes repeated and spammed messages)';
 
-    static usage = '<replace-this> [optional] abc|def';
+    static usage = 'on|off|status';
 
-    static names = ['example'];
+    static names = ['antispam','spammod','spamprotection'];
 
-    static comment = 'This is an example command';
-
-    static userPerms = [];
-
-    static botPerms = [];
+    static userPerms = ['MANAGE_GUILD'];
 
     async execute() {
-        await this.message.channel.send("This is an example");
+        if (this.args.length !== 1) {
+            await this.sendUsage();
+            return;
+        }
+
+        switch (this.args[0].toLowerCase()) {
+            case "on":
+                this.guildConfig.antiSpam = true;
+                await this.guildConfig.save();
+                await this.message.channel.send("Enabled spam protection! Fast message spam and repeated messages will now be deleted.");
+                break;
+            case "off":
+                this.guildConfig.antiSpam = false;
+                await this.guildConfig.save();
+                await this.message.channel.send("Disabled spam protection!")
+                break;
+            case "status":
+                await this.message.channel.send(`Spam protection is currently ${this.guildConfig.antiSpam ? 'enabled' : 'disabled'}.`)
+                break;
+            default:
+                await this.sendUsage();
+        }
     }
 }
 
