@@ -10,9 +10,6 @@ const GuildConfig = require('../../GuildConfig');
 exports.event = async (options, message) => {
     if (!message.guild || await util.ignoresAutomod(message) || !(await GuildConfig.get(message.guild.id)).antiSpam) return;
 
-    if (RepeatedMessage.isSpam(message)) {
-        const key = RepeatedMessage.getKey(message);
-        await RepeatedMessage.get(key).delete();
-    }
+    await RepeatedMessage.checkSpam(message)
 };
 

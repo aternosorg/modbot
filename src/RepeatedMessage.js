@@ -41,7 +41,7 @@ class RepeatedMessage {
      */
     similarEnough(messageA, messageB) {
         const similarity = stringSimilarity.compareTwoStrings(messageA.content, messageB.content);
-        return similarity > 0.75;
+        return similarity > 0.85;
     }
 
     /**
@@ -49,10 +49,19 @@ class RepeatedMessage {
      * @return {number}
      */
     getSimilarMessageCount(newMessage) {
-        let similarMessages = 0;
+        return this.getSimilarMessages(newMessage).length;
+    }
+
+    /**
+     * get similar messages
+     * @param {module:"discord.js".Message} newMessage
+     * @return {module:"discord.js".Message[]}
+     */
+    getSimilarMessages(newMessage) {
+        let similarMessages = [];
         for (const cachedMessage of this.#messages) {
             if (this.similarEnough(newMessage, cachedMessage)) {
-                similarMessages++;
+                similarMessages.push(cachedMessage);
             }
         }
         return similarMessages;
@@ -65,7 +74,6 @@ class RepeatedMessage {
     getMessageCount() {
         return this.#messages.length;
     }
-
 
     /**
      * add a message
@@ -84,12 +92,27 @@ class RepeatedMessage {
     /**
      * @return {Promise<void>}
      */
-    async delete() {
-        const reason = `Message spam`;
+    async deleteAll() {
+        const reason = `Fast message spam`;
         for (const message of this.#messages) {
             if (message.deletable) {
                 await util.delete(message, {reason});
                 await Log.logMessageDeletion(message, reason)
+            }
+        }
+    }
+
+    /**
+     * delete similar messages
+     * @param {module:"discord.js".Message} message
+     * @return {Promise<void>}
+     */
+    async deleteSimilar(message) {
+        const reason = `Repeated messages`;
+        for (const cacheMessage of this.getSimilarMessages(message)) {
+            if (cacheMessage.deletable) {
+                await util.delete(cacheMessage, {reason});
+                await Log.logMessageDeletion(cacheMessage, reason)
             }
         }
     }
@@ -112,15 +135,14 @@ class RepeatedMessage {
     }
 
     /**
-     * should this message be deleted
+     * remove this message if it is spam
      * @param {module:"discord.js".Message} message
-     * @return {boolean}
      */
-    static isSpam(message) {
+    static async checkSpam(message) {
         const key = this.getKey(message);
         if (!this.#members.has(key)) {
             this.#members.set(key, new RepeatedMessage(message));
-            return false;
+            return;
         }
 
         /** @type {RepeatedMessage} */
@@ -128,7 +150,18 @@ class RepeatedMessage {
         cache.add(message);
         const similar = cache.getSimilarMessageCount(message);
 
-        return similar >= 3 || cache.getMessageCount() >= 5;
+        if (cache.getMessageCount() >= 5) {
+            await cache.deleteAll();
+            /** @type {module:"discord.js".Message} */
+            const reply = await message.channel.send(`<@!${message.author.id}> stop sending messages this fast!`);
+            await reply.delete({timeout: 3000});
+        }
+        else if (similar >= 2) {
+            await cache.deleteSimilar(message);
+            /** @type {module:"discord.js".Message} */
+            const reply = await message.channel.send(`<@!${message.author.id}> stop repeating your messages!`);
+            await reply.delete({timeout: 3000});
+        }
     }
 }
 
