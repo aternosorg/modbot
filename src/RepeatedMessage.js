@@ -153,13 +153,13 @@ class RepeatedMessage {
         if (cache.getMessageCount() >= 5) {
             await cache.deleteAll();
             /** @type {module:"discord.js".Message} */
-            const reply = await message.channel.send(`<@!${message.author.id}> stop sending messages this fast!`);
+            const reply = await message.channel.send(`<@!${message.author.id}> Stop sending messages this fast!`);
             await reply.delete({timeout: 3000});
         }
         else if (similar >= 2) {
             await cache.deleteSimilar(message);
             /** @type {module:"discord.js".Message} */
-            const reply = await message.channel.send(`<@!${message.author.id}> stop repeating your messages!`);
+            const reply = await message.channel.send(`<@!${message.author.id}> Stop repeating your messages!`);
             await reply.delete({timeout: 3000});
         }
     }
