@@ -30,6 +30,7 @@ class GuildConfig extends Config {
      * @param  {Number}                           [json.linkCooldown]   cooldown on links in s (user based)
      * @param  {String}                           [json.prefix]         alternative prefix for commands
      * @param  {Boolean}                          [json.caps]        should caps be automatically deleted
+     * @param  {Number}                           [json.maxMentions]    maximum amount of mentions allowed
      * @return {GuildConfig}
      */
     constructor(id, json) {
@@ -51,6 +52,7 @@ class GuildConfig extends Config {
             if (typeof(json.prefix) === 'string')
                 this.prefix = json.prefix;
             this.caps = json.caps || false;
+            this.maxMentions = json.maxMentions | 5;
         }
     }
 
