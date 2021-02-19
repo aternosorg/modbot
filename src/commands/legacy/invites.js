@@ -1,6 +1,7 @@
 const util = require('../../util.js');
 const GuildConfig = require('../../GuildConfig');
 const ChannelConfig = require('../../ChannelConfig');
+const icons = require('../../icons');
 
 const command = {};
 
@@ -25,7 +26,7 @@ command.execute = async (message, args, database, bot) => {
   if (util.channelMentionToId(args[0])) {
     let channel = util.channelMentionToId(args.shift());
     if (!args.length || getMode(args[0]) === null) {
-      await message.react(util.icons.error);
+      await message.react(icons.error);
       await message.channel.send(await util.usage(message,command.names[0]));
       return;
     }
@@ -45,7 +46,7 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
   if (!args.length || getMode(args[0]) === null) {
-    await message.react(util.icons.error);
+    await message.react(icons.error);
     await message.channel.send(await util.usage(message,command.names[0]));
     return;
   }

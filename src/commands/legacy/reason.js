@@ -1,6 +1,6 @@
 const util = require('../../util.js');
 const GuildConfig = require('../../GuildConfig');
-
+const icons = require('../../icons');
 const command = {};
 
 command.description = 'View or change the reason of a moderation';
@@ -13,7 +13,7 @@ command.execute = async (message, args, database, bot) => {
   /** @type {GuildConfig} */
   const guildconfig = await GuildConfig.get(message.guild.id);
   if(!await guildconfig.isMod(message.member) && !message.member.hasPermission('VIEW_AUDIT_LOG')) {
-    await message.react(util.icons.error);
+    await message.react(icons.error);
     return;
   }
 

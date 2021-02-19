@@ -2,7 +2,7 @@ const util = require('../../util.js');
 const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
 const RateLimiter = require('../../RateLimiter');
-
+const icons = require('../../icons');
 const command = {};
 
 command.description = 'Unmute a user';
@@ -15,7 +15,7 @@ command.execute = async (message, args, database, bot) => {
   /** @type {GuildConfig} */
   const guildconfig = await GuildConfig.get(message.guild.id);
   if(!guildconfig.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
-    await message.react(util.icons.error);
+    await message.react(icons.error);
     return;
   }
 
@@ -38,13 +38,13 @@ command.execute = async (message, args, database, bot) => {
     let guildConfig = await GuildConfig.get(message.guild.id);
 
     if (user.bot) {
-      await message.react(util.icons.error);
+      await message.react(icons.error);
       await message.channel.send("I can't interact with bots!");
       continue;
     }
 
     if(!await database.query("SELECT * FROM moderations WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'mute'", [message.guild.id, userId]) && (member && !member.roles.cache.has(guildConfig.mutedRole))) {
-      await message.react(util.icons.error);
+      await message.react(icons.error);
       await message.channel.send(`<@${member.id}> isn't muted here!`);
       continue;
     }

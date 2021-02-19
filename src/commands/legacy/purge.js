@@ -1,4 +1,5 @@
 const util = require('../../util.js');
+const icons = require('../../icons');
 const Discord = require('discord.js');
 const GuildConfig = require('../../GuildConfig');
 
@@ -16,7 +17,7 @@ command.execute = async (message, args, database, bot) => {
   /** @type {GuildConfig} */
   const guildconfig = await GuildConfig.get(message.guild.id);
   if(!await guildconfig.isMod(message.member) && !message.member.hasPermission('MANAGE_MESSAGES')) {
-    await message.react(util.icons.error);
+    await message.react(icons.error);
     return;
   }
 

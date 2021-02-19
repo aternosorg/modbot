@@ -2,7 +2,7 @@ const util = require('../../util.js');
 const Discord = require('discord.js');
 const moderations = require('./moderations');
 const GuildConfig = require('../../GuildConfig');
-
+const icons = require('../../icons');
 const command = {};
 
 command.description = 'Delete a specific moderation';
@@ -14,7 +14,7 @@ command.names = ['deletemoderation','delmod'];
 command.execute = async (message, args, database, bot) => {
     const guildConfig = await GuildConfig.get(message.guild.id);
     if(!guildConfig.isMod(message.member) && !message.member.hasPermission('VIEW_AUDIT_LOG')) {
-        await message.react(util.icons.error);
+        await message.react(icons.error);
         return;
     }
 
@@ -38,13 +38,13 @@ command.execute = async (message, args, database, bot) => {
         title: `Moderation #${moderation.id}`,
         description: moderations.moderationText(moderation)
     }));
-    await response.react(util.icons.yes);
-    await response.react(util.icons.no);
+    await response.react(icons.yes);
+    await response.react(icons.no);
     let confirmed;
     try {
         confirmed = (await response.awaitReactions((reaction, user) => {
-            return user.id === message.author.id && (reaction.emoji.name === util.icons.yes || reaction.emoji.name === util.icons.no);
-        }, { max: 1, time: 15000, errors: ['time'] })).first().emoji.name === util.icons.yes;
+            return user.id === message.author.id && (reaction.emoji.name === icons.yes || reaction.emoji.name === icons.no);
+        }, { max: 1, time: 15000, errors: ['time'] })).first().emoji.name === icons.yes;
     }
     catch {
         await message.channel.send("You took to long to react!");

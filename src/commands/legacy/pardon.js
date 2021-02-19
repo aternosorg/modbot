@@ -3,6 +3,7 @@ const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
 const RateLimiter = require('../../RateLimiter');
 const maxStrikesAtOnce = 5;
+const icons = require('../../icons');
 
 const command = {};
 
@@ -16,7 +17,7 @@ command.execute = async (message, args, database, bot) => {
   /** @type {GuildConfig} */
   const guildconfig = await GuildConfig.get(message.guild.id);
   if(!guildconfig.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
-    await message.react(util.icons.error);
+    await message.react(icons.error);
     return;
   }
 
@@ -48,7 +49,7 @@ command.execute = async (message, args, database, bot) => {
     let user = await bot.users.fetch(util.userMentionToId(userId));
 
     if (user.bot) {
-      await message.react(util.icons.error);
+      await message.react(icons.error);
       await message.channel.send("I can't interact with bots!");
       continue;
     }
@@ -58,7 +59,7 @@ command.execute = async (message, args, database, bot) => {
     try {
       member = await message.guild.members.fetch(user);
       if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || guildconfig.isProtected(member)){
-        await message.react(util.icons.error);
+        await message.react(icons.error);
         await message.channel.send(`You don't have the permission to pardon strikes of <@${member.id}>!`);
         continue;
       }
