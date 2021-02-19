@@ -31,6 +31,7 @@ class GuildConfig extends Config {
      * @param  {String}                           [json.prefix]         alternative prefix for commands
      * @param  {Boolean}                          [json.caps]        should caps be automatically deleted
      * @param  {Number}                           [json.maxMentions]    maximum amount of mentions allowed
+     * @param  {Boolean}                          [json.antiSpam]       should spam detection be enabled
      * @return {GuildConfig}
      */
     constructor(id, json) {
@@ -53,6 +54,7 @@ class GuildConfig extends Config {
                 this.prefix = json.prefix;
             this.caps = json.caps || false;
             this.maxMentions = json.maxMentions || 5;
+            this.antiSpam = json.antiSpam !== false;
         }
     }
 

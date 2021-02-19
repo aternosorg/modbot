@@ -33,7 +33,7 @@ class RateLimiter {
         let count = this.#modCountCache.get(guild.id);
         if (!count) {
             count = await database.query(`SELECT COUNT(*) AS count FROM moderations WHERE guildid = ${guild.id} AND created >= ${Math.floor(Date.now()/1000) - 60*60*24}`);
-            count = count.count;
+            count = parseInt(count.count);
         }
 
         this.#modCountCache.set(guild.id, count + 1);
