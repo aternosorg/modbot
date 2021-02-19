@@ -2,7 +2,7 @@ const Command = require('../../Command');
 
 class ExampleCommand extends Command {
 
-    static description = 'Configure how many mentions users should be allowed to mention in one message';
+    static description = 'Configure how many users a user should be allowed to mention in one message';
 
     static usage = '[<maxiumum>|off]';
 
