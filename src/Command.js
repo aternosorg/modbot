@@ -36,6 +36,12 @@ class Command {
     static userPerms = [];
 
     /**
+     * can moderators execute this command without the required permissions?
+     * @type {boolean}
+     */
+    static modCommand = false;
+
+    /**
      * permissions the bot needs for this command to work
      * @type {PermissionResolvable[]}
      */
@@ -103,6 +109,8 @@ class Command {
      * @return {boolean}
      */
     userHasPerms() {
+        if (this.constructor.modCommand && this.guildConfig.isMod(this.message.member))
+            return true;
         const missingPerms = [];
         for (const perm of this.constructor.userPerms) {
             if (!this.message.member.hasPermission(perm)) missingPerms.push(perm);
