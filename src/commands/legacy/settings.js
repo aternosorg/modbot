@@ -34,6 +34,7 @@ command.execute = async (message, args, database, bot) => {
   automod += `Invites: ${guild.invites === false ? 'forbidden' : 'allowed'} \n`;
   automod += `Link cooldown: ${guild.linkCooldown > 0 ? util.secToTime(guild.linkCooldown) : 'disabled'} \n`;
   automod += `Caps: ${guild.caps === true ? 'enabled' : 'disabled'} \n`;
+  automod += `Maximum mentions: ${guild.maxMentions === -1 ? 'disabled' : guild.maxMentions} \n`;
 
   let embed = new Discord.MessageEmbed()
   .setTitle(`Settings | Prefix: ${guild.prefix}`)

@@ -186,6 +186,8 @@ command.executePunishment = async (punishment, guild, user, bot, database, reaso
       }
       break;
 
+    default:
+      throw `Unknown punishment action ${punishment.action}`;
   }
 }
 

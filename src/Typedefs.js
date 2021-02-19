@@ -51,6 +51,6 @@
  * * mute
  * * softban
  * * strike
- * @property {String|Number} duration
+ * @property {String|Number} [duration]
  * @property {String} [message]
  */

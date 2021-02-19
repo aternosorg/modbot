@@ -52,7 +52,7 @@ class GuildConfig extends Config {
             if (typeof(json.prefix) === 'string')
                 this.prefix = json.prefix;
             this.caps = json.caps || false;
-            this.maxMentions = json.maxMentions | 5;
+            this.maxMentions = json.maxMentions || 5;
         }
     }
 
