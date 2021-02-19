@@ -3,7 +3,7 @@ const Log = require('../../Log');
 
 class RaidModeCommand extends Command {
 
-    static description = 'en/disable anti-raid-mode';
+    static description = 'En-/disable anti-raid-mode (Kicks everybody that joins while enabled).';
 
     static usage = 'on|off|status';
 
@@ -26,7 +26,7 @@ class RaidModeCommand extends Command {
             case "on":
                 this.guildConfig.raidMode = true;
                 await this.guildConfig.save();
-                await this.message.channel.send("Enabled anti-raid-mode!");
+                await this.message.channel.send("Enabled anti-raid-mode! Nobody can join this server now.");
                 await Log.logEmbed(/** @type {module:"discord.js".Snowflake} */this.message.guild.id, {
                     description: `<@!${this.message.author.id}> enabled anti-raid-mode!`
                 });
