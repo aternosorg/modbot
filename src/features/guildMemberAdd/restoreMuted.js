@@ -1,4 +1,3 @@
-const util = require('../../util');
 const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
 

@@ -7,7 +7,7 @@ class Log{
      * Logs a message to the guilds log channel (if specified)
      * @param {GuildInfo}                        guildInfo
      * @param {String}                           message   content of the log message
-     * @param {module:"discord.js".MessageEmbed} options
+     * @param {module:"discord.js".MessageEmbed} [options]
      * @return {Promise<module:"discord.js".Message>} log message
      */
     static async log(guildInfo, message, options) {

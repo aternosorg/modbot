@@ -22,14 +22,15 @@ class GuildConfig extends Config {
      * @param  {module:"discord.js".Snowflake}    [json.logChannel]     id of the log channel
      * @param  {module:"discord.js".Snowflake}    [json.mutedRole]      id of the muted role
      * @param  {module:"discord.js".Snowflake[]}  [json.modRoles]       role ids that can execute commands
-     * @param  {module:"discord.js".Snowflake[]}  [json.protectedRoles]  role ids that can't be targeted by moderations
+     * @param  {module:"discord.js".Snowflake[]}  [json.protectedRoles] role ids that can't be targeted by moderations
      * @param  {Object}                           [json.punishments]    automatic punishments for strikes
      * @param  {String}                           [json.playlist]       id of youtube playlist for tutorials
      * @param  {String}                           [json.helpcenter]     subdomain of the zendesk help center
      * @param  {Boolean}                          [json.invites]        allow invites (can be overwritten per channel)
      * @param  {Number}                           [json.linkCooldown]   cooldown on links in s (user based)
      * @param  {String}                           [json.prefix]         alternative prefix for commands
-     * @param  {Boolean}                          [json.caps]        should caps be automatically deleted
+     * @param  {Boolean}                          [json.caps]           should caps be automatically deleted
+     * @param  {Boolean}                          [json.raidMode]       is anti-raid-mode enabled
      * @param  {Boolean}                          [json.antiSpam]       should spam detection be enabled
      * @return {GuildConfig}
      */
@@ -52,6 +53,7 @@ class GuildConfig extends Config {
             if (typeof(json.prefix) === 'string')
                 this.prefix = json.prefix;
             this.caps = json.caps || false;
+            this.raidMode = json.raidMode || false;
             this.antiSpam = json.antiSpam !== false;
         }
     }
