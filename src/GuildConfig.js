@@ -29,6 +29,7 @@ class GuildConfig extends Config {
      * @param  {Boolean}                          [json.invites]        allow invites (can be overwritten per channel)
      * @param  {Number}                           [json.linkCooldown]   cooldown on links in s (user based)
      * @param  {String}                           [json.prefix]         alternative prefix for commands
+     * @param  {Number}                           [json.maxMentions]    maximum amount of mentions allowed
      * @param  {Boolean}                          [json.caps]           should caps be automatically deleted
      * @param  {Boolean}                          [json.raidMode]       is anti-raid-mode enabled
      * @param  {Boolean}                          [json.antiSpam]       should spam detection be enabled
@@ -53,6 +54,7 @@ class GuildConfig extends Config {
             if (typeof(json.prefix) === 'string')
                 this.prefix = json.prefix;
             this.caps = json.caps || false;
+            this.maxMentions = json.maxMentions || 5;
             this.raidMode = json.raidMode || false;
             this.antiSpam = json.antiSpam !== false;
         }
