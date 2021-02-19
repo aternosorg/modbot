@@ -22,6 +22,7 @@
     "discord.js": "^12.4.0",
     "fuse.js": "^6.4.1",
     "googleapis": "^61.0.0",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "string-similarity": "^4.0.4"
   }
 }
