@@ -31,6 +31,7 @@ class GuildConfig extends Config {
      * @param  {String}                           [json.prefix]         alternative prefix for commands
      * @param  {Boolean}                          [json.caps]           should caps be automatically deleted
      * @param  {Boolean}                          [json.raidMode]       is anti-raid-mode enabled
+     * @param  {Boolean}                          [json.antiSpam]       should spam detection be enabled
      * @return {GuildConfig}
      */
     constructor(id, json) {
@@ -53,6 +54,7 @@ class GuildConfig extends Config {
                 this.prefix = json.prefix;
             this.caps = json.caps || false;
             this.raidMode = json.raidMode || false;
+            this.antiSpam = json.antiSpam !== false;
         }
     }
 

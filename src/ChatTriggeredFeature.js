@@ -151,8 +151,11 @@ class ChatTriggeredFeature {
                 this.constructor.getGuildCache().get(this.gid).delete(this.id);
         }
         else {
+            const channelCache = this.constructor.getChannelCache();
             for (const channel of this.channels) {
-                this.constructor.getChannelCache().get(channel).delete(this.id);
+                if(channelCache.has(channel)) {
+                    channelCache.get(channel).delete(this.id);
+                }
             }
         }
     }
