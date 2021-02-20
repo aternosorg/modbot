@@ -9,10 +9,11 @@ class TimedModerationCommand extends ModerationCommand {
     static timed = true;
 
     async dmUser(target) {
+        const guild = Guild.get(this.message.guild);
         if (this.duration)
-            return await Guild.sendDM(this.message.guild, target, `You have been ${this.constructor.type.done} from \`${this.message.guild.name}\` for ${util.secToTime(this.duration)} | ${this.reason}`);
+            return await guild.sendDM(target, `You have been ${this.constructor.type.done} from \`${this.message.guild.name}\` for ${util.secToTime(this.duration)} | ${this.reason}`);
         else
-            return await Guild.sendDM(this.message.guild, target, `You have been permanently ${this.constructor.type.done} from \`${this.message.guild.name}\` | ${this.reason}`);
+            return await guild.sendDM(target, `You have been permanently ${this.constructor.type.done} from \`${this.message.guild.name}\` | ${this.reason}`);
     }
 
     /**

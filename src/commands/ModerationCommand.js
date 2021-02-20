@@ -66,7 +66,8 @@ class ModerationCommand extends Command {
             await this.message.channel.send("I can't interact with bots!");
             return false;
         }
-        const member = await Guild.fetchMember(this.message.guild, /** @type {module:"discord.js".Snowflake} */ target.id);
+        const guild = Guild.get(this.message.guild);
+        const member = await guild.fetchMember(/** @type {module:"discord.js".Snowflake} */ target.id);
         if (member === null) return false;
 
         if (this.message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || this.guildConfig.isProtected(member)) {
@@ -102,7 +103,8 @@ class ModerationCommand extends Command {
      * @return {Promise<Boolean>} success
      */
     async dmUser(target) {
-        return await Guild.sendDM(this.message.guild, target, `You have been ${this.constructor.type.done} from \`${this.message.guild.name}\` | ${this.reason}`);
+        const guild = Guild.get(this.message.guild);
+        return await guild.sendDM(target, `You have been ${this.constructor.type.done} from \`${this.message.guild.name}\` | ${this.reason}`);
     }
 
     /**
