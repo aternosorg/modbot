@@ -32,8 +32,8 @@ class GuildConfig extends Config {
      * @param  {Number}                           [json.maxMentions]        maximum amount of mentions allowed
      * @param  {Boolean}                          [json.caps]               should caps be automatically deleted
      * @param  {Boolean}                          [json.raidMode]           is anti-raid-mode enabled
-     * @param  {Boolean}                          [json.antiSpam]           should message spam detection be enabled
-     * @param  {Boolean}                          [json.similarMessages]    should similar message detection be enabled
+     * @param  {Number}                           [json.antiSpam]           should message spam detection be enabled
+     * @param  {Number}                           [json.similarMessages]    should similar message detection be enabled
      * @return {GuildConfig}
      */
     constructor(id, json) {
@@ -57,7 +57,7 @@ class GuildConfig extends Config {
             this.caps = json.caps || false;
             this.maxMentions = json.maxMentions || 5;
             this.raidMode = json.raidMode || false;
-            this.antiSpam = json.antiSpam || -1;
+            this.antiSpam = typeof(json.antiSpam) === "number" ? json.antiSpam : -1;
             this.similarMessages = json.similarMessages || -1;
         }
     }
