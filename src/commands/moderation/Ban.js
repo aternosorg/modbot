@@ -1,6 +1,6 @@
 const TimedModerationCommand = require('../TimedModerationCommand');
-
-class ExampleCommand extends TimedModerationCommand {
+const util = require('../../util')
+class BanCommand extends TimedModerationCommand {
 
     static description = 'Ban a user';
 
@@ -21,4 +21,4 @@ class ExampleCommand extends TimedModerationCommand {
     }
 }
 
-module.exports = ExampleCommand;
+module.exports = BanCommand;

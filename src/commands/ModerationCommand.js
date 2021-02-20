@@ -29,8 +29,9 @@ class ModerationCommand extends Command {
         this.targetedUsers = await this.getTargetedUsers();
         if (this.targetedUsers === null) return;
 
-        if (this.constructor.timed)
+        if (this.constructor.timed) {
             this.duration = this.getDuration();
+        }
 
         this.reason = this.getReason();
         for (const target of this.targetedUsers) {
@@ -39,7 +40,7 @@ class ModerationCommand extends Command {
             await this.executePunishment(target);
             const id = await this.database.addModeration(this.message.guild.id, target.id, this.constructor.type.execute, this.reason, this.duration, this.message.author.id);
             await util.chatSuccess(this.message.channel, target, this.reason, this.constructor.type.done);
-            await Log.logModeration(this.message.guild.id, this.message.author, target, this.reason, id, this.constructor.type.execute);
+            await Log.logModeration(this.message.guild.id, this.message.author, target, this.reason, id, this.constructor.type.execute, { time: util.secToTime(this.duration) });
         }
     }
 

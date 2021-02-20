@@ -1,5 +1,5 @@
 const util = require('../../util.js');
-const ban = require('../ban.js');
+const Ban = require('../moderation/Ban.js');
 const kick = require('./kick.js');
 const mute = require('./mute.js');
 const softban = require('./softban.js');
@@ -147,7 +147,18 @@ command.executePunishment = async (punishment, guild, user, bot, database, reaso
   let member;
   switch (punishment.action) {
     case 'ban':
-      await ban.ban(guild, user, bot.user, reason, punishment.duration);
+      const ban = new Ban(/** @type {module:"discord.js".Message}*/{
+        guild,
+        author: bot.user,
+        content: '---',
+      }, database, bot, 'ban');
+      ban.guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */guild.id);
+      ban.reason = reason; //DURATION DNW
+      ban.duration = punishment.duration
+      await ban.dmUser(user);
+      await ban.executePunishment(user);
+      const id = await database.addModeration(guild.id, user.id, 'ban', reason, punishment.duration, bot.user.id);
+      await Log.logModeration(guild.id, bot.user, user, reason, id, 'ban', {time:util.secToTime(punishment.duration)});
       break;
     case 'kick':
       try {

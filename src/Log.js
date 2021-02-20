@@ -59,16 +59,16 @@ class Log{
     /**
      * Log a moderation
      * @async
-     * @param {GuildInfo}                   guildInfo
-     * @param {module:"discord.js".User}    moderator           user that started the moderation
-     * @param {module:"discord.js".User}    user                user that was moderated
-     * @param {String}                      reason              reason for the moderation
-     * @param {Number}                      insertId            id in the moderations table of the db
-     * @param {String}                      type                moderation action
-     * @param {Object}                      [options]           optional information
-     * @param {String}                      [options.time]      duration of the moderation as a time string
-     * @param {Number}                      [options.amount]    amount of strikes that were given/pardoned
-     * @param {Number}                      [options.total]     total strike count
+     * @param {GuildInfo}                           guildInfo
+     * @param {module:"discord.js".User|ClientUser} moderator           user that started the moderation
+     * @param {module:"discord.js".User}            user                user that was moderated
+     * @param {String}                              reason              reason for the moderation
+     * @param {Number}                              insertId            id in the moderations table of the db
+     * @param {String}                              type                moderation action
+     * @param {Object}                              [options]           optional information
+     * @param {String}                              [options.time]      duration of the moderation as a time string
+     * @param {Number}                              [options.amount]    amount of strikes that were given/pardoned
+     * @param {Number}                              [options.total]     total strike count
      * @return {Promise<module:"discord.js".Message|null>}
      */
     static async logModeration (guildInfo, moderator, user, reason, insertId, type, options = {}) {
