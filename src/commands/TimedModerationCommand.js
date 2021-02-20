@@ -1,5 +1,4 @@
 const ModerationCommand = require('./ModerationCommand');
-const Guild = require('../Guild');
 const util = require('../util');
 
 class TimedModerationCommand extends ModerationCommand {
@@ -7,14 +6,6 @@ class TimedModerationCommand extends ModerationCommand {
     static usage = '<@user|id> [<@user|id…>] [<duration>] [<reason>]';
 
     static timed = true;
-
-    async dmUser(target) {
-        const guild = Guild.get(this.message.guild);
-        if (this.duration)
-            return await guild.sendDM(target, `You have been ${this.constructor.type.done} from \`${this.message.guild.name}\` for ${util.secToTime(this.duration)} | ${this.reason}`);
-        else
-            return await guild.sendDM(target, `You have been permanently ${this.constructor.type.done} from \`${this.message.guild.name}\` | ${this.reason}`);
-    }
 
     /**
      * get the duration of this moderation

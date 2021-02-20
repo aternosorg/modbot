@@ -1,6 +1,6 @@
 const Command = require('../Command');
 const util = require('../util');
-const Guild = require('../Guild');
+const Guild = require('../GuildHandler');
 const Log = require('../Log');
 
 class ModerationCommand extends Command {
@@ -36,11 +36,8 @@ class ModerationCommand extends Command {
         this.reason = this.getReason();
         for (const target of this.targetedUsers) {
             if (await this.isProtected(target) === false) return;
-            await this.dmUser(target);
             await this.executePunishment(target);
-            const id = await this.database.addModeration(this.message.guild.id, target.id, this.constructor.type.execute, this.reason, this.duration, this.message.author.id);
             await util.chatSuccess(this.message.channel, target, this.reason, this.constructor.type.done);
-            await Log.logModeration(this.message.guild.id, this.message.author, target, this.reason, id, this.constructor.type.execute, { time: util.secToTime(this.duration) });
         }
     }
 
@@ -95,16 +92,6 @@ class ModerationCommand extends Command {
         }
 
         return targetedUsers;
-    }
-
-    /**
-     * send the user a dm about this punishment
-     * @param {module:"discord.js".User} target
-     * @return {Promise<Boolean>} success
-     */
-    async dmUser(target) {
-        const guild = Guild.get(this.message.guild);
-        return await guild.sendDM(target, `You have been ${this.constructor.type.done} from \`${this.message.guild.name}\` | ${this.reason}`);
     }
 
     /**

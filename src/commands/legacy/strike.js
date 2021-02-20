@@ -1,11 +1,12 @@
 const util = require('../../util.js');
-const Ban = require('../moderation/Ban.js');
+const GuildUserHandler = require('../../GuildUserHandler');
 const kick = require('./kick.js');
 const mute = require('./mute.js');
 const softban = require('./softban.js');
 const GuildConfig = require('../../GuildConfig');
 const Log = require('../../Log');
 const RateLimiter = require('../../RateLimiter');
+const Guild = require('../../GuildHandler');
 
 const maxStrikesAtOnce = 5;
 
@@ -147,18 +148,8 @@ command.executePunishment = async (punishment, guild, user, bot, database, reaso
   let member;
   switch (punishment.action) {
     case 'ban':
-      const ban = new Ban(/** @type {module:"discord.js".Message}*/{
-        guild,
-        author: bot.user,
-        content: '---',
-      }, database, bot, 'ban');
-      ban.guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */guild.id);
-      ban.reason = reason; //DURATION DNW
-      ban.duration = punishment.duration
-      await ban.dmUser(user);
-      await ban.executePunishment(user);
-      const id = await database.addModeration(guild.id, user.id, 'ban', reason, punishment.duration, bot.user.id);
-      await Log.logModeration(guild.id, bot.user, user, reason, id, 'ban', {time:util.secToTime(punishment.duration)});
+      const guildUserHandler = new GuildUserHandler(user, guild);
+      await guildUserHandler.ban(reason, bot.user, punishment.duration)
       break;
     case 'kick':
       try {

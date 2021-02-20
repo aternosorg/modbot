@@ -1,11 +1,11 @@
 const RateLimiter = require('./RateLimiter');
 const Discord = require('discord.js');
 
-class Guild {
+class GuildHandler {
 
     /**
-     * Guild Cache
-     * @type {module:"discord.js".Collection<module:"discord.js".Snowflake, Guild>}
+     * GuildHandler Cache
+     * @type {module:"discord.js".Collection<module:"discord.js".Snowflake, GuildHandler>}
      */
     static #cache = new Discord.Collection();
 
@@ -66,17 +66,17 @@ class Guild {
     /**
      * get a guild from cache or create a new one
      * @param {module:"discord.js".Guild}   guild
-     * @return {Guild}
+     * @return {GuildHandler}
      */
     static get(guild) {
         if (this.#cache.has(guild.id))
             return this.#cache.get(guild.id)
         else {
-            const newGuild = new Guild(guild);
+            const newGuild = new GuildHandler(guild);
             this.#cache.set(guild.id, newGuild);
             return newGuild;
         }
     }
 }
 
-module.exports = Guild;
+module.exports = GuildHandler;
