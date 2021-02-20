@@ -86,7 +86,7 @@ class RepeatedMessage {
             if (this.#messages.length === 0) {
                 this.constructor.#members.delete(this.#key);
             }
-        }, 30000);
+        }, 60000);
     }
 
     /**
@@ -134,11 +134,7 @@ class RepeatedMessage {
         return this.#members.get(key);
     }
 
-    /**
-     * remove this message if it is spam
-     * @param {module:"discord.js".Message} message
-     */
-    static async checkSpam(message) {
+    static add(message) {
         const key = this.getKey(message);
         if (!this.#members.has(key)) {
             this.#members.set(key, new RepeatedMessage(message));
@@ -148,15 +144,33 @@ class RepeatedMessage {
         /** @type {RepeatedMessage} */
         const cache = this.#members.get(key);
         cache.add(message);
-        const similar = cache.getSimilarMessageCount(message);
+    }
 
-        if (cache.getMessageCount() >= 5) {
+    /**
+     * remove this message if it is fast message spam
+     * @param {module:"discord.js".Message} message
+     * @param {Number}                      count   maximum allowed number of messages per minute
+     */
+    static async checkSpam(message, count) {
+        const cache = this.#members.get(this.getKey(message));
+
+        if (cache.getMessageCount() > count) {
             await cache.deleteAll();
             /** @type {module:"discord.js".Message} */
             const reply = await message.channel.send(`<@!${message.author.id}> Stop sending messages this fast!`);
             await reply.delete({timeout: 3000});
         }
-        else if (similar >= 2) {
+    }
+
+    /**
+     * remove this message if it is repeated
+     * @param {module:"discord.js".Message} message
+     * @param {Number}                      count   maximum allowed number of similar messages per minute
+     */
+    static async checkSimilar(message, count) {
+        const cache = this.#members.get(this.getKey(message));
+        const similar = cache.getSimilarMessageCount(message);
+        if (similar > count) {
             await cache.deleteSimilar(message);
             /** @type {module:"discord.js".Message} */
             const reply = await message.channel.send(`<@!${message.author.id}> Stop repeating your messages!`);
