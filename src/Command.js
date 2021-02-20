@@ -131,6 +131,10 @@ class Command {
         return missingPerms.length ? missingPerms : true;
     }
 
+    /**
+     * execute the command
+     * @return {Promise<void>}
+     */
     async execute() {}
 
     /**

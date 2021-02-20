@@ -8,7 +8,7 @@ command.description = 'Ban a user';
 
 command.usage = '@user|id <@user|id…> <duration> <reason>';
 
-command.names = ['ban'];
+command.names = ['//ban'];
 
 command.execute = async (message, args, database, bot) => {
   /** @type {GuildConfig} */
