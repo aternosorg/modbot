@@ -35,7 +35,7 @@ class ModerationCommand extends Command {
 
         this.reason = this.getReason();
         for (const target of this.targetedUsers) {
-            if (await this.isProtected(target)) return;
+            if (await this.isProtected(target) === false) return;
             await this.dmUser(target);
             await this.executePunishment(target);
             const id = await this.database.addModeration(this.message.guild.id, target.id, this.constructor.type.execute, this.reason, this.duration, this.message.author.id);
@@ -64,7 +64,7 @@ class ModerationCommand extends Command {
     async isProtected(target) {
         if (target.bot) {
             await this.message.channel.send("I can't interact with bots!");
-            return;
+            return false;
         }
         const member = await Guild.fetchMember(this.message.guild, /** @type {module:"discord.js".Snowflake} */ target.id);
         if (member === null) return false;
