@@ -134,6 +134,10 @@ class RepeatedMessage {
         return this.#members.get(key);
     }
 
+    /**
+     * add this message to the correct cache
+     * @param {module:"discord.js".Message} message
+     */
     static add(message) {
         const key = this.getKey(message);
         if (!this.#members.has(key)) {

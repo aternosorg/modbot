@@ -29,7 +29,7 @@ class ExampleCommand extends Command {
                 break;
             default:
                 const count = parseInt(this.args[0]);
-                if (count > 0 && count < 30) {
+                if (count > 0 && count <= 30) {
                     this.guildConfig.antiSpam = count;
                     await this.guildConfig.save();
                     await this.message.channel.send(`Enabled spam protection! Users can now only send ${count} messages per minute.`);

@@ -29,7 +29,7 @@ class ExampleCommand extends Command {
                 break;
             default:
                 const count = parseInt(this.args[0]);
-                if (count > 0 && count < 10) {
+                if (count > 0 && count <= 10) {
                     this.guildConfig.similarMessages = count;
                     await this.guildConfig.save();
                     await this.message.channel.send(`Enabled repeated message protection! Users can now only send ${count} similar messages per minute.`);
