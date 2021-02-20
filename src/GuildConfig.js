@@ -56,7 +56,7 @@ class GuildConfig extends Config {
             this.caps = json.caps || false;
             this.maxMentions = json.maxMentions || 5;
             this.raidMode = json.raidMode || false;
-            this.antiSpam = json.antiSpam !== false;
+            this.antiSpam = json.antiSpam || false;
         }
     }
 
