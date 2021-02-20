@@ -1,7 +1,7 @@
-const util = require('../../util.js');
-const Log = require('../../Log');
-const GuildConfig = require('../../GuildConfig');
-const RateLimiter = require('../../RateLimiter');
+const util = require('../util.js');
+const Log = require('../Log');
+const GuildConfig = require('../GuildConfig');
+const RateLimiter = require('../RateLimiter');
 const command = {};
 
 command.description = 'Ban a user';

@@ -1,19 +1,19 @@
-const ModerationCommand = require('ModerationCommand');
+const ModerationCommand = require('./ModerationCommand');
+const Guild = require('../Guild');
+const util = require('../util');
 
 class TimedModerationCommand extends ModerationCommand {
 
     static usage = '<@user|id> [<@user|id…>] [<duration>] [<reason>]';
 
-    async execute() {
-        this.targetedUsers = await this.getTargetedUsers();
-        if (this.targetedUsers === null) return;
+    static timed = true;
+    
 
-        this.duration = this.getDuration();
-        this.reason = this.getReason();
-        for (const target of this.targetedUsers) {
-            if (await this.isProtected(target)) return;
-            await this.executePunishment(target);
-        }
+    async dmUser(target) {
+        if (this.duration)
+            return await Guild.sendDM(this.message.guild, target, `You have been ${this.constructor.type.done} from \`${this.message.guild.name}\` for ${util.secToTime(this.duration)} | ${this.reason}`);
+        else
+            return await Guild.sendDM(this.message.guild, target, `You have been permanently ${this.constructor.type.done} from \`${this.message.guild.name}\` | ${this.reason}`);
     }
 
     /**

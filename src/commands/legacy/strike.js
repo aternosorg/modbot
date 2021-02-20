@@ -1,5 +1,5 @@
 const util = require('../../util.js');
-const ban = require('./ban.js');
+const ban = require('../ban.js');
 const kick = require('./kick.js');
 const mute = require('./mute.js');
 const softban = require('./softban.js');
