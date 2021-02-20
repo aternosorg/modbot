@@ -1,7 +1,7 @@
 const util = require('../../util.js');
 const Discord = require('discord.js');
 const GuildConfig = require('../../GuildConfig');
-
+const icons = require('../../icons');
 const command = {};
 
 command.description = 'Show information about a user';
@@ -14,7 +14,7 @@ command.execute = async (message, args, database, bot) => {
   /** @type {GuildConfig} */
   const guildconfig = await GuildConfig.get(message.guild.id);
   if(!guildconfig.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
-    await message.react(util.icons.error);
+    await message.react(icons.error);
     return;
   }
 
@@ -28,7 +28,7 @@ command.execute = async (message, args, database, bot) => {
   try {
     user = await bot.users.fetch(userId);
   } catch (e) {
-    await message.react(util.icons.error);
+    await message.react(icons.error);
     await message.channel.send("User not found!");
     return;
   }
@@ -63,16 +63,16 @@ command.execute = async (message, args, database, bot) => {
   if (muteInfo) {
     if(muteInfo.expireTime) {
       let remaining = muteInfo.expireTime - Math.floor(Date.now()/1000) > 0 ? muteInfo.expireTime - Math.floor(Date.now()/1000) : 1;
-      muteInfo = `${util.icons.yes} - ${muteInfo.reason} \n**Remaining:** ${util.secToTime(remaining)}`;
+      muteInfo = `${icons.yes} - ${muteInfo.reason} \n**Remaining:** ${util.secToTime(remaining)}`;
     }
     else
-      muteInfo = `${util.icons.yes} - ${muteInfo.reason}`;
+      muteInfo = `${icons.yes} - ${muteInfo.reason}`;
   }
   else if (member && member.roles.cache.get(guildConfig.mutedRole)) {
-    muteInfo = `${util.icons.yes} - Unknown reason and time`;
+    muteInfo = `${icons.yes} - Unknown reason and time`;
   }
   else {
-    muteInfo = `${util.icons.no}`;
+    muteInfo = `${icons.no}`;
   }
   embed.setDescription(embed.description + `**Muted:** ${muteInfo} \n`);
 
@@ -81,19 +81,19 @@ command.execute = async (message, args, database, bot) => {
   if (banInfo) {
     if(banInfo.expireTime) {
       let remaining = banInfo.expireTime - Math.floor(Date.now()/1000) > 0 ? banInfo.expireTime - Math.floor(Date.now()/1000) : 1;
-      banInfo = `${util.icons.yes} - ${banInfo.reason} \n**Remaining:** ${util.secToTime(remaining)}`;
+      banInfo = `${icons.yes} - ${banInfo.reason} \n**Remaining:** ${util.secToTime(remaining)}`;
     }
     else
-      banInfo = `${util.icons.yes} - ${banInfo.reason}`;
+      banInfo = `${icons.yes} - ${banInfo.reason}`;
     embed.setDescription(embed.description + `**Banned:** ${banInfo}`);
   }
   else {
     try {
       banInfo = await message.guild.fetchBan(/** @type {UserResolvable} */ userId);
-      banInfo = `${util.icons.yes} - ${decodeURIComponent(banInfo.reason || 'Unknown reason')}`;
+      banInfo = `${icons.yes} - ${decodeURIComponent(banInfo.reason || 'Unknown reason')}`;
       embed.setDescription(embed.description + `**Banned:** ${banInfo}`);
     } catch (e) {
-      embed.setDescription(embed.description + `**Banned:** ${util.icons.no}`);
+      embed.setDescription(embed.description + `**Banned:** ${icons.no}`);
     }
   }
   await message.channel.send(embed);

@@ -2,6 +2,7 @@ const util = require('../../util.js');
 const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
 const RateLimiter = require('../../RateLimiter');
+const icons = require('../../icons');
 const command = {};
 
 command.description = 'Ban a user';
@@ -14,7 +15,7 @@ command.execute = async (message, args, database, bot) => {
   /** @type {GuildConfig} */
   const guildconfig = await GuildConfig.get(message.guild.id);
   if(!await guildconfig.isMod(message.member) && !message.member.hasPermission('BAN_MEMBERS')) {
-    await message.react(util.icons.error);
+    await message.react(icons.error);
     return;
   }
   const users = await util.userMentions(args);
@@ -35,7 +36,7 @@ command.execute = async (message, args, database, bot) => {
     user = await bot.users.fetch(util.userMentionToId(user));
 
     if (user.bot) {
-      await message.react(util.icons.error);
+      await message.react(icons.error);
       await message.channel.send("I can't interact with bots!");
       continue;
     }
@@ -45,7 +46,7 @@ command.execute = async (message, args, database, bot) => {
       member = await message.guild.members.fetch(user);
       //highest role & mod check
       if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || guildconfig.isProtected(member)) {
-        await message.react(util.icons.error);
+        await message.react(icons.error);
         await message.channel.send(`You don't have the permission to ban <@${user.id}>!`);
         continue;
       }

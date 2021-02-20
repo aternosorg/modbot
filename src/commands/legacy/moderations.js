@@ -1,6 +1,7 @@
 const util = require('../../util.js');
 const Discord = require('discord.js');
 const GuildConfig = require('../../GuildConfig');
+const icons = require('../../icons');
 
 /**
  * timeout after last reaction in ms
@@ -20,7 +21,7 @@ command.execute = async (message, args, database, bot) => {
   /** @type {GuildConfig} */
   const guildconfig = await GuildConfig.get(message.guild.id);
   if(!guildconfig.isMod(message.member) && !message.member.hasPermission('VIEW_AUDIT_LOG')) {
-    await message.react(util.icons.error);
+    await message.react(icons.error);
     return;
   }
 
@@ -34,7 +35,7 @@ command.execute = async (message, args, database, bot) => {
   try {
     user = await bot.users.fetch(userId);
   } catch {
-    await message.react(util.icons.error);
+    await message.react(icons.error);
     await message.channel.send("User not found!");
     return;
   }
@@ -60,11 +61,11 @@ command.execute = async (message, args, database, bot) => {
 
   if (moderations.length <= 10) return;
 
-  await response.react(util.icons.left)
-  await response.react(util.icons.right)
+  await response.react(icons.left)
+  await response.react(icons.right)
 
   const reactionCollector = response.createReactionCollector(async (reaction, reactingUser) => {
-    if (message.author.id === reactingUser.id && [util.icons.left,util.icons.right].includes(reaction.emoji.name))
+    if (message.author.id === reactingUser.id && [icons.left,icons.right].includes(reaction.emoji.name))
       return true;
     else {
       await reaction.users.remove(reactingUser);
@@ -73,7 +74,7 @@ command.execute = async (message, args, database, bot) => {
   })
 
   reactionCollector.on('collect', async (reaction, reactingUser) => {
-    if (reaction.emoji.name === util.icons.right) {
+    if (reaction.emoji.name === icons.right) {
       if (index < Math.floor(moderations.length / 10)) {
         index++;
         await response.edit(generateEmbed(moderations, user, index*10));
