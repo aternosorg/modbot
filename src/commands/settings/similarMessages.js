@@ -6,7 +6,7 @@ class ExampleCommand extends Command {
 
     static usage = '<count>|off|status';
 
-    static comment = 'Count is the number of similar messages(1-10) a user is allowed to send per minute.';
+    static comment = 'Count is the number of similar messages(1-60) a user is allowed to send per minute.';
 
     static names = ['similarmessages','similar','repeatedmessages','repeated'];
 
@@ -29,7 +29,7 @@ class ExampleCommand extends Command {
                 break;
             default:
                 const count = parseInt(this.args[0]);
-                if (count > 0 && count <= 10) {
+                if (count > 0 && count <= 60) {
                     this.guildConfig.similarMessages = count;
                     await this.guildConfig.save();
                     await this.message.channel.send(`Enabled repeated message protection! Users can now only send ${count} similar messages per minute.`);

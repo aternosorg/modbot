@@ -6,7 +6,7 @@ class ExampleCommand extends Command {
 
     static usage = '<count>|off|status';
 
-    static comment = 'Count is the number of messages(1-30) a user is allowed to send per minute.';
+    static comment = 'Count is the number of messages(1-60) a user is allowed to send per minute.';
 
     static names = ['antispam','spammod','spamprotection'];
 
@@ -29,7 +29,7 @@ class ExampleCommand extends Command {
                 break;
             default:
                 const count = parseInt(this.args[0]);
-                if (count > 0 && count <= 30) {
+                if (count > 0 && count <= 60) {
                     this.guildConfig.antiSpam = count;
                     await this.guildConfig.save();
                     await this.message.channel.send(`Enabled spam protection! Users can now only send ${count} messages per minute.`);
