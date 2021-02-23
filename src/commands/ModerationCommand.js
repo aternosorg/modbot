@@ -34,7 +34,7 @@ class ModerationCommand extends Command {
 
         this.reason = this.getReason();
         for (const target of this.targetedUsers) {
-            if (await this.isProtected(target) === false) return;
+            if (await this.isProtected(target)) continue;
             await this.executePunishment(target);
             await util.chatSuccess(this.message.channel, target, this.reason, this.constructor.type.done);
         }
@@ -59,15 +59,15 @@ class ModerationCommand extends Command {
      */
     async isProtected(target) {
         if (target.bot) {
-            await this.message.channel.send("I can't interact with bots!");
-            return false;
+            await this.sendError("I can't interact with bots!");
+            return true;
         }
         const guild = Guild.get(this.message.guild);
         const member = await guild.fetchMember(/** @type {module:"discord.js".Snowflake} */ target.id);
         if (member === null) return false;
 
         if (this.message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || this.guildConfig.isProtected(member)) {
-            await this.message.channel.send(`You don't have the permission to ${this.constructor.type.execute} <@!${target.id}>!`)
+            await this.sendError(`You don't have the permission to ${this.constructor.type.execute} <@!${target.id}>!`)
             return true;
         }
         return false;

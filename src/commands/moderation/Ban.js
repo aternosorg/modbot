@@ -18,7 +18,7 @@ class BanCommand extends TimedModerationCommand {
 
     async executePunishment(target) {
         const member = new Member(target, this.message.guild);
-        await member.ban(this.reason, this.message.author, this.duration);
+        await member.ban(this.database, this.reason, this.message.author, this.duration);
     }
 }
 

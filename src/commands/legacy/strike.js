@@ -148,7 +148,7 @@ command.executePunishment = async (punishment, guild, user, bot, database, reaso
   switch (punishment.action) {
     case 'ban':
       member = new Member(user, guild);
-      await member.ban(reason, bot.user, punishment.duration);
+      await member.ban(database,reason, bot.user, punishment.duration);
       break;
     case 'kick':
       try {

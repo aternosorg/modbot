@@ -181,6 +181,17 @@ class Command {
     async sendUsage() {
         await this.message.channel.send(await this.constructor.getUsage(this.message,this.name , this.guildConfig));
     }
+
+    /**
+     * send a discord embed with an error message
+     * @return {Promise<void>}
+     */
+    async sendError(message) {
+        await this.message.channel.send(new Discord.MessageEmbed({
+            color: util.color.red,
+            description: message,
+        }));
+    }
 }
 
 module.exports = Command
