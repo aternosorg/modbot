@@ -1,5 +1,5 @@
 const TimedModerationCommand = require('../TimedModerationCommand');
-const GuildUserHandler = require('../../GuildUserHandler')
+const Member = require('../../Member')
 
 class BanCommand extends TimedModerationCommand {
 
@@ -17,8 +17,8 @@ class BanCommand extends TimedModerationCommand {
     };
 
     async executePunishment(target) {
-        const guildUserHandler = new GuildUserHandler(target, this.message.guild);
-        await guildUserHandler.ban(this.reason, this.message.author, this.duration);
+        const member = new Member(target, this.message.guild);
+        await member.ban(this.reason, this.message.author, this.duration);
     }
 }
 

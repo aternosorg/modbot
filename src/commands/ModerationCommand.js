@@ -1,7 +1,6 @@
 const Command = require('../Command');
 const util = require('../util');
-const Guild = require('../GuildHandler');
-const Log = require('../Log');
+const Guild = require('../Guild');
 
 class ModerationCommand extends Command {
 

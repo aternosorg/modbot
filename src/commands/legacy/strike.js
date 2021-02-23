@@ -1,12 +1,11 @@
 const util = require('../../util.js');
-const GuildUserHandler = require('../../GuildUserHandler');
+const Member = require('../../Member');
 const kick = require('./kick.js');
 const mute = require('./mute.js');
 const softban = require('./softban.js');
 const GuildConfig = require('../../GuildConfig');
 const Log = require('../../Log');
 const RateLimiter = require('../../RateLimiter');
-const Guild = require('../../GuildHandler');
 
 const maxStrikesAtOnce = 5;
 
@@ -148,8 +147,8 @@ command.executePunishment = async (punishment, guild, user, bot, database, reaso
   let member;
   switch (punishment.action) {
     case 'ban':
-      const guildUserHandler = new GuildUserHandler(user, guild);
-      await guildUserHandler.ban(reason, bot.user, punishment.duration)
+      member = new Member(user, guild);
+      await member.ban(reason, bot.user, punishment.duration);
       break;
     case 'kick':
       try {
