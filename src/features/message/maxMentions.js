@@ -4,7 +4,6 @@ const GuildConfig = require('../../GuildConfig');
 const strike = require('../../commands/legacy/strike');
 
 exports.event = async (options, message) => {
-    console.log(message.mentions.users.size)
     if (!message.guild || await util.ignoresAutomod(message)) return;
 
     /** @type {GuildConfig} */
