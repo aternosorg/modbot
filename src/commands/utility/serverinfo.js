@@ -19,6 +19,13 @@ class ServerinfoCommand extends Command{
                 `**Owner:** ${guild.owner}\n**Owner ID:**\n${guild.ownerID}\n**Created:** ${guild.createdAt.toDateString()}\n**Region:** ${guild.region}\n**Guild ID:** ${guild.id}`,
                 true
                 );
+            embed.addField(
+                '__**Statistics**__',
+                `**Members:** ${guild.memberCount}\n**Max members:** ${guild.maximumMembers}\n**Verified:** ${guild.verified ? 'yes' : 'no'}\n**Partnered:** ${guild.partnered ? 'yes' : 'no'}`,
+                true
+            )
+            await message.channel.send(embed);
     }
 }
         
+module.exports = ServerinfoCommand;
