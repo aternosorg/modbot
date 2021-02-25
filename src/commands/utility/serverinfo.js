@@ -12,10 +12,13 @@ class ServerinfoCommand extends Command{
 
     async execute() {
         const guild = this.message.guild;
-        const ServerEmbed = new Discord.MessageEmbed()
-            .setAuthor(`Info of ${guild.name}`, guild.iconURL());
-            .addFields(
-                {name: 'Generic', value: `**Owner:** ${guild.owner}\n**Owner ID:**\n${guild.ownerID}\n**Created:** ${guild.createdAt.toDateString()}
+        const embed = new Discord.MessageEmbed()
+            embed.setAuthor(`Info of ${guild.name}`, guild.iconURL());
+            embed.addField(
+                '__**Generic**__',
+                `**Owner:** ${guild.owner}\n**Owner ID:**\n${guild.ownerID}\n**Created:** ${guild.createdAt.toDateString()}\n**Region:** ${guild.region}\n**Guild ID:** ${guild.id}`,
+                true
+                );
     }
 }
         
