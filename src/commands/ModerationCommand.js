@@ -4,6 +4,8 @@ const Guild = require('../Guild');
 
 class ModerationCommand extends Command {
 
+    static modCommand = true;
+
     static usage = '<@user|id> [<@user|id…>] [<reason>]';
 
     static timed = false;
@@ -38,10 +40,6 @@ class ModerationCommand extends Command {
             await this.executePunishment(target);
             await util.chatSuccess(this.message.channel, target, this.reason, this.constructor.type.done);
         }
-    }
-
-    userHasPerms() {
-        return this.guildConfig.isMod(this.message.member) || super.userHasPerms();
     }
 
     /**
