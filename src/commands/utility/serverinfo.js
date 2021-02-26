@@ -12,7 +12,7 @@ class ServerinfoCommand extends Command{
 
     async execute() {
         const guild = this.message.guild;
-        const embed = new Discord.MessageEmbed()
+        const embed = new Discord.MessageEmbed();
             embed.setAuthor(`Info of ${guild.name}`, guild.iconURL());
             embed.addField(
                 '__**Generic**__',
@@ -23,7 +23,7 @@ class ServerinfoCommand extends Command{
                 '__**Statistics**__',
                 `**Members:** ${guild.memberCount}\n**Max members:** ${guild.maximumMembers}\n**Verified:** ${guild.verified ? 'yes' : 'no'}\n**Partnered:** ${guild.partnered ? 'yes' : 'no'}`,
                 true
-            )
+            );
             await message.channel.send(embed);
     }
 }
