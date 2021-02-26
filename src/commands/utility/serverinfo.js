@@ -24,7 +24,7 @@ class ServerinfoCommand extends Command{
                 `**Members:** ${guild.memberCount}\n**Max members:** ${guild.maximumMembers}\n**Verified:** ${guild.verified ? 'yes' : 'no'}\n**Partnered:** ${guild.partnered ? 'yes' : 'no'}`,
                 true
             );
-            await message.channel.send(embed);
+        await this.message.channel.send(embed);
     }
 }
         
