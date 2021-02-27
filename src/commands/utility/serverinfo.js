@@ -23,7 +23,7 @@ class ServerinfoCommand extends Command{
         let statistics = '';
         statistics += `**Members:** ${guild.memberCount} \n`;
         statistics += `**Max members:** ${guild.maximumMembers} \n`;
-        statistics += `**Verified: ${guild.verified ? 'yes' : 'no'} \n`;
+        statistics += `**Verified:** ${guild.verified ? 'yes' : 'no'} \n`;
         statistics += `**Partnered:** ${guild.partnered ? 'yes' : 'no'} \n`;
         
         const embed = new Discord.MessageEmbed()
