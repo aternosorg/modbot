@@ -4,7 +4,7 @@ const util = require('../../util');
 
 class ServerinfoCommand extends Command{
   
-    static names = ['si', 'server'];
+    static names = ['serverinfo', 'si', 'server'];
 
     static usage = '';
 
