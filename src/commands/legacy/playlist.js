@@ -3,6 +3,7 @@ const tutorial = require('./tutorial.js');
 const {google} = require('googleapis');
 const config = require('../../../config.json');
 const GuildConfig = require('../../GuildConfig');
+const icons = require('../../icons');
 
 const command = {};
 
@@ -15,7 +16,7 @@ command.names = ['playlist'];
 command.execute = async (message, args, database, bot) => {
   //Permission check
   if (!message.member.hasPermission('MANAGE_GUILD')) {
-    await message.react(util.icons.error);
+    await message.react(icons.error);
     await message.channel.send('You need the "Manage Server" permission to use this command.');
     return;
   }
@@ -24,7 +25,7 @@ command.execute = async (message, args, database, bot) => {
   let playlist = match ? match[1] : args[0];
 
   if (!playlist  || !playlist.length) {
-    await message.react(util.icons.error);
+    await message.react(icons.error);
     await message.channel.send("Please provide a youtube playlist link or id");
     return;
   }
@@ -43,7 +44,7 @@ command.execute = async (message, args, database, bot) => {
     });
 
     if (response.data.items.length === 0) {
-      await message.react(util.icons.error);
+      await message.react(icons.error);
       await message.channel.send("Invalid playlist!");
       return;
     }

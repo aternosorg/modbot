@@ -2,7 +2,7 @@ const util = require('../../util.js');
 const Discord = require('discord.js');
 const moderations = require('./moderations');
 const GuildConfig = require('../../GuildConfig');
-
+const icons = require('../../icons');
 const command = {};
 
 command.description = 'Show information about a single moderation';
@@ -14,7 +14,7 @@ command.names = ['moderation','mod','modinfo'];
 command.execute = async (message, args, database, bot) => {
     const guildConfig = await GuildConfig.get(message.guild.id);
     if(!guildConfig.isMod(message.member) && !message.member.hasPermission('VIEW_AUDIT_LOG')) {
-        await message.react(util.icons.error);
+        await message.react(icons.error);
         return;
     }
 

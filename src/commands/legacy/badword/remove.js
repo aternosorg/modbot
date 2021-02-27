@@ -1,4 +1,5 @@
 const util = require('../../../util.js');
+const icons = require('../../../icons');
 
 /**
  * remove a bad word
@@ -20,16 +21,16 @@ module.exports = async (badWords, message, args) => {
 
     let confirmation = await message.channel.send("Do you really want to delete this bad word?", badWord.embed("Remove bad word", util.color.red));
     {
-        let yes = confirmation.react(util.icons.yes);
-        let no = confirmation.react(util.icons.no);
+        let yes = confirmation.react(icons.yes);
+        let no = confirmation.react(icons.no);
         await Promise.all([yes,no]);
     }
 
     let confirmed;
     try {
         confirmed = (await confirmation.awaitReactions((reaction, user) => {
-            return user.id === message.author.id && (reaction.emoji.name === util.icons.yes || reaction.emoji.name === util.icons.no);
-        }, { max: 1, time: 15000, errors: ['time'] })).first().emoji.name === util.icons.yes;
+            return user.id === message.author.id && (reaction.emoji.name === icons.yes || reaction.emoji.name === icons.no);
+        }, { max: 1, time: 15000, errors: ['time'] })).first().emoji.name === icons.yes;
     }
     catch {
         return await message.channel.send("You took to long to react!");

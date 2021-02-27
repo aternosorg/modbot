@@ -2,7 +2,7 @@ const util = require('../../util.js');
 const Discord = require('discord.js');
 const ChannelConfig = require('../../ChannelConfig');
 const GuildConfig = require('../../GuildConfig');
-
+const icons = require('../../icons');
 const command = {};
 
 command.description = 'Disallow users to send messages to one or multiple channels';
@@ -16,7 +16,7 @@ command.execute = async (message, args, database, bot) => {
   const guildconfig = await GuildConfig.get(message.guild.id);
   //Permission check
   if (!guildconfig.isMod(message.member) && !message.member.hasPermission('MANAGE_CHANNELS')) {
-    await message.react(util.icons.error);
+    await message.react(icons.error);
     return;
   }
 
