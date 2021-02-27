@@ -45,7 +45,7 @@ class Member {
      * @param {Number}  duration
      * @return {Promise<Boolean>} success
      */
-    async dmUser(verb, reason, duration) {
+    async dmPunishedUser(verb, reason, duration) {
         if (duration)
             return await this.guild.sendDM(this.user, `You have been ${verb} from \`${this.guild.guild.name}\` for ${util.secToTime(duration)} | ${reason}`);
         else
