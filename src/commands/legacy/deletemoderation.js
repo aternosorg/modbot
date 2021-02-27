@@ -18,8 +18,8 @@ command.execute = async (message, args, database, bot) => {
         return;
     }
 
-    const regex = args[0].match(/#?(\d+)/);
-    if (regex === null) {
+    const regex = args[0]?.match(/#?(\d+)/);
+    if (regex === null || regex === undefined) {
         await message.channel.send(await util.usage(message, command.names[0]));
         return;
     }
