@@ -26,7 +26,7 @@ class ServerinfoCommand extends Command{
         statistics += `**Verified: ${guild.verified ? 'yes' : 'no'} \n`;
         statistics += `**Partnered:** ${guild.partnered ? 'yes' : 'no'} \n`;
         
-        let embed = new Discord.MessageEmbed()
+        const embed = new Discord.MessageEmbed()
             .setAuthor(`Info of ${guild.name}`, guild.iconURL());
             .addFields(
               {name: '__**Generic**__', value: generic, inline: true},
