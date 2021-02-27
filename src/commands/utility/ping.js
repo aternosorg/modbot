@@ -2,6 +2,8 @@ const Command = require('../../Command');
 
 class PingCommand extends Command {
 
+    static description = 'Show the bot\'s ping';
+
     static names = ['ping'];
 
     async execute() {
