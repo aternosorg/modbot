@@ -27,8 +27,8 @@ class ServerinfoCommand extends Command{
         statistics += `**Partnered:** ${guild.partnered ? 'yes' : 'no'} \n`;
         
         const embed = new Discord.MessageEmbed()
-            .setAuthor(`Info of ${guild.name}`, guild.iconURL())
-            .setThumbnail(guild.iconURL())
+            .setTitle(`Info of ${guild.name}`)
+            .setThumbnail(guild.iconURL({dynamic: true, size: 2048}))
             .setFooter(`Command executed by ${this.message.author.username}`)
             .setTimestamp()
             .addFields(
