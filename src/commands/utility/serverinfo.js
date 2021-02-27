@@ -28,6 +28,9 @@ class ServerinfoCommand extends Command{
         
         const embed = new Discord.MessageEmbed()
             .setAuthor(`Info of ${guild.name}`, guild.iconURL())
+            .setThumbnail(guild.iconURL())
+            .setFooter(`Command executed by ${this.message.author.username}`)
+            .setTimestamp();
             .addFields(
               {name: '__**Generic**__', value: generic, inline: true},
               {name: '__**Statistics**__', value: statistics, inline: true }
