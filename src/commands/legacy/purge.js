@@ -2,6 +2,7 @@ const util = require('../../util.js');
 const icons = require('../../icons');
 const Discord = require('discord.js');
 const GuildConfig = require('../../GuildConfig');
+const Log = require('../../Log');
 
 const command = {};
 
@@ -170,7 +171,7 @@ command.execute = async (message, args, database, bot) => {
   if (filter.count) {
     logembed.addField(`Tested ${messages.size === 1 ? 'message' : 'messages'}`, filter.count, true);
   }
-  return await message.guild.channels.resolve(guildConfig.logChannel).send(logembed);
+  return await Log.logEmbed(message.guild.id, logembed);
 
 };
 
