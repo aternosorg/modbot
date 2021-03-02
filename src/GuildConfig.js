@@ -36,30 +36,28 @@ class GuildConfig extends Config {
      * @param  {Number}                           [json.similarMessages]    should similar message detection be enabled
      * @return {GuildConfig}
      */
-    constructor(id, json) {
+    constructor(id, json = {}) {
         super(id);
 
-        if (json) {
-            this.logChannel = json.logChannel;
-            this.mutedRole = json.mutedRole;
-            if (json.modRoles instanceof Array)
-                this.#modRoles = json.modRoles;
-            if (json.protectedRoles instanceof Array)
-                this.#protectedRoles = json.protectedRoles;
-            if (json.punishments instanceof Object)
-                this.#punishments = json.punishments;
-            this.playlist = json.playlist;
-            this.helpcenter = json.helpcenter;
-            this.invites = json.invites;
-            this.linkCooldown = json.linkCooldown;
-            if (typeof(json.prefix) === 'string')
-                this.prefix = json.prefix;
-            this.caps = json.caps || false;
-            this.maxMentions = json.maxMentions || 5;
-            this.raidMode = json.raidMode || false;
-            this.antiSpam = typeof(json.antiSpam) === "number" ? json.antiSpam : -1;
-            this.similarMessages = json.similarMessages || -1;
-        }
+        this.logChannel = json.logChannel;
+        this.mutedRole = json.mutedRole;
+        if (json.modRoles instanceof Array)
+            this.#modRoles = json.modRoles;
+        if (json.protectedRoles instanceof Array)
+            this.#protectedRoles = json.protectedRoles;
+        if (json.punishments instanceof Object)
+            this.#punishments = json.punishments;
+        this.playlist = json.playlist;
+        this.helpcenter = json.helpcenter;
+        this.invites = json.invites;
+        this.linkCooldown = json.linkCooldown;
+        if (typeof(json.prefix) === 'string')
+            this.prefix = json.prefix;
+        this.caps = json.caps || false;
+        this.maxMentions = json.maxMentions || 5;
+        this.raidMode = json.raidMode || false;
+        this.antiSpam = typeof(json.antiSpam) === "number" ? json.antiSpam : -1;
+        this.similarMessages = json.similarMessages || -1;
     }
 
     /**

@@ -17,17 +17,11 @@ class ChannelConfig extends Config {
      * @return {ChannelConfig} the config of the channel
      */
 
-    constructor(id, json) {
+    constructor(id, json = {}) {
         super(id);
 
-        if (json) {
-          this.invites = json.invites;
-          this.lock = json.lock;
-        }
-
-        if (!this.lock) {
-          this.lock = {};
-        }
+        this.invites = json.invites;
+        this.lock = json.lock || {};
     }
 }
 
