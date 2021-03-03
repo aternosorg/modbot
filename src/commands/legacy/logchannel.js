@@ -12,7 +12,12 @@ command.names = ['logchannel'];
 command.execute = async (message, args, database, bot) => {
   //Permission check
   if (!message.member.hasPermission('MANAGE_GUILD')) {
-    message.channel.send('You need the "Manage Server" permission to use this command.');
+    await message.channel.send('You need the "Manage Server" permission to use this command.');
+    return;
+  }
+
+  if (args.length === 0) {
+    await message.channel.send(await util.usage(message, command.names[0]));
     return;
   }
 
