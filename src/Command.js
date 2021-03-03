@@ -149,7 +149,8 @@ class Command {
             .setFooter(`Command executed by ${message.author.username}`)
             .addFields(
                 /** @type {any} */ { name: "Usage", value: `\`${prefix}${cmd} ${this.usage}\``, inline: true},
-                /** @type {any} */ { name: "Description", value: this.description, inline: true}
+                /** @type {any} */ { name: "Description", value: this.description, inline: true},
+                /** @type {any} */ { name: "Required Permissions", value: this.userPerms.length !== 0 ? `\`${this.userPerms.join('`, `')}\`` : "none" }
             )
             .setColor(util.color.green)
             .setTimestamp();
@@ -165,7 +166,7 @@ class Command {
                 }
             }
             embed.addFields(
-                /** @type {any} */{ name: "Aliases", value: aliases.substring(0,aliases.length - 2), inline: false});
+                /** @type {any} */{ name: "Aliases", value: aliases.substring(0,aliases.length - 2), inline: true});
         }
         return embed;
     }
