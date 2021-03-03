@@ -463,10 +463,14 @@ async function messagesBefore(channel, message, limit) {
   let before = message;
   let messages = new Discord.Collection();
   for (let remaining = limit; remaining > 0; remaining -= 100) {
-    let res = await channel.messages.fetch( /** @type {module:"discord.js".Snowflake} */{
+    /** @type {Collection<K, V>} */
+    const res = await channel.messages.fetch( /** @type {module:"discord.js".Snowflake} */{
       before: before,
       limit: remaining > 100 ? 100: remaining
     }, false);
+
+    if (res.size === 0) return messages;
+
     messages = messages.concat(res);
     before = res.last().id;
   }
