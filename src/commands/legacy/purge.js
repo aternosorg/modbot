@@ -127,12 +127,20 @@ command.execute = async (message, args, database, bot) => {
     return true;
   });
 
+  if (messages.size === 0) {
+    await message.channel.send(new Discord.MessageEmbed({
+      description: '**No messages found!**',
+      color: util.color.red
+    }));
+    return;
+  }
+
   try {
     await util.delete(message);
   } catch (e) {}
 
   try {
-    await util.bulkDelete(message.channel,messages);
+    await util.bulkDelete(message.channel, messages);
   } catch (e) {
     console.log('bulkDelete failed ', e);
   }
