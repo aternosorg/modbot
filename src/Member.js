@@ -32,7 +32,7 @@ class Member {
      * @return {Promise<void>}
      */
     async ban(database, reason, moderator, duration){
-        await this.dmUser('banned', reason, duration)
+        await this.dmPunishedUser('banned', reason, duration)
         await this.guild.guild.members.ban(this.user.id, {days: 1, reason: `${moderator.username}#${moderator.discriminator} ${duration ? `(${util.secToTime(duration)}) ` : ''}| ${reason}`});
         const id = await database.addModeration(this.guild.guild.id, this.user.id, 'ban', reason, duration, moderator.id);
         await Log.logModeration(this.guild.guild.id, moderator, this.user, reason, id, 'ban', { time: util.secToTime(duration) });
