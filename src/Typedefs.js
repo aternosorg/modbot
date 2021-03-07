@@ -40,7 +40,7 @@
  * * A Message object
  * * A Guild object
  * * A Snowflake
- * @typedef {module:"discord.js".Message|module:"discord.js".Guild|module:"discord.js".Snowflake} GuildInfo
+ * @typedef {module:"discord.js".Message|module:"discord.js".Guild|module:"discord.js".Snowflake|Snowflake} GuildInfo
  */
 
 /**

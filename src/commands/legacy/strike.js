@@ -1,5 +1,5 @@
 const util = require('../../util.js');
-const ban = require('./ban.js');
+const Member = require('../../Member');
 const kick = require('./kick.js');
 const mute = require('./mute.js');
 const softban = require('./softban.js');
@@ -148,7 +148,8 @@ command.executePunishment = async (punishment, guild, user, bot, database, reaso
   let member;
   switch (punishment.action) {
     case 'ban':
-      await ban.ban(guild, user, bot.user, reason, punishment.duration);
+      member = new Member(user, guild);
+      await member.ban(database,reason, bot.user, punishment.duration);
       break;
     case 'kick':
       try {
