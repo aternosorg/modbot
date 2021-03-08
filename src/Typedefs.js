@@ -54,3 +54,7 @@
  * @property {String|Number} [duration]
  * @property {String} [message]
  */
+
+/**
+ * @typedef {module:"discord.js".Snowflake} Snowflake
+ */

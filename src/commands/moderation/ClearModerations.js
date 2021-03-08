@@ -1,0 +1,46 @@
+const Command = require('../../Command');
+const User = require('../../User');
+const Channel = require('../../Channel');
+
+class ClearModerationsCommand extends Command {
+
+    static description = 'Delete all moderations for a user';
+
+    static usage = '<@user|userId>';
+
+    static names = ['clearmoderations','clearlogs', 'clearmods'];
+
+    static userPerms = ['VIEW_AUDIT_LOG'];
+
+    static modCommand = true;
+
+    async execute() {
+        const user = await User.getMentionedUser(this.args.shift(), this.bot);
+        if (user === null) {
+            return await this.sendUsage();
+        }
+
+        /** @type {ModerationData[]} */
+        const moderations = await this.database.queryAll("SELECT COUNT(id) FROM moderations WHERE userid = ? AND guildid = ?",[user.id,this.message.guild.id]);
+        const count = moderations[0]["COUNT(id)"];
+
+        if (count === "0") {
+            await this.message.channel.send('This user doesn\'t have any moderations!');
+            return;
+        }
+
+        const channel = new Channel(this.message.channel);
+        let confirmed = await channel.getConfirmation(this.message.author, `Are you sure you want to delete all ${count} moderations for <@${user.id}>?`);
+        if (!confirmed) {
+            await this.message.channel.send("Canceled!");
+            return;
+        }
+
+        /** @property {Number} affectedRows */
+        const deletion = await this.database.queryAll('DELETE FROM moderations WHERE guildid = ? AND userid = ?',[this.message.guild.id, user.id]);
+        await this.message.channel.send(`Deleted ${deletion.affectedRows} ${deletion.affectedRows === 1 ? 'moderation' : 'moderations'}!`);
+    }
+
+}
+
+module.exports = ClearModerationsCommand;
