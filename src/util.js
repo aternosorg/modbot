@@ -448,7 +448,7 @@ async function messagesBefore(channel, message, limit) {
   let before = message;
   let messages = new Discord.Collection();
   for (let remaining = limit; remaining > 0; remaining -= 100) {
-    /** @type {Collection<K, V>} */
+    /** @type {Collection<module:"discord.js".Snowflake, module:"discord.js".Message>} */
     const res = await channel.messages.fetch( /** @type {module:"discord.js".Snowflake} */{
       before: before,
       limit: remaining > 100 ? 100: remaining
