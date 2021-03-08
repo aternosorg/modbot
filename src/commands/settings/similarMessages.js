@@ -1,6 +1,6 @@
 const Command = require('../../Command');
 
-class ExampleCommand extends Command {
+class SimilarMessagesCommand extends Command {
 
     static description = 'Configure message repeated message protection (deletes similar messages)';
 
@@ -41,4 +41,4 @@ class ExampleCommand extends Command {
     }
 }
 
-module.exports = ExampleCommand;
+module.exports = SimilarMessagesCommand;

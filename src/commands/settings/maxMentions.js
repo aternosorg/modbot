@@ -1,6 +1,6 @@
 const Command = require('../../Command');
 
-class ExampleCommand extends Command {
+class MaxMentionsCommand extends Command {
 
     static description = 'Configure how many users a user should be allowed to mention in one message';
 
@@ -46,4 +46,4 @@ class ExampleCommand extends Command {
     }
 }
 
-module.exports = ExampleCommand;
+module.exports = MaxMentionsCommand;
