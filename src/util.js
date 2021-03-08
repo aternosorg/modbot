@@ -311,26 +311,11 @@ util.resolveGuild = async (guildInfo) => {
 };
 
 /**
-<<<<<<< HEAD
- * Log a moderation
- * @async
- * @param {GuildInfo}     guildInfo
- * @param {module:"discord.js".User}  moderator user that started the moderation
- * @param {module:"discord.js".User}  user      user that was moderated
- * @param {String}        reason      reason for the moderation
- * @param {Number}        insertId    id in the moderations table of the db
- * @param {String}        type        moderation action
- * @param {String}        [time]      duration of the moderation as a time string
- * @param {Number}        [amount]    amount of strikes that were given/pardoned
- * @param {Number}        [total]     total strike count
- * @return {module:"discord.js".Message}
-=======
  * Sends an embed to the channel
  * @async
  * @param {module:"discord.js".TextBasedChannel}    channel
  * @param {module:"discord.js".MessageEmbed|Object} options options for the embed
  * @return {Promise<module:"discord.js".Message>}
->>>>>>> master
  */
 util.sendEmbed = (channel, options) => {
   return channel.send(new Discord.MessageEmbed(options));
@@ -463,7 +448,7 @@ async function messagesBefore(channel, message, limit) {
   let before = message;
   let messages = new Discord.Collection();
   for (let remaining = limit; remaining > 0; remaining -= 100) {
-    /** @type {Collection<K, V>} */
+    /** @type {Collection<module:"discord.js".Snowflake, module:"discord.js".Message>} */
     const res = await channel.messages.fetch( /** @type {module:"discord.js".Snowflake} */{
       before: before,
       limit: remaining > 100 ? 100: remaining
