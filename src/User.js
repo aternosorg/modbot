@@ -11,21 +11,27 @@ class User {
     user;
 
     /**
+     * @type {module:"discord.js".Client}
+     */
+    client;
+
+    /**
      *
      * @param {Snowflake} id
+     * @param {module:"discord.js".Client} client
      */
-    constructor(id) {
+    constructor(id, client) {
         this.id = id;
+        this.client = client;
     }
 
     /**
      * fetch this user
-     * @param {module:"discord.js".Client} client
      * @return {Promise<User>}
      */
-    async fetch(client) {
+    async fetch() {
         try {
-            this.user = await client.users.fetch(this.id);
+            this.user = await this.client.users.fetch(this.id);
         }
         catch (e) {
             //Unknown User
@@ -71,8 +77,8 @@ class User {
             return null;
         }
 
-        let user = new User(userID);
-        await user.fetch(client);
+        let user = new User(userID, client);
+        await user.fetch();
         user = user.user;
         return user;
     }
