@@ -21,8 +21,8 @@ class ClearModerationsCommand extends Command {
         }
 
         /** @type {ModerationData[]} */
-        const moderations = await this.database.queryAll("SELECT COUNT(id) FROM moderations WHERE userid = ? AND guildid = ?",[user.id,this.message.guild.id]);
-        const count = moderations[0]["COUNT(id)"];
+        const moderations = await this.database.queryAll("SELECT COUNT(id) AS modCount FROM moderations WHERE userid = ? AND guildid = ?",[user.id,this.message.guild.id]);
+        const count = moderations[0]["modCount"];
 
         if (count === "0") {
             await this.message.channel.send('This user doesn\'t have any moderations!');
@@ -30,7 +30,7 @@ class ClearModerationsCommand extends Command {
         }
 
         const channel = new Channel(this.message.channel);
-        let confirmed = await channel.getConfirmation(this.message.author, `Are you sure you want to delete all ${count} moderations for <@${user.id}>?`);
+        let confirmed = await channel.getConfirmation(this.message.author, `Are you sure you want to delete ${count} ${count === 1 ? `moderations` : 'moderation'} for <@${user.id}>?`);
         if (!confirmed) {
             await this.message.channel.send("Canceled!");
             return;
