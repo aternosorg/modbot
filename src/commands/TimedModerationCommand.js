@@ -11,7 +11,7 @@ class TimedModerationCommand extends ModerationCommand {
         if (this.duration)
             return util.chatSuccess(this.message.channel, target, this.reason, this.constructor.type.done, util.secToTime(this.duration));
         else
-            return util.chatSuccess(this.message.channel, target, this.reason, this.constructor.type.done);
+            return super.sendSuccess(target);
     }
 
     /**
