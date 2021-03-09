@@ -8,8 +8,6 @@ class ModerationCommand extends Command {
 
     static usage = '<@user|id> [<@user|id…>] [<reason>]';
 
-    static timed = false;
-
     /**
      * @type {Object}
      */
@@ -30,11 +28,7 @@ class ModerationCommand extends Command {
         this.targetedUsers = await this.getTargetedUsers();
         if (this.targetedUsers === null) return;
 
-        if (this.constructor.timed) {
-            this.duration = this.getDuration();
-        }
-
-        this.reason = this.getReason();
+        this.loadInfo();
         for (const target of this.targetedUsers) {
             if (await this.isProtected(target)) continue;
             await this.executePunishment(target);
@@ -43,7 +37,14 @@ class ModerationCommand extends Command {
     }
 
     /**
-     *
+     * load information (e.g. reason, duration)
+     */
+    loadInfo() {
+        this.reason = this.getReason();
+    }
+
+    /**
+     * send an embed showing that the command was executed successfully.
      * @param target
      * @return {Promise<module:"discord.js".Message>}
      */
