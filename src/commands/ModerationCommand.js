@@ -38,8 +38,17 @@ class ModerationCommand extends Command {
         for (const target of this.targetedUsers) {
             if (await this.isProtected(target)) continue;
             await this.executePunishment(target);
-            await util.chatSuccess(this.message.channel, target, this.reason, this.constructor.type.done);
+            await this.sendSuccess(target);
         }
+    }
+
+    /**
+     *
+     * @param target
+     * @return {Promise<module:"discord.js".Message>}
+     */
+    async sendSuccess(target) {
+        return util.chatSuccess(this.message.channel, target, this.reason, this.constructor.type.done);
     }
 
     /**

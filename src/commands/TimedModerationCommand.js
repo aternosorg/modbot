@@ -7,6 +7,13 @@ class TimedModerationCommand extends ModerationCommand {
 
     static timed = true;
 
+    async sendSuccess(target){
+        if (this.duration)
+            return util.chatSuccess(this.message.channel, target, this.reason, this.constructor.type.done, util.secToTime(this.duration));
+        else
+            return util.chatSuccess(this.message.channel, target, this.reason, this.constructor.type.done);
+    }
+
     /**
      * get the duration of this moderation
      */
