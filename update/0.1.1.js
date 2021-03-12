@@ -54,11 +54,9 @@ async function updateGuildID(channelID) {
         await database.query('UPDATE channels SET guildid = ? WHERE id = ?',[channel.guild.id, channelID]);
     }
     catch (e) {
-        if (e.code === 10003) {
+        // unknown channel, missing access
+        if ([10003, 50001].includes(e.code)) {
             await database.query('DELETE FROM channels WHERE id = ?',[channelID]);
-            return false;
-        }
-        if (e.code === 50001) {
             return false;
         }
         throw e;

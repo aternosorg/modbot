@@ -15,6 +15,12 @@ class Config {
     static database;
 
     /**
+     * Discord Client
+     * @type {module:"discord.js".Client}
+     */
+    static client;
+
+    /**
      * Cache for all configs by tableName
      * @type {{}}
      */
@@ -36,9 +42,11 @@ class Config {
     /**
      * save database
      * @param {Database} db
+     * @param {module:"discord.js".Client} client
      */
-    static init(db) {
+    static init(db, client) {
         this.database = db;
+        this.client = client;
     }
 
     static getCache() {
@@ -56,55 +64,54 @@ class Config {
     }
 
     /**
+     * get the escaped table name
+     * @return {string}
+     */
+    static getTableName() {
+        return this.database.escapeId(this.tableName);
+    }
+
+    /**
      * Save to db and cache
      * @async
      * @return {Promise<>}
      */
     async save() {
-        const json = this.toJSONString();
-        const escapedTable = this.constructor.database.escapeId(this.constructor.tableName);
-
-        const result = await this.constructor._select(json, escapedTable);
+        const result = await this._select();
         if(result){
-            await this.constructor._update(json, escapedTable);
+            await this._update();
         }
         else {
-            await this.constructor._insert(json, escapedTable)
+            await this._insert()
             this.constructor.getCache().set(this.id, this);
         }
     }
 
     /**
-     * Get a config from the DB
-     * @param {String}  json
-     * @param {String}  escapedTable
+     * Get this config from the DB
      * @return {Promise<void>}
      * @private
      */
-    static async _select(json, escapedTable) {
-        return this.database.query(`SELECT * FROM ${escapedTable} WHERE id = ?`,[this.id]);
+    async _select() {
+        return this.constructor.database.query(`SELECT id, config FROM ${this.constructor.getTableName()} WHERE id = ?`,[this.id]);
     }
 
     /**
-     * Update a config in the DB
-     * @param {String}  json
-     * @param {String}  escapedTable
+     * Update this config in the DB
      * @return {Promise<void>}
      * @private
      */
-    static async _update(json, escapedTable) {
-        return this.database.query(`UPDATE ${escapedTable} SET config = ? WHERE id = ?`,[json,this.id]);
+    async _update() {
+        return this.constructor.database.query(`UPDATE ${this.constructor.getTableName()} SET config = ? WHERE id = ?`,[this.toJSONString(),this.id]);
     }
 
     /**
      * Insert a config into the DB
-     * @param {String}  json
-     * @param {String}  escapedTable
      * @return {Promise<void>}
      * @private
      */
-    static async _insert(json, escapedTable) {
-        return this.database.query(`INSERT INTO ${escapedTable} (config,id) VALUES (?,?)`,[json,this.id]);
+    async _insert() {
+        return this.constructor.database.query(`INSERT INTO ${this.constructor.getTableName()} (config,id) VALUES (?,?)`,[this.toJSONString(), this.id]);
     }
 
     /**
@@ -116,7 +123,7 @@ class Config {
     static async get(id) {
 
         if (!this.getCache().has(id)) {
-            let result = await this.database.query(`SELECT * FROM ${this.database.escapeId(this.tableName)} WHERE id = ?`, id);
+            let result = await this.database.query(`SELECT id, config FROM ${this.getTableName()} WHERE id = ?`, [id]);
             if(!result) return new this(id);
             this.getCache().set(result.id, new this(result.id, JSON.parse(result.config)));
             setTimeout(() => {

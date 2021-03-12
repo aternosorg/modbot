@@ -11,30 +11,39 @@ class ChannelConfig extends Config {
      * Constructor - create a channel config
      *
      * @param  {module:"discord.js".Snowflake}  id             channel id
-     * @param  {module:"discord.js".Snowflake}  guildid
      * @param  {Object}                         [json]          options
      * @param  {Boolean}                        [json.invites]  allow invites
      * @param  {Object}                         [json.lock]     permissions before locking (only affected perms)
      * @return {ChannelConfig} the config of the channel
      */
-
-    constructor(id, guildid, json = {}) {
+    constructor(id, json = {}) {
         super(id);
-        this.guildid = guildid;
 
         this.invites = json.invites;
         this.lock = json.lock || {};
     }
 
     /**
-     * Insert this config into the DB
-     * @param {String}  json
-     * @param {String}  escapedTable
-     * @return {Promise<void>}
-     * @private
+     * get the guildID of this channel
+     * @return {Promise<null|string>}
      */
-    static async _insert(json, escapedTable) {
-        return this.database.query(`INSERT INTO ${escapedTable} (config,id,guildid) VALUES (?,?,?)`,[json,this.id, this.guildid]);
+    async getGuildID() {
+        try {
+            /** @type {module:"discord.js".GuildChannel} */
+            const channel = await this.constructor.client.channels.fetch(this.id);
+            return channel.guild.id;
+        }
+        catch (e) {
+            // unknown channel, missing access
+            if ([10003, 50001].includes(e.code)) {
+                return null;
+            }
+            throw e;
+        }
+    }
+
+    async _insert() {
+        return this.constructor.database.query(`INSERT INTO ${this.constructor.getTableName()} (config,id,guildid) VALUES (?,?,?)`,[this.toJSONString(), this.id, await this.getGuildID()]);
     }
 }
 
