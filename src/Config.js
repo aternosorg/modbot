@@ -1,18 +1,18 @@
 const Discord = require('discord.js');
 
 /**
- * Database
- * @type {Database}
- */
-let database;
-
-/**
  * Config cache time (ms)
  * @type {Number}
  */
 const cacheDuration = 10*60*1000;
 
 class Config {
+
+    /**
+     * Database
+     * @type {Database}
+     */
+    static database;
 
     /**
      * Cache for all configs by tableName
@@ -38,7 +38,7 @@ class Config {
      * @param {Database} db
      */
     static init(db) {
-        database = db;
+        this.database = db;
     }
 
     static getCache() {
@@ -62,14 +62,49 @@ class Config {
      */
     async save() {
         const json = this.toJSONString();
-        let result = await database.query(`SELECT * FROM ${database.escapeId(this.constructor.tableName)} WHERE id = ?`,[this.id]);
+        const escapedTable = this.constructor.database.escapeId(this.constructor.tableName);
+
+        const result = await this.constructor._select(json, escapedTable);
         if(result){
-            await database.query(`UPDATE ${database.escapeId(this.constructor.tableName)} SET config = ? WHERE id = ?`,[json,this.id]);
+            await this.constructor._update(json, escapedTable);
         }
         else {
-            await database.query(`INSERT INTO ${database.escapeId(this.constructor.tableName)} (config,id) VALUES (?,?)`,[json,this.id]);
+            await this.constructor._insert(json, escapedTable)
             this.constructor.getCache().set(this.id, this);
         }
+    }
+
+    /**
+     * Get a config from the DB
+     * @param {String}  json
+     * @param {String}  escapedTable
+     * @return {Promise<void>}
+     * @private
+     */
+    static async _select(json, escapedTable) {
+        return this.database.query(`SELECT * FROM ${escapedTable} WHERE id = ?`,[this.id]);
+    }
+
+    /**
+     * Update a config in the DB
+     * @param {String}  json
+     * @param {String}  escapedTable
+     * @return {Promise<void>}
+     * @private
+     */
+    static async _update(json, escapedTable) {
+        return this.database.query(`UPDATE ${escapedTable} SET config = ? WHERE id = ?`,[json,this.id]);
+    }
+
+    /**
+     * Insert a config into the DB
+     * @param {String}  json
+     * @param {String}  escapedTable
+     * @return {Promise<void>}
+     * @private
+     */
+    static async _insert(json, escapedTable) {
+        return this.database.query(`INSERT INTO ${escapedTable} (config,id) VALUES (?,?)`,[json,this.id]);
     }
 
     /**
@@ -81,7 +116,7 @@ class Config {
     static async get(id) {
 
         if (!this.getCache().has(id)) {
-            let result = await database.query(`SELECT * FROM ${database.escapeId(this.tableName)} WHERE id = ?`, id);
+            let result = await this.database.query(`SELECT * FROM ${this.database.escapeId(this.tableName)} WHERE id = ?`, id);
             if(!result) return new this(id);
             this.getCache().set(result.id, new this(result.id, JSON.parse(result.config)));
             setTimeout(() => {
