@@ -33,7 +33,7 @@ util.init = (db, client) => {
   database = db;
   bot = client;
   ChatTriggeredFeature.init(db);
-  Config.init(db);
+  Config.init(db, client);
   RateLimiter.init(db);
 };
 

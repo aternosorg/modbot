@@ -1,18 +1,24 @@
 const Discord = require('discord.js');
 
 /**
- * Database
- * @type {Database}
- */
-let database;
-
-/**
  * Config cache time (ms)
  * @type {Number}
  */
 const cacheDuration = 10*60*1000;
 
 class Config {
+
+    /**
+     * Database
+     * @type {Database}
+     */
+    static database;
+
+    /**
+     * Discord Client
+     * @type {module:"discord.js".Client}
+     */
+    static client;
 
     /**
      * Cache for all configs by tableName
@@ -36,9 +42,11 @@ class Config {
     /**
      * save database
      * @param {Database} db
+     * @param {module:"discord.js".Client} client
      */
-    static init(db) {
-        database = db;
+    static init(db, client) {
+        this.database = db;
+        this.client = client;
     }
 
     static getCache() {
@@ -56,20 +64,54 @@ class Config {
     }
 
     /**
+     * get the escaped table name
+     * @return {string}
+     */
+    static getTableName() {
+        return this.database.escapeId(this.tableName);
+    }
+
+    /**
      * Save to db and cache
      * @async
      * @return {Promise<>}
      */
     async save() {
-        const json = this.toJSONString();
-        let result = await database.query(`SELECT * FROM ${database.escapeId(this.constructor.tableName)} WHERE id = ?`,[this.id]);
+        const result = await this._select();
         if(result){
-            await database.query(`UPDATE ${database.escapeId(this.constructor.tableName)} SET config = ? WHERE id = ?`,[json,this.id]);
+            await this._update();
         }
         else {
-            await database.query(`INSERT INTO ${database.escapeId(this.constructor.tableName)} (config,id) VALUES (?,?)`,[json,this.id]);
+            await this._insert()
             this.constructor.getCache().set(this.id, this);
         }
+    }
+
+    /**
+     * Get this config from the DB
+     * @return {Promise<void>}
+     * @private
+     */
+    async _select() {
+        return this.constructor.database.query(`SELECT id, config FROM ${this.constructor.getTableName()} WHERE id = ?`,[this.id]);
+    }
+
+    /**
+     * Update this config in the DB
+     * @return {Promise<void>}
+     * @private
+     */
+    async _update() {
+        return this.constructor.database.query(`UPDATE ${this.constructor.getTableName()} SET config = ? WHERE id = ?`,[this.toJSONString(),this.id]);
+    }
+
+    /**
+     * Insert a config into the DB
+     * @return {Promise<void>}
+     * @private
+     */
+    async _insert() {
+        return this.constructor.database.query(`INSERT INTO ${this.constructor.getTableName()} (config,id) VALUES (?,?)`,[this.toJSONString(), this.id]);
     }
 
     /**
@@ -81,7 +123,7 @@ class Config {
     static async get(id) {
 
         if (!this.getCache().has(id)) {
-            let result = await database.query(`SELECT * FROM ${database.escapeId(this.tableName)} WHERE id = ?`, id);
+            let result = await this.database.query(`SELECT id, config FROM ${this.getTableName()} WHERE id = ?`, [id]);
             if(!result) return new this(id);
             this.getCache().set(result.id, new this(result.id, JSON.parse(result.config)));
             setTimeout(() => {

@@ -4,7 +4,7 @@ const util = require('./util');
 const fs = require('fs').promises;
 const config = require('../config.json');
 
-class Bot{
+class Bot {
     static instance = new Bot();
 
     static getInstance() {
