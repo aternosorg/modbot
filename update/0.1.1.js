@@ -8,7 +8,15 @@ async function update() {
     console.log('Starting update to v0.1.1');
 
     console.log('Updating tables...');
-    await database.query('ALTER TABLE `channels` ADD COLUMN IF NOT EXISTS `guildid` VARCHAR(20)');
+    try {
+        await database.query('ALTER TABLE `channels` ADD COLUMN `guildid` VARCHAR(20)');
+    }
+    catch (e) {
+        if (e.code === 'ER_DUP_FIELDNAME')
+            console.log('Channels table already up to date');
+        else
+            throw e;
+    }
     console.log('Done!')
     console.log('Updating entries...')
     const channelIDs = await database.queryAll('SELECT id FROM channels WHERE guildid IS null');
