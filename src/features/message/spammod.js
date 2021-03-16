@@ -8,7 +8,7 @@ const GuildConfig = require('../../GuildConfig');
  * @return {Promise<void>}
  */
 exports.event = async (options, message) => {
-    if (!message.guild || await util.ignoresAutomod(message)) return;
+    if (!message.guild || message.content.length === 0 || await util.ignoresAutomod(message)) return;
 
     /** @type {GuildConfig} */
     const guildConfig = await GuildConfig.get(message.guild.id);
