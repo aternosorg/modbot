@@ -1,8 +1,7 @@
 const Command = require('../../Command')
 const Discord = require('discord.js');
-const util = require('../../util');
 
-class ServerinfoCommand extends Command{
+class ServerInfoCommand extends Command{
   
     static names = ['serverinfo', 'si', 'server'];
 
@@ -40,4 +39,4 @@ class ServerinfoCommand extends Command{
     }
 }
         
-module.exports = ServerinfoCommand;
+module.exports = ServerInfoCommand;
