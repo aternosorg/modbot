@@ -9,11 +9,9 @@ command.names = ['info','invite'];
 
 command.execute = async (message, args, database, bot) => {
     const embed = new Discord.MessageEmbed();
-    embed.setTitle('Modbot by Aternos')
-    embed.addField(
-        'Description',
-        '[Modbot](https://github.com/aternosorg/modbot/) is a moderation bot developed by [Aternos](https://aternos.org/)\n',
-        false
+    embed.setTitle('ModBot by Aternos')
+    embed.setDescription(
+        '[ModBot](https://github.com/aternosorg/modbot/) is a moderation bot developed by [Aternos](https://aternos.org/)'
         );
     embed.addField(
         'Invite link',
