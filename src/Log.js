@@ -39,6 +39,7 @@ class Log{
      * @return {Promise<module:"discord.js".Message|null>} log message
      */
      static async logMessageDeletion(message, reason) {
+         if (message.content.length === 0) return;
         return this.log(message, `Message in <#${message.channel.id}> deleted`, new Discord.MessageEmbed({
             footer: {
                 text: `${message.author.username}#${message.author.discriminator}`,
