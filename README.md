@@ -7,8 +7,6 @@
 ---
 ModBot is a moderation bot that is mainly used in the [Aternos Discord](https://chat.aternos.org).
 
-It was made using the [discord.js](https://discord.js.org/) Library and [node.js](https://nodejs.org/).
-
 ### Features
 - Moderation commands (ban, kick, mute, softban, strike)
 - Import strikes, tempmutes and tempbans from Vortex 
@@ -19,18 +17,24 @@ It was made using the [discord.js](https://discord.js.org/) Library and [node.js
 - Autoresponses
 - Bad word filters
 
-### Invite The Bot
-Click [this link](https://discordapp.com/oauth2/authorize?client_id=790967448111153153&scope=bot&permissions=268446806) to invite the bot to your own server
+### Add ModBot to your server
+By adding the bot to your server you agree to our [privacy policy](https://aternos.gmbh/en/modbot/privacy). <br>
+Invite: [click me](https://discordapp.com/oauth2/authorize?client_id=790967448111153153&scope=bot&permissions=268446806)
 
-If you need help with the commands use `!help` to list them and `!help <command>` to get more info.
+If you need help with the commands use `!help` to list them and `!help <command>` to get more information about a single command.
 
 ### Getting Started
 - You can view the settings with `!settings`
-- If you have a Zendesk help center, use `!helpcenter <url>` to enable the `!article` command
 - To set up a log channel use `!logchannel <#channel>`
-- If you want to configure a Youtube playlist, you can use `!playlist <url>`
 - To add moderator roles use `!modrole add <@role>`
-- If you used Vortex before you can import strikes, mutes and bans using `!import`
+- You can import strikes, mutes and bans from Vortex using `!import`
+- If you want to configure a Youtube playlist, you can use `!playlist <url>`
+- You can also add a Zendesk help center, using `!helpcenter <url>` to enable the `!article` command.
+
+### Support
+You can view the usage of commands with the help command.<br>
+If you think you found a bug in ModBot then please create an [issue](https://github.com/aternosorg/modbot/issues). <br>
+For security vulnerabilities send a mail to [security@aternos.org](mailto://security@aternos.org).
 
 ### Self Hosting
 Requirements: [Node.js](https://nodejs.org/en/download/), a [MySQL](https://dev.mysql.com/downloads/mysql/) database
@@ -45,6 +49,5 @@ Requirements: [Node.js](https://nodejs.org/en/download/), a [MySQL](https://dev.
 7. To invite the bot to your server replace `ID` with the client ID of your application https://discordapp.com/oauth2/authorize?client_id=ID&scope=bot&permissions=268446806 and open the link
 
 ### Contributing
-If you want to contribute you need to [fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the repository, then add your changes to your fork and then create a [pull request](https://github.com/aternosorg/modbot/compare). We recommend looking at the [Documentation](https://discord.js.org/#/docs/) of discord.js.
-
-If you need help with the Bot create an [Issue](https://github.com/aternosorg/modbot/issues).
+If you want to contribute you need to [fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the repository, then add your changes to your fork and then create a [pull request](https://github.com/aternosorg/modbot/compare). 
+We recommend looking at the [Documentation](https://discord.js.org/#/docs/) of discord.js.
