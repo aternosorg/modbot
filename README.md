@@ -18,7 +18,7 @@ ModBot is a moderation bot that is mainly used in the [Aternos Discord](https://
 - Bad word filters
 
 ### Add ModBot to your server
-By adding the Bot to your server you agree to our [privacy policy](https://aternos.gmbh/en/modbot/privacy). <br>
+By adding the bot to your server you agree to our [privacy policy](https://aternos.gmbh/en/modbot/privacy). <br>
 Invite: [click me](https://discordapp.com/oauth2/authorize?client_id=790967448111153153&scope=bot&permissions=268446806)
 
 If you need help with the commands use `!help` to list them and `!help <command>` to get more information about a single command.
@@ -33,7 +33,7 @@ If you need help with the commands use `!help` to list them and `!help <command>
 
 ### Support
 You can view the usage of commands with the help command.<br>
-If you think you found a bug in ModBot then please create an [Issue](https://github.com/aternosorg/modbot/issues). <br>
+If you think you found a bug in ModBot then please create an [issue](https://github.com/aternosorg/modbot/issues). <br>
 For security vulnerabilities send a mail to [security@aternos.org](mailto://security@aternos.org).
 
 ### Self Hosting

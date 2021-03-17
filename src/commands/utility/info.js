@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 
 class InfoCommand extends Command {
 
-    static description = 'show information about ModBot';
+    static description = 'Show information about ModBot';
 
     static names = ['info', 'invite'];
 
