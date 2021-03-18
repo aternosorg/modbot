@@ -32,7 +32,8 @@ class ServerInfoCommand extends Command{
             .setTimestamp()
             .addFields(
               {name: '__**Generic**__', value: generic, inline: true},
-              {name: '__**Statistics**__', value: statistics, inline: true }
+              {name: '__**Statistics**__', value: statistics, inline: true },
+              {name: '__**Features**__', value: guild.features.join(', ') || 'None', inline: false }
             );
               
         await this.message.channel.send(embed);
