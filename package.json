@@ -17,11 +17,11 @@
   },
   "homepage": "https://github.com/aternosorg/modbot#readme",
   "dependencies": {
-    "axios": "^0.21.1",
     "diff": "^4.0.2",
     "discord.js": "^12.4.0",
     "fuse.js": "^6.4.1",
     "googleapis": "^61.0.0",
+    "got": "^11.8.2",
     "mysql": "^2.18.1",
     "string-similarity": "^4.0.4"
   }
