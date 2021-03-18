@@ -16,6 +16,9 @@
     "url": "https://github.com/aternosorg/modbot/issues"
   },
   "homepage": "https://github.com/aternosorg/modbot#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "dependencies": {
     "axios": "^0.21.1",
     "diff": "^4.0.2",
