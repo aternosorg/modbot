@@ -1,5 +1,5 @@
 const Command = require('../../Command');
-const axios = require('axios');
+const Request = require('../../Request');
 
 class ArticleCommand extends Command {
 
@@ -22,9 +22,11 @@ class ArticleCommand extends Command {
         }
 
 
-        const response = await axios.get(`https://${this.guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles/search.json?query=`+encodeURIComponent(query));
-        if(response.data.results[0]){
-            await this.message.channel.send(response.data.results[0].html_url);
+        const request = new Request(`https://${this.guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles/search.json?query=`+encodeURIComponent(query));
+        await request.getJSON()
+
+        if(request.JSON.count !== 0){
+            await this.message.channel.send(request.JSON.results[0].html_url);
         }
         else {
             await this.message.channel.send('No article found!');

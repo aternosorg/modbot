@@ -1,4 +1,4 @@
-const axios = require('axios');
+const Request = require('../../Request');
 const util = require('../../util.js');
 
 const command = {};
@@ -25,9 +25,10 @@ command.execute = async (message, args, database, bot) => {
 
   let time = Date.now();
 
-  let data = await axios.get(message.attachments.first().url);
+  const request = new Request(message.attachments.first().url);
+  await request.getJSON();
   /** @type {VortexData} */
-  data = data.data;
+  const data = request.JSON;
 
   let response = await message.channel.send('Importing mutes...');
   let percent = 0;
