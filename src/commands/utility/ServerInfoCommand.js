@@ -1,5 +1,6 @@
 const Command = require('../../Command')
 const Discord = require('discord.js');
+const util = require('../../util');
 
 class ServerInfoCommand extends Command{
   
@@ -16,24 +17,26 @@ class ServerInfoCommand extends Command{
         generic += `**Owner:** <@!${guild.ownerID}> \n`;
         generic += `**Owner ID:** ${guild.ownerID} \n`;
         generic += `**Created:** ${guild.createdAt.toDateString()} \n`;
-        generic += `**Region:** ${guild.region.toUpperCase()} \n`;
+        generic += `**Region:** ${util.toTitleCase(guild.region)} \n`;
         generic += `**Guild ID:** ${guild.id} \n`;
         
         let statistics = '';
         statistics += `**Members:** ${guild.memberCount} \n`;
         statistics += `**Max members:** ${guild.maximumMembers} \n`;
-        statistics += `**Verified:** ${guild.verified ? 'yes' : 'no'} \n`;
-        statistics += `**Partnered:** ${guild.partnered ? 'yes' : 'no'} \n`;
-        
+        statistics += `**Verified:** ${guild.verified ? 'Yes' : 'No'} \n`;
+        statistics += `**Partnered:** ${guild.partnered ? 'Yes' : 'No'} \n`;
+
+        const features = guild.features.map(feature => util.toTitleCase(feature));
+
         const embed = new Discord.MessageEmbed()
             .setTitle(`Info of ${guild.name}`)
             .setThumbnail(guild.iconURL({dynamic: true, size: 2048}))
             .setFooter(`Command executed by ${this.message.author.username}`)
             .setTimestamp()
             .addFields(
-              {name: '__**Generic**__', value: generic, inline: true},
-              {name: '__**Statistics**__', value: statistics, inline: true },
-              {name: '__**Features**__', value: guild.features.join(', ') || 'None', inline: false }
+                /** @type {any} */ {name: '__**Generic**__', value: generic, inline: true},
+                /** @type {any} */ {name: '__**Statistics**__', value: statistics, inline: true },
+                /** @type {any} */ {name: '__**Features**__', value: features.join(', ') || 'None', inline: false }
             );
               
         await this.message.channel.send(embed);

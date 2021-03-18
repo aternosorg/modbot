@@ -601,4 +601,12 @@ util.getResponse = async(channel, author, timeout = responseWaitTime*60*1000) =>
   }
 }
 
+/**
+ * Convert a string to tile case
+ * @param {String} s
+ */
+util.toTitleCase = (s) => {
+  return s.toLowerCase().replace(/^(\w)|\s(\w)/g, c => c.toUpperCase());
+}
+
 module.exports = util;
