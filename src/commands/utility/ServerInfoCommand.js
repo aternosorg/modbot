@@ -32,7 +32,7 @@ class ServerInfoCommand extends Command{
             .setTimestamp()
             .addFields(
               {name: '__**Generic**__', value: generic, inline: true},
-              {name: '__**Statistics**__', value: statistics, inline: true }
+              {name: '__**Statistics**__', value: statistics, inline: true },
               {name: '__**Features**__', value: guild.features.join(', '), inline: false }
             );
               
