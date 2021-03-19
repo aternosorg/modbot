@@ -26,7 +26,7 @@ class ServerInfoCommand extends Command{
         statistics += `**Verified:** ${guild.verified ? 'Yes' : 'No'} \n`;
         statistics += `**Partnered:** ${guild.partnered ? 'Yes' : 'No'} \n`;
 
-        const features = guild.features.map(feature => util.toTitleCase(feature));
+        const features = guild.features.map(feature => util.toTitleCase(feature.replace(/[-_]/g, ' ')));
 
         const embed = new Discord.MessageEmbed()
             .setTitle(`Info of ${guild.name}`)
