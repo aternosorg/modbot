@@ -53,13 +53,13 @@ class CommandHandler {
      * @return {Promise<void>}
      */
     static async event(options, message) {
-        const name = await this.getCommandName(message);
+        const [name, prefix] = await this.getCommandName(message);
         const Command = this.#commands[name];
         if (Command === undefined) return;
 
         try {
             /** @type {Command} */
-            const cmd = new Command(message, options.database, options.bot, name);
+            const cmd = new Command(message, options.database, options.bot, name, prefix);
             await cmd._loadConfigs();
             const userPerms = cmd.userHasPerms(), botPerms = cmd.botHasPerms();
             if (userPerms !== true) {
@@ -87,14 +87,14 @@ class CommandHandler {
      * @return {Promise<String>}
      */
     static async getCommandName(message) {
-        if (!message.guild || message.author.bot) return null;
+        if (!message.guild || message.author.bot) return [];
         /** @type {GuildConfig} */
         const guild = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */ message.guild.id);
         const args = util.split(message.content,' ');
         const prefix = util.startsWithMultiple(message.content.toLowerCase(), guild.prefix.toLowerCase(), defaultPrefix.toLowerCase());
-        if (!prefix) return null;
+        if (!prefix) return [];
 
-        return args[0].slice(prefix.length).toLowerCase();
+        return [args[0].slice(prefix.length).toLowerCase(), prefix];
     }
 
     /**
