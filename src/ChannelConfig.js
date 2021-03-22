@@ -7,6 +7,10 @@ class ChannelConfig extends Config {
 
     static tableName = 'channels';
 
+    invites;
+
+    lock;
+
     /**
      * Constructor - create a channel config
      *
