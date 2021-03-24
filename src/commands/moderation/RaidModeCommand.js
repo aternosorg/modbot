@@ -13,7 +13,7 @@ class RaidModeCommand extends Command {
 
     static userPerms = ['BAN_MEMBERS'];
 
-    static botPerms = ['MANAGE_CHANNELS'];
+    static botPerms = ['KICK_MEMBERS'];
 
     async execute() {
 
