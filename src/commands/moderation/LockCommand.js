@@ -15,7 +15,7 @@ class LockCommand extends Command {
 
     static modCommand = true;
 
-    static userPerms = ['BAN_MEMBERS'];
+    static userPerms = ['MANAGE_CHANNELS'];
 
     static botPerms = ['MANAGE_CHANNELS', 'MANAGE_ROLES'];
 
