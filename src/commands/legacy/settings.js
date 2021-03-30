@@ -32,7 +32,7 @@ command.execute = async (message, args, database, bot) => {
 
   let automod = '';
   automod += `Invites: ${guild.invites === false ? 'forbidden' : 'allowed'} \n`;
-  automod += `Link cooldown: ${guild.linkCooldown > 0 ? util.secToTime(guild.linkCooldown) : 'disabled'} \n`;
+  automod += `Link cooldown: ${guild.linkCooldown !== -1 ? util.secToTime(guild.linkCooldown) : 'disabled'} \n`;
   automod += `Caps: ${guild.caps === true ? 'enabled' : 'disabled'} \n`;
   automod += `Maximum mentions: ${guild.maxMentions === -1 ? 'disabled' : guild.maxMentions} \n`;
   automod += `Spam protection: ${guild.antiSpam === -1 ? 'disabled' : `${guild.antiSpam} messages per minute`} \n`;

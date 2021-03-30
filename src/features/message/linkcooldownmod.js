@@ -13,9 +13,10 @@ exports.event = async (options, message) => {
     return;
   }
 
+  /** @type {GuildConfig} */
   let guild = await GuildConfig.get(message.guild.id);
 
-  if (!guild.linkCooldown) {
+  if (guild.linkCooldown === -1) {
     return;
   }
 

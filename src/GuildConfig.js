@@ -50,7 +50,7 @@ class GuildConfig extends Config {
         this.playlist = json.playlist;
         this.helpcenter = json.helpcenter;
         this.invites = json.invites;
-        this.linkCooldown = json.linkCooldown;
+        this.linkCooldown = json.linkCooldown || -1;
         if (typeof(json.prefix) === 'string')
             this.prefix = json.prefix;
         this.caps = json.caps || false;
