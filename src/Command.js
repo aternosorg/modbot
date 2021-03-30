@@ -85,18 +85,26 @@ class Command {
     name;
 
     /**
+     * the prefix used in this command call
+     * @type {String}
+     */
+    prefix;
+
+    /**
      * call this command
      * @param {module:"discord.js".Message} message
      * @param {Database}                    database
      * @param {module:"discord.js".Client}  bot
      * @param {String} name
+     * @param {String} prefix
      */
-    constructor(message, database, bot, name) {
+    constructor(message, database, bot, name, prefix) {
         this.message = message;
         this.database = database;
         this.bot = bot;
         this.args = util.split(message.content,' ').slice(1);
         this.name = name;
+        this.prefix = prefix;
     }
 
     async _loadConfigs() {
