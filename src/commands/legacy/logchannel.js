@@ -7,7 +7,7 @@ command.description = 'Specify the log channel';
 
 command.usage = '<#channel|channelId|off>';
 
-command.names = ['logchannel'];
+command.names = ['logchannel','log'];
 
 command.execute = async (message, args, database, bot) => {
   //Permission check
