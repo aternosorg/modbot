@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 const util = require('../../util');
 const ChannelConfig = require('../../ChannelConfig');
 
-const PERMS = ['SEND_MESSAGES', 'ADD_REACTIONS']
+const PERMS = ['SEND_MESSAGES', 'ADD_REACTIONS'];
 
 class LockCommand extends Command {
 
@@ -34,6 +34,7 @@ class LockCommand extends Command {
             }
             /** @type {module:"discord.js".GuildChannel[]} */
             const channels = this.message.guild.channels.cache.filter(this.lockable, this).array();
+            if (channels.length === 0) return this.sendUsage();
             return this.lock(channels, embed);
         }
 
@@ -57,8 +58,8 @@ class LockCommand extends Command {
         if (channels.length === 0) return;
 
         {
-            const regex = new RegExp(`${this.prefix}${this.name} (<?#?\\d+>?)+`);
-            const start = this.message.content.match(regex)[0].length + 1;
+            const regex = new RegExp(`${this.prefix}${this.name} (<?#?\\d+>? )+`);
+            const start = this.message.content.match(regex)[0].length;
             embed.setDescription(this.message.content.substring(start));
         }
 
@@ -80,7 +81,7 @@ class LockCommand extends Command {
             const options = {};
             for (const perm of PERMS) {
                 const overwrite = channel.permissionOverwrites.get(everyone);
-                channelConfig.lock[perm] = overwrite === null ? null : overwrite.allow.has(perm) ? true : null;
+                channelConfig.lock[perm] = overwrite == null ? null : overwrite.allow.has(perm) ? true : null;
                 options[perm] = false;
             }
             await util.retry(channel.updateOverwrite, channel, [everyone, options], 3, (/** @type module:"discord.js".GuildChannel*/ result) => {
