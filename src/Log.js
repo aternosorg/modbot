@@ -76,7 +76,7 @@ class Log{
         const embedColor = util.color.resolve(type);
         const logEmbed = new Discord.MessageEmbed()
             .setColor(embedColor)
-            .setAuthor(`Case ${insertId} | ${type} | ${user.username}#${user.discriminator}`, user.avatarURL())
+            .setAuthor(`Case ${insertId} | ${util.toTitleCase(type)} | ${user.username}#${user.discriminator}`, user.avatarURL())
             .setFooter(`ID: ${user.id}`)
             .setTimestamp()
             .addFields(
