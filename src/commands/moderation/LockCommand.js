@@ -58,7 +58,7 @@ class LockCommand extends Command {
         if (channels.length === 0) return;
 
         {
-            const regex = new RegExp(`${this.prefix}${this.name} (<?#?\\d+>? )+`);
+            const regex = new RegExp(`${this.prefix}${this.name} (<?#?\\d+>? ?)+`);
             const start = this.message.content.match(regex)[0].length;
             embed.setDescription(this.message.content.substring(start));
         }
