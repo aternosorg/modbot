@@ -2,6 +2,8 @@ const util = require('../../util.js');
 const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
 const icons = require('../../icons');
+const {APIErrors} = require('discord.js').Constants;
+
 const command = {};
 
 command.description = 'Unban a user';
@@ -40,7 +42,9 @@ command.execute = async (message, args, database, bot) => {
     try {
       ban = await message.guild.fetchBan(userId);
     } catch (e) {
-
+      if (e.code !== APIErrors.UNKNOWN_BAN) {
+        throw e;
+      }
     }
     if(!await database.query("SELECT * FROM moderations WHERE active = TRUE AND guildid = ? AND userid = ? AND action = 'ban'", [message.guild.id, userId]) && !ban) {
       await message.react(icons.error);

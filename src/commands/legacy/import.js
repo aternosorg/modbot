@@ -1,5 +1,6 @@
 const Request = require('../../Request');
 const util = require('../../util.js');
+const monitor = require('../../Monitor').getInstance();
 
 const command = {};
 
@@ -41,7 +42,7 @@ command.execute = async (message, args, database, bot) => {
   for (let /** @type {module:"discord.js".Snowflake} */ key of Object.keys(data.tempmutes)) {
     if (mutes.successful / mutes.total * 100  > percent + 0.5) {
       percent = mutes.successful / mutes.total * 100;
-      response.edit(`Importing mutes (${percent.toFixed(1)}%)...`).catch(console.error);
+      edit(response,`Importing mutes (${percent.toFixed(1)}%)...`)
     }
     let endsAt = data.tempmutes[key];
     if (endsAt > Number.MAX_SAFE_INTEGER) {
@@ -67,7 +68,7 @@ command.execute = async (message, args, database, bot) => {
     let now = Math.floor(Date.now()/1000);
     if (strikes.successful / strikes.total * 100  > percent + 0.5) {
       percent = strikes.successful / strikes.total * 100;
-      response.edit(`Importing strikes (${percent.toFixed(1)}%)...`).catch(console.error);
+      edit(response, `Importing strikes (${percent.toFixed(1)}%)...`);
     }
     let count = data.strikes[key];
 
@@ -86,7 +87,7 @@ command.execute = async (message, args, database, bot) => {
   for (let /** @type {module:"discord.js".Snowflake} */ key of Object.keys(data.tempbans)) {
     if (bans.successful / bans.total * 100  > percent + 0.5) {
       percent = bans.successful / bans.total * 100;
-      response.edit(`Importing bans (${percent.toFixed(1)}%)...`).catch(console.error);
+      edit(response, `Importing bans (${percent.toFixed(1)}%)...`);
     }
     let endsAt = data.tempbans[key];
     if (endsAt > Number.MAX_SAFE_INTEGER) {
@@ -103,5 +104,18 @@ command.execute = async (message, args, database, bot) => {
   time = util.secToTime(time);
   await response.edit(`Imported ${mutes.successful} of ${mutes.total} mutes, ${strikes.successful} of ${strikes.total} strikes and ${bans.successful} of ${bans.total} bans in ${time}!`);
 };
+
+/**
+ * edit a message and handle errors
+ * @param {module:"discord.js".Message} message
+ * @param {String} content
+ * @return {Promise<any>}
+ */
+function edit(message, content) {
+  return message.edit(content).catch(async (e) => {
+    console.error('Failed to edit message: ', e);
+    await monitor.error('Failed to edit message', e)
+  });
+}
 
 module.exports = command;

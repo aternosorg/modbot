@@ -1,5 +1,6 @@
 const util = require('../../util.js');
 const GuildConfig = require('../../GuildConfig');
+const {APIErrors} = require('discord.js').Constants;
 
 const command = {};
 
@@ -70,8 +71,14 @@ command.execute = async (message, args, database, bot) => {
           if (member.roles.cache.get(oldRole)) {
             await member.roles.remove(oldRole);
           }
-        } catch (e) {
-          console.error("Couldn't change muted role",e);
+        }
+        catch (e) {
+          if (e.code === APIErrors.MISSING_PERMISSIONS) {
+            await message.channel.send(`Missing permissions to edit these roles. Please make sure that both muted roles are below me!`);
+          }
+          else {
+            throw e;
+          }
         }
       }
     }

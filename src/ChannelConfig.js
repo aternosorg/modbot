@@ -1,4 +1,5 @@
 const Config = require('./Config');
+const {APIErrors} = require('discord.js').Constants;
 
 /**
  * Class representing the config of a channel
@@ -38,8 +39,7 @@ class ChannelConfig extends Config {
             return channel.guild.id;
         }
         catch (e) {
-            // unknown channel, missing access
-            if ([10003, 50001].includes(e.code)) {
+            if ([APIErrors.UNKNOWN_CHANNEL, APIErrors.MISSING_ACCESS].includes(e.code)) {
                 return null;
             }
             throw e;

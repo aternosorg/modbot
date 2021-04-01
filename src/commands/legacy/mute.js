@@ -4,6 +4,7 @@ const GuildConfig = require('../../GuildConfig');
 const RateLimiter = require('../../RateLimiter');
 const icons = require('../../icons');
 const command = {};
+const {APIErrors} = require('discord.js').Constants;
 
 command.description = 'Mute a user';
 
@@ -45,7 +46,11 @@ command.execute = async (message, args, database, bot) => {
     try {
       member = await message.guild.members.fetch(userId);
     }
-    catch{}
+    catch (e) {
+      if (![APIErrors.UNKNOWN_MEMBER, APIErrors.UNKNOWN_USER].includes(e.code)) {
+        throw e;
+      }
+    }
 
     //highest role check
     if(member && (message.member.roles.highest.comparePositionTo((await message.guild.members.fetch(userId)).roles.highest) <= 0 || guildconfig.isProtected(member))) {
@@ -93,7 +98,16 @@ command.mute = async (guild, user, moderator, reason, duration, channel) => {
       text = `You were permanently muted in \`${guild.name}\` | ${reason}`;
     }
     await RateLimiter.sendDM(guild, member, text);
-  } catch (e) {}
+  } catch (e) {
+    if (APIErrors.MISSING_PERMISSIONS === e.code) {
+      if (channel) {
+        await channel.send('I am missing the required permissions to perform this command!')
+      }
+    }
+    else if (![APIErrors.UNKNOWN_MEMBER, APIErrors.UNKNOWN_USER, APIErrors.CANNOT_MESSAGE_USER, APIErrors.MISSING_PERMISSIONS, ].includes(e.code)) {
+      throw e;
+    }
+  }
 
   let insert = await util.moderationDBAdd(guild.id, user.id, "mute", reason, duration, moderator.id);
   if (channel) {

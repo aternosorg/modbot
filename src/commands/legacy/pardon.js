@@ -4,6 +4,7 @@ const GuildConfig = require('../../GuildConfig');
 const RateLimiter = require('../../RateLimiter');
 const maxStrikesAtOnce = 5;
 const icons = require('../../icons');
+const {APIErrors} = require('discord.js').Constants;
 
 const command = {};
 
@@ -58,12 +59,17 @@ command.execute = async (message, args, database, bot) => {
     let member;
     try {
       member = await message.guild.members.fetch(user);
-      if(message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || guildconfig.isProtected(member)){
-        await message.react(icons.error);
-        await message.channel.send(`You don't have the permission to pardon strikes of <@${member.id}>!`);
-        continue;
+    } catch (e) {
+      if (![APIErrors.UNKNOWN_MEMBER].includes(e.code)) {
+        throw e;
       }
-    } catch (e) {}
+    }
+
+    if(member && message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || guildconfig.isProtected(member)){
+      await message.react(icons.error);
+      await message.channel.send(`You don't have the permission to pardon strikes of <@${member.id}>!`);
+      continue;
+    }
 
     let now = Math.floor(Date.now()/1000);
 

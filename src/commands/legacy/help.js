@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 const fs = require('fs').promises;
 const GuildConfig = require('../../GuildConfig');
 const CommandHandler = require('../../features/message/commands');
+const monitor = require('../../Monitor').getInstance();
 
 const command = {};
 
@@ -28,7 +29,8 @@ let commandList = '';
       }
       commandList += `\`${cmd.names[0]}\`, `;
     } catch (e) {
-      console.error(`Failed to load command '${file}'`, e);
+      await monitor.error(`(help) Failed to load legacy command 'legacy/${file}'`, e);
+      console.error(`(help) Failed to load legacy command 'legacy/${file}'`, e);
     }
   }
   commandList = commandList.substring(0, commandList.length - 2);

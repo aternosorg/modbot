@@ -1,3 +1,5 @@
+const {APIErrors} = require('discord.js').Constants;
+
 class User {
 
     /**
@@ -34,8 +36,7 @@ class User {
             this.user = await this.client.users.fetch(this.id);
         }
         catch (e) {
-            //Unknown User
-            if (e.code === 10013) {
+            if (e.code === APIErrors.UNKNOWN_USER) {
                 this.user = null;
             }
             else {

@@ -3,6 +3,7 @@ const Discord = require('discord.js');
 const GuildConfig = require('../../GuildConfig');
 const icons = require('../../icons');
 const command = {};
+const {APIErrors} = require('discord.js').Constants;
 
 command.description = 'Show information about a user';
 
@@ -27,16 +28,27 @@ command.execute = async (message, args, database, bot) => {
   let user;
   try {
     user = await bot.users.fetch(userId);
-  } catch (e) {
-    await message.react(icons.error);
-    await message.channel.send("User not found!");
-    return;
+  }
+  catch (e) {
+    if (e.code === APIErrors.UNKNOWN_USER) {
+      await message.react(icons.error);
+      await message.channel.send("User not found!");
+      return;
+    }
+    else {
+      throw e;
+    }
   }
 
   let member;
   try {
     member = await message.guild.members.fetch(userId);
-  } catch (e) {}
+  }
+  catch (e) {
+    if (e.code !== APIErrors.UNKNOWN_MEMBER) {
+      throw e;
+    }
+  }
 
   let embed = new Discord.MessageEmbed({
       description: ``
@@ -92,8 +104,14 @@ command.execute = async (message, args, database, bot) => {
       banInfo = await message.guild.fetchBan(/** @type {UserResolvable} */ userId);
       banInfo = `${icons.yes} - ${decodeURIComponent(banInfo.reason || 'Unknown reason')}`;
       embed.setDescription(embed.description + `**Banned:** ${banInfo}`);
-    } catch (e) {
-      embed.setDescription(embed.description + `**Banned:** ${icons.no}`);
+    }
+    catch (e) {
+      if (e.code === APIErrors.UNKNOWN_BAN) {
+        embed.setDescription(embed.description + `**Banned:** ${icons.no}`);
+      }
+      else {
+        throw e;
+      }
     }
   }
   await message.channel.send(embed);

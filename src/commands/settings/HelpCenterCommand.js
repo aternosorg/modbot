@@ -43,8 +43,13 @@ class HelpCenterCommand extends Command {
                 try {
                     await request.getJSON();
                 } catch (e) {
-                    await this.message.channel.send('This is not a valid helpcenter subdomain!');
-                    return;
+                    if (e.response?.statusCode === 404 || e.code === 'ENOTFOUND') {
+                        await this.message.channel.send('This is not a valid helpcenter subdomain!');
+                        return;
+                    }
+                    else {
+                        throw e;
+                    }
                 }
                 this.guildConfig.helpcenter = subdomain;
                 await this.guildConfig.save();
