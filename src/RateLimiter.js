@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const monitor = require('./Monitor').getInstance();
 
 /**
  * Database
@@ -47,7 +48,13 @@ class RateLimiter {
             await user.send(message);
         }
         else {
-            console.log(`Didn't send DM in guild ${guild.id}, count: ${count}`);
+            await monitor.warn(`Guild ${guild.name}(${guild.id}) exceeded DM limit`, {
+                dms: count,
+                memberCount: guild.memberCount,
+                guildID: guild.id,
+                guildName: guild.name
+            })
+            console.log(`Didn't send DM in guild ${guild.name}(${guild.id}), count: ${count}`);
         }
     }
 
