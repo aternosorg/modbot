@@ -37,7 +37,7 @@ command.execute = async (message, args, database, bot) => {
   }
 
   if (!message.guild.channels.resolve(channelId).permissionsFor(bot.user).has(['VIEW_CHANNEL','SEND_MESSAGES'])) {
-    await message.channel.send("The bot is doesn't have the permission to send messages in this channel!")
+    await message.channel.send("The bot doesn't have the permission to send messages in this channel!")
     return;
   }
 
