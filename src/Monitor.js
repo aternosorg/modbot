@@ -103,6 +103,16 @@ class Monitor {
     }
 
     /**
+     * @param {String|Object} messages
+     * @return {Promise<*>}
+     */
+    emergency(...messages){
+        return this._log({
+            severity: 'EMERGENCY'
+        }, ...messages)
+    }
+
+    /**
      * @param {Object} metadata
      * @param {String|Object} messages
      * @return {Promise<*>}
