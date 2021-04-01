@@ -4,6 +4,8 @@ const Discord = require('discord.js');
 const util = require('../../util');
 const GuildConfig = require('../../GuildConfig');
 
+const monitor = require('../../Monitor').getInstance();
+
 class CommandHandler {
     /**
      * loaded commands
@@ -33,7 +35,8 @@ class CommandHandler {
                         commands[name] = command;
                     }
                 } catch (e) {
-                    console.error(`Failed to load command '${file}'`, e);
+                    monitor.error(`Failed to load command '${folder}/${file}'`, e);
+                    console.error(`Failed to load command '${folder}/${file}'`, e);
                 }
             }
         }
@@ -72,12 +75,13 @@ class CommandHandler {
             }
             await cmd.execute();
         } catch (e) {
-            let embed = new Discord.MessageEmbed({
+            await monitor.error(`Failed to execute command ${name}`, e);
+            const embed = new Discord.MessageEmbed({
                 color: util.color.red,
                 description: `An error occurred while executing that command!`
             });
             await message.channel.send(embed);
-            console.error(`An error occurred while executing command ${Command.names[0]}:`,e);
+            console.error(`An error occurred while executing command ${name}:`,e);
         }
     }
 

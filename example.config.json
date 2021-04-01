@@ -10,5 +10,10 @@
     "bigNumberStrings": true
   },
   "prefix": "!",
-  "googleapikey":"google API Key"
+  "googleapikey":"google API Key",
+  "monitoring": {
+    "enabeled": false,
+    "project_id": "000",
+    "log_name": "modbot"
+  }
 }

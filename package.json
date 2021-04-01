@@ -20,6 +20,7 @@
     "node": ">=14.0.0"
   },
   "dependencies": {
+    "@google-cloud/logging": "^9.1.1",
     "diff": "^4.0.2",
     "discord.js": "^12.4.0",
     "fuse.js": "^6.4.1",

@@ -3,6 +3,7 @@ const { prefix } = require('../../../config.json');
 const Discord = require('discord.js');
 const util = require('../../util');
 const GuildConfig = require('../../GuildConfig');
+const monitor = require('../../Monitor').getInstance();
 
 /**
  * loaded commands
@@ -19,7 +20,8 @@ const commands = [];
         try {
             commands.push(require(path));
         } catch (e) {
-            console.error(`Failed to load command '${file}'`, e);
+            await monitor.error(`Failed to load legacy command 'legacy/${file}'`, e);
+            console.error(`Failed to load legacy command 'legacy/${file}'`, e);
         }
     }
 })()
@@ -40,6 +42,7 @@ exports.event = async(options, message) => {
     try {
         await Promise.resolve(command.execute(message, args, options.database, options.bot));
     } catch (e) {
+        await monitor.error(`Failed to execute command ${command.names[0]}`, e);
         let embed = new Discord.MessageEmbed({
             color: util.color.red,
             description: `An error occurred while executing that command!`
