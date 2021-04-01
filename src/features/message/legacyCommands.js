@@ -4,6 +4,7 @@ const Discord = require('discord.js');
 const util = require('../../util');
 const GuildConfig = require('../../GuildConfig');
 const monitor = require('../../Monitor').getInstance();
+const {APIErrors} = Discord.Constants;
 
 /**
  * loaded commands
@@ -42,13 +43,21 @@ exports.event = async(options, message) => {
     try {
         await Promise.resolve(command.execute(message, args, options.database, options.bot));
     } catch (e) {
-        await monitor.error(`Failed to execute command ${command.names[0]}`, e);
-        let embed = new Discord.MessageEmbed({
-            color: util.color.red,
-            description: `An error occurred while executing that command!`
-        });
-        await message.channel.send(embed);
-        console.error(`An error occurred while executing command ${command.names[0]}:`,e);
+        try {
+            if  (e.code === APIErrors.MISSING_PERMISSIONS) {
+                await message.channel.send('I am missing permissions to execute that command!');
+            }
+            else {
+                await message.channel.send('An error occurred while executing that command!');
+            }
+        }
+        catch (e2) {
+            if (e2.code === APIErrors.MISSING_PERMISSIONS) {
+                return;
+            }
+        }
+        await monitor.error(`Failed to execute command ${name}`, e);
+        console.error(`An error occurred while executing command ${name}:`,e);
     }
 }
 
