@@ -1,6 +1,9 @@
 const Log = require('../Log');
 const GuildConfig = require('../GuildConfig');
 const RateLimiter = require('../RateLimiter');
+const {APIErrors} = require('discord.js').Constants;
+const deleteGuild = require('../features/guildDelete/deleteConfig');
+const monitor = require('../Monitor').getInstance();
 
 exports.check = async (database, bot) => {
   let results = await database.queryAll("SELECT * FROM moderations WHERE action = 'mute' AND active = TRUE AND expireTime IS NOT NULL AND expireTime <= ?", [Math.floor(Date.now()/1000)]);
@@ -19,7 +22,14 @@ exports.check = async (database, bot) => {
           }
         }
       }
-      catch (e) {}
+      catch (e) {
+        if (e.code === APIErrors.UNKNOWN_GUILD) {
+          await deleteGuild.delete(database, result.guildid);
+        }
+        else if (![APIErrors.UNKNOWN_MEMBER, APIErrors.MISSING_PERMISSIONS, APIErrors.CANNOT_MESSAGE_USER].includes(e.code)) {
+          throw e;
+        }
+      }
 
       let user = await bot.users.fetch(result.userid);
       let insert = await database.queryAll("INSERT INTO moderations (guildid, userid, action, created, reason, active) VALUES (?,?,?,?,?,?)",[result.guildid,result.userid,'unmute',Math.floor(Date.now()/1000),"Temporary mute completed!", false]);
@@ -30,6 +40,7 @@ exports.check = async (database, bot) => {
       await database.query("UPDATE moderations SET active = FALSE WHERE action = 'mute' AND userid = ? AND guildid = ?",[result.userid,result.guildid]);
     }
     catch (e) {
+      await monitor.error('Failed to run tempmute check: ', e, result);
       console.error(`Couldn't unmute user ${result.userid} in ${result.guildid}`, e);
     }
   }
