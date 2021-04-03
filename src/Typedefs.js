@@ -58,3 +58,11 @@
 /**
  * @typedef {module:"discord.js".Snowflake} Snowflake
  */
+
+/**
+ * @typedef {Object} CommandInfo
+ * @property {Boolean} isCommand
+ * @property {String} name
+ * @property {String} prefix
+ * @property {String[]} args
+ */
