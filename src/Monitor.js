@@ -39,7 +39,8 @@ class Monitor {
         this.#config = config.monitoring;
 
         this.#logging = new Logging({
-            projectId: config.monitoring.project_id
+            projectId: config.monitoring.project_id,
+            credentials: config.monitoring.credentials
         });
 
         this.#log = this.#logging.log(config.monitoring.log_name)
