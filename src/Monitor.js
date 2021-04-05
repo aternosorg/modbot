@@ -124,7 +124,13 @@ class Monitor {
         metadata.resource = {type: 'global'};
 
         const entries = [];
-        for (const msg of messages) {
+        for (let msg of messages) {
+            if (msg instanceof Error) {
+                msg = msg.toString();
+            }
+            else if (typeof(msg) === "object") {
+                msg = JSON.stringify(msg);
+            }
             entries.push(this.#log.entry(metadata,msg));
         }
         return this.#log.write(entries);

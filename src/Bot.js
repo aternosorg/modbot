@@ -50,12 +50,6 @@ class Bot {
 
         await this._loadChecks();
         await this._loadFeatures();
-
-        // errors
-        this.#client.on('error', (error) => {
-            this.#monitor.error('The discord client experienced an error' + error);
-            console.error('The discord client experienced an error',error);
-        });
     }
 
     async _loadChecks(){
