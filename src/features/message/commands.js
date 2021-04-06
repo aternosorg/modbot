@@ -53,9 +53,9 @@ class CommandHandler {
      * @return {Promise<void>}
      */
     static async event(options, message) {
-        const {isCommand, name, prefix} = await this.getCommandName(message);
+        const [name, prefix] = await this.getCommandName(message);
         const Command = this.#commands[name];
-        if (!isCommand || Command === undefined) return;
+        if (Command === undefined) return;
 
         try {
             /** @type {Command} */
@@ -84,22 +84,17 @@ class CommandHandler {
     /**
      * get the command in this message
      * @param {module:"discord.js".Message} message
-     * @return {Promise<CommandInfo|null>}
+     * @return {Promise<String>}
      */
     static async getCommandName(message) {
-        if (!message.guild || message.author.bot) return {isCommand: false};
+        if (!message.guild || message.author.bot) return [];
         /** @type {GuildConfig} */
         const guild = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */ message.guild.id);
         const args = util.split(message.content,' ');
         const prefix = util.startsWithMultiple(message.content.toLowerCase(), guild.prefix.toLowerCase(), defaultPrefix.toLowerCase());
-        if (!prefix) return {isCommand: false};
+        if (!prefix) return [];
 
-        return {
-            isCommand: true,
-            name: args[0].slice(prefix.length).toLowerCase(),
-            prefix,
-            args
-        };
+        return [args[0].slice(prefix.length).toLowerCase(), prefix];
     }
 
     /**
@@ -108,9 +103,7 @@ class CommandHandler {
      * @return {Promise<boolean>}
      */
     static async isCommand(message) {
-        const {isCommand, name} = await this.getCommandName(message);
-        if (!isCommand) return false;
-        return this.#commands[name] !== undefined;
+        return this.#commands[await this.getCommandName(message)] !== undefined;
     }
 }
 
