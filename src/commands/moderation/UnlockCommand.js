@@ -55,11 +55,7 @@ class UnlockCommand extends Command {
 
         if (channels.length === 0) return;
 
-        {
-            const reason = this.message.content.substring(this.prefix.length + this.name.length + 1);
-            const channelLength = reason.match(/^(<?#?\d+>?)+/)[0].length + 1;
-            embed.setDescription(reason.substring(channelLength));
-        }
+        embed.setDescription(this.args.join(' '));
 
         return this.unlock(channels, embed);
     }
