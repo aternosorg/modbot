@@ -371,35 +371,52 @@ util.moderationDBAdd = async (guildId, userId, action, reason, duration, moderat
  * @return {String[]}
  */
 util.split = (str, ...splitAt) => {
-    let quote = false,
-        dQuote = false,
-        parts = [],
-        current = '';
+  let quote = false,
+      dQuote = false,
+      parts = [],
+      current = '';
 
-    for(let i = 0; i < str.length; i++){
-        let char = str.charAt(i);
-        if(char === '"' && !quote){
-            dQuote = !dQuote;
-            continue;
-        }
-        if(char === "'" && !dQuote){
-            quote = !quote;
-            continue;
-        }
-        if(!quote && !dQuote && splitAt.includes(char)){
-            if(current.length){
-                parts.push(current);
-            }
-            current = '';
-            continue;
-        }
-        current += char;
+  for(let i = 0; i < str.length; i++){
+    const char = str.charAt(i),
+        next = str.charAt(i+1);
+    if (i === 0 && char === "'") {
+      quote = true;
+      continue;
     }
-
-    if(current.length){
+    if (i === 0 && char === '"') {
+      dQuote = true;
+      continue;
+    }
+    if (splitAt.includes(char) && !quote && !dQuote){
+      if (next === "'") {
+        quote = true;
+        i++;
+      }
+      if (next === '"') {
+        dQuote = true;
+        i++;
+      }
+      if(current.length){
         parts.push(current);
+      }
+      current = '';
+      continue;
     }
-    return parts;
+    if (quote && char === "'" && (next === "" || splitAt.includes(next))) {
+      quote = false;
+      continue;
+    }
+    if (dQuote && char === '"' && (next === "" || splitAt.includes(next))) {
+      dQuote = false;
+      continue;
+    }
+    current += char;
+  }
+
+  if(current.length){
+    parts.push(current);
+  }
+  return parts;
 };
 
 /**
