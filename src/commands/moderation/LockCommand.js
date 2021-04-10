@@ -2,6 +2,7 @@ const Command = require('../../Command');
 const Discord = require('discord.js');
 const util = require('../../util');
 const ChannelConfig = require('../../ChannelConfig');
+const {APIErrors} = Discord.Constants;
 
 const PERMS = ['SEND_MESSAGES', 'ADD_REACTIONS'];
 
@@ -58,9 +59,9 @@ class LockCommand extends Command {
         if (channels.length === 0) return;
 
         {
-            const regex = new RegExp(`${this.prefix}${this.name} (<?#?\\d+>? ?)+`);
-            const start = this.message.content.match(regex)[0].length;
-            embed.setDescription(this.message.content.substring(start));
+            const reason = this.message.content.substring(this.prefix.length + this.name.length + 1);
+            const channelLength = reason.match(/^(<?#?\d+>?)+/)[0].length + 1;
+            embed.setDescription(reason.substring(channelLength));
         }
 
         return this.lock(channels, embed);
@@ -75,13 +76,21 @@ class LockCommand extends Command {
     async lock(channels, embed) {
         const everyone = this.message.guild.roles.everyone.id;
         for (const channel of channels) {
-            await channel.send(embed);
+            try {
+                await channel.send(embed);
+            }
+            catch (e) {
+                if (e.code !== APIErrors.MISSING_PERMISSIONS) {
+                    throw e;
+                }
+            }
             /** @type {ChannelConfig} */
             const channelConfig = await ChannelConfig.get(/** @type {module:"discord.js".Snowflake} */ channel.id);
             const options = {};
             for (const perm of PERMS) {
+                if (!channel.permissionsFor(everyone).has(perm)) continue;
                 const overwrite = channel.permissionOverwrites.get(everyone);
-                channelConfig.lock[perm] = overwrite == null ? null : overwrite.allow.has(perm) ? true : null;
+                channelConfig.lock[perm] = !overwrite ? null : overwrite.allow.has(perm) ? true : null;
                 options[perm] = false;
             }
             await util.retry(channel.updateOverwrite, channel, [everyone, options], 3, (/** @type module:"discord.js".GuildChannel*/ result) => {

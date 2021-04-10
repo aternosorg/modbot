@@ -2,6 +2,7 @@ const Command = require('../../Command');
 const Discord = require('discord.js');
 const util = require('../../util');
 const ChannelConfig = require('../../ChannelConfig');
+const {APIErrors} = Discord.Constants;
 
 class UnlockCommand extends Command {
 
@@ -55,9 +56,9 @@ class UnlockCommand extends Command {
         if (channels.length === 0) return;
 
         {
-            const regex = new RegExp(`${this.prefix}${this.name} (<?#?\\d+>? ?)+`);
-            const start = this.message.content.match(regex)[0].length;
-            embed.setDescription(this.message.content.substring(start));
+            const reason = this.message.content.substring(this.prefix.length + this.name.length + 1);
+            const channelLength = reason.match(/^(<?#?\d+>?)+/)[0].length + 1;
+            embed.setDescription(reason.substring(channelLength));
         }
 
         return this.unlock(channels, embed);
@@ -83,7 +84,14 @@ class UnlockCommand extends Command {
             });
             channelConfig.lock = {};
             await channelConfig.save();
-            await channel.send(embed);
+            try {
+                await channel.send(embed);
+            }
+            catch (e) {
+                if (e.code !== APIErrors.MISSING_PERMISSIONS) {
+                    throw e;
+                }
+            }
         }
         await this.message.channel.send(`Unlocked ${channels.map(c => `<#${c.id}>`).join(', ')}`);
     }
