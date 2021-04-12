@@ -1,10 +1,10 @@
 {
   "name": "modbot",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Discord Bot for the Aternos Discord server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -28,5 +28,8 @@
     "got": "^11.8.2",
     "mysql": "^2.18.1",
     "string-similarity": "^4.0.4"
+  },
+  "devDependencies": {
+    "jest": "^26.6.3"
   }
 }
