@@ -1,5 +1,5 @@
 # ModBot
-[![Discord](https://img.shields.io/discord/107936397578489856?style=plastic)](https://chat.aternos.org/)
+[![Discord](https://img.shields.io/discord/826482655893127248?style=plastic)](https://discord.gg/zYYhgPtmxw)
 [![GitHub](https://img.shields.io/github/license/aternosorg/modbot?style=plastic)](https://github.com/aternosorg/modbot/blob/master/LICENSE)
 [![GitHub contributors](https://img.shields.io/github/contributors/aternosorg/modbot?style=plastic)](https://github.com/aternosorg/modbot/graphs/contributors)
 [![GitHub last commit](https://img.shields.io/github/last-commit/aternosorg/modbot?style=plastic)](https://github.com/aternosorg/modbot/commits/)
@@ -22,6 +22,9 @@ By adding the bot to your server you agree to our [privacy policy](https://atern
 Invite: [click me](https://discordapp.com/oauth2/authorize?client_id=790967448111153153&scope=bot&permissions=268446806)
 
 If you need help with the commands use `!help` to list them and `!help <command>` to get more information about a single command.
+
+We also have a [Discord Server](https://discord.gg/zYYhgPtmxw). <br>
+**Please note: ModBot is a side project for us. We don't earn any money with it and primarily develop it for use on our own servers. We can't help with every problem and won't add features that we don't need.**
 
 ### Getting Started
 - You can view the settings with `!settings`
