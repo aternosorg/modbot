@@ -609,4 +609,20 @@ util.toTitleCase = (s) => {
   return s.toLowerCase().replace(/^(\w)|\s(\w)/g, c => c.toUpperCase());
 }
 
+/**
+ * filter an array with an asynchronous filter function
+ * @param {Array} arr
+ * @param {Function} filter
+ * @param [args]
+ * @return {Promise<[]>}
+ */
+util.asyncFilter = async (arr, filter, ...args) => {
+  const res = [];
+  for (const element of arr) {
+    if (await filter(element, ...args))
+      res.push(element);
+  }
+  return res;
+}
+
 module.exports = util;
