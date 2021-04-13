@@ -3,6 +3,9 @@ const defaultPrefix = require('../../../config.json').prefix;
 const Discord = require('discord.js');
 const util = require('../../util');
 const GuildConfig = require('../../GuildConfig');
+const {APIErrors} = Discord.Constants;
+
+const monitor = require('../../Monitor').getInstance();
 
 class CommandHandler {
     /**
@@ -33,7 +36,8 @@ class CommandHandler {
                         commands[name] = command;
                     }
                 } catch (e) {
-                    console.error(`Failed to load command '${file}'`, e);
+                    monitor.error(`Failed to load command '${folder}/${file}'`, e);
+                    console.error(`Failed to load command '${folder}/${file}'`, e);
                 }
             }
         }
@@ -72,12 +76,21 @@ class CommandHandler {
             }
             await cmd.execute();
         } catch (e) {
-            let embed = new Discord.MessageEmbed({
-                color: util.color.red,
-                description: `An error occurred while executing that command!`
-            });
-            await message.channel.send(embed);
-            console.error(`An error occurred while executing command ${Command.names[0]}:`,e);
+            try {
+                if  (e.code === APIErrors.MISSING_PERMISSIONS) {
+                    await message.channel.send('I am missing permissions to execute that command!');
+                }
+                else {
+                    await message.channel.send('An error occurred while executing that command!');
+                }
+            }
+            catch (e2) {
+                if (e2.code === APIErrors.MISSING_PERMISSIONS) {
+                    return;
+                }
+            }
+            await monitor.error(`Failed to execute command ${name}`, e);
+            console.error(`An error occurred while executing command ${name}:`,e);
         }
     }
 

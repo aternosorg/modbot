@@ -3,6 +3,8 @@ const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
 const RateLimiter = require('../../RateLimiter');
 const icons = require('../../icons');
+const {APIErrors} = require('discord.js').Constants;
+
 const command = {};
 
 command.description = 'Unmute a user';
@@ -34,7 +36,11 @@ command.execute = async (message, args, database, bot) => {
     let member;
     try {
       member = await message.guild.members.fetch(userId);
-    } catch (e) {}
+    } catch (e) {
+      if (e.code !== APIErrors.UNKNOWN_MEMBER) {
+        throw e;
+      }
+    }
     let guildConfig = await GuildConfig.get(message.guild.id);
 
     if (user.bot) {
@@ -60,7 +66,11 @@ command.execute = async (message, args, database, bot) => {
     if (member) {
       try {
         await RateLimiter.sendDM(message.guild, user, `You were unmuted in \`${message.guild.name}\` | ${reason}`);
-      } catch (e) {}
+      } catch (e) {
+        if (e.code !== APIErrors.CANNOT_MESSAGE_USER) {
+          throw e;
+        }
+      }
     }
 
     await util.chatSuccess(message.channel, user, reason, "unmuted");

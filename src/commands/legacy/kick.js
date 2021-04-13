@@ -3,6 +3,8 @@ const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
 const RateLimiter = require('../../RateLimiter');
 const icons = require('../../icons');
+const {APIErrors} = require('discord.js').Constants;
+
 const command = {};
 
 command.description = 'Kick a user';
@@ -33,9 +35,14 @@ command.execute = async (message, args, database, bot) => {
     try {
       member = await message.guild.members.fetch(userId);
     } catch (e) {
-      await message.react(icons.error);
-      await message.channel.send("User not found or not in guild!");
-      continue;
+      if (e.code === APIErrors.UNKNOWN_MEMBER) {
+        await message.react(icons.error);
+        await message.channel.send("User not found or not in guild!");
+        continue;
+      }
+      else {
+        throw e;
+      }
     }
 
     if (member.user.bot) {
@@ -71,7 +78,11 @@ command.kick = async (guild, member, moderator, reason, channel) => {
 
   try {
     await RateLimiter.sendDM(guild, member, `You were kicked from \`${guild.name}\` | ${reason}`);
-  } catch (e) {}
+  } catch (e) {
+    if (e.code !== APIErrors.CANNOT_MESSAGE_USER) {
+      throw e;
+    }
+  }
   await member.kick(`${moderator.username}#${moderator.discriminator} | `+reason);
 
   if (channel) {

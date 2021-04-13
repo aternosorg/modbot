@@ -3,6 +3,7 @@ const GuildConfig = require('./GuildConfig.js');
 const ChatTriggeredFeature = require('./ChatTriggeredFeature');
 const Config = require('./Config');
 const RateLimiter = require('./RateLimiter');
+const {APIErrors} = require('discord.js').Constants;
 
 /**
  * Default timeout for responses in minutes
@@ -173,13 +174,17 @@ util.isUserMention = async(mention) => {
  * @return {Promise<Boolean>}
  */
 util.isUser = async (id) => {
-  let notUser;
   try {
     await bot.users.fetch(/** @type {Snowflake} */ id);
   } catch (e) {
-    notUser = true;
+    if (e.code === APIErrors.UNKNOWN_USER) {
+      return false;
+    }
+    else {
+      throw e;
+    }
   }
-  return !notUser;
+  return true;
 };
 
 /**
@@ -305,8 +310,14 @@ util.resolveGuild = async (guildInfo) => {
   }
   try {
     return await bot.guilds.fetch(/** @type {Snowflake} */ guildInfo);
-  } catch (e) {
-    return null;
+  }
+  catch (e) {
+    if (e.code === APIErrors.UNKNOWN_GUILD) {
+      return null;
+    }
+    else {
+      throw e;
+    }
   }
 };
 
@@ -557,7 +568,7 @@ util.delete = async(message, options) => {
   try {
     return await util.retry(message.delete, message, [options]);
   } catch (e) {
-    if (e.code === 10008) {
+    if (e.code === APIErrors.UNKNOWN_MESSAGE) {
       return Promise.resolve(message);
     }
     throw e;

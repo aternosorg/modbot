@@ -1,5 +1,6 @@
 const RateLimiter = require('./RateLimiter');
 const Discord = require('discord.js');
+const {APIErrors} = require('discord.js').Constants;
 
 class Guild {
 
@@ -33,7 +34,7 @@ class Guild {
             return await this.guild.members.fetch(id);
         }
         catch (e) {
-            if (e.code === 10007) {
+            if (e.code === APIErrors.UNKNOWN_MEMBER) {
                 return null;
             }
             else {
@@ -53,7 +54,7 @@ class Guild {
             await RateLimiter.sendDM(this.guild, user, message);
         }
         catch (e) {
-            if (e.code === 50007) {
+            if (e.code === APIErrors.CANNOT_MESSAGE_USER) {
                 return false;
             }
             else {

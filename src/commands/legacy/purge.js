@@ -135,26 +135,17 @@ command.execute = async (message, args, database, bot) => {
     return;
   }
 
-  try {
-    await util.delete(message);
-  } catch (e) {}
+  await util.delete(message);
 
-  try {
-    await util.bulkDelete(message.channel, messages);
-  } catch (e) {
-    console.log('bulkDelete failed ', e);
-  }
+  await util.bulkDelete(message.channel, messages);
 
   let response = await message.channel.send(new Discord.MessageEmbed({
     color: util.color.green,
     description: `Deleted **${messages.size}** ${messages.size === 1 ? 'message' : 'messages'}.`
   }));
 
-  try {
-    await util.delete(response,{timeout: 3000});
-  } catch (e) {}
+  await util.delete(response,{timeout: 3000});
 
-  let guildConfig = await GuildConfig.get(message.guild.id);
   const logembed = new Discord.MessageEmbed()
   .setColor(util.color.orange)
   .setAuthor(`${message.author.username}#${message.author.discriminator} purged ${messages.size} ${messages.size === 1 ? 'message' : 'messages'}.`)

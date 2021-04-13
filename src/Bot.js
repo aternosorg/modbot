@@ -3,6 +3,7 @@ const Database = require('./Database');
 const util = require('./util');
 const fs = require('fs').promises;
 const config = require('../config.json');
+const Monitor = require('./Monitor');
 
 class Bot {
     static instance = new Bot();
@@ -21,6 +22,11 @@ class Bot {
      */
     #database;
 
+    /**
+     * @type {Monitor}
+     */
+    #monitor = Monitor.getInstance();
+
     constructor() {
         this.#client = new Discord.Client({
             disableMentions: 'everyone',
@@ -31,21 +37,19 @@ class Bot {
     }
 
     async start(){
+        await this.#monitor.notice('Starting modbot');
         await this.#database.waitForConnection();
+        await this.#monitor.info('Connected to database!');
         console.log("Connected!");
 
         await this.#database.createTables();
         util.init(this.#database, this.#client);
 
         await this.#client.login(config.auth_token);
+        await this.#monitor.info('Logged into Discord');
 
         await this._loadChecks();
         await this._loadFeatures();
-
-        // errors
-        this.#client.on('error', (error) => {
-            console.error('An error occurred',error);
-        });
     }
 
     async _loadChecks(){
@@ -54,12 +58,23 @@ class Bot {
             if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
                 continue;
             }
+
+            let check;
             try {
-                let check = require(path);
+                check = require(path);
+            }
+            catch (e) {
+                await this.#monitor.critical(`Failed to load check '${file}'`, e);
+                console.error(`Failed to load check '${file}'`, e);
+                continue;
+            }
+
+            try {
                 check.check(this.#database, this.#client);
                 setInterval(check.check, check.interval * 1000, this.#database, this.#client);
             } catch (e) {
-                console.error(`Failed to load feature '${file}'`, e);
+                await this.#monitor.error(`Failed to execute check '${file}'`, e);
+                console.error(`Failed to execute check '${file}'`, e);
             }
         }
     }
@@ -70,20 +85,21 @@ class Bot {
             if (!(await fs.lstat(folderPath)).isDirectory()) {
                 continue;
             }
-            let feature = [];
+            let features = [];
             for (let file of await fs.readdir(folderPath)) {
                 let path = `${__dirname}/features/${folder}/${file}`;
                 if (!file.endsWith('.js') || !(await fs.lstat(path)).isFile()) {
                     continue;
                 }
                 try {
-                    feature.push(require(path));
+                    features.push(require(path));
                 } catch (e) {
-                    console.error(`Failed to load message feature '${file}'`, e);
+                    await this.#monitor.critical(`Failed to load feature '${folder}/${file}'`, e)
+                    console.error(`Failed to load feature '${folder}/${file}'`, e);
                 }
             }
             this.#client.on(folder, async (...args) => {
-                for (let f of feature) {
+                for (let f of features) {
                     await Promise.resolve(f.event({database: this.#database,bot: this.#client}, ...args));
                 }
             });

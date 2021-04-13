@@ -14,6 +14,7 @@ exports.check = async (database, bot) => {
       await Log.logCheck(result.guildid, user, reason, insert.insertId, "Unban");
     }
     catch (e) {
+      await monitor.error('Failed to run tempban check: ', e, result);
       console.error(`Couldn't unban user ${result.userid} in ${result.guildid}`, e);
     }
   }

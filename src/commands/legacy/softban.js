@@ -3,6 +3,7 @@ const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
 const RateLimiter = require('../../RateLimiter');
 const icons = require('../../icons');
+const {APIErrors} = require('discord.js').Constants;
 
 const command = {};
 
@@ -33,10 +34,16 @@ command.execute = async (message, args, database, bot) => {
     let member;
     try {
       member = await message.guild.members.fetch(userId);
-    } catch (e) {
-      await message.react(icons.error);
-      await message.channel.send("User not found or not in guild!");
-      continue;
+    }
+    catch (e) {
+      if (e.code === APIErrors.UNKNOWN_MEMBER) {
+        await message.react(icons.error);
+        await message.channel.send("User not found or not in guild!");
+        continue;
+      }
+      else {
+        throw e;
+      }
     }
 
     if (member.user.bot) {
@@ -70,7 +77,11 @@ command.softban = async (guild, member, moderator, reason, channel) => {
 
   try {
     await RateLimiter.sendDM(guild, member, `You were softbanned from \`${guild.name}\` | ${reason}`);
-  } catch (e) {}
+  } catch (e) {
+    if (e.code !== APIErrors.CANNOT_MESSAGE_USER) {
+      throw e;
+    }
+  }
   await guild.members.ban(member.id,{days: 1, reason: `${moderator.username}#${moderator.discriminator} | `+reason});
   await guild.members.unban(member.id,`Softban`);
 

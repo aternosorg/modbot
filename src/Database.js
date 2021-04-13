@@ -1,4 +1,5 @@
 const mysql = require('mysql');
+const monitor = require('./Monitor').getInstance();
 
 class Database {
     /**
@@ -58,6 +59,7 @@ class Database {
      * @private
      */
     _handleConnectionError(err) {
+        monitor.error('A fatal database error occurred', err)
         if (err.code === 'ER_ACCESS_DENIED_ERROR') {
             console.error('Access to database denied. Make sure your config and database are set up correctly!');
             process.exit(1);

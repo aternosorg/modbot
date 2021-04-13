@@ -2,6 +2,7 @@ const util = require('../../util.js');
 const Discord = require('discord.js');
 const GuildConfig = require('../../GuildConfig');
 const icons = require('../../icons');
+const {APIErrors} = require('discord.js').Constants;
 
 /**
  * timeout after last reaction in ms
@@ -34,10 +35,16 @@ command.execute = async (message, args, database, bot) => {
   let user;
   try {
     user = await bot.users.fetch(userId);
-  } catch {
-    await message.react(icons.error);
-    await message.channel.send("User not found!");
-    return;
+  }
+  catch (e) {
+    if (e.code === APIErrors.UNKNOWN_USER) {
+      await message.react(icons.error);
+      await message.channel.send("User not found!");
+      return;
+    }
+    else {
+      throw e;
+    }
   }
 
   /** @type {ModerationData[]} */
