@@ -42,12 +42,12 @@ class Log{
          if (message.content.length === 0) return;
         return this.log(message, `Message in <#${message.channel.id}> deleted`, new Discord.MessageEmbed({
             footer: {
-                text: user.id,
+                text: message.author.id,
                 iconURL: message.author.avatarURL()
             },
             author: {
-                name: `${user.username}#${user.discriminator}`,
-                icon_url: user.avatarURL())
+                name: `${message.author.username}#${message.author.discriminator}`,
+                icon_url: message.author.avatarURL())
             },
             color: util.color.orange,
             fields: [{
