@@ -47,7 +47,7 @@ class Log{
             },
             author: {
                 name: `${message.author.username}#${message.author.discriminator}`,
-                icon_url: message.author.avatarURL())
+                icon_url: message.author.avatarURL()
             },
             color: util.color.orange,
             fields: [{
