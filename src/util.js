@@ -177,7 +177,7 @@ util.isUser = async (id) => {
   try {
     await bot.users.fetch(/** @type {Snowflake} */ id);
   } catch (e) {
-    if (e.code === APIErrors.UNKNOWN_USER) {
+    if (e.code === APIErrors.UNKNOWN_USER || e.httpStatus === 404) {
       return false;
     }
     else {

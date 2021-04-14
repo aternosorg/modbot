@@ -30,7 +30,7 @@ command.execute = async (message, args, database, bot) => {
     user = await bot.users.fetch(userId);
   }
   catch (e) {
-    if (e.code === APIErrors.UNKNOWN_USER) {
+    if (e.code === APIErrors.UNKNOWN_USER || e.httpStatus === 404) {
       await message.react(icons.error);
       await message.channel.send("User not found!");
       return;
