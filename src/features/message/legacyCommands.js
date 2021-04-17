@@ -56,8 +56,8 @@ exports.event = async(options, message) => {
                 return;
             }
         }
-        await monitor.error(`Failed to execute command ${name}`, e);
-        console.error(`An error occurred while executing command ${name}:`,e);
+        await monitor.error(`Failed to execute command ${command.names[0]}`, e);
+        console.error(`An error occurred while executing command ${command.names[0]}:`,e);
     }
 }
 
