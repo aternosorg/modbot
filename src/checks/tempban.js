@@ -1,4 +1,6 @@
 const Log = require('../Log');
+const monitor = require('../Monitor').getInstance();
+const {APIErrors} = require('discord.js').Constants;
 
 exports.check = async (database, bot) => {
   let results = await database.queryAll("SELECT * FROM moderations WHERE action = 'ban' AND active = TRUE AND expireTime IS NOT NULL AND expireTime <= ?", [Math.floor(Date.now()/1000)]);
@@ -14,8 +16,10 @@ exports.check = async (database, bot) => {
       await Log.logCheck(result.guildid, user, reason, insert.insertId, "Unban");
     }
     catch (e) {
-      await monitor.error('Failed to run tempban check: ', e, result);
-      console.error(`Couldn't unban user ${result.userid} in ${result.guildid}`, e);
+      if (![APIErrors.UNKNOWN_BAN].includes(e.code)) {
+        await monitor.error('Failed to run tempban check: ', e, result);
+        console.error(`Couldn't unban user ${result.userid} in ${result.guildid}`, e);
+      }
     }
   }
 };
