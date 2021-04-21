@@ -67,6 +67,7 @@ async function insertStrikes(db, data, type, guildid, botid) {
 function getUsers(data, type, guildid, botid) {
     const users = [];
     for (const user of Object.keys(data)) {
+        if (data[user] > Number.MAX_SAFE_INTEGER) continue;
         users.push([guildid, user, type, Date.now(), data[user], 'Imported from Vortex', botid])
     }
     return users;
