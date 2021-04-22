@@ -126,7 +126,7 @@ class Monitor {
         const entries = [];
         for (let msg of messages) {
             if (msg instanceof Error) {
-                msg = msg.toString();
+                msg = msg.stack;
             }
             else if (typeof(msg) === "object") {
                 msg = JSON.stringify(msg);
