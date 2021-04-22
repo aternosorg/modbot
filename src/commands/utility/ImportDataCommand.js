@@ -22,7 +22,16 @@ class ImportDataCommand extends Command {
         }
 
         /** @type {VortexData} */
-        const data = await VortexData.get(this.message.attachments.first().url);
+        let data;
+        try {
+            data = await VortexData.get(this.message.attachments.first().url);
+        }
+        catch (e) {
+            if (e.message === 'Invalid VortexData') {
+                return await this.message.channel.send('The attached file is not valid Vortex data.');
+            }
+            throw e;
+        }
 
         await insertTimedModerations(this.database, data.tempmutes, 'mute', this.message.guild.id, this.bot.user.id);
         await insertTimedModerations(this.database, data.tempbans, 'ban', this.message.guild.id, this.bot.user.id);
