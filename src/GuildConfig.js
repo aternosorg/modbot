@@ -49,7 +49,7 @@ class GuildConfig extends Config {
             this.#punishments = json.punishments;
         this.playlist = json.playlist;
         this.helpcenter = json.helpcenter;
-        this.invites = json.invites;
+        this.invites = json.invites ?? true;
         this.linkCooldown = json.linkCooldown || -1;
         if (typeof(json.prefix) === 'string')
             this.prefix = json.prefix;

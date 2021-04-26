@@ -24,7 +24,7 @@ class ChannelConfig extends Config {
     constructor(id, json = {}) {
         super(id);
 
-        this.invites = json.invites;
+        this.invites = json.invites ?? null;
         this.lock = json.lock || {};
     }
 
