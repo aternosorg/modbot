@@ -77,7 +77,7 @@ class InvitesCommand extends Command {
                         .setDescription(`Invites are currently ${channelConfig.invites ? "allowed": "forbidden"} in <#${channelID}>!`);
                 }
                 else {
-                    await embed.setColor(this.guildConfig.invites ? util.color.green : util.color.red)
+                    embed.setColor(this.guildConfig.invites ? util.color.green : util.color.red)
                         .setDescription(`Invites are currently ${this.guildConfig.invites ? "allowed": "forbidden"} (server default) in <#${channelID}>!`);
                 }
                 break;
