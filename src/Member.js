@@ -29,7 +29,7 @@ class Member {
     }
 
     /**
-     * fetch this member;
+     * fetch this member
      * @returns {Promise<module:"discord.js".GuildMember>}
      */
     async fetchMember() {
