@@ -1,6 +1,7 @@
 const util = require('./util');
 const Discord = require('discord.js');
 const GuildConfig = require('./GuildConfig');
+const {APIErrors} = Discord.Constants;
 
 class Log{
     /**
@@ -8,7 +9,7 @@ class Log{
      * @param {GuildInfo}                        guildInfo
      * @param {String}                           message   content of the log message
      * @param {module:"discord.js".MessageEmbed} [options]
-     * @return {Promise<module:"discord.js".Message>} log message
+     * @return {Promise<module:"discord.js".Message|null>} log message
      */
     static async log(guildInfo, message, options) {
         /** @type {module:"discord.js".Guild} */
@@ -17,7 +18,17 @@ class Log{
         const guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */guild.id);
         if (!guildConfig.logChannel) return null;
 
-        return await guild.channels.resolve(/** @type {String} */guildConfig.logChannel).send(message.substring(0,2000),options);
+        try {
+            return await guild.channels.resolve(/** @type {String} */guildConfig.logChannel).send(message.substring(0,2000),options);
+        }
+        catch (e) {
+            if ([APIErrors.MISSING_ACCESS, APIErrors.MISSING_PERMISSIONS].includes(e.code)) {
+                return null;
+            }
+            else {
+                throw e;
+            }
+        }
     }
 
     /**
