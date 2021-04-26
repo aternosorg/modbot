@@ -1,6 +1,5 @@
 const util = require('../../util.js');
 const Member = require('../../Member');
-const kick = require('./kick.js');
 const mute = require('./mute.js');
 const softban = require('./softban.js');
 const GuildConfig = require('../../GuildConfig');
@@ -159,21 +158,11 @@ command.executePunishment = async (punishment, guild, user, bot, database, reaso
   switch (punishment.action) {
     case 'ban':
       member = new Member(user, guild);
-      await member.ban(database,reason, bot.user, punishment.duration);
+      await member.ban(database, reason, bot.user, punishment.duration);
       break;
     case 'kick':
-      try {
-        member = await guild.members.fetch(user.id);
-      }
-      catch (e) {
-        if (e.code === APIErrors.UNKNOWN_MEMBER) {
-          return;
-        }
-        else {
-          throw e;
-        }
-      }
-      await kick.kick(guild, member, bot.user, reason);
+      member = new Member(user, guild);
+      await member.kick(database, reason, bot.user);
       break;
     case 'mute':
       await mute.mute(guild, user, bot.user, reason, punishment.duration);

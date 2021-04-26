@@ -31,8 +31,9 @@ class ModerationCommand extends Command {
         this.loadInfo();
         for (const target of this.targetedUsers) {
             if (await this.isProtected(target)) continue;
-            await this.executePunishment(target);
-            await this.sendSuccess(target);
+            if(await this.executePunishment(target)) {
+                await this.sendSuccess(target);
+            }
         }
     }
 
@@ -104,7 +105,7 @@ class ModerationCommand extends Command {
     /**
      * execute the punishment on this user
      * @param {module:"discord.js".User} target
-     * @return {Promise<void>}
+     * @return {Promise<boolean>}
      */
     async executePunishment(target) {}
 }
