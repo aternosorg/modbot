@@ -15,12 +15,26 @@ class Member {
     guild;
 
     /**
+     * @type {module:"discord.js".GuildMember}
+     */
+    member;
+
+    /**
      * @param {module:"discord.js".User}    user
      * @param {module:"discord.js".Guild}   guild
      */
     constructor(user, guild) {
         this.user = user;
         this.guild = Guild.get(guild);
+    }
+
+    /**
+     * fetch this member;
+     * @returns {Promise<module:"discord.js".GuildMember>}
+     */
+    async fetchMember() {
+        this.member = await this.guild.fetchMember(this.user.id);
+        return this.member;
     }
 
     /**
@@ -39,10 +53,25 @@ class Member {
     }
 
     /**
+     * kick this user from this guild
+     * @param {Database}                            database
+     * @param {String}                              reason
+     * @param {module:"discord.js".User|ClientUser} moderator
+     * @return {Promise<void>}
+     */
+    async kick(database, reason, moderator){
+        await this.dmPunishedUser('kicked', reason)
+        if (!this.member && await this.fetchMember() === null) return;
+        await this.member.kick(`${moderator.username}#${moderator.discriminator} | ${reason}`);
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'kick', reason, null, moderator.id);
+        await Log.logModeration(this.guild.guild.id, moderator, this.user, reason, id, 'kick');
+    }
+
+    /**
      * send the user a dm about this punishment
      * @param {String}  verb
      * @param {String}  reason
-     * @param {Number}  duration
+     * @param {Number}  [duration]
      * @return {Promise<Boolean>} success
      */
     async dmPunishedUser(verb, reason, duration) {
