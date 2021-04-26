@@ -1,6 +1,5 @@
 const util = require('../src/util');
 
-// util.split
 test('split a simple string', () => {
     expect(util.split("a simple string", " ")).toStrictEqual(["a", "simple", "string"]);
 })
