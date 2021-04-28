@@ -35,9 +35,12 @@ class IDCommand extends Command {
             return await this.message.channel.send(embed);
         }
         if (users.size > 150) {
-            embed.setDescription("Too many users found.")
-                .setColor(util.color.red);
-            return await this.message.channel.send(embed);
+            embed.setTitle(`First 150 results of user search for ${fullName}`)
+            let i = 0;
+            users = users.filter(() => {
+                i++;
+                return i <= 150;
+            });
         }
 
         users = users.map(u => `${u.user.tag}: ${u.user.id}`);
