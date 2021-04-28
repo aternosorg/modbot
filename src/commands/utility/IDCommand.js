@@ -30,8 +30,13 @@ class IDCommand extends Command {
         const embed = new Discord.MessageEmbed()
             .setTitle(`User search for ${fullName}`);
         if (users.size === 0) {
-            embed.setDescription("No users found");
-            embed.setColor(util.color.red);
+            embed.setDescription("No users found")
+                .setColor(util.color.red);
+            return await this.message.channel.send(embed);
+        }
+        if (users.size > 150) {
+            embed.setDescription("Too many users found.")
+                .setColor(util.color.red);
             return await this.message.channel.send(embed);
         }
 
