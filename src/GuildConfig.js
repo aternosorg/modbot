@@ -20,7 +20,6 @@ class GuildConfig extends Config {
      * @param  {module:"discord.js".Snowflake}    id                        guild id
      * @param  {Object}                           [json]                    options
      * @param  {module:"discord.js".Snowflake}    [json.logChannel]         id of the log channel
-     * @param  {module:"discord.js".Snowflake}    [json.messageLogChannel]  if of the message log channel
      * @param  {module:"discord.js".Snowflake}    [json.mutedRole]          id of the muted role
      * @param  {module:"discord.js".Snowflake[]}  [json.modRoles]           role ids that can execute commands
      * @param  {module:"discord.js".Snowflake[]}  [json.protectedRoles]     role ids that can't be targeted by moderations
@@ -41,7 +40,6 @@ class GuildConfig extends Config {
         super(id);
 
         this.logChannel = json.logChannel;
-        this.messageLogChannel = json.messageLogChannel;
         this.mutedRole = json.mutedRole;
         if (json.modRoles instanceof Array)
             this.#modRoles = json.modRoles;
