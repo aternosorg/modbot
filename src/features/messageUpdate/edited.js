@@ -43,5 +43,5 @@ exports.event = async (options, old, newMsg) => {
     )
     .setFooter(`ID: ${old.author.id}`);
 
-  await Log.logEmbed(old, embed);
+  await Log.messageLogEmbed(old, embed);
 };

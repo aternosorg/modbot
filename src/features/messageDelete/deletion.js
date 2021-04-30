@@ -34,7 +34,7 @@ exports.event = async (options, message) => {
         .setFooter(`ID: ${message.author.id}`);
   }
 
-  await Log.logEmbed(message, embed);
+  await Log.messageLogEmbed(message, embed);
 };
 
 exports.ignore = (id) => {
