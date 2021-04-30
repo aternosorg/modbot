@@ -2,6 +2,8 @@ const Command = require('../../Command');
 const Discord = require('discord.js');
 const util = require('../../util');
 
+const resultLimit = 150;
+
 class IDCommand extends Command {
 
     static description = 'Find a user\'s ID';
@@ -34,13 +36,9 @@ class IDCommand extends Command {
                 .setColor(util.color.red);
             return await this.message.channel.send(embed);
         }
-        if (users.size > 150) {
-            embed.setTitle(`First 150 results of user search for ${fullName}`)
-            let i = 0;
-            users = users.filter(() => {
-                i++;
-                return i <= 150;
-            });
+        if (users.size > resultLimit) {
+            embed.setTitle(`First ${resultLimit} results of user search for ${fullName}`)
+            users = users.array().slice(0, resultLimit);
         }
 
         users = users.map(u => `${u.user.tag}: ${u.user.id}`);
