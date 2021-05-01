@@ -1,6 +1,5 @@
 const util = require('../../util.js');
 const Member = require('../../Member');
-const mute = require('./mute.js');
 const softban = require('./softban.js');
 const GuildConfig = require('../../GuildConfig');
 const Log = require('../../Log');
@@ -165,7 +164,8 @@ command.executePunishment = async (punishment, guild, user, bot, database, reaso
       await member.kick(database, reason, bot.user);
       break;
     case 'mute':
-      await mute.mute(guild, user, bot.user, reason, punishment.duration);
+      member = new Member(user, guild);
+      await member.mute(database, reason, bot.user, punishment.duration);
       break;
     case 'softban':
       try {

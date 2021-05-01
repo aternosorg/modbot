@@ -25,6 +25,7 @@ class ModerationCommand extends Command {
     };
 
     async execute() {
+        if (!await this.checkRequirements()) return;
         this.targetedUsers = await this.getTargetedUsers();
         if (this.targetedUsers === null) return;
 
@@ -35,6 +36,14 @@ class ModerationCommand extends Command {
                 await this.sendSuccess(target);
             }
         }
+    }
+
+    /**
+     * check if this command can be executed, send an error if it cant be
+     * @returns {Promise<boolean>}
+     */
+    async checkRequirements() {
+        return true;
     }
 
     /**
