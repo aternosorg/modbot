@@ -65,7 +65,7 @@ command.execute = async (message, args, database, bot) => {
       }
     }
 
-    if(member && message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || guildconfig.isProtected(member)){
+    if(member && (message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || guildconfig.isProtected(member))){
       await message.react(icons.error);
       await message.channel.send(`You don't have the permission to pardon strikes of <@${member.id}>!`);
       continue;
