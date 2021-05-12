@@ -12,7 +12,7 @@ module.exports = async (badWords, message) => {
     let text = '';
     for (const [id, badWord] of badWords) {
         if(text.length > 1500){
-            await message.channel.send(text);
+            await message.channel.send(text.substring(0, 2000));
             text = '';
         }
         text += `[${id}] ${badWord.global ? "global" : badWord.channels.map(c => `<#${c}>`).join(', ')} (${badWord.trigger.type}): \`${badWord.trigger.type === 'regex' ? '/' + badWord.trigger.content + '/' + badWord.trigger.flags : badWord.trigger.content}\` \n`;
