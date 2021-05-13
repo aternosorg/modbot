@@ -17,7 +17,6 @@ class ServerInfoCommand extends Command{
         generic += `**Owner:** <@!${guild.ownerID}> \n`;
         generic += `**Owner ID:** ${guild.ownerID} \n`;
         generic += `**Created:** ${guild.createdAt.toDateString()} \n`;
-        generic += `**Region:** ${util.toTitleCase(guild.region)} \n`;
         generic += `**Guild ID:** ${guild.id} \n`;
         
         let statistics = '';
