@@ -424,8 +424,14 @@ util.split = (str, ...splitAt) => {
     current += char;
   }
 
+  const remaining = [];
+  if (quote || dQuote) {
+    remaining.push(...util.split(current, ...splitAt));
+    current = (quote ? "'" : '"') + (remaining.shift() || '');
+  }
+
   if(current.length){
-    parts.push(current);
+    parts.push(current, ...remaining);
   }
   return parts;
 };
