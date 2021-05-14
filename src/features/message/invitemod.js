@@ -9,26 +9,12 @@ exports.event = async (options, message) => {
   }
 
   if (!includesInvite(message.content)) {
-    return ;
+    return;
   }
 
   let guildConfig = await GuildConfig.get(message.guild.id);
   let channelConfig = await ChannelConfig.get(message.channel.id);
-  let allowed;
-
-  if (channelConfig && channelConfig.invites !== undefined) {
-    allowed = channelConfig.invites;
-  }
-  else{
-
-    if (guildConfig.invites === undefined) {
-      allowed = true;
-    }
-    else {
-      allowed = guildConfig.invites;
-    }
-  }
-
+  let allowed = channelConfig.invites ?? guildConfig.invites;
 
   if (!allowed) {
     await util.delete(message, {reason: 'Invites are not allowed here'});

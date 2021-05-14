@@ -57,9 +57,9 @@ class AutoResponse extends ChatTriggeredFeature {
         .setColor(color)
         .addFields(
             /** @type {any} */[
-          {name: "Trigger", value: `${this.trigger.type}: \`${this.trigger.type === 'regex' ? '/' + this.trigger.content + '/' + this.trigger.flags : this.trigger.content}\``},
+          {name: "Trigger", value: `${this.trigger.type}: \`${this.trigger.type === 'regex' ? '/' + this.trigger.content + '/' + this.trigger.flags : this.trigger.content}\``.substring(0, 1000)},
           {name: "Response", value: this.response.substring(0,1000)},
-          {name: "Channels", value: this.global ? "global" : this.channels.map(c => `<#${c}>`).join(', ')}
+          {name: "Channels", value: this.global ? "global" : this.channels.map(c => `<#${c}>`).join(', ').substring(0, 1000)}
         ]);
   }
 
