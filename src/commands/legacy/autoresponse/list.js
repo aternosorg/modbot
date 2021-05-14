@@ -12,7 +12,7 @@ module.exports = async (responses, message) => {
     let text = '';
     for (const [id, response] of responses) {
         if(text.length > 1500){
-            await message.channel.send(text);
+            await message.channel.send(text.substring(0, 2000));
             text = '';
         }
         text += `[${id}] ${response.global ? "global" : response.channels.map(c => `<#${c}>`).join(', ')} (${response.trigger.type}): \`${response.trigger.type === 'regex' ? '/' + response.trigger.content + '/' + response.trigger.flags : response.trigger.content}\` \n`;
