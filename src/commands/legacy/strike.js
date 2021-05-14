@@ -1,6 +1,5 @@
 const util = require('../../util.js');
 const Member = require('../../Member');
-const softban = require('./softban.js');
 const GuildConfig = require('../../GuildConfig');
 const Log = require('../../Log');
 const RateLimiter = require('../../RateLimiter');
@@ -168,18 +167,8 @@ command.executePunishment = async (punishment, guild, user, bot, database, reaso
       await member.mute(database, reason, bot.user, punishment.duration);
       break;
     case 'softban':
-      try {
-        member = await guild.members.fetch(user.id);
-      }
-      catch (e) {
-        if (e.code === APIErrors.UNKNOWN_MEMBER) {
-          return;
-        }
-        else {
-          throw e;
-        }
-      }
-      await softban.softban(guild, member, bot.user, reason);
+      member = new Member(user, guild);
+      await member.softban(database, reason, bot.user);
       break;
 
     //punishments that cant be strike punishments
