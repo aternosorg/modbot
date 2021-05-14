@@ -1,6 +1,7 @@
 const Guild = require('./Guild');
 const Log = require('./Log');
 const util = require('./util');
+const GuildConfig = require('./GuildConfig');
 
 class Member {
 
@@ -65,6 +66,25 @@ class Member {
         await this.member.kick(`${moderator.username}#${moderator.discriminator} | ${reason}`);
         const id = await database.addModeration(this.guild.guild.id, this.user.id, 'kick', reason, null, moderator.id);
         await Log.logModeration(this.guild.guild.id, moderator, this.user, reason, id, 'kick');
+    }
+
+    /**
+     * mute this user in this guild
+     * @param {Database}                            database
+     * @param {String}                              reason
+     * @param {module:"discord.js".User|ClientUser} moderator
+     * @param {Number}                              [duration]
+     * @return {Promise<void>}
+     */
+    async mute(database, reason, moderator, duration){
+        await this.dmPunishedUser('muted', reason, duration)
+        if (!this.member) await this.fetchMember();
+        if (this.member) {
+            const {mutedRole} = await GuildConfig.get(this.guild.guild.id)
+            await this.member.roles.add(mutedRole, `${moderator.username}#${moderator.discriminator} ${duration ? `(${util.secToTime(duration)}) ` : ''}| ${reason}`);
+        }
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'mute', reason, duration, moderator.id);
+        await Log.logModeration(this.guild.guild.id, moderator, this.user, reason, id, 'mute', { time: util.secToTime(duration) });
     }
 
     /**

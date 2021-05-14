@@ -1,5 +1,5 @@
 const TimedModerationCommand = require('../TimedModerationCommand');
-const Member = require('../../Member')
+const Member = require('../../Member');
 
 class BanCommand extends TimedModerationCommand {
 
