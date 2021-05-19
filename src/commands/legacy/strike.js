@@ -113,7 +113,7 @@ command.add = async (guild, user, count, moderator, reason, channel, database, b
     await util.chatSuccess(channel, user, reason, "striked");
   }
   await Log.logModeration(guild, moderator, user, reason, insert.insertId, "Strike", {amount: count, total});
-  await punish(guild, user, total, bot, database);
+  await punish(guild, user, total, bot, database, channel);
 };
 
 /**
@@ -122,9 +122,10 @@ command.add = async (guild, user, count, moderator, reason, channel, database, b
  * @param {Number}                      total
  * @param {module:"discord.js".Client}  bot
  * @param {Database}                    database
+ * @param {module:"discord.js".TextChannel} [channel]
  * @return {Promise<void>}
  */
-async function punish(guild, user, total, bot, database) {
+async function punish(guild, user, total, bot, database, channel) {
   /** @type {GuildConfig} */
   let config = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */ guild.id);
   let punishment;
@@ -136,7 +137,7 @@ async function punish(guild, user, total, bot, database) {
 
   if (!punishment) return;
 
-  await command.executePunishment(punishment, guild, user, bot, database,`Reaching ${total} ${total === 1 ? "strike" : "strikes"}`);
+  await command.executePunishment(punishment, guild, user, bot, database,`Reaching ${total} ${total === 1 ? "strike" : "strikes"}`, channel);
 }
 
 /**
@@ -146,13 +147,16 @@ async function punish(guild, user, total, bot, database) {
  * @param {module:"discord.js".Client}  bot
  * @param {Database}                    database
  * @param {String}                      reason
+ * @param {module:"discord.js".TextChannel} [channel]
  * @return {Promise<void>}
  */
-command.executePunishment = async (punishment, guild, user, bot, database, reason) => {
+command.executePunishment = async (punishment, guild, user, bot, database, reason, channel) => {
   if (typeof(punishment.duration) === 'string') {
     punishment.duration = util.timeToSec(punishment.duration);
   }
 
+  /** @type {GuildConfig} */
+  const guildConfig = await GuildConfig.get(/** @type {Snowflake}*/ guild.id);
   let member;
   switch (punishment.action) {
     case 'ban':
@@ -164,6 +168,12 @@ command.executePunishment = async (punishment, guild, user, bot, database, reaso
       await member.kick(database, reason, bot.user);
       break;
     case 'mute':
+      if (!guildConfig.mutedRole) {
+        if (channel) {
+          await channel.send("There is no muted role configured in this guild!");
+        }
+        return;
+      }
       member = new Member(user, guild);
       await member.mute(database, reason, bot.user, punishment.duration);
       break;
