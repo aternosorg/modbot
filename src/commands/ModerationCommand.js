@@ -104,7 +104,9 @@ class ModerationCommand extends Command {
         }
 
         const targetedUsers = [];
-        for (const id of targetedIDs) {
+        for (const [index, id] of targetedIDs.entries()) {
+            //prevent duplicate users
+            if (targetedIDs.indexOf(id) !== index) continue;
             targetedUsers.push(await this.bot.users.fetch(id));
         }
 
