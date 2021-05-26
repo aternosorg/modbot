@@ -38,6 +38,6 @@
     "lint-staged": "^11.0.0"
   },
   "lint-staged": {
-    "*.js": "eslint && jest --passWithNoTests --findRelatedTests"
+    "*.js": ["eslint --fix", "jest --passWithNoTests --findRelatedTests"]
   }
 }
