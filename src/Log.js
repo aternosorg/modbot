@@ -57,7 +57,7 @@ class Log{
                 iconURL: message.author.avatarURL()
             },
             author: {
-                name: `${message.author.username}#${message.author.discriminator}`,
+                name: `${util.escapeFormatting(message.author.tag)}`,
                 icon_url: message.author.avatarURL()
             },
             color: util.color.orange,
@@ -91,7 +91,7 @@ class Log{
         const embedColor = util.color.resolve(type);
         const logEmbed = new Discord.MessageEmbed()
             .setColor(embedColor)
-            .setAuthor(`Case ${insertId} | ${util.toTitleCase(type)} | ${user.username}#${user.discriminator}`, user.avatarURL())
+            .setAuthor(`Case ${insertId} | ${util.toTitleCase(type)} | ${util.escapeFormatting(user.tag)}`, user.avatarURL())
             .setFooter(`ID: ${user.id}`)
             .setTimestamp()
             .addFields(
@@ -122,7 +122,7 @@ class Log{
     static async logCheck(guildInfo, user, reason, insertId, type) {
         const logEmbed = new Discord.MessageEmbed()
             .setColor(util.color.green)
-            .setAuthor(`Case ${insertId} | ${type} | ${user.username}#${user.discriminator}`, user.avatarURL())
+            .setAuthor(`Case ${insertId} | ${type} | ${util.escapeFormatting(user.tag)}`, user.avatarURL())
             .setFooter(`ID: ${user.id}`)
             .setTimestamp()
             .addFields(

@@ -30,7 +30,7 @@ class ServerInfoCommand extends Command{
         const embed = new Discord.MessageEmbed()
             .setTitle(`Info of ${guild.name}`)
             .setThumbnail(guild.iconURL({dynamic: true, size: 2048}))
-            .setFooter(`Command executed by ${this.message.author.username}`)
+            .setFooter(`Command executed by ${util.escapeFormatting(this.message.author.tag)}`)
             .setTimestamp()
             .addFields(
                 /** @type {any} */ {name: '__**Generic**__', value: generic, inline: true},

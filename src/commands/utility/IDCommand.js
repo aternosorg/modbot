@@ -41,7 +41,7 @@ class IDCommand extends Command {
             users = users.array().slice(0, resultLimit);
         }
 
-        users = users.map(u => `${u.user.tag}: ${u.user.id}`);
+        users = users.map(u => `${util.escapeFormatting(u.user.tag)}: ${u.user.id}`);
         embed.setColor(util.color.green);
         while (users.length) {
             let list = "";

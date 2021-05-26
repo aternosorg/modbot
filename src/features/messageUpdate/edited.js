@@ -37,7 +37,7 @@ exports.event = async (options, old, newMsg) => {
 
   let embed = new Discord.MessageEmbed()
     .setColor(util.color.orange)
-    .setAuthor(`Message by ${old.author.username}#${old.author.discriminator} in #${old.channel.name} was edited`,old.author.avatarURL())
+    .setAuthor(`Message by ${util.escapeFormatting(old.author.tag)} in #${old.channel.name} was edited`,old.author.avatarURL())
     .setDescription(
       formatted
     )

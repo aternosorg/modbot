@@ -6,7 +6,7 @@ exports.event = async (options, guild, user) => {
   if (result) {
     await options.database.query("UPDATE moderations SET active = FALSE WHERE action = 'ban' AND active = TRUE AND userid = ? AND guildid = ?",[user.id,guild.id]);
     const embed = {
-      title: `Ban deleted from guild | ${user.username}#${user.discriminator}`,
+      title: `Ban deleted from guild | ${util.escapeFormatting(user.tag)}`,
       fields: [
         {name: 'Ban ID', value: result.id}
       ],
