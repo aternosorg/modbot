@@ -54,6 +54,21 @@ class Member {
     }
 
     /**
+     * softban this user from this guild
+     * @param {Database}                            database
+     * @param {String}                              reason
+     * @param {module:"discord.js".User|ClientUser} moderator
+     * @return {Promise<void>}
+     */
+    async softban(database, reason, moderator){
+        await this.dmPunishedUser('softbanned', reason)
+        await this.guild.guild.members.ban(this.user.id, {days: 1, reason: `${moderator.username}#${moderator.discriminator} | ${reason}`});
+        await this.guild.guild.members.unban(this.user.id, `softban`);
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'softban', reason, null, moderator.id);
+        await Log.logModeration(this.guild.guild.id, moderator, this.user, reason, id, 'softban');
+    }
+
+    /**
      * kick this user from this guild
      * @param {Database}                            database
      * @param {String}                              reason
