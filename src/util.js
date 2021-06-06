@@ -347,9 +347,9 @@ util.chatSuccess = async (channel, user, reason, type, time) => {
 
   const responseEmbed = new Discord.MessageEmbed()
     .setColor(embedColor)
-    .setDescription(`**${user.username}#${user.discriminator}** has been **${type}** | ${reason.substring(0, 1800)}`);
+    .setDescription(`**${util.escapeFormatting(user.tag)}** has been **${type}** | ${reason.substring(0, 1800)}`);
   if (time) {
-    responseEmbed.setDescription(`**${user.username}#${user.discriminator}** has been **${type}** for **${time}** | ${reason}`);
+    responseEmbed.setDescription(`**${util.escapeFormatting(user.tag)}** has been **${type}** for **${time}** | ${reason}`);
   }
 
   return await channel.send(responseEmbed);
@@ -657,6 +657,22 @@ util.asyncFilter = async (arr, filter, ...args) => {
       res.push(element);
   }
   return res;
+}
+
+/**
+ * escape discord formatting codes in a string
+ * @param {String} string
+ * @returns {String}
+ */
+util.escapeFormatting = (string) => {
+  let currentOffset = 0;
+  string = string.replace(/(.*?)(https?:\/\/[^\s\n]+)/g, (match, before, url) => {
+    let res = before.replace(/([*_~`])/g,'\\$1') + url;
+    currentOffset += res.length;
+    return res;
+  });
+  return string.substr(0, currentOffset) +
+      string.substr(currentOffset).replace(/([*_~`])/g,'\\$1');
 }
 
 module.exports = util;

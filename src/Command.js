@@ -158,7 +158,7 @@ class Command {
         const prefix = guildConfig.prefix || defaultPrefix;
         const embed = new Discord.MessageEmbed()
             .setAuthor(`Help for ${cmd} | Prefix: ${prefix}`)
-            .setFooter(`Command executed by ${message.author.username}`)
+            .setFooter(`Command executed by ${util.escapeFormatting(message.author.tag)}`)
             .addFields(
                 /** @type {any} */ { name: "Usage", value: `\`${prefix}${cmd} ${this.usage}\``, inline: true},
                 /** @type {any} */ { name: "Description", value: this.description, inline: true},

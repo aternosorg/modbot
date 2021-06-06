@@ -23,13 +23,13 @@ exports.event = async (options, message) => {
   else if(content.length === 0) {
     embed = new Discord.MessageEmbed()
         .setColor(util.color.red)
-        .setAuthor(`Empty message by ${message.author.username}#${message.author.discriminator} in #${message.channel.name} was deleted`,message.author.avatarURL())
+        .setAuthor(`Empty message by ${util.escapeFormatting(message.author.tag)} in #${message.channel.name} was deleted`,message.author.avatarURL())
         .setFooter(`ID: ${message.author.id}`);
   }
   else{
     embed = new Discord.MessageEmbed()
         .setColor(util.color.red)
-        .setAuthor(`Message by ${message.author.username}#${message.author.discriminator} in #${message.channel.name} was deleted`,message.author.avatarURL())
+        .setAuthor(`Message by ${util.escapeFormatting(message.author.tag)} in #${message.channel.name} was deleted`,message.author.avatarURL())
         .setDescription(content)
         .setFooter(`ID: ${message.author.id}`);
   }

@@ -1,5 +1,6 @@
 const Command = require('../../Command');
 const Discord = require('discord.js');
+const util = require('../../util');
 
 class InfoCommand extends Command {
 
@@ -22,7 +23,7 @@ class InfoCommand extends Command {
             '[[Discord]](https://discord.gg/zYYhgPtmxw) '
             )
             .setTimestamp()
-            .setFooter(this.message.author.tag);
+            .setFooter(util.escapeFormatting(this.message.author.tag));
         await this.message.channel.send(embed);
     }
 }
