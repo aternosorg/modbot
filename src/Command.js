@@ -160,15 +160,15 @@ class Command {
             .setAuthor(`Help for ${cmd} | Prefix: ${prefix}`)
             .setFooter(`Command executed by ${util.escapeFormatting(message.author.tag)}`)
             .addFields(
-                /** @type {any} */ { name: "Usage", value: `\`${prefix}${cmd} ${this.usage}\``, inline: true},
-                /** @type {any} */ { name: "Description", value: this.description, inline: true},
-                /** @type {any} */ { name: "Required Permissions", value: this.userPerms.length !== 0 ? `\`${this.userPerms.join('`, `')}\`` : "none" }
+                /** @type {any} */ { name: 'Usage', value: `\`${prefix}${cmd} ${this.usage}\``, inline: true},
+                /** @type {any} */ { name: 'Description', value: this.description, inline: true},
+                /** @type {any} */ { name: 'Required Permissions', value: this.userPerms.length !== 0 ? `\`${this.userPerms.join('`, `')}\`` : 'none' }
             )
             .setColor(util.color.green)
             .setTimestamp();
         if (this.comment) {
             embed.addFields(
-                /** @type {any} */{ name: "Comment", value: `${this.comment}`, inline: false});
+                /** @type {any} */{ name: 'Comment', value: `${this.comment}`, inline: false});
         }
         if (this.names.length > 1) {
             let aliases = '';
@@ -178,7 +178,7 @@ class Command {
                 }
             }
             embed.addFields(
-                /** @type {any} */{ name: "Aliases", value: aliases.substring(0,aliases.length - 2), inline: true});
+                /** @type {any} */{ name: 'Aliases', value: aliases.substring(0,aliases.length - 2), inline: true});
         }
         return embed;
     }
@@ -203,4 +203,4 @@ class Command {
     }
 }
 
-module.exports = Command
+module.exports = Command;
