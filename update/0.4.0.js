@@ -6,13 +6,14 @@ const GuildConfig = require('../src/GuildConfig');
 async function update() {
     console.log('Starting update to v0.4.0');
 
-    console.log('Updating guild log channels')
+    console.log('Updating guild log channels');
     await database.waitForConnection();
+    GuildConfig.init(database, null);
     const guilds = await database.queryAll('SELECT id, config FROM guilds');
     let updated = 0;
 
     for (const guild of guilds) {
-        const gc = new GuildConfig(guild.id, guild.config);
+        const gc = new GuildConfig(guild.id, JSON.parse(guild.config));
         if (gc.logChannel) {
             gc.messageLogChannel = gc.logChannel;
             await gc.save();
