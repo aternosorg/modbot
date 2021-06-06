@@ -15,20 +15,11 @@ class Log{
         /** @type {module:"discord.js".Guild} */
         const guild = await util.resolveGuild(guildInfo);
 
+        /** @type {GuildConfig} */
         const guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */guild.id);
         if (!guildConfig.logChannel) return null;
 
-        try {
-            return await guild.channels.resolve(/** @type {String} */guildConfig.logChannel).send(message.substring(0,2000),options);
-        }
-        catch (e) {
-            if ([APIErrors.MISSING_ACCESS, APIErrors.MISSING_PERMISSIONS].includes(e.code)) {
-                return null;
-            }
-            else {
-                throw e;
-            }
-        }
+        return this._send(guild.channels.resolve(/** @type {String} */guildConfig.logChannel), message, options)
     }
 
     /**
@@ -71,6 +62,34 @@ class Log{
                 }]
         }));
     };
+
+    /**
+     * Logs a message to the guilds message log channel (if specified)
+     * @param {GuildInfo}                        guildInfo
+     * @param {String}                           message   content of the log message
+     * @param {module:"discord.js".MessageEmbed} [options]
+     * @return {Promise<module:"discord.js".Message|null>} log message
+     */
+    static async messageLog(guildInfo, message, options) {
+        /** @type {module:"discord.js".Guild} */
+        const guild = await util.resolveGuild(guildInfo);
+
+        /** @type {GuildConfig} */
+        const guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */guild.id);
+        if (!guildConfig.messageLogChannel) return null;
+
+        return this._send(guild.channels.resolve(/** @type {String} */guildConfig.messageLogChannel), message, options)
+    }
+
+    /**
+     * Logs an embed to the guilds message log channel (if specified)
+     * @param {GuildInfo}                               guildInfo
+     * @param {module:"discord.js".MessageEmbed|Object} embed     embed to log
+     * @return {Promise<module:"discord.js".Message|null>} log message
+     */
+    static async messageLogEmbed(guildInfo, embed) {
+        return this.messageLog(guildInfo,'',new Discord.MessageEmbed(embed));
+    }
 
     /**
      * Log a moderation
@@ -132,6 +151,28 @@ class Log{
 
         return this.logEmbed(guildInfo,logEmbed);
     };
+
+    /**
+     * try to send this message to this channel
+     * @param {module:"discord.js".GuildChannel} channel
+     * @param {String} message
+     * @param {module:"discord.js".MessageEmbed} [options]
+     * @returns {Promise<null|*>}
+     * @private
+     */
+    static async _send(channel, message, options) {
+        try {
+            return channel.send(message.substring(0,2000),options);
+        }
+        catch (e) {
+            if ([APIErrors.MISSING_ACCESS, APIErrors.MISSING_PERMISSIONS].includes(e.code)) {
+                return null;
+            }
+            else {
+                throw e;
+            }
+        }
+    }
 }
 
 module.exports = Log;
