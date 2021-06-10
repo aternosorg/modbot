@@ -24,7 +24,7 @@ class LogChannelCommand extends Command {
                 await this.guildConfig.save();
                 await this.message.channel.send(new Discord.MessageEmbed()
                     .setDescription("Disabled moderation logs")
-                    .setFooter("You can configure message logs with the 'messagelogs' command.")
+                    .setFooter("You can configure message logs with the 'messagelog' command.")
                     .setColor(util.color.red)
                 );
                 break;
@@ -32,7 +32,7 @@ class LogChannelCommand extends Command {
                 await this.message.channel.send(new Discord.MessageEmbed()
                     .setDescription(`Moderations are currently ${this.guildConfig.logChannel ? `logged to <#${this.guildConfig.logChannel}>` : 
                         `not logged.\n Use \`${this.prefix}log ${LogChannelCommand.usage}\` to change this`}.`)
-                    .setFooter(`You can configure message logs with ${this.prefix}messagelogs`)
+                    .setFooter(`You can configure message logs with ${this.prefix}messagelog`)
                     .setColor(this.guildConfig.logChannel ? util.color.green : util.color.red)
                 );
                 break;
@@ -47,7 +47,7 @@ class LogChannelCommand extends Command {
                 await this.guildConfig.save();
                 await this.message.channel.send(new Discord.MessageEmbed()
                     .setDescription(`Set moderation log channel to <#${channel}>.`)
-                    .setFooter("You can configure message logs with the 'messagelogs' command.")
+                    .setFooter("You can configure message logs with the 'messagelog' command.")
                     .setColor(util.color.green)
                 );
         }
