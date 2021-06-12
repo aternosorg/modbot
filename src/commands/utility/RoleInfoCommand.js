@@ -18,7 +18,7 @@ class RoleInfoCommand extends Command{
       if (!role) return await message.channel.send(`This is not a valid role ID.`)
 
       let generic = '';
-      generic += `**role name:** ${role.name} (${role.id})\n`;
+      generic += `**Role name:** ${role.name} (${role.id})\n`;
       generic += `**Created on** ${role.createdAt.toUTCString()}\n`;
       generic += `**From guild:** ${role.guild}\n`
       generic += `**Managed:** ${role.managed ? 'Yes' : 'No'}\n`
@@ -45,7 +45,7 @@ class RoleInfoCommand extends Command{
               .setDescription(`
 ${generic}
 
-**permissions:** ${permissions}
+**Permissions:** ${permissions}
               `)
 
           await message.channel.send(e)
