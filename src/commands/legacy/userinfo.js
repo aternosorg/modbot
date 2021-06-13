@@ -57,9 +57,9 @@ command.execute = async (message, args, database, bot) => {
   embed.setAuthor(`Userinfo for ${user.username}#${user.discriminator}`,user.avatarURL());
 
   embed.setDescription(embed.description + `**ID:** ${userId} \n`);
-  embed.setDescription(embed.description + `**Created Account:** ${user.createdAt.toDateString()} \n`);
+  embed.setDescription(embed.description + `**Created Account:** ${user.createdAt.toUTCString()} \n`);
   if (member && member.joinedAt) {
-    embed.setDescription(embed.description + `**Joined Guild:** ${member.joinedAt.toDateString()} \n`);
+    embed.setDescription(embed.description + `**Joined Guild:** ${member.joinedAt.toUTCString()} \n`);
   }
 
   let moderations = await database.query("SELECT COUNT(*) AS count FROM moderations WHERE userid = ? AND guildid = ?",[userId,message.guild.id]);

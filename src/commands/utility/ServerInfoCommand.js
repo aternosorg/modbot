@@ -16,7 +16,7 @@ class ServerInfoCommand extends Command{
         let generic = '';
         generic += `**Owner:** <@!${guild.ownerID}> \n`;
         generic += `**Owner ID:** ${guild.ownerID} \n`;
-        generic += `**Created:** ${guild.createdAt.toDateString()} \n`;
+        generic += `**Created:** ${guild.createdAt.toUTCString()} \n`;
         generic += `**Guild ID:** ${guild.id} \n`;
         
         let statistics = '';
@@ -29,6 +29,7 @@ class ServerInfoCommand extends Command{
 
         const embed = new Discord.MessageEmbed()
             .setTitle(`Info of ${guild.name}`)
+            .setColor(util.color.red)
             .setThumbnail(guild.iconURL({dynamic: true, size: 2048}))
             .setFooter(`Command executed by ${util.escapeFormatting(this.message.author.tag)}`)
             .setTimestamp()
