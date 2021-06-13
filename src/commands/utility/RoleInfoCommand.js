@@ -21,7 +21,8 @@ class RoleInfoCommand extends Command{
       let permissions;
       if (role.permissions.has('ADMINISTRATOR')) {
           permissions = `Administrator`
-      } if (!role.permissions.has('ADMINISTRATOR')) {
+      } 
+      if (!role.permissions.has('ADMINISTRATOR')) {
           permissions = role.permissions.toArray().toString()
           permissions = permissions.toLowerCase()
           permissions = permissions.replace(/[-_]/g, ' ')
