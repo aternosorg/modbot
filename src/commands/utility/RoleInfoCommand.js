@@ -48,7 +48,7 @@ ${generic}
 **Permissions:** ${permissions}
               `)
 
-          await message.channel.send(e)
+          await message.channel.send(embed);
 
 
       }
