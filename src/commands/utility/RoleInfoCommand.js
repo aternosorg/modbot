@@ -12,21 +12,13 @@ class RoleInfoCommand extends Command{
   static description = 'Get information about a role';
   
   async execute() {
-      if (!args.length) {
-          return await message.channel.send(`You have to provide a role ID ${message.author}!`)
+      if (!this.args.length) {
+          return await this.message.channel.send(`You have to provide a role ID ${message.author}!`)
       }
 
-      let role = message.guild.roles.resolve(args[0]);
-      if (!role) return await message.channel.send(`This is not a valid role ID.`)
+      let role = this.message.guild.roles.resolve(this.args[0]);
+      if (!role) return await this.message.channel.send(`This is not a valid role ID.`)
 
-      let generic = '';
-      generic += `**Role name:** ${role.name} (${role.id})\n`;
-      generic += `**Created on** ${role.createdAt.toUTCString()}\n`;
-      generic += `**From guild:** ${role.guild}\n`
-      generic += `**Managed:** ${role.managed ? 'Yes' : 'No'}\n`
-      generic += `**Position:** ${role.position} (from below)\n`
-      generic += `**Hoisted:** ${role.hoist ? 'Yes' : 'No'}\n`
-      generic += `**Color:** \`${role.hexColor}\` (\`${role.color}\`)`
 
       let permissions;
       if (role.permissions.has('ADMINISTRATOR')) {
@@ -43,13 +35,16 @@ class RoleInfoCommand extends Command{
           const embed = new Discord.MessageEmbed()
               .setTitle(`About role ${role.name}`)
               .setColor(role.color)
-              .setDescription(`
-${generic}
+              .setDescription(`**Role name:** ${role.name} (${role.id})\n` +
+                              `**Created on** ${role.createdAt.toUTCString()}\n` +
+                              `**From guild:** ${role.guild}\n` +
+                              `**Managed:** ${role.managed ? 'Yes' : 'No'}\n` +
+                              `**Position:** ${role.position} (from below)\n` +
+                              `**Hoisted:** ${role.hoist ? 'Yes' : 'No'}\n` +
+                              `**Color:** \`${role.hexColor}\` (\`${role.color}\`)\n` +
+                              `**Permissions:** ${permissions}`)
 
-**Permissions:** ${permissions}
-              `)
-
-          await message.channel.send(embed);
+          await this.message.channel.send(embed);
 
 
       }
