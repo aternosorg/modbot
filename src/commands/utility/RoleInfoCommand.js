@@ -45,8 +45,6 @@ class RoleInfoCommand extends Command{
                               `**Permissions:** ${permissions}`)
 
           await this.message.channel.send(embed);
-
-
       }
 }
 
