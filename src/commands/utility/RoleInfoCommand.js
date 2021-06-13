@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 const Command = require('../../Command')
 const Discord = require('discord.js');
 
