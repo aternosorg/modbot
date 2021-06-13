@@ -15,11 +15,14 @@ class ModInfoCommand extends Command {
     static modCommand = true;
 
     async execute() {
+
+        if (this.args.length !== 1) return this.sendUsage();
+
         const id = parseInt(this.args[0].startsWith('#') ? this.args[0].substring(1) : this.args[0]);
         if (!id) return this.sendUsage();
 
         /** @type {ModerationData|null} */
-        const moderation = await this.database.query("SELECT * FROM moderations WHERE id = ? AND guildid = ?",[id, this.message.guild.id]);
+        const moderation = await this.database.query('SELECT * FROM moderations WHERE id = ? AND guildid = ?',[id, this.message.guild.id]);
 
         if (!moderation) return this.sendError('Moderation not found');
 
