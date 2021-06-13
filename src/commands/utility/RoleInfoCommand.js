@@ -27,7 +27,8 @@ class RoleInfoCommand extends Command{
           permissions = permissions.toLowerCase()
           permissions = permissions.replace(/[-_]/g, ' ')
           permissions = permissions.replace(/[,]/g, ", ")
-      } if (!permissions) {
+      } 
+      if (!permissions) {
           permissions = `None`
       }
 
