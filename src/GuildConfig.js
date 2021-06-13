@@ -111,11 +111,7 @@ class GuildConfig extends Config {
      * @return {String}
      */
     listModRoles() {
-        let roles = '';
-        for (let role of this.#modRoles) {
-            roles += `<@&${role}>, `
-        }
-        return roles.length ? roles.substring(0, roles.length-2) : 'none';
+        return this.#modRoles.map(role => `<@&${role}>`).join(', ') || 'none';
     }
 
     /**
@@ -168,11 +164,7 @@ class GuildConfig extends Config {
      * @return {String}
      */
     listProtectedRoles() {
-        let roles = '';
-        for (let role of this.#protectedRoles) {
-            roles += `<@&${role}>, `
-        }
-        return roles.length ? roles.substring(0, roles.length-2) : 'none';
+        return this.#protectedRoles.map(role => `<@&${role}>`).join(', ') || 'none';
     }
 
     /**
