@@ -39,7 +39,7 @@ class RoleInfoCommand extends Command{
 
       }
 
-          const e = new Discord.MessageEmbed()
+          const embed = new Discord.MessageEmbed()
               .setTitle(`About role ${role.name}`)
               .setColor(role.color)
               .setDescription(`
