@@ -153,8 +153,8 @@ class GuildConfig extends Config {
     removeProtectedRole(role) {
         let newRoles = [];
         for (let protectedRole of this.#protectedRoles) {
-            if (protectedRole !== protectedRole)
-                newRoles.push(protectedRole);
+            if (protectedRole !== role)
+                newRoles.push(role);
         }
         this.#protectedRoles = newRoles;
     }
