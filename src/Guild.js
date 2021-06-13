@@ -25,7 +25,7 @@ class Guild {
     }
 
     /**
-     *
+     * fetch a guild member
      * @param {module:"discord.js".Snowflake}   id  user id
      * @return {Promise<null|module:"discord.js".GuildMember>}
      */
@@ -35,6 +35,25 @@ class Guild {
         }
         catch (e) {
             if (e.code === APIErrors.UNKNOWN_MEMBER) {
+                return null;
+            }
+            else {
+                throw e;
+            }
+        }
+    }
+
+    /**
+     * fetch a role
+     * @param {Snowflake} id role id
+     * @return {Promise<null|module:"discord.js".Role>}
+     */
+    async fetchRole(id) {
+        try {
+            return await this.guild.roles.fetch(id);
+        }
+        catch (e) {
+            if (e.code === APIErrors.UNKNOWN_ROLE) {
                 return null;
             }
             else {
@@ -71,7 +90,7 @@ class Guild {
      */
     static get(guild) {
         if (this.#cache.has(guild.id))
-            return this.#cache.get(guild.id)
+            return this.#cache.get(guild.id);
         else {
             const newGuild = new Guild(guild);
             this.#cache.set(guild.id, newGuild);
