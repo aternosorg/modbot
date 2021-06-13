@@ -14,21 +14,25 @@ class RoleInfoCommand extends Command{
           return await this.message.channel.send(`You have to provide a role ID ${message.author}!`)
       }
 
-      let role = this.message.guild.roles.resolve(this.args[0]);
+      let roleid = util.roleMentionToId(args[0]);
+    
+      if (!roleid) {
+        return this.sendUsage();
+      }
+    
+      let role = this.message.guild.roles.resolve(roleid);
       if (!role) return await this.message.channel.send(`This is not a valid role ID.`)
 
 
       let permissions;
       if (role.permissions.has('ADMINISTRATOR')) {
           permissions = `Administrator`
-      } 
-      if (!role.permissions.has('ADMINISTRATOR')) {
+      } if (!role.permissions.has('ADMINISTRATOR')) {
           permissions = role.permissions.toArray().toString()
           permissions = permissions.toLowerCase()
           permissions = permissions.replace(/[-_]/g, ' ')
           permissions = permissions.replace(/[,]/g, ", ")
-      } 
-      if (!permissions) {
+      } if (!permissions) {
           permissions = `None`
       }
 
@@ -45,6 +49,8 @@ class RoleInfoCommand extends Command{
                               `**Permissions:** ${permissions}`)
 
           await this.message.channel.send(embed);
+
+
       }
 }
 
