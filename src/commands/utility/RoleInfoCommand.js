@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const Command = require('../../Command')
 const Discord = require('discord.js');
 
@@ -27,16 +29,15 @@ class RoleInfoCommand extends Command{
       generic += `**Color:** \`${role.hexColor}\` (\`${role.color}\`)`
 
       let permissions;
-          if (role.permissions.has('ADMINISTRATOR')) {
-              permissions = `Administrator`
-          } if (!role.permissions.has('ADMINISTRATOR')) {
-              permissions = role.permissions.toArray().toString()
-              permissions = permissions.toLowerCase()
-              permissions = permissions.replace(/[-_]/g, ' ')
-              permissions = permissions.replace(/[,]/g, ", ")
-          } if (!permissions) {
-              permissions = `None`
-
+      if (role.permissions.has('ADMINISTRATOR')) {
+          permissions = `Administrator`
+      } if (!role.permissions.has('ADMINISTRATOR')) {
+          permissions = role.permissions.toArray().toString()
+          permissions = permissions.toLowerCase()
+          permissions = permissions.replace(/[-_]/g, ' ')
+          permissions = permissions.replace(/[,]/g, ", ")
+      } if (!permissions) {
+          permissions = `None`
       }
 
           const embed = new Discord.MessageEmbed()
