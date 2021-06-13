@@ -33,7 +33,7 @@ class ModRolesCommand extends Command {
                 if (this.args.length !== 2) return this.sendUsage();
 
                 role = util.roleMentionToId(this.args[1]);
-                if (await guild.fetchRole(role) === null) return this.sendUsage();
+                if (role === null || await guild.fetchRole(role) === null) return this.sendUsage();
 
                 if (this.guildConfig.isModRole(role)) {
                     return this.message.channel.send(new Discord.MessageEmbed()
@@ -54,7 +54,7 @@ class ModRolesCommand extends Command {
                 if (this.args.length !== 2) return this.sendUsage();
 
                 role = util.roleMentionToId(this.args[1]);
-                if (await guild.fetchRole(role) === null) return this.sendUsage();
+                if (role === null || await guild.fetchRole(role) === null) return this.sendUsage();
 
                 if (!this.guildConfig.isModRole(role)) {
                     return this.message.channel.send(new Discord.MessageEmbed()
