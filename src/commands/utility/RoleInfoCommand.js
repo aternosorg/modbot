@@ -33,11 +33,10 @@ class RoleInfoCommand extends Command{
       }
 
       const embed = new Discord.MessageEmbed()
-          .setTitle(`About role ${role.name}`)
+          .setTitle(`About ${role.name}`)
           .setColor(role.color)
           .setDescription(`**Role name:** ${role.name} (${role.id})\n` +
                               `**Created on** ${role.createdAt.toUTCString()}\n` +
-                              `**From guild:** ${role.guild}\n` +
                               `**Managed:** ${role.managed ? 'Yes' : 'No'}\n` +
                               `**Position:** ${role.position} (from below)\n` +
                               `**Hoisted:** ${role.hoist ? 'Yes' : 'No'}\n` +
