@@ -27,13 +27,9 @@ class RoleInfoCommand extends Command{
       if (role.permissions.has('ADMINISTRATOR')) {
           permissions = 'Administrator';
       }
-      if (!role.permissions.has('ADMINISTRATOR')) {
-          permissions = util.toTitleCase(role.permissions.toArray()
-              .join(', ')
-              .replace(/[-_]/g, ' '));
-      }
-      if (!permissions) {
-          permissions = 'None';
+      else {
+          permissions = util.toTitleCase(role.permissions.toArray().join(', ')
+              .replace(/[-_]/g, ' ')) || 'None';
       }
 
       const embed = new Discord.MessageEmbed()
