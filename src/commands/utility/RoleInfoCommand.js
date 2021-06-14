@@ -1,4 +1,4 @@
-const Command = require('../../Command')
+const Command = require('../../Command');
 const Discord = require('discord.js');
 const util = require('../../util');
 
@@ -12,47 +12,44 @@ class RoleInfoCommand extends Command{
   
   async execute() {
       if (!this.args.length) {
-          return await this.message.channel.send(`You have to provide a role ID ${message.author}!`)
+          return await this.message.channel.send(`You have to provide a role ID ${this.message.author}!`);
       }
 
-      let roleid = util.roleMentionToId(args[0]);
+      let roleid = util.roleMentionToId(this.args[0]);
     
-      if (!roleid) {
-        return this.sendUsage();
-      }
+      if (!roleid) return this.sendUsage();
     
       let role = this.message.guild.roles.resolve(roleid);
-      if (!role) return await this.message.channel.send(`This is not a valid role ID.`)
+      if (!role) return await this.message.channel.send('This is not a valid role ID.');
 
 
       let permissions;
       if (role.permissions.has('ADMINISTRATOR')) {
-          permissions = `Administrator`
-      } if (!role.permissions.has('ADMINISTRATOR')) {
-          permissions = role.permissions.toArray().toString()
-          permissions = permissions.toLowerCase()
-          permissions = permissions.replace(/[-_]/g, ' ')
-          permissions = permissions.replace(/[,]/g, ", ")
-      } if (!permissions) {
-          permissions = `None`
+          permissions = 'Administrator';
+      }
+      if (!role.permissions.has('ADMINISTRATOR')) {
+          permissions = util.toTitleCase(role.permissions.toArray()
+              .join(', ')
+              .replace(/[-_]/g, ' '));
+      }
+      if (!permissions) {
+          permissions = 'None';
       }
 
-          const embed = new Discord.MessageEmbed()
-              .setTitle(`About role ${role.name}`)
-              .setColor(role.color)
-              .setDescription(`**Role name:** ${role.name} (${role.id})\n` +
+      const embed = new Discord.MessageEmbed()
+          .setTitle(`About role ${role.name}`)
+          .setColor(role.color)
+          .setDescription(`**Role name:** ${role.name} (${role.id})\n` +
                               `**Created on** ${role.createdAt.toUTCString()}\n` +
                               `**From guild:** ${role.guild}\n` +
                               `**Managed:** ${role.managed ? 'Yes' : 'No'}\n` +
                               `**Position:** ${role.position} (from below)\n` +
                               `**Hoisted:** ${role.hoist ? 'Yes' : 'No'}\n` +
                               `**Color:** \`${role.hexColor}\` (\`${role.color}\`)\n` +
-                              `**Permissions:** ${permissions}`)
+                              `**Permissions:** ${permissions}`);
 
-          await this.message.channel.send(embed);
-
-
-      }
+      await this.message.channel.send(embed);
+  }
 }
 
 module.exports = RoleInfoCommand;
