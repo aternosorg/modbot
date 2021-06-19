@@ -33,13 +33,13 @@ module.exports = async (responses, message, args) => {
         }, { max: 1, time: 15000, errors: ['time'] })).first().emoji.name === icons.yes;
     }
     catch {
-        return await message.channel.send("You took to long to react!");
+        return await confirmation.edit("You took to long to react!");
     }
     if (!confirmed) {
-        return await message.channel.send("Canceled!");
+        return await confirmation.edit("Canceled!");
     }
 
     await response.remove();
 
-    await message.channel.send(`Removed the autoresponse with the id ${response.id}!`);
+    await confirmation.edit(`Removed the autoresponse with the id ${response.id}!`);
 };
