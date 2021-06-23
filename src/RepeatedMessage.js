@@ -26,11 +26,16 @@ class RepeatedMessage {
     #messages = [];
 
     /**
+     * has this user been warned not to spam before
+     */
+    warned = false;
+
+    /**
      * @param {module:"discord.js".Message} message
      */
     constructor(message) {
         this.#key = this.constructor.getKey(message);
-        this.#messages.push(message);
+        this.add(message);
     }
 
     /**
@@ -160,9 +165,12 @@ class RepeatedMessage {
 
         if (cache.getMessageCount() > count) {
             await cache.deleteAll();
-            /** @type {module:"discord.js".Message} */
-            const reply = await message.channel.send(`<@!${message.author.id}> Stop sending messages this fast!`);
-            await reply.delete({timeout: 3000});
+            if (!cache.warned) {
+                cache.warned = true;
+                /** @type {module:"discord.js".Message} */
+                const reply = await message.channel.send(`<@!${message.author.id}> Stop sending messages this fast!`);
+                await reply.delete({timeout: 3000});
+            }
         }
     }
 
@@ -176,9 +184,12 @@ class RepeatedMessage {
         const similar = cache.getSimilarMessageCount(message);
         if (similar > count) {
             await cache.deleteSimilar(message);
-            /** @type {module:"discord.js".Message} */
-            const reply = await message.channel.send(`<@!${message.author.id}> Stop repeating your messages!`);
-            await reply.delete({timeout: 3000});
+            if (!cache.warned) {
+                cache.warned = true;
+                /** @type {module:"discord.js".Message} */
+                const reply = await message.channel.send(`<@!${message.author.id}> Stop repeating your messages!`);
+                await reply.delete({timeout: 3000});
+            }
         }
     }
 }
