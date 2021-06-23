@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const stringSimilarity = require("string-similarity");
+const stringSimilarity = require('string-similarity');
 const Log = require('./Log');
 const util = require('./util');
 
@@ -93,11 +93,11 @@ class RepeatedMessage {
      * @return {Promise<void>}
      */
     async deleteAll() {
-        const reason = `Fast message spam`;
+        const reason = 'Fast message spam';
         for (const message of this.#messages) {
             if (message.deletable) {
                 await util.delete(message, {reason});
-                await Log.logMessageDeletion(message, reason)
+                await Log.logMessageDeletion(message, reason);
             }
         }
     }
@@ -108,11 +108,11 @@ class RepeatedMessage {
      * @return {Promise<void>}
      */
     async deleteSimilar(message) {
-        const reason = `Repeated messages`;
+        const reason = 'Repeated messages';
         for (const cacheMessage of this.getSimilarMessages(message)) {
             if (cacheMessage.deletable) {
                 await util.delete(cacheMessage, {reason});
-                await Log.logMessageDeletion(cacheMessage, reason)
+                await Log.logMessageDeletion(cacheMessage, reason);
             }
         }
     }
