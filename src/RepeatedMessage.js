@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 const stringSimilarity = require('string-similarity');
 const Log = require('./Log');
-const util = require('./util');
 
 class RepeatedMessage {
 
@@ -98,13 +97,7 @@ class RepeatedMessage {
      * @return {Promise<void>}
      */
     async deleteAll() {
-        const reason = 'Fast message spam';
-        for (const message of this.#messages) {
-            if (message.deletable) {
-                await util.delete(message, {reason});
-                await Log.logMessageDeletion(message, reason);
-            }
-        }
+        return this.delete(this.#messages, 'Fast message spam');
     }
 
     /**
@@ -113,13 +106,25 @@ class RepeatedMessage {
      * @return {Promise<void>}
      */
     async deleteSimilar(message) {
-        const reason = 'Repeated messages';
-        for (const cacheMessage of this.getSimilarMessages(message)) {
-            if (cacheMessage.deletable) {
-                await util.delete(cacheMessage, {reason});
-                await Log.logMessageDeletion(cacheMessage, reason);
-            }
-        }
+        return this.delete(this.getSimilarMessages(message), 'Repeated messages');
+    }
+
+    /**
+     * delete an array of messages if possible
+     * @param {module:"discord.js".Message[]} messages
+     * @param {String} reason
+     * @returns {Promise<void>}
+     */
+    async delete(messages, reason) {
+        messages = messages.filter(m => m.deletable);
+
+        if (messages.length === 0) return;
+
+        /** @type {module:"discord.js".TextBasedChannelFields} */
+        const channel = messages[0].channel;
+        await channel.bulkDelete(messages);
+
+        await Promise.all(messages.map(m => Log.logMessageDeletion(m , reason)));
     }
 
     /**
