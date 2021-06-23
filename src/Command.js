@@ -3,6 +3,7 @@ const ChannelConfig = require('./ChannelConfig');
 const util = require('./util');
 const Discord = require('discord.js');
 const defaultPrefix = require('../config.json').prefix;
+const icons = require('./icons');
 
 class Command {
     /**
@@ -160,15 +161,15 @@ class Command {
             .setAuthor(`Help for ${cmd} | Prefix: ${prefix}`)
             .setFooter(`Command executed by ${util.escapeFormatting(message.author.tag)}`)
             .addFields(
-                /** @type {any} */ { name: "Usage", value: `\`${prefix}${cmd} ${this.usage}\``, inline: true},
-                /** @type {any} */ { name: "Description", value: this.description, inline: true},
-                /** @type {any} */ { name: "Required Permissions", value: this.userPerms.length !== 0 ? `\`${this.userPerms.join('`, `')}\`` : "none" }
+                /** @type {any} */ { name: 'Usage', value: `\`${prefix}${cmd} ${this.usage}\``, inline: true},
+                /** @type {any} */ { name: 'Description', value: this.description, inline: true},
+                /** @type {any} */ { name: 'Required Permissions', value: this.userPerms.length !== 0 ? `\`${this.userPerms.join('`, `')}\`` : 'none' }
             )
             .setColor(util.color.green)
             .setTimestamp();
         if (this.comment) {
             embed.addFields(
-                /** @type {any} */{ name: "Comment", value: `${this.comment}`, inline: false});
+                /** @type {any} */{ name: 'Comment', value: `${this.comment}`, inline: false});
         }
         if (this.names.length > 1) {
             let aliases = '';
@@ -178,7 +179,7 @@ class Command {
                 }
             }
             embed.addFields(
-                /** @type {any} */{ name: "Aliases", value: aliases.substring(0,aliases.length - 2), inline: true});
+                /** @type {any} */{ name: 'Aliases', value: aliases.substring(0,aliases.length - 2), inline: true});
         }
         return embed;
     }
@@ -201,6 +202,55 @@ class Command {
             description: message,
         }));
     }
+
+    /**
+     * generate a multi page response
+     * @param {function} generatePage generate a new page (index, ..args)
+     * @param {Number} [pages] number of possible pages
+     * @param {Number} [duration] inactivity timeout in ms (default: 60s)
+     */
+    async multiPageResponse(generatePage, pages, duration = 60000) {
+        /**
+         * @type {module:"discord.js".Message}
+         */
+        const message = await this.message.channel.send(await generatePage(0));
+
+        if (pages === 1) return;
+        await message.react(icons.right);
+
+        const reactions = message.createReactionCollector( async (reaction, user) => {
+            if (user.id === this.message.author.id && [icons.left,icons.right].includes(reaction.emoji.name)) {
+                return true;
+            }
+            else {
+                if (user.id !== this.bot.user.id) await reaction.users.remove(user);
+                return false;
+            }
+        });
+
+        let index = 0,
+            timeout = setTimeout(end, duration);
+
+        reactions.on('collect', async (reaction) => {
+            if (reaction.emoji.name === icons.right && index !== pages - 1) {
+                index++;
+            }
+            if (reaction.emoji.name === icons.left && index !== 0) {
+                index--;
+            }
+            await message.edit(await generatePage(index));
+            await message.reactions.removeAll();
+            if (index !== pages -1) await message.react(icons.right);
+            if (index !== 0) await message.react(icons.left);
+            clearTimeout(timeout);
+            setTimeout(end, duration);
+        });
+
+        async function end() {
+            reactions.stop('TIME');
+            await message.reactions.removeAll();
+        }
+    }
 }
 
-module.exports = Command
+module.exports = Command;
