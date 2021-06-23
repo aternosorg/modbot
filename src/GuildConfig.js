@@ -58,13 +58,12 @@ class GuildConfig extends Config {
         this.caps = json.caps || false;
         this.maxMentions = json.maxMentions || 5;
         this.raidMode = json.raidMode || false;
-        this.antiSpam = typeof(json.antiSpam) === "number" ? json.antiSpam : -1;
+        this.antiSpam = typeof(json.antiSpam) === 'number' ? json.antiSpam : -1;
         this.similarMessages = json.similarMessages || -1;
     }
 
     /**
      * Is this a moderator role?
-     *
      * @param  {module:"discord.js".Snowflake} role role id
      * @return {Boolean}
      */
@@ -88,7 +87,6 @@ class GuildConfig extends Config {
 
     /**
      * Add this role to the moderator roles
-     *
      * @param  {module:"discord.js".Snowflake} role role id
      */
     addModRole(role) {
@@ -97,7 +95,6 @@ class GuildConfig extends Config {
 
     /**
      * Remove this role from the moderator roles
-     *
      * @param  {module:"discord.js".Snowflake} role role id
      */
     removeModRole(role) {
@@ -114,16 +111,11 @@ class GuildConfig extends Config {
      * @return {String}
      */
     listModRoles() {
-        let roles = '';
-        for (let role of this.#modRoles) {
-            roles += `<@&${role}>, `
-        }
-        return roles.length ? roles.substring(0, roles.length-2) : 'none';
+        return this.#modRoles.map(role => `<@&${role}>`).join(', ') || 'none';
     }
 
     /**
      * Is this a protected role?
-     *
      * @param  {module:"discord.js".Snowflake} role role id
      * @return {Boolean}
      */
@@ -148,7 +140,6 @@ class GuildConfig extends Config {
 
     /**
      * Add this role to the protected roles
-     *
      * @param  {module:"discord.js".Snowflake} role role id
      */
     addProtectedRole(role) {
@@ -157,14 +148,13 @@ class GuildConfig extends Config {
 
     /**
      * Remove this role from the protected roles
-     *
      * @param  {module:"discord.js".Snowflake} role role id
      */
     removeProtectedRole(role) {
         let newRoles = [];
         for (let protectedRole of this.#protectedRoles) {
-            if (protectedRole !== protectedRole)
-                newRoles.push(protectedRole);
+            if (protectedRole !== role)
+                newRoles.push(role);
         }
         this.#protectedRoles = newRoles;
     }
@@ -174,11 +164,7 @@ class GuildConfig extends Config {
      * @return {String}
      */
     listProtectedRoles() {
-        let roles = '';
-        for (let role of this.#protectedRoles) {
-            roles += `<@&${role}>, `
-        }
-        return roles.length ? roles.substring(0, roles.length-2) : 'none';
+        return this.#protectedRoles.map(role => `<@&${role}>`).join(', ') || 'none';
     }
 
     /**
@@ -198,7 +184,7 @@ class GuildConfig extends Config {
      */
     setPunishment(strikes, punishment) {
         if (punishment === null)
-            delete this.#punishments[strikes]
+            delete this.#punishments[strikes];
         else
             this.#punishments[strikes] = punishment;
         return this.save();
