@@ -27,27 +27,27 @@ class BadWord extends ChatTriggeredFeature {
    * @return {BadWord}
    */
   constructor(gid, json, id) {
-    super(id);
-    this.gid = gid;
+      super(id);
+      this.gid = gid;
 
-    if (json) {
-      this.trigger = json.trigger;
-      this.punishment = typeof(json.punishment) === 'string' ? JSON.parse(json.punishment) : json.punishment;
-      this.response = json.response;
-      if (this.punishment && this.punishment.action === 'dm' && this.response && this.response !== 'disabled') {
-        if (this.response === 'default') {
-          this.punishment.message = BadWord.defaultResponse;
-        } else {
-          this.punishment.message = this.response;
-        }
+      if (json) {
+          this.trigger = json.trigger;
+          this.punishment = typeof(json.punishment) === 'string' ? JSON.parse(json.punishment) : json.punishment;
+          this.response = json.response;
+          if (this.punishment && this.punishment.action === 'dm' && this.response && this.response !== 'disabled') {
+              if (this.response === 'default') {
+                  this.punishment.message = BadWord.defaultResponse;
+              } else {
+                  this.punishment.message = this.response;
+              }
+          }
+          this.global = json.global;
+          this.channels = json.channels;
       }
-      this.global = json.global;
-      this.channels = json.channels;
-    }
 
-    if (!this.channels) {
-      this.channels = [];
-    }
+      if (!this.channels) {
+          this.channels = [];
+      }
   }
 
   /**
@@ -55,7 +55,7 @@ class BadWord extends ChatTriggeredFeature {
    * @returns {(*|string)[]}
    */
   serialize() {
-    return [this.gid, JSON.stringify(this.trigger), JSON.stringify(this.punishment), this.response, this.global, this.channels.join(',')];
+      return [this.gid, JSON.stringify(this.trigger), JSON.stringify(this.punishment), this.response, this.global, this.channels.join(',')];
   }
 
   /**
@@ -65,19 +65,19 @@ class BadWord extends ChatTriggeredFeature {
    * @returns {module:"discord.js".MessageEmbed}
    */
   embed(title, color) {
-    const embed = new Discord.MessageEmbed()
-        .setTitle(title + ` [${this.id}]`)
-        .setColor(color)
-        .addFields(
-            /** @type {any} */[
-          {name: "Trigger", value: `${this.trigger.type}: \`${this.trigger.type === 'regex' ? '/' + this.trigger.content + '/' + this.trigger.flags : this.trigger.content}\``.substring(0, 1000)},
-          {name: "Response", value: this.response === 'default' ? BadWord.defaultResponse :this.response.substring(0,1000)},
-          {name: "Channels", value: this.global ? "global" : this.channels.map(c => `<#${c}>`).join(', ').substring(0, 1000)}
-        ]);
-    if (this.punishment.action) {
-      embed.addField("Punishment", `${this.punishment.action} ${this.punishment.duration ? `for ${this.punishment.duration}` : ''}`)
-    }
-    return embed;
+      const embed = new Discord.MessageEmbed()
+          .setTitle(title + ` [${this.id}]`)
+          .setColor(color)
+          .addFields(
+              /** @type {any} */[
+                  {name: 'Trigger', value: `${this.trigger.type}: \`${this.trigger.type === 'regex' ? '/' + this.trigger.content + '/' + this.trigger.flags : this.trigger.content}\``.substring(0, 1000)},
+                  {name: 'Response', value: this.response === 'default' ? BadWord.defaultResponse :this.response.substring(0,1000)},
+                  {name: 'Channels', value: this.global ? 'global' : this.channels.map(c => `<#${c}>`).join(', ').substring(0, 1000)}
+              ]);
+      if (this.punishment.action) {
+          embed.addField('Punishment', `${this.punishment.action} ${this.punishment.duration ? `for ${this.punishment.duration}` : ''}`);
+      }
+      return embed;
   }
 }
 
