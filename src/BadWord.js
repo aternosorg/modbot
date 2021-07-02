@@ -67,28 +67,38 @@ class BadWord extends ChatTriggeredFeature {
      * @returns {module:"discord.js".MessageEmbed}
      */
     embed(title, color) {
-        const embed = new Discord.MessageEmbed()
+        const duration = this.punishment.duration, trigger = this.trigger;
+        return new Discord.MessageEmbed()
             .setTitle(title + ` [${this.id}]`)
             .setColor(color)
             .addFields(
                 /** @type {any} */[
                     {
                         name: 'Trigger',
-                        value: `${this.trigger.type}: \`${this.trigger.type === 'regex' ? '/' + this.trigger.content + '/' + this.trigger.flags : this.trigger.content}\``.substring(0, 1000)
+                        value: `${trigger.type}: \`${trigger.type === 'regex' ? '/' + trigger.content + '/' + trigger.flags : trigger.content}\``.substring(0, 1000),
+                        inline: true
                     },
                     {
                         name: 'Response',
-                        value: this.response === 'default' ? BadWord.defaultResponse : this.response.substring(0, 1000)
+                        value: this.response === 'default' ? BadWord.defaultResponse : this.response.substring(0, 1000),
+                        inline: true
                     },
                     {
                         name: 'Channels',
-                        value: this.global ? 'global' : this.channels.map(c => `<#${c}>`).join(', ').substring(0, 1000)
-                    }
+                        value: this.global ? 'global' : this.channels.map(c => `<#${c}>`).join(', ').substring(0, 1000),
+                        inline: true
+                    },
+                    {
+                        name: 'Punishment',
+                        value: `${this.punishment.action} ${duration ? `for ${duration}` : ''}`,
+                        inline: true
+                    },
+                    {
+                        name: 'Priority',
+                        value: this.priority,
+                        inline: true
+                    },
                 ]);
-        if (this.punishment.action) {
-            embed.addField('Punishment', `${this.punishment.action} ${this.punishment.duration ? `for ${this.punishment.duration}` : ''}`);
-        }
-        return embed;
     }
 
     /**
