@@ -63,6 +63,25 @@ class Guild {
     }
 
     /**
+     * fetch a ban
+     * @param {Snowflake} id user id
+     * @return {Promise<null|{reason: String|null}>}
+     */
+    async fetchBan(id) {
+        try {
+            return await this.guild.fetchBan(id);
+        }
+        catch (e) {
+            if (e.code === APIErrors.UNKNOWN_BAN) {
+                return null;
+            }
+            else {
+                throw e;
+            }
+        }
+    }
+
+    /**
      * try to send a dm
      * @param {module:"discord.js".User}    user
      * @param {String} message

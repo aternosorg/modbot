@@ -143,7 +143,7 @@ util.roleMentionToId = (mention) => {
 /**
  * Converts a user mention (<@!userId> or <@userId>) or user id to a user id
  * @param {String|module:"discord.js".Snowflake}  mention user mention (<@!userId> or <@userId>) or user id
- * @return {module:"discord.js".Snowflake|null}   user id or null
+ * @return {Snowflake|null}   user id or null
  */
 util.userMentionToId = (mention) => {
     if (/^<@!?\d+>$/.test(mention)) {

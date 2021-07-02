@@ -21,6 +21,13 @@ class Member {
     member;
 
     /**
+     * @type {Object|null}
+     * @property {String|null} reason
+     * @property {module:"discord.js".User} user
+     */
+    banInfo;
+
+    /**
      * @param {module:"discord.js".User}    user
      * @param {module:"discord.js".Guild}   guild
      */
@@ -39,6 +46,15 @@ class Member {
     }
 
     /**
+     * fetch a ban
+     * @returns {Promise<null|{reason: String|null}>}
+     */
+    async fetchBanInfo() {
+        this.banInfo = await this.guild.fetchBan(this.user.id);
+        return this.banInfo;
+    }
+
+    /**
      * ban this user from this guild
      * @param {Database}                            database
      * @param {String}                              reason
@@ -47,7 +63,7 @@ class Member {
      * @return {Promise<void>}
      */
     async ban(database, reason, moderator, duration){
-        await this.dmPunishedUser('banned', reason, duration)
+        await this.dmPunishedUser('banned', reason, duration);
         await this.guild.guild.members.ban(this.user.id, {days: 1, reason: `${moderator.username}#${moderator.discriminator} ${duration ? `(${util.secToTime(duration)}) ` : ''}| ${reason}`});
         const id = await database.addModeration(this.guild.guild.id, this.user.id, 'ban', reason, duration, moderator.id);
         await Log.logModeration(this.guild.guild.id, moderator, this.user, reason, id, 'ban', { time: util.secToTime(duration) });
@@ -61,9 +77,9 @@ class Member {
      * @return {Promise<void>}
      */
     async softban(database, reason, moderator){
-        await this.dmPunishedUser('softbanned', reason)
+        await this.dmPunishedUser('softbanned', reason);
         await this.guild.guild.members.ban(this.user.id, {days: 1, reason: `${moderator.username}#${moderator.discriminator} | ${reason}`});
-        await this.guild.guild.members.unban(this.user.id, `softban`);
+        await this.guild.guild.members.unban(this.user.id, 'softban');
         const id = await database.addModeration(this.guild.guild.id, this.user.id, 'softban', reason, null, moderator.id);
         await Log.logModeration(this.guild.guild.id, moderator, this.user, reason, id, 'softban');
     }
@@ -76,7 +92,7 @@ class Member {
      * @return {Promise<void>}
      */
     async kick(database, reason, moderator){
-        await this.dmPunishedUser('kicked', reason)
+        await this.dmPunishedUser('kicked', reason);
         if (!this.member && await this.fetchMember() === null) return;
         await this.member.kick(`${moderator.username}#${moderator.discriminator} | ${reason}`);
         const id = await database.addModeration(this.guild.guild.id, this.user.id, 'kick', reason, null, moderator.id);
@@ -92,10 +108,10 @@ class Member {
      * @return {Promise<void>}
      */
     async mute(database, reason, moderator, duration){
-        await this.dmPunishedUser('muted', reason, duration)
+        await this.dmPunishedUser('muted', reason, duration);
         if (!this.member) await this.fetchMember();
         if (this.member) {
-            const {mutedRole} = await GuildConfig.get(this.guild.guild.id)
+            const {mutedRole} = await GuildConfig.get(this.guild.guild.id);
             await this.member.roles.add(mutedRole, `${moderator.username}#${moderator.discriminator} ${duration ? `(${util.secToTime(duration)}) ` : ''}| ${reason}`);
         }
         const id = await database.addModeration(this.guild.guild.id, this.user.id, 'mute', reason, duration, moderator.id);
