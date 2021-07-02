@@ -1,6 +1,7 @@
 const config = require('../config.json');
 const Config = require('./Config');
 const Discord = require('discord.js');
+const {MessageEmbed} = require('discord.js');
 
 /**
  * Class representing the config of a guild
@@ -60,6 +61,56 @@ class GuildConfig extends Config {
         this.raidMode = json.raidMode || false;
         this.antiSpam = typeof(json.antiSpam) === 'number' ? json.antiSpam : -1;
         this.similarMessages = json.similarMessages || -1;
+    }
+
+    /**
+     * generate a settings embed
+     * @returns {module:"discord.js".MessageEmbed}
+     */
+    getSettings() {
+        const util = require('./util');
+        return new MessageEmbed()
+            .setTitle(`Settings | Prefix: ${this.prefix}`)
+            .addField('Moderation', this.getModerationSettings(), false)
+            .addField('Automod', this.getAutomodSettings(), false)
+            .addField('Connections', this.getConnectionsSettings(), false)
+            .setColor(util.color.red);
+    }
+
+    /**
+     * generate an overview of moderation settings
+     * @returns {string}
+     */
+    getModerationSettings() {
+        return `Log: ${this.logChannel ? `<#${this.logChannel}>` : 'disabled'}\n` +
+            `Message Log: ${this.messageLogChannel ? `<#${this.messageLogChannel}>` : 'disabled'}\n` +
+            `Muted role: ${this.mutedRole ? `<@&${this.mutedRole}>` : 'disabled'}\n` +
+            `Mod roles: ${this.listModRoles()}\n` +
+            `Protected roles: ${this.listProtectedRoles()}\n`;
+    }
+
+    /**
+     * generate an overview of connection settings
+     * @returns {string}
+     */
+    getConnectionsSettings() {
+        //How can youtube's link shortener *NOT* support playlists?
+        return `Playlist: ${this.playlist ? `https://www.youtube.com/playlist?list=${this.playlist}` : 'disabled'}` +
+            `Helpcenter: ${this.helpcenter ? `https://${this.helpcenter}.zendesk.com/` : 'disabled'}\n`;
+    }
+
+    /**
+     * generate an overview of automod settings
+     * @returns {String}
+     */
+    getAutomodSettings() {
+        const util = require('./util');
+        return `Invites: ${this.invites ? 'allowed' : 'forbidden'}\n` +
+            `Link cooldown: ${this.linkCooldown !== -1 ? util.secToTime(this.linkCooldown) : 'disabled'}\n` +
+            `Caps: ${this.caps ? 'forbidden' : 'allowed'}\n` +
+            `Max mentions: ${this.maxMentions === -1 ? 'disabled' : this.maxMentions}\n` +
+            `Spam protection: ${this.antiSpam === -1 ? 'disabled' : `${this.antiSpam} messages per minute`}\n` +
+            `Repeated message protection: ${this.similarMessages === -1 ? 'disabled' : `${this.similarMessages} similar messages per minute`}\n`;
     }
 
     /**
