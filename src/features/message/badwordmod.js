@@ -6,7 +6,7 @@ const strike = require('../../commands/legacy/strike');
 exports.event = async (options, message) => {
     if (!message.guild || await util.ignoresAutomod(message)) return;
 
-    const words = await BadWord.get(message.channel.id, message.guild.id);
+    const words = (await BadWord.get(message.channel.id, message.guild.id)).sort((a,b) => b.priority - a.priority);
     for (let [,word] of words) {
         if (word.matches(message)) {
             const reason = 'Using forbidden words or phrases';

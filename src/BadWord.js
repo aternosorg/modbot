@@ -13,7 +13,7 @@ class BadWord extends ChatTriggeredFeature {
 
     static tableName = 'badWords';
 
-    static columns = ['guildid', 'trigger', 'punishment', 'response', 'global', 'channels'];
+    static columns = ['guildid', 'trigger', 'punishment', 'response', 'global', 'channels', 'priority'];
 
     /**
      * constructor - create a bad word
@@ -57,7 +57,7 @@ class BadWord extends ChatTriggeredFeature {
      * @returns {(*|string)[]}
      */
     serialize() {
-        return [this.gid, JSON.stringify(this.trigger), JSON.stringify(this.punishment), this.response, this.global, this.channels.join(',')];
+        return [this.gid, JSON.stringify(this.trigger), JSON.stringify(this.punishment), this.response, this.global, this.channels.join(','), this.priority];
     }
 
     /**
@@ -110,7 +110,7 @@ class BadWord extends ChatTriggeredFeature {
      * @param {String} triggerContent
      * @returns {Promise<{success:boolean, badWord: BadWord, message: String}>}
      */
-    static async create(guildID, global, channels, triggerType, triggerContent) {
+    static async new(guildID, global, channels, triggerType, triggerContent) {
 
         let trigger = this.getTrigger(triggerType, triggerContent);
         if (!trigger.success) return trigger;

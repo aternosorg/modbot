@@ -32,7 +32,7 @@ class BadWordCommand extends Command {
         }
     }
 
-    static names = ['badword','badwords','blacklist'];
+    static names = ['badword','badwords','bw'];
 
     static userPerms = ['MANAGE_GUILD'];
 
@@ -71,14 +71,13 @@ class BadWordCommand extends Command {
                 const global = this.args[0].toLowerCase() === 'global';
 
                 let channels;
-                console.log(!!this.message.guild.channels.resolve('749286933171142780'));
                 if (!global) channels = await util.channelMentions(this.message.guild, this.args);
                 else this.args.shift();
 
                 const type = this.args.shift().toLowerCase();
                 const content = this.args.join(' ');
 
-                let badWord = await BadWord.create(this.message.guild.id, global, channels, type, content);
+                let badWord = await BadWord.new(this.message.guild.id, global, channels, type, content);
                 if (!badWord.success) return this.message.channel.send(badWord.message);
 
                 await this.message.channel.send(badWord.badWord.embed('Added new bad word', util.color.green));
