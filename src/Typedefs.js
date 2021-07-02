@@ -22,20 +22,6 @@
  */
 
 /**
- * A trigger for an AutoResponse this can be:
- * * a string that has to be included
- * * a string that has to match the message
- * * a regex
- * @typedef {Object} Trigger
- * @property {String} type the type of the trigger possible types:
- * * regex
- * * include
- * * match
- * @property {String} content the string or regex
- * @property {String} [flags] flags for regex's
- */
-
-/**
  * Data that resolves to give a Guild object. This can be:
  * * A Message object
  * * A Guild object

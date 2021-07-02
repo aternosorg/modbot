@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const Trigger = require('./Trigger');
 
 /**
  * Database
@@ -39,10 +40,20 @@ class ChatTriggeredFeature {
     static columns;
 
     /**
-     * @param {Number} id ID in the database
+     * @type {Object}
+     * @property {String} type
+     * @property {String} content
+     * @property {String} [flags]
      */
-    constructor(id) {
+    trigger;
+
+    /**
+     * @param {Number} id ID in the database
+     * @param {Trigger} trigger
+     */
+    constructor(id, trigger) {
         this.id = id;
+        this.trigger = new Trigger(trigger);
     }
 
     /**
@@ -89,27 +100,37 @@ class ChatTriggeredFeature {
      */
     matches(message) {
         switch (this.trigger.type) {
-            case "include":
+            case 'include':
                 if (message.content.toLowerCase().includes(this.trigger.content.toLowerCase())) {
                     return true;
                 }
                 break;
 
-            case "match":
+            case 'match':
                 if (message.content.toLowerCase() === this.trigger.content.toLowerCase()) {
                     return true;
                 }
                 break;
 
-            case "regex":
-                let regex = new RegExp(this.trigger.content,this.trigger.flags);
+            case 'regex': {
+                let regex = new RegExp(this.trigger.content, this.trigger.flags);
                 if (regex.test(message.content)) {
                     return true;
                 }
                 break;
+            }
         }
 
         return false;
+    }
+
+    /**
+     * serialize this object
+     * must return data in same order as the static columns array
+     * @returns {(*|string)[]}
+     */
+    serialize() {
+        throw 'Abstract method not overridden!';
     }
 
     /**
@@ -118,24 +139,33 @@ class ChatTriggeredFeature {
      * @return {Promise<Number>} id in db
      */
     async save() {
-        if (!this.channels) this.channels = null;
-
-        let dbentry = await database.queryAll(`INSERT INTO ${database.escapeId(this.constructor.tableName)} (${database.escapeIdArray(this.constructor.columns).join(', ')}) VALUES (${',?'.repeat(this.constructor.columns.length).slice(1)})`,this.serialize());
-
-        this.id = dbentry.insertId;
+        if (this.id) {
+            let assignments = [],
+                columns = this.constructor.columns,
+                data = this.serialize();
+            for (let i = 0; i < columns.length; i++) {
+                assignments.push(`${database.escapeId(columns[i])}=${database.escapeValue(data[i])}`);
+            }
+            if (data.length !== columns.length) throw 'Unable to update, lengths differ!';
+            await database.queryAll(`UPDATE ${database.escapeId(this.constructor.tableName)} SET ${assignments.join(', ')} WHERE id = ?`, [this.id]);
+        }
+        else {
+            let dbentry = await database.queryAll(`INSERT INTO ${database.escapeId(this.constructor.tableName)} (${database.escapeIdArray(this.constructor.columns).join(', ')}) VALUES (${',?'.repeat(this.constructor.columns.length).slice(1)})`,this.serialize());
+            this.id = dbentry.insertId;
+        }
 
         if (this.global) {
-            if (!this.constructor.getGuildCache().has(this.gid)) this.constructor.getGuildCache().set(this.gid, new Discord.Collection())
+            if (!this.constructor.getGuildCache().has(this.gid)) return this.id;
             this.constructor.getGuildCache().get(this.gid).set(this.id, this);
         }
         else {
             for (const channel of this.channels) {
-                if(!this.constructor.getChannelCache().has(channel)) this.constructor.getChannelCache().set(channel, new Discord.Collection());
+                if(!this.constructor.getChannelCache().has(channel)) continue;
                 this.constructor.getChannelCache().get(channel).set(this.id, this);
             }
         }
 
-        return dbentry.insertId;
+        return this.id;
     }
 
     /**
@@ -158,6 +188,59 @@ class ChatTriggeredFeature {
                 }
             }
         }
+    }
+
+    /**
+     * create this object from data retrieved from the database
+     * @param data
+     * @returns {Promise<ChatTriggeredFeature>}
+     */
+    static fromData(data) {
+        return new this(data.guildid, {
+            trigger: JSON.parse(data.trigger),
+            punishment: data.punishment,
+            response: data.response,
+            global: data.global === 1,
+            channels: data.channels.split(','),
+            priority: data.priority
+        }, data.id);
+    }
+
+    /**
+     * Get a single bad word / autoresponse
+     * @param {String|Number} id
+     * @returns {Promise<null|ChatTriggeredFeature>}
+     */
+    static async getByID(id) {
+        const result = await database.query(`SELECT * FROM ${database.escapeId(this.tableName)} WHERE id = ?`, [id]);
+        if (!result) return null;
+        return this.fromData(result);
+    }
+
+    /**
+     * get a trigger
+     * @param {String} type trigger type
+     * @param {String} value trigger value
+     * @returns {{trigger: Trigger, success: boolean, message: string}}
+     */
+    static getTrigger(type, value) {
+        if (!this.triggerTypes.includes(type)) return {success: false, message: 'Unknown trigger type'};
+        if (!value) return  {success: false, message:'Empty triggers are not allowed'};
+
+        let content = value, flags;
+        if (type === 'regex') {
+            /** @type {String[]}*/
+            let parts = value.split(/(?<!\\)\//);
+            if (parts.length < 2 || parts.shift()?.length) return {success: false, message:'Invalid regex trigger'};
+            [content, flags] = parts;
+            try {
+                new RegExp(content, flags);
+            } catch {
+                throw {success: false, message:'Invalid regex trigger'};
+            }
+        }
+
+        return {success: true, trigger:new Trigger({type, content: content, flags: flags})};
     }
 
     /**
@@ -191,13 +274,7 @@ class ChatTriggeredFeature {
 
         const collection = new Discord.Collection();
         for (const res of result) {
-            collection.set(res.id, new this(res.guildid, {
-                trigger: JSON.parse(res.trigger),
-                punishment: res.punishment,
-                response: res.response,
-                global: res.global === 1,
-                channels: res.channels.split(',')
-            }, res.id));
+            collection.set(res.id, this.fromData(res));
         }
 
         return collection.sort((a, b) => a.id - b.id);
@@ -213,14 +290,7 @@ class ChatTriggeredFeature {
 
         const newItems = new Discord.Collection();
         for (const res of result) {
-            const o = new this(res.guildid, {
-                trigger: JSON.parse(res.trigger),
-                punishment: res.punishment,
-                response: res.response,
-                global: true,
-                channels: []
-            }, res.id);
-            newItems.set(res.id, o);
+            newItems.set(res.id, this.fromData(res));
         }
         this.getGuildCache().set(guildId, newItems);
         setTimeout(() => {
@@ -238,13 +308,7 @@ class ChatTriggeredFeature {
 
         const newItems = new Discord.Collection();
         for (const res of result) {
-            newItems.set(res.id, new this(res.guildid, {
-                trigger: JSON.parse(res.trigger),
-                response: res.response,
-                punishment: res.punishment,
-                global: false,
-                channels: res.channels.split(',')
-            }, res.id));
+            newItems.set(res.id, this.fromData(res));
         }
         this.getChannelCache().set(channelId, newItems);
         setTimeout(() => {

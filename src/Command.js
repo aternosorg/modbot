@@ -205,7 +205,7 @@ class Command {
 
     /**
      * generate a multi page response
-     * @param {function} generatePage generate a new page (index, ..args)
+     * @param {function} generatePage generate a new page (index)
      * @param {Number} [pages] number of possible pages
      * @param {Number} [duration] inactivity timeout in ms (default: 60s)
      */
