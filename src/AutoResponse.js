@@ -22,19 +22,19 @@ class AutoResponse extends ChatTriggeredFeature {
    * @return {AutoResponse} the auto response
    */
   constructor(gid, json, id) {
-    super(id);
-    this.gid = gid;
+      super(id);
+      this.gid = gid;
 
-    if (json) {
-      this.trigger = json.trigger;
-      this.response = json.response;
-      this.global = json.global;
-      this.channels = json.channels;
-    }
+      if (json) {
+          this.trigger = json.trigger;
+          this.response = json.response;
+          this.global = json.global;
+          this.channels = json.channels;
+      }
 
-    if (!this.channels) {
-      this.channels = [];
-    }
+      if (!this.channels) {
+          this.channels = [];
+      }
   }
 
   /**
@@ -42,7 +42,7 @@ class AutoResponse extends ChatTriggeredFeature {
    * @returns {(*|string)[]}
    */
   serialize() {
-    return [this.gid, JSON.stringify(this.trigger), this.response, this.global, this.channels.join(',')];
+      return [this.gid, JSON.stringify(this.trigger), this.response, this.global, this.channels.join(',')];
   }
 
   /**
@@ -52,15 +52,15 @@ class AutoResponse extends ChatTriggeredFeature {
    * @returns {module:"discord.js".MessageEmbed}
    */
   embed(title, color) {
-    return new Discord.MessageEmbed()
-        .setTitle(title + ` [${this.id}]`)
-        .setColor(color)
-        .addFields(
-            /** @type {any} */[
-          {name: "Trigger", value: `${this.trigger.type}: \`${this.trigger.type === 'regex' ? '/' + this.trigger.content + '/' + this.trigger.flags : this.trigger.content}\``.substring(0, 1000)},
-          {name: "Response", value: this.response.substring(0,1000)},
-          {name: "Channels", value: this.global ? "global" : this.channels.map(c => `<#${c}>`).join(', ').substring(0, 1000)}
-        ]);
+      return new Discord.MessageEmbed()
+          .setTitle(title + ` [${this.id}]`)
+          .setColor(color)
+          .addFields(
+              /** @type {any} */[
+                  {name: 'Trigger', value: `${this.trigger.type}: \`${this.trigger.type === 'regex' ? '/' + this.trigger.content + '/' + this.trigger.flags : this.trigger.content}\``.substring(0, 1000)},
+                  {name: 'Response', value: this.response.substring(0,1000)},
+                  {name: 'Channels', value: this.global ? 'global' : this.channels.map(c => `<#${c}>`).join(', ').substring(0, 1000)}
+              ]);
   }
 
 }
