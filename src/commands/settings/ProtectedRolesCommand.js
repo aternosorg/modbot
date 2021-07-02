@@ -24,7 +24,7 @@ class ProtectedRolesCommand extends Command {
         switch (this.args[0].toLowerCase()) {
             case 'list':
                 await this.message.channel.send(new Discord.MessageEmbed()
-                    .setDescription(`Active moderator roles: ${this.guildConfig.listProtectedRoles()}`)
+                    .setDescription(`Active protected roles: ${this.guildConfig.listProtectedRoles()}`)
                     .setColor(util.color.green)
                 );
                 break;
@@ -63,7 +63,7 @@ class ProtectedRolesCommand extends Command {
                     );
                 }
 
-                this.guildConfig.removeModRole(role);
+                this.guildConfig.removeProtectedRole(role);
                 await this.guildConfig.save();
                 await this.message.channel.send(new Discord.MessageEmbed()
                     .setDescription(`<@&${role}> is no longer a protected role!`)
