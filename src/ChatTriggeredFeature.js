@@ -1,4 +1,5 @@
 const Discord = require('discord.js');
+const Trigger = require('./Trigger');
 
 /**
  * Database
@@ -39,10 +40,20 @@ class ChatTriggeredFeature {
     static columns;
 
     /**
-     * @param {Number} id ID in the database
+     * @type {Object}
+     * @property {String} type
+     * @property {String} content
+     * @property {String} [flags]
      */
-    constructor(id) {
+    trigger;
+
+    /**
+     * @param {Number} id ID in the database
+     * @param {Trigger} trigger
+     */
+    constructor(id, trigger) {
         this.id = id;
+        this.trigger = new Trigger(trigger);
     }
 
     /**
@@ -89,24 +100,25 @@ class ChatTriggeredFeature {
      */
     matches(message) {
         switch (this.trigger.type) {
-            case "include":
+            case 'include':
                 if (message.content.toLowerCase().includes(this.trigger.content.toLowerCase())) {
                     return true;
                 }
                 break;
 
-            case "match":
+            case 'match':
                 if (message.content.toLowerCase() === this.trigger.content.toLowerCase()) {
                     return true;
                 }
                 break;
 
-            case "regex":
-                let regex = new RegExp(this.trigger.content,this.trigger.flags);
+            case 'regex': {
+                let regex = new RegExp(this.trigger.content, this.trigger.flags);
                 if (regex.test(message.content)) {
                     return true;
                 }
                 break;
+            }
         }
 
         return false;
@@ -125,7 +137,7 @@ class ChatTriggeredFeature {
         this.id = dbentry.insertId;
 
         if (this.global) {
-            if (!this.constructor.getGuildCache().has(this.gid)) this.constructor.getGuildCache().set(this.gid, new Discord.Collection())
+            if (!this.constructor.getGuildCache().has(this.gid)) this.constructor.getGuildCache().set(this.gid, new Discord.Collection());
             this.constructor.getGuildCache().get(this.gid).set(this.id, this);
         }
         else {
@@ -158,6 +170,49 @@ class ChatTriggeredFeature {
                 }
             }
         }
+    }
+
+    /**
+     * Get a single bad word / autoresponse
+     * @param {String|Number} id
+     * @returns {Promise<null|ChatTriggeredFeature>}
+     */
+    static async getByID(id) {
+        const result = await database.query(`SELECT * FROM ${database.escapeId(this.tableName)} WHERE id = ?`, [id]);
+        if (!result) return null;
+        return new this(result.guildid, {
+            trigger: JSON.parse(result.trigger),
+            punishment: result.punishment,
+            response: result.response,
+            global: result.global === 1,
+            channels: result.channels.split(',')
+        }, result.id);
+    }
+
+    /**
+     * get a trigger
+     * @param {String} type trigger type
+     * @param {String} value trigger value
+     * @returns {{trigger: Trigger, success: boolean, message: string}}
+     */
+    static getTrigger(type, value) {
+        if (!this.triggerTypes.includes(type)) return {success: false, message: 'Unknown trigger type'};
+        if (!value) return  {success: false, message:'Empty triggers are not allowed'};
+
+        let content = value, flags;
+        if (type === 'regex') {
+            /** @type {String[]}*/
+            let parts = value.split(/(?<!\\)\//);
+            if (parts.length < 2 || parts.shift()?.length) return {success: false, message:'Invalid regex trigger'};
+            [content, flags] = parts;
+            try {
+                new RegExp(content, flags);
+            } catch {
+                throw {success: false, message:'Invalid regex trigger'};
+            }
+        }
+
+        return {success: true, trigger:new Trigger({type, content: content, flags: flags})};
     }
 
     /**

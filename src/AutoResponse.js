@@ -22,11 +22,10 @@ class AutoResponse extends ChatTriggeredFeature {
    * @return {AutoResponse} the auto response
    */
   constructor(gid, json, id) {
-      super(id);
+      super(id, json.trigger);
       this.gid = gid;
 
       if (json) {
-          this.trigger = json.trigger;
           this.response = json.response;
           this.global = json.global;
           this.channels = json.channels;
