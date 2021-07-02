@@ -27,11 +27,12 @@ class Guild {
     /**
      * fetch a guild member
      * @param {module:"discord.js".Snowflake}   id  user id
+     * @param {boolean} [force] bypass cache
      * @return {Promise<null|module:"discord.js".GuildMember>}
      */
-    async fetchMember(id) {
+    async fetchMember(id, force = false) {
         try {
-            return await this.guild.members.fetch(id);
+            return await this.guild.members.fetch(id, {force});
         }
         catch (e) {
             if (e.code === APIErrors.UNKNOWN_MEMBER) {
