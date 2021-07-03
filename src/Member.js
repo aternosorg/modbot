@@ -2,6 +2,7 @@ const Guild = require('./Guild');
 const Log = require('./Log');
 const util = require('./util');
 const GuildConfig = require('./GuildConfig');
+const {APIErrors} = require('discord.js').Constants;
 
 class Member {
 
@@ -68,6 +69,39 @@ class Member {
         await this.guild.guild.members.ban(this.user.id, {days: 1, reason: `${moderator.username}#${moderator.discriminator} ${duration ? `(${util.secToTime(duration)}) ` : ''}| ${reason}`});
         const id = await database.addModeration(this.guild.guild.id, this.user.id, 'ban', reason, duration, moderator.id);
         await Log.logModeration(this.guild.guild.id, moderator, this.user, reason, id, 'ban', { time: util.secToTime(duration) });
+    }
+
+    /**
+     * unban this member
+     * @param {Database}                            database
+     * @param {String}                              reason
+     * @param {module:"discord.js".User|ClientUser} moderator
+     * @return {Promise<void>}
+     */
+    async unban(database, reason, moderator){
+        try {
+            await this.guild.guild.members.unban(this.user, `${moderator.username}#${moderator.discriminator} | ${reason}`);
+        }
+        catch (e) {
+            if (e.code !== APIErrors.UNKNOWN_BAN) {
+                throw e;
+            }
+        }
+        await database.query('UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'ban\'', [this.guild.guild.id, this.user.id]);
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'unban', reason, null, moderator.id);
+        await Log.logModeration(this.guild.guild.id, moderator, this.user, reason, id, 'unban');
+    }
+
+    /**
+     * is this member banned
+     * @param {Database} database
+     * @returns {Promise<boolean>}
+     */
+    async isBanned(database) {
+        await this.fetchBanInfo();
+        if (this.banInfo) return true;
+        const response = await database.query('SELECT * FROM moderations WHERE active = TRUE AND action = \'ban\' AND guildid = ? AND userid = ?', [this.guild.guild.id, this.user.id]);
+        return !!response;
     }
 
     /**
