@@ -7,7 +7,7 @@ class ModRolesCommand extends Command {
 
     static description = 'Manage moderator roles';
 
-    static usage = 'add|remove|list <[@role|id]>';
+    static usage = 'add|remove|list [<@role|id>]';
 
     static names = ['modrole','modroles'];
 

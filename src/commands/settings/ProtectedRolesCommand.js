@@ -7,7 +7,7 @@ class ProtectedRolesCommand extends Command {
 
     static description = 'Manage protected roles';
 
-    static usage = 'add|remove|list <[@role|id]>';
+    static usage = 'add|remove|list [<@role|id>]';
 
     static names = ['protectedroles','protectedrole','protected','protect'];
 
