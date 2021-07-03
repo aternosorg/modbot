@@ -32,7 +32,7 @@ class UserInfoCommand extends Command {
             this.database.query('SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = \'mute\'',[userID,guildID]),
             this.database.query('SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = \'ban\'', [userID,guildID]),
         ]);
-        if (!mute && guildMember.roles.cache.has(this.guildConfig.mutedRole)) mute = {reason: 'Unknown reason and timer'};
+        if (!mute && guildMember && guildMember.roles.cache.has(this.guildConfig.mutedRole)) mute = {reason: 'Unknown reason and timer'};
         let muteTime = getRemainingDuration(mute);
         let banTime = getRemainingDuration(ban);
         if (!ban && await member.fetchBanInfo()) ban = member.banInfo;
@@ -45,7 +45,7 @@ class UserInfoCommand extends Command {
                 `**Account Created:** ${user.createdAt.toUTCString()}\n` +
                 (guildMember?.joinedAt ? `**Joined Guild:** ${guildMember.joinedAt.toUTCString()}\n` : '') +
                 `**Moderations:** ${moderations.count}\n` +
-                `**Strikes:** ${strikes.sum}\n` +
+                `**Strikes:** ${strikes||0}\n` +
                 `**Muted:** ${mute ? `${icons.yes} - ${mute.reason}`: icons.no}\n` +
                 (muteTime ? `**Remaining:** ${muteTime}\n` : '') +
                 `**Banned:** ${ban ? `${icons.yes} - ${ban.reason || 'Unknown Reason'}` : icons.no}\n` +
