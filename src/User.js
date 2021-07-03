@@ -30,8 +30,18 @@ class User {
     /**
      * fetch this user
      * @return {Promise<User>}
+     * @deprecated
      */
     async fetch() {
+        await this.fetchUser();
+        return this;
+    }
+
+    /**
+     * fetch this user
+     * @return {Promise<module:"discord.js".User>}
+     */
+    async fetchUser() {
         try {
             this.user = await this.client.users.fetch(this.id);
         }
@@ -43,7 +53,7 @@ class User {
                 throw e;
             }
         }
-        return this;
+        return this.user;
     }
 
     /**
