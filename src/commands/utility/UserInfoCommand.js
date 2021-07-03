@@ -45,7 +45,7 @@ class UserInfoCommand extends Command {
                 `**Account Created:** ${user.createdAt.toUTCString()}\n` +
                 (guildMember?.joinedAt ? `**Joined Guild:** ${guildMember.joinedAt.toUTCString()}\n` : '') +
                 `**Moderations:** ${moderations.count}\n` +
-                `**Strikes:** ${strikes||0}\n` +
+                `**Strikes:** ${strikes?.sum||0}\n` +
                 `**Muted:** ${mute ? `${icons.yes} - ${mute.reason}`: icons.no}\n` +
                 (muteTime ? `**Remaining:** ${muteTime}\n` : '') +
                 `**Banned:** ${ban ? `${icons.yes} - ${ban.reason || 'Unknown Reason'}` : icons.no}\n` +
