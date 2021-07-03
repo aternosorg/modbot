@@ -21,6 +21,13 @@ class Member {
     member;
 
     /**
+     * @type {Object|null}
+     * @property {String|null} reason
+     * @property {module:"discord.js".User} user
+     */
+    banInfo;
+
+    /**
      * @param {module:"discord.js".User}    user
      * @param {module:"discord.js".Guild}   guild
      */
@@ -37,6 +44,15 @@ class Member {
     async fetchMember(force) {
         this.member = await this.guild.fetchMember(this.user.id, force);
         return this.member;
+    }
+
+    /**
+     * fetch a ban
+     * @returns {Promise<null|{reason: String|null}>}
+     */
+    async fetchBanInfo() {
+        this.banInfo = await this.guild.fetchBan(this.user.id);
+        return this.banInfo;
     }
 
     /**
