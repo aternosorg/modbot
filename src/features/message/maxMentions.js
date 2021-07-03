@@ -1,7 +1,7 @@
 const util = require('../../util');
 const Log = require('../../Log');
 const GuildConfig = require('../../GuildConfig');
-const strike = require('../../commands/legacy/strike');
+const Member = require('../../Member');
 
 exports.event = async (options, message) => {
     if (!message.guild || await util.ignoresAutomod(message)) return;
@@ -17,6 +17,7 @@ exports.event = async (options, message) => {
         /** @type {module:"discord.js".Message} */
         const response = await message.channel.send(`<@!${message.author.id}> You're not allowed to mention more than ${guildConfig.maxMentions} users!`);
         await response.delete({ timeout: 3000 });
-        await strike.executePunishment({ action: 'strike' }, message.guild, message.author, options.bot, options.database, reason)
+        await (new Member(message.author, message.guild))
+            .executePunishment({ action: 'strike' }, options.database, reason);
     }
 };

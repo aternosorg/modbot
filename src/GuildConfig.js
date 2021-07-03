@@ -228,6 +228,20 @@ class GuildConfig extends Config {
     }
 
     /**
+     * find the last punishment
+     * @param {Number} strikes
+     * @return {Punishment}
+     */
+    findPunishment(strikes) {
+        let punishment;
+        do {
+            punishment = this.getPunishment(strikes);
+            strikes --;
+        } while (!punishment && strikes > 0);
+        return punishment;
+    }
+
+    /**
      * set a punishment
      * @param {Number} strikes
      * @param {Punishment|null} punishment
