@@ -95,7 +95,7 @@ class GuildConfig extends Config {
      */
     getConnectionsSettings() {
         //How can youtube's link shortener *NOT* support playlists?
-        return `Playlist: ${this.playlist ? `https://www.youtube.com/playlist?list=${this.playlist}` : 'disabled'}` +
+        return `Playlist: ${this.playlist ? `https://www.youtube.com/playlist?list=${this.playlist}` : 'disabled'}\n` +
             `Helpcenter: ${this.helpcenter ? `https://${this.helpcenter}.zendesk.com/` : 'disabled'}\n`;
     }
 
