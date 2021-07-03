@@ -32,7 +32,7 @@ class UserInfoCommand extends Command {
             this.database.query('SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = \'mute\'',[userID,guildID]),
             this.database.query('SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = \'ban\'', [userID,guildID]),
         ]);
-        if (!mute && guildMember.roles.cache.has(this.guildConfig.mutedRole)) mute = {reason: 'Unknown reason and timer'};
+        if (!mute && guildMember && guildMember.roles.cache.has(this.guildConfig.mutedRole)) mute = {reason: 'Unknown reason and timer'};
         let muteTime = getRemainingDuration(mute);
         let banTime = getRemainingDuration(ban);
         if (!ban && await member.fetchBanInfo()) ban = member.banInfo;
