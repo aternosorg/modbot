@@ -210,6 +210,17 @@ util.isChannel = (guild, id) => {
 };
 
 /**
+ * Is this id a valid role id?
+ * @async
+ * @param {module:"discord.js".Guild}     guild the guild that should have this role
+ * @param {module:"discord.js".Snowflake} id role id
+ * @return {Boolean}
+ */
+util.isRole = (guild, id) => {
+    return !!guild.roles.fetch(/** @type {Snowflake} */ id);
+};
+
+/**
  * Converts a time string ("1d 5h 2s") to seconds. Supported time values: s, m, h, d, w, M, y
  * @param {String} time a time string ("1d 5h 2s")
  * @return {Number} time in seconds
