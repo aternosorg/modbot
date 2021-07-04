@@ -74,6 +74,8 @@ class BadWordCommand extends Command {
                 if (!global) channels = await util.channelMentions(this.message.guild, this.args);
                 else this.args.shift();
 
+                if (!global && !channels.length) return this.sendUsage();
+
                 const type = this.args.shift().toLowerCase();
                 const content = this.args.join(' ');
 

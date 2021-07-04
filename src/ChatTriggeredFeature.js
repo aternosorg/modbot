@@ -143,11 +143,12 @@ class ChatTriggeredFeature {
             let assignments = [],
                 columns = this.constructor.columns,
                 data = this.serialize();
-            for (let i = 0; i < columns.length; i++) {
-                assignments.push(`${database.escapeId(columns[i])}=${database.escapeValue(data[i])}`);
+            for (const column of columns) {
+                assignments.push(`${database.escapeId(column)}=?`);
             }
             if (data.length !== columns.length) throw 'Unable to update, lengths differ!';
-            await database.queryAll(`UPDATE ${database.escapeId(this.constructor.tableName)} SET ${assignments.join(', ')} WHERE id = ?`, [this.id]);
+            data.push(this.id);
+            await database.queryAll(`UPDATE ${database.escapeId(this.constructor.tableName)} SET ${assignments.join(', ')} WHERE id = ?`, data);
         }
         else {
             let dbentry = await database.queryAll(`INSERT INTO ${database.escapeId(this.constructor.tableName)} (${database.escapeIdArray(this.constructor.columns).join(', ')}) VALUES (${',?'.repeat(this.constructor.columns.length).slice(1)})`,this.serialize());
@@ -236,7 +237,7 @@ class ChatTriggeredFeature {
             try {
                 new RegExp(content, flags);
             } catch {
-                throw {success: false, message:'Invalid regex trigger'};
+                return {success: false, message:'Invalid regex trigger'};
             }
         }
 
