@@ -263,7 +263,7 @@ class GuildConfig extends Config {
         const punishments = new Discord.Collection();
 
         for (const key of Object.keys(this.#punishments)) {
-            punishments.set(key, this.#punishments[key]);
+            punishments.set(parseInt(key), this.#punishments[key]);
         }
 
         return punishments;
