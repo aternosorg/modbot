@@ -174,6 +174,7 @@ util.isUserMention = async(mention) => {
  * @return {Promise<Boolean>}
  */
 util.isUser = async (id) => {
+    if (!id) return false;
     try {
         await bot.users.fetch(/** @type {Snowflake} */ id);
     } catch (e) {
@@ -545,7 +546,7 @@ util.ignoresAutomod = async (message) => {
 /**
  * Delete messages (even more than 100)
  * @async
- * @param {module:"discord.js".TextBasedChannel}                          channel
+ * @param {TextChannel | DMChannel | NewsChannel}                          channel
  * @param {module:"discord.js".Collection.<module:"discord.js".Message>}  messages messages to delete
  * @return {Promise.<Array.<module:"discord.js".Collection.<module:"discord.js".Message>>>} deleted messages
  */
@@ -553,7 +554,7 @@ util.bulkDelete = async (channel, messages) => {
     const keys = messages.keyArray();
     let requests = [];
     for (let start = 0; start < keys.length; start += 100) {
-        requests.push(channel.bulkDelete(keys.slice(start,start+100)));
+        requests.push(channel.bulkDelete(keys.slice(start,start+100), true));
     }
     return Promise.all(requests);
 };
