@@ -115,7 +115,7 @@ class Command {
 
     /**
      * Can this user run this command?
-     * @return {boolean}
+     * @return {boolean|String[]}
      */
     userHasPerms() {
         if (this.constructor.modCommand && this.guildConfig.isMod(this.message.member))
