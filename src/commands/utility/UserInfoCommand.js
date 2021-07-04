@@ -28,7 +28,7 @@ class UserInfoCommand extends Command {
             guildID = this.message.guild.id;
         let [moderations, strikes, mute, ban] = await Promise.all([
             this.database.query('SELECT COUNT(*) AS count FROM moderations WHERE userid = ? AND guildid = ?',[userID,guildID]),
-            this.database.query('SELECT SUM(value) AS sum FROM moderations WHERE guildid = ? AND userid = ? AND (action = \'strike\' OR action = \'pardon\')',[guildID, userID]),
+            member.getStrikeSum(this.database),
             this.database.query('SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = \'mute\'',[userID,guildID]),
             this.database.query('SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = \'ban\'', [userID,guildID]),
         ]);
@@ -45,7 +45,7 @@ class UserInfoCommand extends Command {
                 `**Account Created:** ${user.createdAt.toUTCString()}\n` +
                 (guildMember?.joinedAt ? `**Joined Guild:** ${guildMember.joinedAt.toUTCString()}\n` : '') +
                 `**Moderations:** ${moderations.count}\n` +
-                `**Strikes:** ${strikes?.sum||0}\n` +
+                `**Strikes:** ${strikes}\n` +
                 `**Muted:** ${mute ? `${icons.yes} - ${mute.reason}`: icons.no}\n` +
                 (muteTime ? `**Remaining:** ${muteTime}\n` : '') +
                 `**Banned:** ${ban ? `${icons.yes} - ${ban.reason || 'Unknown Reason'}` : icons.no}\n` +
