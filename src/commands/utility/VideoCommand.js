@@ -26,7 +26,16 @@ class VideoCommand extends Command {
         const query = this.args.join(' ');
         if (!query) return this.sendUsage();
 
-        const videos = await this.constructor._get(this.guildConfig.playlist);
+        let videos;
+        try {
+            videos = await this.constructor._get(this.guildConfig.playlist);
+        }
+        catch (e) {
+            if (e.response.data.error.code === 404) {
+                return this.message.channel.send('The playlist couln\'t be found. It was most likely deleted or set to private!');
+            }
+            throw e;
+        }
         const video = new Fuse(videos, {keys:['snippet.title']}).search(query)[0];
 
         if (!video) return this.message.channel.send('No video found!');

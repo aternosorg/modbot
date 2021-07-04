@@ -51,7 +51,6 @@ class PlaylistCommand extends Command {
                 await this.guildConfig.save();
                 await this.message.channel.send(new Discord.MessageEmbed()
                     .setDescription(`Set playlist to https://www.youtube.com/playlist?list=${playlistID}`)
-                    .setFooter('You can configure message logs with the \'messagelog\' command.')
                 );
             }
         }
