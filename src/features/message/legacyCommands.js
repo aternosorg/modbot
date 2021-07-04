@@ -25,7 +25,7 @@ const commands = [];
             console.error(`Failed to load legacy command 'legacy/${file}'`, e);
         }
     }
-})()
+})();
 
 /**
  *
@@ -59,7 +59,7 @@ exports.event = async(options, message) => {
         await monitor.error(`Failed to execute command ${command.names[0]}`, e);
         console.error(`An error occurred while executing command ${command.names[0]}:`,e);
     }
-}
+};
 
 /**
  * get the command in this message
@@ -69,15 +69,15 @@ exports.event = async(options, message) => {
 exports.getCommand = async (message) => {
     if (!message.guild || message.author.bot) return null;
     let guild = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */ message.guild.id);
-    const args = util.split(message.content,' ');
     let usedPrefix = util.startsWithMultiple(message.content.toLowerCase(),guild.prefix.toLowerCase(), prefix.toLowerCase());
+    const args = util.split(message.content.substring(usedPrefix.length),' ');
     if (!usedPrefix) return null;
 
-    let cmd = args.shift().slice(usedPrefix.length).toLowerCase();
+    let cmd = args.shift().toLowerCase();
     for (let command of commands) {
         if (command.names.includes(cmd)) {
             return [command,args];
         }
     }
     return null;
-}
+};
