@@ -132,6 +132,24 @@ class Member {
     }
 
     /**
+     * pardon strikes from this member
+     * @param {Database}                            database
+     * @param {String}                              reason
+     * @param {module:"discord.js".User|ClientUser} moderator
+     * @param {number}                              amount
+     * @return {Promise<void>}
+     */
+    async pardon(database, reason, moderator, amount = 1){
+        await this.guild.sendDM(this.user, `${amount} strikes have been pardoned in \`${this.guild.guild.name}\` | ${reason}`);
+
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'pardon', reason, null, moderator.id, -amount);
+        await Log.logModeration(this.guild.guild.id, moderator, this.user, reason, id, 'pardon', {
+            amount,
+            total: await this.getStrikeSum(database)
+        });
+    }
+
+    /**
      * ban this user from this guild
      * @param {Database}                            database
      * @param {String}                              reason
