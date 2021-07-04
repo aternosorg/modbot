@@ -1,5 +1,6 @@
 const ChatTriggeredFeature = require('./ChatTriggeredFeature');
 const Discord = require('discord.js');
+const util = require('./util');
 
 /**
  * Class representing an auto response
@@ -68,6 +69,76 @@ class AutoResponse extends ChatTriggeredFeature {
                 ]);
     }
 
+    /**
+     * create a new response
+     * @param {Snowflake} guildID
+     * @param {boolean} global
+     * @param {Snowflake[]|null} channels
+     * @param {String} triggerType
+     * @param {String} triggerContent
+     * @param {String} responseText
+     * @returns {Promise<{success:boolean, response: AutoResponse, message: String}>}
+     */
+    static async new(guildID, global, channels, triggerType, triggerContent, responseText) {
+        let trigger = this.getTrigger(triggerType, triggerContent);
+        if (!trigger.success) return trigger;
+
+        const response = new AutoResponse(guildID, {
+            trigger: trigger.trigger,
+            global,
+            channels,
+            response: responseText
+        });
+        await response.save();
+        return {success: true, response: response};
+    }
+
+    /**
+     * edit this auto-response
+     * @param {String} option option to change
+     * @param {String[]} args
+     * @param {module:"discord.js".Guild} guild
+     * @returns {Promise<String>} response message
+     */
+    async edit(option, args, guild) {
+        switch (option) {
+            case 'trigger': {
+                let trigger = this.constructor.getTrigger(args.shift(), args.join(' '));
+                if (!trigger.success) return trigger.message;
+                this.trigger = trigger.trigger;
+                await this.save();
+                return 'Successfully changed trigger';
+            }
+
+            case 'response': {
+                let response = args.join(' ');
+                if (!response) response = 'disabled';
+
+                this.response = response;
+                await this.save();
+                return `Successfully ${response === 'disabled' ? 'disabled' : 'changed'} response`;
+            }
+
+            case 'channels': {
+                if (args[0].toLowerCase() === 'global') {
+                    this.global = true;
+                    this.channels = [];
+                }
+                else {
+                    let channels = await util.channelMentions(guild, args);
+                    if (!channels) return 'No valid channels specified';
+                    this.global = false;
+                    this.channels = channels;
+                }
+                await this.save();
+                return global ? 'Successfully made this auto-response global' : 'Successfully changed channels';
+            }
+
+            default: {
+                return 'Unknown option';
+            }
+        }
+    }
 }
 
 module.exports = AutoResponse;
