@@ -35,7 +35,7 @@ class LogChannelCommand extends Command {
             case 'status':
                 await this.message.channel.send(new Discord.MessageEmbed()
                     .setDescription(`The muted role is ${this.guildConfig.mutedRole ? `<@&${this.guildConfig.mutedRole}>` : 'currently disabled'}.`)
-                    .setColor(this.guildConfig.logChannel ? util.color.green : util.color.red)
+                    .setColor(this.guildConfig.mutedRole ? util.color.green : util.color.red)
                 );
                 break;
 
