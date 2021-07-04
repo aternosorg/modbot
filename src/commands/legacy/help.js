@@ -2,7 +2,7 @@ const util = require('../../util.js');
 const Discord = require('discord.js');
 const fs = require('fs').promises;
 const GuildConfig = require('../../GuildConfig');
-const CommandHandler = require('../../features/message/commands');
+const CommandHandler = require('../../features/message/CommandManager');
 const monitor = require('../../Monitor').getInstance();
 
 const command = {};

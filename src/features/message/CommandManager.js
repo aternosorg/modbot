@@ -7,7 +7,7 @@ const {APIErrors} = Discord.Constants;
 
 const monitor = require('../../Monitor').getInstance();
 
-class CommandHandler {
+class CommandManager {
     /**
      * loaded commands
      * @type {Object}
@@ -33,6 +33,12 @@ class CommandHandler {
                 try {
                     const command = require(path);
                     for (const name of command.names) {
+                        if (commands[name]) {
+                            console.error(`Two command registered the name '${name}':`);
+                            console.error(`- ${commands[name].path}`);
+                            console.error(`- ${folder}/${file}`);
+                        }
+                        command.path = `${folder}/${file}`;
                         commands[name] = command;
                     }
                 } catch (e) {
@@ -127,4 +133,4 @@ class CommandHandler {
     }
 }
 
-module.exports = CommandHandler;
+module.exports = CommandManager;
