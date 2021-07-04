@@ -175,7 +175,7 @@ class BadWord extends ChatTriggeredFeature {
                     this.channels = [];
                 }
                 else {
-                    let channels = util.channelMentions(guild, args);
+                    let channels = await util.channelMentions(guild, args);
                     if (!channels) return 'No valid channels specified';
                     this.global = false;
                     this.channels = channels;
