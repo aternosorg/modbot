@@ -52,7 +52,7 @@ class BadWordCommand extends Command {
                 let text = '';
                 for (const [id, badWord] of badWords) {
                     const info = `[${id}] ${badWord.global ? 'global' : badWord.channels.map(c => `\`${c}\``).join(', ')} ` +
-                        badWord.trigger.asString() + '\n';
+                        '`' + badWord.trigger.asString() + '`\n';
 
                     if (text.length + info.length < 2000) {
                         text += info;
@@ -73,6 +73,8 @@ class BadWordCommand extends Command {
                 let channels;
                 if (!global) channels = await util.channelMentions(this.message.guild, this.args);
                 else this.args.shift();
+
+                if (!global && !channels.length) return this.sendUsage();
 
                 const type = this.args.shift().toLowerCase();
                 const content = this.args.join(' ');
