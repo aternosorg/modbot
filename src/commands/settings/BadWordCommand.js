@@ -52,7 +52,7 @@ class BadWordCommand extends Command {
                 let text = '';
                 for (const [id, badWord] of badWords) {
                     const info = `[${id}] ${badWord.global ? 'global' : badWord.channels.map(c => `\`${c}\``).join(', ')} ` +
-                        badWord.trigger.asString() + '\n';
+                        '`' + badWord.trigger.asString() + '`\n';
 
                     if (text.length + info.length < 2000) {
                         text += info;
