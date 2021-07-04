@@ -1,7 +1,7 @@
 const ModerationCommand = require('../ModerationCommand');
 const Member = require('../../Member');
 
-class StrikeCommand extends ModerationCommand {
+class PardonCommand extends ModerationCommand {
 
     static description = 'Remove a strike from a user';
 
@@ -33,4 +33,4 @@ class StrikeCommand extends ModerationCommand {
     }
 }
 
-module.exports = StrikeCommand;
+module.exports = PardonCommand;
