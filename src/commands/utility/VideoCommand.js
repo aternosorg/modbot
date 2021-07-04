@@ -16,9 +16,21 @@ class VideoCommand extends Command {
 
     /**
      * playlist cache
-     * @type {module:"discord.js".Collection<String, Object[]>}
+     * @type {module:"discord.js".Collection<String, {data: Object, expires: Number}[]>}
      */
     static #cache = new Collection();
+
+    /**
+     * remove expired cache
+     * @type {NodeJS.Timeout}
+     */
+    static #clearCache = setInterval(() => {
+        for (const [key, value] of this.#cache) {
+            if (value.expires < Date.now()) {
+                this.#cache.delete(key);
+            }
+        }
+    }, 60*1000);
 
     async execute() {
         if (!this.guildConfig.playlist) return this.message.channel.send('No playlist specified!');
@@ -57,13 +69,10 @@ class VideoCommand extends Command {
                 playlistId: playlist,
                 maxResults: 100
             });
-            this.#cache.set(playlist, response.data.items);
-            setTimeout(() => {
-                this.#cache.delete(playlist);
-            }, 10*60*1000);
+            this.#cache.set(playlist, {data: response.data.items, expires: Date.now() + 10*60*1000});
         }
 
-        return this.#cache.get(playlist);
+        return this.#cache.get(playlist).data;
     }
 }
 
