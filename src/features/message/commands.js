@@ -24,7 +24,7 @@ class CommandHandler {
         const commands = {};
         for (const folder of fs.readdirSync(`${__dirname}/../../commands`)) {
             const dirPath = `${__dirname}/../../commands/${folder}`;
-            if (!fs.lstatSync(dirPath).isDirectory() || folder === "legacy") continue;
+            if (!fs.lstatSync(dirPath).isDirectory() || folder === 'legacy') continue;
             for (const file of fs.readdirSync(dirPath)) {
                 const path = `${dirPath}/${file}`;
                 if (!file.endsWith('.js') || !fs.lstatSync(path).isFile()) {
@@ -67,11 +67,11 @@ class CommandHandler {
             await cmd._loadConfigs();
             const userPerms = cmd.userHasPerms(), botPerms = cmd.botHasPerms();
             if (userPerms !== true) {
-                await message.channel.send(`You are missing the following permissions to execute this command: ${userPerms.join(', ')}`)
+                await message.channel.send(`You are missing the following permissions to execute this command: ${userPerms.join(', ')}`);
                 return;
             }
             if (botPerms !== true) {
-                await message.channel.send(`I am missing the following permissions to execute this command: ${botPerms.join(', ')}`)
+                await message.channel.send(`I am missing the following permissions to execute this command: ${botPerms.join(', ')}`);
                 return;
             }
             await cmd.execute();
@@ -103,13 +103,13 @@ class CommandHandler {
         if (!message.guild || message.author.bot) return {isCommand: false};
         /** @type {GuildConfig} */
         const guild = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */ message.guild.id);
-        const args = util.split(message.content,' ');
         const prefix = util.startsWithMultiple(message.content.toLowerCase(), guild.prefix.toLowerCase(), defaultPrefix.toLowerCase());
+        const args = util.split(message.content.substring(prefix.length),' ');
         if (!prefix) return {isCommand: false};
 
         return {
             isCommand: true,
-            name: args[0].slice(prefix.length).toLowerCase(),
+            name: args[0].toLowerCase(),
             prefix,
             args
         };

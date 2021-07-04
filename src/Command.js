@@ -103,7 +103,7 @@ class Command {
         this.message = message;
         this.database = database;
         this.bot = bot;
-        this.args = util.split(message.content,' ').slice(1);
+        this.args = util.split(message.content.substring(prefix.length + name.length),' ');
         this.name = name;
         this.prefix = prefix;
     }

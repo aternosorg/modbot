@@ -95,7 +95,7 @@ class GuildConfig extends Config {
      */
     getConnectionsSettings() {
         //How can youtube's link shortener *NOT* support playlists?
-        return `Playlist: ${this.playlist ? `https://www.youtube.com/playlist?list=${this.playlist}` : 'disabled'}\n` +
+        return `Playlist: ${this.playlist ? `[${this.playlist}](https://www.youtube.com/playlist?list=${this.playlist})` : 'disabled'}\n` +
             `Helpcenter: ${this.helpcenter ? `https://${this.helpcenter}.zendesk.com/` : 'disabled'}\n`;
     }
 
@@ -225,6 +225,20 @@ class GuildConfig extends Config {
      */
     getPunishment(strikes) {
         return this.#punishments[strikes];
+    }
+
+    /**
+     * find the last punishment
+     * @param {Number} strikes
+     * @return {Punishment}
+     */
+    findPunishment(strikes) {
+        let punishment;
+        do {
+            punishment = this.getPunishment(strikes);
+            strikes --;
+        } while (!punishment && strikes > 0);
+        return punishment;
     }
 
     /**
