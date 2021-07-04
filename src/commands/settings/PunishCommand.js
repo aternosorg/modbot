@@ -2,7 +2,7 @@ const Command = require('../../Command');
 const {MessageEmbed} = require('discord.js');
 const util = require('../../util');
 
-class AntiSpamCommand extends Command {
+class PunishCommand extends Command {
 
     static description = 'Configure punishments for strikes';
 
@@ -48,4 +48,4 @@ class AntiSpamCommand extends Command {
     }
 }
 
-module.exports = AntiSpamCommand;
+module.exports = PunishCommand;
