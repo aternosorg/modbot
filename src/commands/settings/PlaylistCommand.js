@@ -35,7 +35,8 @@ class PlaylistCommand extends Command {
                 );
                 break;
             default: {
-                const playlistID = this.args.shift().match(/^(?:(?:https?:\/\/)?(?:www\.)?youtube\.com\/.*[&?]list=)?([a-zA-Z0-9\-_]+?)(?:&.*)?$/)[1];
+                let playlistID = this.args.shift().match(/^(?:(?:https?:\/\/)?(?:www\.)?youtube\.com\/.*[&?]list=)?([a-zA-Z0-9\-_]+?)(?:&.*)?$/);
+                if(playlistID) playlistID = playlistID[1];
                 if (playlistID === null) return this.sendUsage();
 
                 const response = await youtube.playlists.list({
