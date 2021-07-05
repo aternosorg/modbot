@@ -163,9 +163,9 @@ class Command {
             .addFields(
                 /** @type {any} */ { name: 'Usage', value: `\`${prefix}${cmd} ${this.usage}\``, inline: true},
                 /** @type {any} */ { name: 'Description', value: this.description, inline: true},
-                /** @type {any} */ { name: 'Required Permissions', value: this.userPerms.length !== 0 ? `\`${this.userPerms.join('`, `')}\`` : 'none' }
+                /** @type {any} */ { name: 'Required Permissions', value: this.userPerms.length !== 0 ? `\`${this.userPerms.join('`, `')}\`` : 'none', inline: true }
             )
-            .setColor(util.color.green)
+            .setColor(util.color.red)
             .setTimestamp();
         if (this.comment) {
             embed.addFields(
@@ -250,6 +250,15 @@ class Command {
             reactions.stop('TIME');
             await message.reactions.removeAll();
         }
+    }
+
+    /**
+     * get an overview of this command
+     * @return {string}
+     */
+    static getOverview() {
+        return `**${this.names.join(', ')}**\n`+
+            `${this.description}\n`;
     }
 }
 

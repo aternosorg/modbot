@@ -449,17 +449,6 @@ util.split = (str, ...splitAt) => {
 };
 
 /**
- * Get an Embed showing the usage of a command
- * @param {module:"discord.js".Message} message
- * @param {String}                      command the name of the command
- * @return {module:"discord.js".MessageEmbed}
- */
-util.usage = async(message, command) => {
-    const help = require('./commands/legacy/help.js');
-    return await help.getUse(message, command);
-};
-
-/**
 * Fetch messages (even more than 100) from a channel
 * @async
 * @param {module:"discord.js".TextChannel|module:"discord.js".DMChannel}  channel
