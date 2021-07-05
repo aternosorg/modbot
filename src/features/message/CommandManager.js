@@ -70,6 +70,10 @@ class CommandManager {
         return this.#categories;
     }
 
+    /**
+     * get all commands (name => class)
+     * @return {module:"discord.js".Collection<String, Class<Command>>}
+     */
     static getCommands() {
         return this.#commands;
     }
