@@ -22,6 +22,7 @@ class HelpCommand extends Command {
                 .setColor(util.color.red)
                 .setFooter(`View a command or category using ${this.prefix}help <category|command>`);
             for (const [key, commands] of categories.entries()) {
+                if (commands.length === 0) continue;
                 embed.addField(util.toTitleCase(key), commands.map(c => c.names).flat().sort().join(', '));
             }
             return this.message.channel.send(embed);
