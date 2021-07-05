@@ -3,14 +3,20 @@ const defaultPrefix = require('../../../config.json').prefix;
 const Discord = require('discord.js');
 const util = require('../../util');
 const GuildConfig = require('../../GuildConfig');
-const {APIErrors} = Discord.Constants;
-
+const {Collection, APIErrors} = Discord;
 const monitor = require('../../Monitor').getInstance();
 
 class CommandManager {
+
     /**
-     * loaded commands
-     * @type {Object}
+     * command categories
+     * @type {module:"discord.js".Collection<String, Class<Command>[]>}
+     */
+    static #categories = new Collection();
+
+    /**
+     * loaded commands (name => class)
+     * @type {module:"discord.js".Collection<String, Class<Command>>}
      * @private
      */
     static #commands = this._loadCommands();
@@ -21,10 +27,13 @@ class CommandManager {
      * @private
      */
     static _loadCommands() {
-        const commands = {};
+        const commands = new Collection();
         for (const folder of fs.readdirSync(`${__dirname}/../../commands`)) {
+
+            const category = [];
+
             const dirPath = `${__dirname}/../../commands/${folder}`;
-            if (!fs.lstatSync(dirPath).isDirectory() || folder === 'legacy') continue;
+            if (!fs.lstatSync(dirPath).isDirectory()) continue;
             for (const file of fs.readdirSync(dirPath)) {
                 const path = `${dirPath}/${file}`;
                 if (!file.endsWith('.js') || !fs.lstatSync(path).isFile()) {
@@ -32,22 +41,33 @@ class CommandManager {
                 }
                 try {
                     const command = require(path);
+                    category.push(command);
                     for (const name of command.names) {
-                        if (commands[name]) {
+                        if (commands.has(name)) {
                             console.error(`Two command registered the name '${name}':`);
-                            console.error(`- ${commands[name].path}`);
+                            console.error(`- ${commands.get(name).path}`);
                             console.error(`- ${folder}/${file}`);
                         }
                         command.path = `${folder}/${file}`;
-                        commands[name] = command;
+                        commands.set(name, command);
                     }
                 } catch (e) {
                     monitor.error(`Failed to load command '${folder}/${file}'`, e);
                     console.error(`Failed to load command '${folder}/${file}'`, e);
                 }
             }
+
+            this.#categories.set(folder, category);
         }
         return commands;
+    }
+
+    /**
+     * get command categories
+     * @return {module:"discord.js".Collection<String, Class<Command>[]>}
+     */
+    static getCategories() {
+        return this.#categories;
     }
 
     static getCommands() {
@@ -64,7 +84,7 @@ class CommandManager {
      */
     static async event(options, message) {
         const {isCommand, name, prefix} = await this.getCommandName(message);
-        const Command = this.#commands[name];
+        const Command = this.#commands.get(name);
         if (!isCommand || Command === undefined) return;
 
         try {
@@ -129,7 +149,7 @@ class CommandManager {
     static async isCommand(message) {
         const {isCommand, name} = await this.getCommandName(message);
         if (!isCommand) return false;
-        return this.#commands[name] !== undefined;
+        return this.#commands.has(name);
     }
 }
 
