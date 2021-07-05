@@ -3,7 +3,8 @@ const defaultPrefix = require('../../../config.json').prefix;
 const Discord = require('discord.js');
 const util = require('../../util');
 const GuildConfig = require('../../GuildConfig');
-const {Collection, APIErrors} = Discord;
+const {Collection} = Discord;
+const {APIErrors} = Discord.Constants;
 const monitor = require('../../Monitor').getInstance();
 
 class CommandManager {
