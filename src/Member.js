@@ -79,7 +79,7 @@ class Member {
         const total = await this.getStrikeSum(database);
         await Promise.all([
             Log.logModeration(this.guild.guild.id, moderator, this.user, reason, id, 'strike', { amount, total }),
-            this.executePunishment((await this._getGuildConfig()).findPunishment(total), database, `Reaching ${total} strikes`)
+            this.executePunishment((await this._getGuildConfig()).findPunishment(total), database, `Reaching ${total} strikes`, true)
         ]);
     }
 
@@ -99,10 +99,16 @@ class Member {
      * @param {Punishment} punishment
      * @param {Database} database
      * @param {String} reason
+     * @param {boolean} [allowEmpty] return if there is no punishment instead of throwing an exception
      * @return {Promise<void>}
      */
-    async executePunishment(punishment, database, reason) {
-        if (!punishment) throw 'Empty punishment';
+    async executePunishment(punishment, database, reason, allowEmpty = false) {
+        if (!punishment) {
+            if (allowEmpty)
+                return;
+            else
+                throw 'Empty punishment';
+        }
         if (typeof punishment.duration === 'string') {
             punishment.duration = util.timeToSec(punishment.duration);
         }
