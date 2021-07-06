@@ -107,7 +107,7 @@ class Member {
             if (allowEmpty)
                 return;
             else
-                throw 'Empty punishment';
+                throw new Error('Empty punishment');
         }
         if (typeof punishment.duration === 'string') {
             punishment.duration = util.timeToSec(punishment.duration);
