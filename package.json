@@ -1,6 +1,6 @@
 {
   "name": "modbot",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "description": "Discord Bot for the Aternos Discord server",
   "main": "index.js",
   "scripts": {
@@ -22,10 +22,10 @@
   },
   "dependencies": {
     "@google-cloud/logging": "^9.1.1",
+    "@googleapis/youtube": "^2.0.0",
     "diff": "^4.0.2",
     "discord.js": "^12.5.2",
     "fuse.js": "^6.4.6",
-    "googleapis": "^61.0.0",
     "got": "^11.8.2",
     "mysql": "^2.18.1",
     "string-similarity": "^4.0.4"

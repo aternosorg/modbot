@@ -1,38 +1,38 @@
 const Command = require('../../Command');
 const Discord = require('discord.js');
 const util = require('../../util');
-const BadWord = require('../../BadWord');
+const AutoResponse = require('../../AutoResponse');
 
-class BadWordCommand extends Command {
+class AutoResponseCommand extends Command {
 
-    static description = 'Configure bad words';
+    static description = 'Configure auto-responses';
 
     static usage = 'list|add|remove|show|edit';
 
     static subCommands = {
         list: {
             usage:'',
-            description: 'List all bad words'
+            description: 'List all auto-responses'
         },
         add: {
             usage: 'global|<channels> regex|include|match <trigger>',
-            description: 'Add a bad word'
+            description: 'Add an auto-response'
         },
         remove: {
             usage: '<id>',
-            description: 'Remove a bad word'
+            description: 'Remove an auto-response'
         },
         show: {
             usage: '<id>',
-            description: 'Display a bad word'
+            description: 'Display an auto-response'
         },
         edit: {
-            usage: '<id> trigger|response|punishment|priority|channels <value>',
-            description: 'change options of a bad word'
+            usage: '<id> trigger|response|channels <value>',
+            description: 'change options of an auto-response'
         }
     }
 
-    static names = ['badword','badwords','bw'];
+    static names = ['autoresponse','response','responses','autoresponses'];
 
     static userPerms = ['MANAGE_GUILD'];
 
@@ -43,16 +43,16 @@ class BadWordCommand extends Command {
         }
 
         /** @type {module:"discord.js".Collection<Number,ChatTriggeredFeature>} */
-        const badWords = await BadWord.getAll(/** @type {Snowflake} */ this.message.guild.id);
+        const responses = await AutoResponse.getAll(/** @type {Snowflake} */ this.message.guild.id);
 
         switch (this.args.shift().toLowerCase()) {
             case 'list': {
-                if (!badWords.size) return this.message.channel.send('No bad words!');
+                if (!responses.size) return this.message.channel.send('No auto-responses!');
 
                 let text = '';
-                for (const [id, badWord] of badWords) {
-                    const info = `[${id}] ${badWord.global ? 'global' : badWord.channels.map(c => `\`${c}\``).join(', ')} ` +
-                        '`' + badWord.trigger.asString() + '`\n';
+                for (const [id, response] of responses) {
+                    const info = `[${id}] ${response.global ? 'global' : response.channels.map(c => `\`${c}\``).join(', ')} ` +
+                        '`' + response.trigger.asString() + '`\n';
 
                     if (text.length + info.length < 2000) {
                         text += info;
@@ -79,34 +79,38 @@ class BadWordCommand extends Command {
                 const type = this.args.shift().toLowerCase();
                 const content = this.args.join(' ');
 
-                let badWord = await BadWord.new(this.message.guild.id, global, channels, type, content);
-                if (!badWord.success) return this.message.channel.send(badWord.message);
+                await this.message.channel.send('Please enter your response:');
+                const responseText = await util.getResponse(this.message.channel, this.message.author.id);
+                if (!responseText) return;
 
-                await this.message.channel.send(badWord.badWord.embed('Added new bad word', util.color.green));
+                let response = await AutoResponse.new(this.message.guild.id, global, channels, type, content, responseText);
+                if (!response.success) return this.message.channel.send(response.message);
+
+                await this.message.channel.send(response.response.embed('Added new auto-response', util.color.green));
                 break;
             }
 
             case 'remove': {
-                const badWord = await this.getBadWord(this.args.shift(), 'remove');
-                if (!badWord) return;
-                await badWord.remove();
-                await this.message.channel.send(badWord.embed(`Removed bad word ${badWord.id}`, util.color.red));
+                const response = await this.getAutoResponse(this.args.shift(), 'remove');
+                if (!response) return;
+                await response.remove();
+                await this.message.channel.send(response.embed(`Removed auto-response ${response.id}`, util.color.red));
                 break;
             }
 
             case 'show': {
-                const badWord = await this.getBadWord(this.args.shift(), 'remove');
-                if (!badWord) return;
-                await this.message.channel.send(badWord.embed(`Bad Word ${badWord.id}`, util.color.green));
+                const response = await this.getAutoResponse(this.args.shift(), 'remove');
+                if (!response) return;
+                await this.message.channel.send(response.embed(`Auto-response ${response.id}`, util.color.green));
                 break;
             }
 
             case 'edit': {
                 if (this.args.length < 3) return this.sendSubCommandUsage('edit');
-                const badWord = await this.getBadWord(this.args.shift(), 'remove');
-                if (!badWord) return;
+                const response = await this.getAutoResponse(this.args.shift(), 'remove');
+                if (!response) return;
 
-                await this.message.channel.send(badWord.embed(await badWord.edit(this.args.shift(), this.args, this.message.guild), util.color.green));
+                await this.message.channel.send(response.embed(await response.edit(this.args.shift(), this.args, this.message.guild), util.color.green));
                 break;
             }
 
@@ -117,17 +121,17 @@ class BadWordCommand extends Command {
     }
 
     /**
-     * get a single bad word
+     * get a single auto-response
      * @param {String|Number} id
      * @param {String} subCommand
-     * @returns {Promise<BadWord|null>}
+     * @returns {Promise<AutoResponse|null>}
      */
-    async getBadWord(id, subCommand) {
+    async getAutoResponse(id, subCommand) {
         if (!id || !parseInt(id)) {
             await this.sendSubCommandUsage(subCommand);
             return null;
         }
-        const result = await BadWord.getByID(id);
+        const result = await AutoResponse.getByID(id);
         if (!result) {
             await this.sendSubCommandUsage(subCommand);
             return null;
@@ -160,4 +164,4 @@ class BadWordCommand extends Command {
     }
 }
 
-module.exports = BadWordCommand;
+module.exports = AutoResponseCommand;

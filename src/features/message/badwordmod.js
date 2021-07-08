@@ -1,7 +1,7 @@
 const BadWord = require('../../BadWord');
 const util = require('../../util');
 const Log = require('../../Log');
-const strike = require('../../commands/legacy/strike');
+const Member = require('../../Member');
 
 exports.event = async (options, message) => {
     if (!message.guild || await util.ignoresAutomod(message)) return;
@@ -17,7 +17,8 @@ exports.event = async (options, message) => {
             }
             await Log.logMessageDeletion(message, reason);
             if (word.punishment.action !== 'none') {
-                await strike.executePunishment(word.punishment, message.guild, message.author, options.bot, options.database, reason);
+                await (new Member(message.author, message.guild))
+                    .executePunishment(word.punishment, options.database, reason);
             }
             return;
         }

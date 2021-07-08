@@ -103,7 +103,7 @@ class Command {
         this.message = message;
         this.database = database;
         this.bot = bot;
-        this.args = util.split(message.content,' ').slice(1);
+        this.args = util.split(message.content.substring(prefix.length + name.length),' ');
         this.name = name;
         this.prefix = prefix;
     }
@@ -115,7 +115,7 @@ class Command {
 
     /**
      * Can this user run this command?
-     * @return {boolean}
+     * @return {boolean|String[]}
      */
     userHasPerms() {
         if (this.constructor.modCommand && this.guildConfig.isMod(this.message.member))
@@ -163,9 +163,9 @@ class Command {
             .addFields(
                 /** @type {any} */ { name: 'Usage', value: `\`${prefix}${cmd} ${this.usage}\``, inline: true},
                 /** @type {any} */ { name: 'Description', value: this.description, inline: true},
-                /** @type {any} */ { name: 'Required Permissions', value: this.userPerms.length !== 0 ? `\`${this.userPerms.join('`, `')}\`` : 'none' }
+                /** @type {any} */ { name: 'Required Permissions', value: this.userPerms.length !== 0 ? `\`${this.userPerms.join('`, `')}\`` : 'none', inline: true }
             )
-            .setColor(util.color.green)
+            .setColor(util.color.red)
             .setTimestamp();
         if (this.comment) {
             embed.addFields(
@@ -250,6 +250,15 @@ class Command {
             reactions.stop('TIME');
             await message.reactions.removeAll();
         }
+    }
+
+    /**
+     * get an overview of this command
+     * @return {string}
+     */
+    static getOverview() {
+        return `**${this.names.join(', ')}**\n`+
+            `${this.description}\n`;
     }
 }
 

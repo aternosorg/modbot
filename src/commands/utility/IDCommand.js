@@ -21,7 +21,7 @@ class IDCommand extends Command {
 
         const fullName = this.args.join(' ');
         let users = new Discord.Collection();
-        const [,name, discrim] = fullName.match(/(.*)#?(\d{4})?$/);
+        const [,name, discrim] = fullName.match(/([^#]*)#?(\d{4})?$/);
 
         const members = await this.message.guild.members.fetch();
         const bans = await this.message.guild.fetchBans();
@@ -32,22 +32,22 @@ class IDCommand extends Command {
         const embed = new Discord.MessageEmbed()
             .setTitle(`User search for ${fullName}`);
         if (users.size === 0) {
-            embed.setDescription("No users found")
+            embed.setDescription('No users found')
                 .setColor(util.color.red);
             return await this.message.channel.send(embed);
         }
         if (users.size > resultLimit) {
-            embed.setTitle(`First ${resultLimit} results of user search for ${fullName}`)
+            embed.setTitle(`First ${resultLimit} results of user search for ${fullName}`);
             users = users.array().slice(0, resultLimit);
         }
 
         users = users.map(u => `${util.escapeFormatting(u.user.tag)}: ${u.user.id}`);
         embed.setColor(util.color.green);
         while (users.length) {
-            let list = "";
+            let list = '';
 
             while (users.length && list.length + users[0].length < 2000) {
-                list += users.shift() + "\n";
+                list += users.shift() + '\n';
             }
             embed.setDescription(list);
             await this.message.channel.send(embed);

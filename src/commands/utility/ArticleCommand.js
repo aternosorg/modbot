@@ -7,7 +7,7 @@ class ArticleCommand extends Command {
 
     static usage = '<query>';
 
-    static names = ['article'];
+    static names = ['article', 'a'];
 
     async execute() {
         if (!this.guildConfig.helpcenter) {
@@ -23,7 +23,7 @@ class ArticleCommand extends Command {
 
 
         const request = new Request(`https://${this.guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles/search.json?query=`+encodeURIComponent(query));
-        await request.getJSON()
+        await request.getJSON();
 
         if(request.JSON.count !== 0){
             await this.message.channel.send(request.JSON.results[0].html_url);

@@ -164,15 +164,16 @@ class Database {
      * @param {String}                                  reason        reason for the moderation
      * @param {Number}                                  [duration]    duration of the moderation
      * @param {module:"discord.js".Snowflake|Snowflake} [moderatorId] id of the moderator
+     * @param {Number}                                  [value]       strike count
      * @return {Number} the id of the moderation
      */
-    async addModeration(guildId, userId, action, reason, duration, moderatorId) {
+    async addModeration(guildId, userId, action, reason, duration, moderatorId, value= 0) {
         //disable old moderations
         await this.query('UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = ?', [guildId, userId, action]);
 
         const now = Math.floor(Date.now()/1000);
         /** @property {Number} insertId*/
-        const insert = await this.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES (?,?,?,?,?,?,?)',[guildId, userId, action, now, duration ? now + duration : null, reason, moderatorId]);
+        const insert = await this.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value) VALUES (?,?,?,?,?,?,?,?)',[guildId, userId, action, now, duration ? now + duration : null, reason, moderatorId, value]);
         return insert.insertId;
     }
 }

@@ -97,7 +97,7 @@ class GuildConfig extends Config {
      */
     getConnectionsSettings() {
         //How can youtube's link shortener *NOT* support playlists?
-        return `Playlist: ${this.playlist ? `https://www.youtube.com/playlist?list=${this.playlist}` : 'disabled'}` +
+        return `Playlist: ${this.playlist ? `[${this.playlist}](https://www.youtube.com/playlist?list=${this.playlist})` : 'disabled'}\n` +
             `Helpcenter: ${this.helpcenter ? `https://${this.helpcenter}.zendesk.com/` : 'disabled'}\n`;
     }
 
@@ -230,6 +230,20 @@ class GuildConfig extends Config {
     }
 
     /**
+     * find the last punishment
+     * @param {Number} strikes
+     * @return {Punishment}
+     */
+    findPunishment(strikes) {
+        let punishment;
+        do {
+            punishment = this.getPunishment(strikes);
+            strikes --;
+        } while (!punishment && strikes > 0);
+        return punishment;
+    }
+
+    /**
      * set a punishment
      * @param {Number} strikes
      * @param {Punishment|null} punishment
@@ -251,7 +265,7 @@ class GuildConfig extends Config {
         const punishments = new Discord.Collection();
 
         for (const key of Object.keys(this.#punishments)) {
-            punishments.set(key, this.#punishments[key]);
+            punishments.set(parseInt(key), this.#punishments[key]);
         }
 
         return punishments;
