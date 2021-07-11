@@ -1,5 +1,5 @@
-const GuildConfig = require('./GuildConfig');
-const ChannelConfig = require('./ChannelConfig');
+const GuildConfig = require('./config/GuildConfig');
+const ChannelConfig = require('./config/ChannelConfig');
 const util = require('./util');
 const Discord = require('discord.js');
 const defaultPrefix = require('../config.json').prefix;

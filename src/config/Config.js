@@ -82,7 +82,7 @@ class Config {
             await this._update();
         }
         else {
-            await this._insert()
+            await this._insert();
             this.constructor.getCache().set(this.id, this);
         }
     }

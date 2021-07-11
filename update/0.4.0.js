@@ -1,7 +1,7 @@
 const Database = require('../src/Database');
 const config = require('../config.json');
 const database = new Database(config.db);
-const GuildConfig = require('../src/GuildConfig');
+const GuildConfig = require('../src/config/GuildConfig');
 
 async function update() {
     console.log('Starting update to v0.4.0');
