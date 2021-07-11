@@ -33,10 +33,33 @@ class Config {
     static tableName;
 
     /**
+     * @type {NodeJS.Timer}
+     */
+    static clearCache = setInterval(() => {
+        const cache = this.getCache();
+        for (const [key, value] of cache.entries()) {
+            if (value.createdAt + cacheDuration < Date.now()) {
+                cache.delete(key);
+            }
+        }
+    },60*1000);
+
+    /**
+     * @type {String}
+     */
+    id;
+
+    /**
+     * @type {Number}
+     */
+    createdAt;
+
+    /**
      * @param {module:"discord.js".Snowflake} id ID in the database
      */
     constructor(id) {
         this.id = id;
+        this.createdAt = Date.now();
     }
 
     /**
@@ -49,6 +72,9 @@ class Config {
         this.client = client;
     }
 
+    /**
+     * @return {module:"discord.js".Collection<String, Config>}
+     */
     static getCache() {
         let cache = this.cache[this.tableName];
         if (!cache) {
@@ -72,6 +98,24 @@ class Config {
     }
 
     /**
+     * create an empty config
+     * @param {String} key
+     * @return {Config}
+     */
+    static empty(key) {
+        return new this(key);
+    }
+
+    /**
+     * create a config from a database result
+     * @param result
+     * @return {Config}
+     */
+    static create(result) {
+        return new this(result.id, JSON.parse(result.config));
+    }
+
+    /**
      * Save to db and cache
      * @async
      * @return {Promise<>}
@@ -89,16 +133,25 @@ class Config {
 
     /**
      * Get this config from the DB
-     * @return {Promise<void>}
+     * @return {Promise}
+     * @private
+     */
+    static async _select(key) {
+        return this.database.query(`SELECT id, config FROM ${this.getTableName()} WHERE id = ?`,[key]);
+    }
+
+    /**
+     * Get this config from the DB
+     * @return {Promise}
      * @private
      */
     async _select() {
-        return this.constructor.database.query(`SELECT id, config FROM ${this.constructor.getTableName()} WHERE id = ?`,[this.id]);
+        return this.constructor._select(this.id);
     }
 
     /**
      * Update this config in the DB
-     * @return {Promise<void>}
+     * @return {Promise}
      * @private
      */
     async _update() {
@@ -107,7 +160,7 @@ class Config {
 
     /**
      * Insert a config into the DB
-     * @return {Promise<void>}
+     * @return {Promise}
      * @private
      */
     async _insert() {
@@ -116,19 +169,16 @@ class Config {
 
     /**
      * Get config
-     * @async
-     * @param {module:"discord.js".Snowflake|Snowflake} id
-     * @return {Config}
+     * @param {String} id
+     * @return {Promise<Config>}
      */
     static async get(id) {
+        const cache = this.getCache();
+        if (!cache.has(id)) {
+            const result = await this._select(id);
+            if(!result) return this.empty(id);
 
-        if (!this.getCache().has(id)) {
-            let result = await this.database.query(`SELECT id, config FROM ${this.getTableName()} WHERE id = ?`, [id]);
-            if(!result) return new this(id);
-            this.getCache().set(result.id, new this(result.id, JSON.parse(result.config)));
-            setTimeout(() => {
-                this.getCache().delete(result.id);
-            },cacheDuration);
+            cache.set(result.id, this.create(result));
         }
 
         return this.getCache().get(id);
