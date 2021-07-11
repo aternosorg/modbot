@@ -1,7 +1,7 @@
 const Command = require('../../Command');
 const Discord = require('discord.js');
 const util = require('../../util');
-const ChannelConfig = require('../../ChannelConfig');
+const ChannelConfig = require('../../config/ChannelConfig');
 const {APIErrors} = Discord.Constants;
 
 class UnlockCommand extends Command {
@@ -23,12 +23,12 @@ class UnlockCommand extends Command {
 
         const embed = new Discord.MessageEmbed()
             .setTitle('This channel has been unlocked.')
-            .setColor(util.color.green)
+            .setColor(util.color.green);
 
         if (this.args[0].toLowerCase() === 'global') {
             {
                 const start = this.prefix.length + this.name.length + ' global '.length;
-                embed.setDescription(this.message.content.substring(start))
+                embed.setDescription(this.message.content.substring(start));
             }
             /** @type {module:"discord.js".GuildChannel[]} */
             const channels = await util.asyncFilter(this.message.guild.channels.cache.array(), this.locked, this);

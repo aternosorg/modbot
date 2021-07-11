@@ -1,4 +1,4 @@
-const config = require('../config.json');
+const config = require('../../config.json');
 const Config = require('./Config');
 const Discord = require('discord.js');
 const {MessageEmbed} = require('discord.js');
@@ -68,7 +68,7 @@ class GuildConfig extends Config {
      * @returns {module:"discord.js".MessageEmbed}
      */
     getSettings() {
-        const util = require('./util');
+        const util = require('../util');
         return new MessageEmbed()
             .setTitle(`Settings | Prefix: ${this.prefix}`)
             .addField('Moderation', this.getModerationSettings(), false)
@@ -104,7 +104,7 @@ class GuildConfig extends Config {
      * @returns {String}
      */
     getAutomodSettings() {
-        const util = require('./util');
+        const util = require('../util');
         return `Invites: ${this.invites ? 'allowed' : 'forbidden'}\n` +
             `Link cooldown: ${this.linkCooldown !== -1 ? util.secToTime(this.linkCooldown) : 'disabled'}\n` +
             `Caps: ${this.caps ? 'forbidden' : 'allowed'}\n` +

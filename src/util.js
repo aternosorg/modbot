@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
-const GuildConfig = require('./GuildConfig.js');
+const GuildConfig = require('./config/GuildConfig.js');
 const ChatTriggeredFeature = require('./ChatTriggeredFeature');
-const Config = require('./Config');
+const Config = require('./config/Config');
 const RateLimiter = require('./RateLimiter');
 const {APIErrors} = require('discord.js').Constants;
 
