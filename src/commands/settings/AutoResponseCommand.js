@@ -110,7 +110,13 @@ class AutoResponseCommand extends Command {
                 const response = await this.getAutoResponse(this.args.shift(), 'remove');
                 if (!response) return;
 
-                await this.message.channel.send(response.embed(await response.edit(this.args.shift(), this.args, this.message.guild), util.color.green));
+                const edit = await response.edit(this.args.shift(), this.args, this.message.guild);
+
+                if (!edit.success) {
+                    return this.sendError(edit.message);
+                }
+
+                await this.message.channel.send(response.embed(edit.message, util.color.green));
                 break;
             }
 
