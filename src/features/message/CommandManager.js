@@ -3,6 +3,7 @@ const defaultPrefix = require('../../../config.json').prefix;
 const Discord = require('discord.js');
 const util = require('../../util');
 const GuildConfig = require('../../config/GuildConfig');
+const UserConfig = require('../../config/UserConfig');
 const {Collection} = Discord;
 const {APIErrors} = Discord.Constants;
 const monitor = require('../../Monitor').getInstance();
@@ -106,6 +107,10 @@ class CommandManager {
                 return;
             }
             await cmd.execute();
+            const memberConfig = await UserConfig.get(message.author.id);
+            if (memberConfig.deleteCommands) {
+                await message.delete();
+            }
         } catch (e) {
             try {
                 if  (e.code === APIErrors.MISSING_PERMISSIONS) {
