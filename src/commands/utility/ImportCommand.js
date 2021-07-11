@@ -1,6 +1,7 @@
 const Command = require('../../Command');
 const Request = require('../../Request');
-const Importer = require('../../data/Importer');
+const ModBotImporter = require('../../data/ModBotImporter');
+const VortexImporter = require('../../data/VortexImporter');
 
 class ImportDataCommand extends Command {
 
@@ -23,9 +24,10 @@ class ImportDataCommand extends Command {
         }
 
         const request = new Request(this.message.attachments.first().url);
+        /** @type {Exporter|VortexImporter}*/
         let data;
         try {
-            data = await request.getJSON();
+            data = (await request.getJSON()).JSON;
         }
         catch (e) {
             if (typeof(e) === 'string' && e.startsWith('Failed to parse JSON response of')){
@@ -34,13 +36,30 @@ class ImportDataCommand extends Command {
             throw e;
         }
 
-        const importer = new Importer(this.message.guild.id, data.JSON);
-        if (this.guildID !== this.data.guildConfig.id) {
-            await this.message.channel.send('This data was not exported from this guild!');
+        let importer = this.getImporter(data.dataType);
+        if (!importer) {
+            await this.sendError('Unknown data type!');
+            return;
         }
-        await importer.import();
 
+        importer = new importer(this.bot, this.message.guild.id, data);
+
+        await importer.import();
         await this.message.channel.send(importer.generateEmbed());
+    }
+
+    /**
+     * get the correct importer class for this datatype
+     * @param dataType
+     * @return {VortexImporter|ModBotImporter|null}
+     */
+    getImporter(dataType) {
+        if (!dataType)
+            return VortexImporter;
+        if (dataType.toLowerCase().startsWith('modbot-1.'))
+            return ModBotImporter;
+
+        return null;
     }
 }
 

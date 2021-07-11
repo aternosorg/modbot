@@ -66,19 +66,29 @@ class Moderation {
     active;
 
     /**
-     * @param {ModerationData|Moderation} data
+     * @param {Object} data
+     * @param {Number} [data.id]
+     * @param {Snowflake} data.guildid
+     * @param {Snowflake} data.userid
+     * @param {String} data.action
+     * @param {Number} [data.created]
+     * @param {Number} [data.value]
+     * @param {String} [data.reason]
+     * @param {Number} [data.expireTime]
+     * @param {Snowflake} data.moderator
+     * @param {boolean} [data.active]
      */
     constructor(data) {
         this.id = data.id;
         this.guildid = data.guildid;
         this.userid = data.userid;
         this.action = data.action;
-        this.created = data.created;
+        this.created = data.created || Math.floor(Date.now()/1000);
         this.value = data.value;
-        this.reason = data.reason;
+        this.reason = data.reason || 'No reason provided.';
         this.expireTime = data.expireTime;
         this.moderator = data.moderator;
-        this.active = data.active;
+        this.active = data.active ?? true;
     }
 
     /**

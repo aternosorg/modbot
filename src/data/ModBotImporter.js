@@ -5,7 +5,7 @@ const AutoResponse = require('../AutoResponse');
 const BadWord = require('../BadWord');
 const {MessageEmbed} = require('discord.js');
 
-class Importer {
+class ModBotImporter {
 
     /**
      * @type {module:"discord.js".Client}
@@ -85,4 +85,4 @@ class Importer {
     }
 }
 
-module.exports = Importer;
+module.exports = ModBotImporter;

@@ -1,5 +1,5 @@
 const Command = require('../../Command');
-const VortexData = require('../../VortexData');
+const VortexData = require('../../data/VortexImporter');
 
 class ImportDataCommand extends Command {
 
@@ -53,7 +53,7 @@ class ImportDataCommand extends Command {
 async function insertTimedModerations(db, data, type, guildid, botid) {
     const users = getUsers(data, type, guildid, botid);
     if (users.length) {
-        return await db.queryAll("INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES " + users.map(() => '(?,?,?,?,?,?,?)').join(', '), users.flat());
+        return await db.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES ' + users.map(() => '(?,?,?,?,?,?,?)').join(', '), users.flat());
     }
 }
 
@@ -69,7 +69,7 @@ async function insertTimedModerations(db, data, type, guildid, botid) {
 async function insertStrikes(db, data, type, guildid, botid) {
     const users = getUsers(data, type, guildid, botid);
     if (users.length) {
-        return await db.queryAll("INSERT INTO moderations (guildid, userid, action, created, value, reason, moderator) VALUES " + users.map(() => '(?,?,?,?,?,?,?)').join(', '), users.flat());
+        return await db.queryAll('INSERT INTO moderations (guildid, userid, action, created, value, reason, moderator) VALUES ' + users.map(() => '(?,?,?,?,?,?,?)').join(', '), users.flat());
     }
 }
 
@@ -77,7 +77,7 @@ function getUsers(data, type, guildid, botid) {
     const users = [];
     for (const user of Object.keys(data)) {
         if (data[user] > Number.MAX_SAFE_INTEGER) continue;
-        users.push([guildid, user, type, Date.now(), data[user], 'Imported from Vortex', botid])
+        users.push([guildid, user, type, Date.now(), data[user], 'Imported from Vortex', botid]);
     }
     return users;
 }

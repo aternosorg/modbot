@@ -9,7 +9,7 @@ class Exporter {
     /**
      * @type {string}
      */
-    dataVersion = 'modbot-1.0.0';
+    dataType = 'modbot-1.0.0';
 
     /**
      * @type {GuildConfig}
