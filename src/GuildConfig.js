@@ -270,6 +270,10 @@ class GuildConfig extends Config {
     }
 
     toJSONString() {
+        return JSON.stringify(this.getDataObject());
+    }
+
+    getDataObject() {
         //copy this to object
         const object = {};
         Object.assign(object,this);
@@ -282,8 +286,7 @@ class GuildConfig extends Config {
         object.modRoles = this.#modRoles;
         object.protectedRoles = this.#protectedRoles;
 
-        //stringify
-        return JSON.stringify(object);
+        return object;
     }
 }
 
