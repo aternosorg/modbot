@@ -33,9 +33,9 @@ const util = {};
 util.init = (db, client) => {
     database = db;
     bot = client;
-    ChatTriggeredFeature.init(db);
-    Config.init(db, client);
-    RateLimiter.init(db);
+    ChatTriggeredFeature.init(database);
+    Config.init(database, client);
+    RateLimiter.init(database);
 };
 
 /**
@@ -365,26 +365,6 @@ util.chatSuccess = async (channel, user, reason, type, time) => {
     }
 
     return await channel.send(responseEmbed);
-};
-
-/**
- * Save a moderation to the database
- * @async
- * @param {module:"discord.js".Snowflake} guildId       id of the guild
- * @param {module:"discord.js".Snowflake} userId        id of the moderated user
- * @param {String}                        action        moderation type
- * @param {String}                        reason        reason for the moderation
- * @param {Number}                        [duration]    duration of the moderation
- * @param {module:"discord.js".Snowflake} [moderatorId] id of the moderator
- * @return {Number} the id of the moderation
- */
-util.moderationDBAdd = async (guildId, userId, action, reason, duration, moderatorId) => {
-    //disable old moderations
-    await database.query('UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = ?', [guildId, userId, action]);
-
-    let now = Math.floor(Date.now()/1000);
-    let insert = await database.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES (?,?,?,?,?,?,?)',[guildId, userId, action, now, duration ? now + duration : null, reason, moderatorId]);
-    return insert.insertId;
 };
 
 /**
