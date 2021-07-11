@@ -334,40 +334,6 @@ util.resolveGuild = async (guildInfo) => {
 };
 
 /**
- * Sends an embed to the channel
- * @async
- * @param {module:"discord.js".TextBasedChannel}    channel
- * @param {module:"discord.js".MessageEmbed|Object} options options for the embed
- * @return {Promise<module:"discord.js".Message>}
- */
-util.sendEmbed = (channel, options) => {
-    return channel.send(new Discord.MessageEmbed(options));
-};
-
-/**
- * Respond with an embed
- * @async
- * @param {module:"discord.js".TextChannel} channel
- * @param {module:"discord.js".User}    user    user that was moderated
- * @param {String}                      reason  reason for the moderation
- * @param {String}                      type    moderation action
- * @param {String}                      [time]  duration of the moderation as a time string
- * @return {module:"discord.js".Message}
- */
-util.chatSuccess = async (channel, user, reason, type, time) => {
-    let embedColor = util.color.resolve(type);
-
-    const responseEmbed = new Discord.MessageEmbed()
-        .setColor(embedColor)
-        .setDescription(`**${util.escapeFormatting(user.tag)}** has been **${type}** | ${reason.substring(0, 1800)}`);
-    if (time) {
-        responseEmbed.setDescription(`**${util.escapeFormatting(user.tag)}** has been **${type}** for **${time}** | ${reason}`);
-    }
-
-    return await channel.send(responseEmbed);
-};
-
-/**
  * Splits a string at one or multiple substrings
  * @param {String}          str     string to split
  * @param {String|String[]} splitAt strings to split at
