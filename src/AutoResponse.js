@@ -98,25 +98,25 @@ class AutoResponse extends ChatTriggeredFeature {
      * @param {String} option option to change
      * @param {String[]} args
      * @param {module:"discord.js".Guild} guild
-     * @returns {Promise<String>} response message
+     * @returns {Promise<{success: boolean, message: String}>} response message
      */
     async edit(option, args, guild) {
         switch (option) {
             case 'trigger': {
                 let trigger = this.constructor.getTrigger(args.shift(), args.join(' '));
-                if (!trigger.success) return trigger.message;
+                if (!trigger.success) return {success: false, message:trigger.message};
                 this.trigger = trigger.trigger;
                 await this.save();
-                return 'Successfully changed trigger';
+                return {success: true, message:'Successfully changed trigger'};
             }
 
             case 'response': {
                 let response = args.join(' ');
-                if (!response) response = 'disabled';
+                if (!response) return {success: false, message: 'Invalid response'};
 
                 this.response = response;
                 await this.save();
-                return `Successfully ${response === 'disabled' ? 'disabled' : 'changed'} response`;
+                return {success: true, message:`Successfully ${response === 'disabled' ? 'disabled' : 'changed'} response`};
             }
 
             case 'channels': {
@@ -126,16 +126,16 @@ class AutoResponse extends ChatTriggeredFeature {
                 }
                 else {
                     let channels = await util.channelMentions(guild, args);
-                    if (!channels) return 'No valid channels specified';
+                    if (!channels) return {success: false, message:'No valid channels specified'};
                     this.global = false;
                     this.channels = channels;
                 }
                 await this.save();
-                return global ? 'Successfully made this auto-response global' : 'Successfully changed channels';
+                return {success: true, message: global ? 'Successfully made this auto-response global' : 'Successfully changed channels'};
             }
 
             default: {
-                return 'Unknown option';
+                return {success: false, message:'Unknown option'};
             }
         }
     }

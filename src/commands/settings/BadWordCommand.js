@@ -106,7 +106,13 @@ class BadWordCommand extends Command {
                 const badWord = await this.getBadWord(this.args.shift(), 'remove');
                 if (!badWord) return;
 
-                await this.message.channel.send(badWord.embed(await badWord.edit(this.args.shift(), this.args, this.message.guild), util.color.green));
+                const edit = await badWord.edit(this.args.shift(), this.args, this.message.guild);
+
+                if (!edit.success) {
+                    return this.sendError(edit.message);
+                }
+
+                await this.message.channel.send(badWord.embed(edit.message, util.color.green));
                 break;
             }
 

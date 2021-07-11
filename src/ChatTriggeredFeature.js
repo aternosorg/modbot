@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const Trigger = require('./Trigger');
+const stringSimilarity = require('string-similarity');
 
 /**
  * Database
@@ -25,7 +26,7 @@ class ChatTriggeredFeature {
      * Possible trigger types
      * @type {String[]}
      */
-    static triggerTypes = ['regex', 'include', 'match'];
+    static triggerTypes = ['regex', 'include', 'match', 'phishing'];
 
     /**
      * table name
@@ -116,6 +117,44 @@ class ChatTriggeredFeature {
                 let regex = new RegExp(this.trigger.content, this.trigger.flags);
                 if (regex.test(message.content)) {
                     return true;
+                }
+                break;
+            }
+
+            case 'phishing': {
+                // Split domain and min similarity (e.g. steamcommunity.com:0.5)
+                let [domain, similarity] = String(this.trigger.content).split(':');
+                similarity = parseFloat(similarity) || 0.5;
+                domain = domain.toLowerCase();
+                // Split domain into "main part" and extension
+                let parts = domain.match(/^([^/]+)\.([^./]+)$/);
+                if(!parts || !parts[1] || !parts[2]) {
+                    break;
+                }
+                const expectedDomain = parts[1];
+                const expectedExtension = parts[2];
+                // Check all domains contained in the Discord message (and split them into "main part" and extension)
+                let regex = /https?:\/\/([^/]+)\.([^./]+)\b/ig,
+                    matches;
+                while ((matches = regex.exec(message.content)) !== null) {
+                    if(!matches[1] || !matches[2]) {
+                        continue;
+                    }
+                    const foundDomain = matches[1].toLowerCase(),
+                        foundExtension = matches[2].toLowerCase();
+                    // Domain is the actual domain or a subdomain of the actual domain -> no phishing
+                    if(domain === `${foundDomain}.${foundExtension}` || domain.endsWith(`.${foundDomain}.${foundExtension}`)){
+                        continue;
+                    }
+                    // "main part" matches, but extension doesn't -> probably phishing
+                    if(foundDomain === expectedDomain && foundExtension !== expectedExtension) {
+                        return true;
+                    }
+                    // "main part" is very similar to main part of the actual domain -> probably phishing
+                    console.log(stringSimilarity.compareTwoStrings(expectedDomain, foundDomain));
+                    if(stringSimilarity.compareTwoStrings(expectedDomain, foundDomain) >= similarity) {
+                        return true;
+                    }
                 }
                 break;
             }
