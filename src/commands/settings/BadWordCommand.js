@@ -51,7 +51,7 @@ class BadWordCommand extends Command {
 
                 let text = '';
                 for (const [id, badWord] of badWords) {
-                    const info = `[${id}] ${badWord.global ? 'global' : badWord.channels.map(c => `\`${c}\``).join(', ')} ` +
+                    const info = `[${id}] ${badWord.global ? 'global' : badWord.channels.map(c => `<#${c}>`).join(', ')} ` +
                         '`' + badWord.trigger.asString() + '`\n';
 
                     if (text.length + info.length < 2000) {
@@ -103,7 +103,7 @@ class BadWordCommand extends Command {
 
             case 'edit': {
                 if (this.args.length < 3) return this.sendSubCommandUsage('edit');
-                const badWord = await this.getBadWord(this.args.shift(), 'remove');
+                const badWord = await this.getBadWord(this.args.shift(), 'edit');
                 if (!badWord) return;
 
                 const edit = await badWord.edit(this.args.shift(), this.args, this.message.guild);
