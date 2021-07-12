@@ -69,7 +69,7 @@ class Exporter {
     }
 
     async _getChannelConfigs() {
-        this.channels = await ChannelConfig.getForGuild(this.guildID);
+        this.channels = (await ChannelConfig.getForGuild(this.guildID)).map(c => c.getDataObject());
     }
 
     async _getModerations() {
