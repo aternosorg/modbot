@@ -151,7 +151,6 @@ class ChatTriggeredFeature {
                         return true;
                     }
                     // "main part" is very similar to main part of the actual domain -> probably phishing
-                    console.log(stringSimilarity.compareTwoStrings(expectedDomain, foundDomain));
                     if(stringSimilarity.compareTwoStrings(expectedDomain, foundDomain) >= similarity) {
                         return true;
                     }
