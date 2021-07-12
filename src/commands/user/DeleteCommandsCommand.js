@@ -2,7 +2,7 @@ const Command = require('../../Command');
 
 class DeleteCommandsCommand extends Command {
 
-    static description = 'Configure your own preferences';
+    static description = 'Automatically delete commands after you execute them';
 
     static usage = 'on|off';
 
