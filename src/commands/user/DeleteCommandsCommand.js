@@ -15,11 +15,13 @@ class DeleteCommandsCommand extends Command {
         }
 
         switch (this.args.shift().toLowerCase()) {
-            case 'on':
+            case 'on': {
                 this.userConfig.deleteCommands = true;
                 await this.userConfig.save();
-                await this.message.channel.send('Your commands will now be deleted!');
+                const response = await this.message.channel.send('Your commands will now be deleted!');
+                await response.delete({timeout: 5000});
                 break;
+            }
 
             case 'off':
                 this.userConfig.deleteCommands = false;
