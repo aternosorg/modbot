@@ -1,6 +1,6 @@
 const Command = require('../../Command');
 const util = require('../../util');
-const ChannelConfig = require('../../ChannelConfig');
+const ChannelConfig = require('../../config/ChannelConfig');
 const Discord = require('discord.js');
 
 class InvitesCommand extends Command {
@@ -22,21 +22,21 @@ class InvitesCommand extends Command {
 
         if (this.args.length === 1) {
             switch (this.args.shift().toLowerCase()) {
-                case "allowed":
+                case 'allowed':
                     this.guildConfig.invites = true;
                     await this.guildConfig.save();
                     embed.setColor(util.color.green)
-                        .setDescription(`Invites are now allowed!`);
+                        .setDescription('Invites are now allowed!');
                     break;
-                case "forbidden":
+                case 'forbidden':
                     this.guildConfig.invites = false;
                     await this.guildConfig.save();
                     embed.setColor(util.color.red)
-                        .setDescription(`Invites are now forbidden!`);
+                        .setDescription('Invites are now forbidden!');
                     break;
-                case "status":
+                case 'status':
                     embed.setColor(this.guildConfig.invites ? util.color.green : util.color.red)
-                        .setDescription(`Invites are currently ${this.guildConfig.invites ? "allowed": "forbidden"}!`);
+                        .setDescription(`Invites are currently ${this.guildConfig.invites ? 'allowed': 'forbidden'}!`);
                     break;
                 default:
                     return this.sendUsage();
@@ -51,34 +51,34 @@ class InvitesCommand extends Command {
 
         const channelID = await util.channelMentionToId(this.args.shift());
         /** @type {ChannelConfig} */
-        const channelConfig = await ChannelConfig.get(channelID)
+        const channelConfig = await ChannelConfig.get(channelID);
         switch (action.toLowerCase()) {
-            case "allowed":
+            case 'allowed':
                 channelConfig.invites = true;
                 await channelConfig.save();
                 embed.setColor(util.color.green)
                     .setDescription(`Invites are now allowed in <#${channelID}>!`);
                 break;
-            case "forbidden":
+            case 'forbidden':
                 channelConfig.invites = false;
                 await channelConfig.save();
                 embed.setColor(util.color.red)
                     .setDescription(`Invites are now forbidden in <#${channelID}>!`);
                 break;
-            case "default":
+            case 'default':
                 channelConfig.invites = null;
                 await channelConfig.save();
                 embed.setColor(this.guildConfig.invites ? util.color.green : util.color.red)
-                    .setDescription(`Invites are now ${this.guildConfig.invites ? "allowed": "forbidden"} (server default) in <#${channelID}>!`);
+                    .setDescription(`Invites are now ${this.guildConfig.invites ? 'allowed': 'forbidden'} (server default) in <#${channelID}>!`);
                 break;
-            case "status":
+            case 'status':
                 if (channelConfig.invites !== null) {
                     embed.setColor(channelConfig.invites ? util.color.green : util.color.red)
-                        .setDescription(`Invites are currently ${channelConfig.invites ? "allowed": "forbidden"} in <#${channelID}>!`);
+                        .setDescription(`Invites are currently ${channelConfig.invites ? 'allowed': 'forbidden'} in <#${channelID}>!`);
                 }
                 else {
                     embed.setColor(this.guildConfig.invites ? util.color.green : util.color.red)
-                        .setDescription(`Invites are currently ${this.guildConfig.invites ? "allowed": "forbidden"} (server default) in <#${channelID}>!`);
+                        .setDescription(`Invites are currently ${this.guildConfig.invites ? 'allowed': 'forbidden'} (server default) in <#${channelID}>!`);
                 }
                 break;
             default:

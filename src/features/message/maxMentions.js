@@ -1,6 +1,6 @@
 const util = require('../../util');
 const Log = require('../../Log');
-const GuildConfig = require('../../GuildConfig');
+const GuildConfig = require('../../config/GuildConfig');
 const Member = require('../../Member');
 
 exports.event = async (options, message) => {

@@ -51,7 +51,7 @@ class AutoResponseCommand extends Command {
 
                 let text = '';
                 for (const [id, response] of responses) {
-                    const info = `[${id}] ${response.global ? 'global' : response.channels.map(c => `\`${c}\``).join(', ')} ` +
+                    const info = `[${id}] ${response.global ? 'global' : response.channels.map(c => `<#${c}>`).join(', ')} ` +
                         '`' + response.trigger.asString() + '`\n';
 
                     if (text.length + info.length < 2000) {
@@ -107,10 +107,16 @@ class AutoResponseCommand extends Command {
 
             case 'edit': {
                 if (this.args.length < 3) return this.sendSubCommandUsage('edit');
-                const response = await this.getAutoResponse(this.args.shift(), 'remove');
+                const response = await this.getAutoResponse(this.args.shift(), 'edit');
                 if (!response) return;
 
-                await this.message.channel.send(response.embed(await response.edit(this.args.shift(), this.args, this.message.guild), util.color.green));
+                const edit = await response.edit(this.args.shift(), this.args, this.message.guild);
+
+                if (!edit.success) {
+                    return this.sendError(edit.message);
+                }
+
+                await this.message.channel.send(response.embed(edit.message, util.color.green));
                 break;
             }
 

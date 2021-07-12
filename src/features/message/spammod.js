@@ -1,6 +1,6 @@
 const util = require('../../util');
 const RepeatedMessage = require('../../RepeatedMessage');
-const GuildConfig = require('../../GuildConfig');
+const GuildConfig = require('../../config/GuildConfig');
 
 /**
  * @param options

@@ -1,6 +1,7 @@
 const Command = require('../Command');
 const util = require('../util');
 const Guild = require('../Guild');
+const {MessageEmbed} = require('discord.js');
 
 class ModerationCommand extends Command {
 
@@ -30,12 +31,14 @@ class ModerationCommand extends Command {
         if (this.targetedUsers === null) return;
 
         this.loadInfo();
+        const successes = [];
         for (const target of this.targetedUsers) {
             if (await this.isProtected(target)) continue;
             if(await this.executePunishment(target)) {
-                await this.sendSuccess(target);
+                successes.push(target);
             }
         }
+        await this.sendSuccess(successes);
     }
 
     /**
@@ -55,11 +58,17 @@ class ModerationCommand extends Command {
 
     /**
      * send an embed showing that the command was executed successfully.
-     * @param target
+     * @param {module:"discord.js".User[]} targets
      * @return {Promise<module:"discord.js".Message>}
      */
-    async sendSuccess(target) {
-        return util.chatSuccess(this.message.channel, target, this.reason, this.constructor.type.done);
+    async sendSuccess(targets) {
+        const type = this.constructor.type.done;
+        let description = `${targets.map(user => `\`${util.escapeFormatting(user.tag)}\``).join(', ')} ${targets.length === 1 ? 'has' : 'have'} been **${type}** `;
+        description += `| ${this.reason.substring(0, 4000 - description.length)}`;
+
+        return await this.message.channel.send(new MessageEmbed()
+            .setColor(util.color.resolve(type))
+            .setDescription(description));
     }
 
     /**
@@ -77,7 +86,7 @@ class ModerationCommand extends Command {
      */
     async isProtected(target) {
         if (target.bot) {
-            await this.sendError("I can't interact with bots!");
+            await this.sendError('I can\'t interact with bots!');
             return true;
         }
         const guild = Guild.get(this.message.guild);
@@ -85,7 +94,7 @@ class ModerationCommand extends Command {
         if (member === null) return false;
 
         if (this.message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || this.guildConfig.isProtected(member)) {
-            await this.sendError(`You don't have the permission to ${this.constructor.type.execute} <@!${target.id}>!`)
+            await this.sendError(`You don't have the permission to ${this.constructor.type.execute} <@!${target.id}>!`);
             return true;
         }
         return false;
@@ -118,6 +127,7 @@ class ModerationCommand extends Command {
      * @param {module:"discord.js".User} target
      * @return {Promise<boolean>}
      */
+    // eslint-disable-next-line no-unused-vars
     async executePunishment(target) {}
 }
 

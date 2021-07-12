@@ -1,7 +1,7 @@
 const Command = require('../../Command');
 const Discord = require('discord.js');
 const util = require('../../util');
-const ChannelConfig = require('../../ChannelConfig');
+const ChannelConfig = require('../../config/ChannelConfig');
 const {APIErrors} = Discord.Constants;
 
 const PERMS = ['SEND_MESSAGES', 'ADD_REACTIONS'];
@@ -31,7 +31,7 @@ class LockCommand extends Command {
         if (this.args[0].toLowerCase() === 'global') {
             {
                 const start = this.prefix.length + this.name.length + ' global '.length;
-                embed.setDescription(this.message.content.substring(start))
+                embed.setDescription(this.message.content.substring(start));
             }
             /** @type {module:"discord.js".GuildChannel[]} */
             const channels = this.message.guild.channels.cache.filter(this.lockable, this).array();

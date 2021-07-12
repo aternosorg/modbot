@@ -1,6 +1,6 @@
 const util = require('./util');
 const Discord = require('discord.js');
-const GuildConfig = require('./GuildConfig');
+const GuildConfig = require('./config/GuildConfig');
 const {APIErrors} = Discord.Constants;
 
 class Log{
@@ -19,7 +19,7 @@ class Log{
         const guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */guild.id);
         if (!guildConfig.logChannel) return null;
 
-        return this._send(guild.channels.resolve(/** @type {String} */guildConfig.logChannel), message, options)
+        return this._send(guild.channels.resolve(/** @type {String} */guildConfig.logChannel), message, options);
     }
 
     /**
@@ -40,8 +40,8 @@ class Log{
      * @param reason  reason for the deletion
      * @return {Promise<module:"discord.js".Message|null>} log message
      */
-     static async logMessageDeletion(message, reason) {
-         if (message.content.length === 0) return;
+    static async logMessageDeletion(message, reason) {
+        if (message.content.length === 0) return;
         return this.log(message, `Message in <#${message.channel.id}> deleted`, new Discord.MessageEmbed({
             footer: {
                 text: message.author.id,
@@ -56,12 +56,12 @@ class Log{
                 name: 'Message',
                 value: message.content.substring(0, 1024)
             },
-                {
-                    name: 'Reason',
-                    value: reason.substring(0, 512)
-                }]
+            {
+                name: 'Reason',
+                value: reason.substring(0, 512)
+            }]
         }));
-    };
+    }
 
     /**
      * Logs a message to the guilds message log channel (if specified)
@@ -78,7 +78,7 @@ class Log{
         const guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */guild.id);
         if (!guildConfig.messageLogChannel) return null;
 
-        return this._send(guild.channels.resolve(/** @type {String} */guildConfig.messageLogChannel), message, options)
+        return this._send(guild.channels.resolve(/** @type {String} */guildConfig.messageLogChannel), message, options);
     }
 
     /**
@@ -114,19 +114,19 @@ class Log{
             .setFooter(`ID: ${user.id}`)
             .setTimestamp()
             .addFields(
-                /** @type {any} */ { name: "User", value: `<@${user.id}>`, inline: true},
-                /** @type {any} */ { name: "Moderator", value: `<@${moderator.id}>`, inline: true},
-                /** @type {any} */ { name: "Reason", value: reason.substring(0, 1024), inline: true}
+                /** @type {any} */ { name: 'User', value: `<@${user.id}>`, inline: true},
+                /** @type {any} */ { name: 'Moderator', value: `<@${moderator.id}>`, inline: true},
+                /** @type {any} */ { name: 'Reason', value: reason.substring(0, 1024), inline: true}
             );
         if (options.time) {
-            logEmbed.addField("Duration", options.time, true);
+            logEmbed.addField('Duration', options.time, true);
         }
         if (options.amount) {
-            logEmbed.addField("Amount", options.amount, true);
-            logEmbed.addField("Total Strikes", options.total, true);
+            logEmbed.addField('Amount', options.amount, true);
+            logEmbed.addField('Total Strikes', options.total, true);
         }
         return this.logEmbed(guildInfo, logEmbed);
-    };
+    }
 
     /**
      * Log automatic unbans etc.
@@ -145,12 +145,12 @@ class Log{
             .setFooter(`ID: ${user.id}`)
             .setTimestamp()
             .addFields(
-                /** @type {any}*/ { name: "User", value: `<@!${user.id}>`, inline: true},
-                /** @type {any}*/ { name: "Reason", value: reason.substring(0, 512), inline: true}
+                /** @type {any}*/ { name: 'User', value: `<@!${user.id}>`, inline: true},
+                /** @type {any}*/ { name: 'Reason', value: reason.substring(0, 512), inline: true}
             );
 
         return this.logEmbed(guildInfo,logEmbed);
-    };
+    }
 
     /**
      * try to send this message to this channel
