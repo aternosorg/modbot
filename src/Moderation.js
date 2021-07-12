@@ -98,7 +98,8 @@ class Moderation {
      */
     static async getAll(guildID) {
         const result = [];
-        for (const moderation of await database.queryAll('SELECT id, userid, action, created, value, expireTime, reason, moderator, active FROM moderations WHERE guildid = ?', [guildID])) {
+        for (const moderation of await database.queryAll('SELECT id, userid, action, created, value, expireTime, reason, moderator, active ' +
+            'FROM moderations WHERE guildid = ?', [guildID])) {
             result.push(new Moderation(moderation));
         }
         return result;
@@ -118,8 +119,28 @@ class Moderation {
      * @return {Promise}
      */
     async save() {
-        return database.query('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) VALUES (?,?,?,?,?,?,?,?,?)',
-            [this.guildid, this.userid, this.action, this.created, this.expireTime, this.reason, this.moderator, this.value, this.active]);
+        return database.query('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
+            'VALUES (?,?,?,?,?,?,?,?,?)', this.getParameters());
+    }
+
+    /**
+     * get all parameters of this moderation
+     * @return {(Snowflake|String|Number)[]}
+     */
+    getParameters() {
+        return [this.guildid, this.userid, this.action, this.created, this.expireTime, this.reason, this.moderator, this.value, this.active];
+    }
+
+    /**
+     * insert multiple moderations at once
+     * @param {Moderation[]} moderations
+     * @return {Promise}
+     * @private
+     */
+    static async bulkSave(moderations) {
+        moderations = moderations.map(m => m.getParameters());
+        return database.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
+            `VALUES ${moderations.map(() => '(?,?,?,?,?,?,?,?,?)').join(', ')}`, moderations.flat());
     }
 }
 

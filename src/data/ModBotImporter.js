@@ -59,9 +59,9 @@ class ModBotImporter {
 
     _importModerations() {
         const moderations = this.data.moderations;
-        return Promise.all(moderations.map(m => {
+        return Moderation.bulkSave(moderations.map(m => {
             m.guildid = this.guildID;
-            return (new Moderation(m)).save();
+            return new Moderation(m);
         }));
     }
 

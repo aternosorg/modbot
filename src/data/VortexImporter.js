@@ -62,17 +62,17 @@ class VortexImporter {
     
     async _importTempmutes() {
         const mutes = this.keyValueArray(this.tempmutes).filter(e => e.value < Number.MAX_SAFE_INTEGER);
-        return Promise.all(mutes.map(m => this._timedModeration(m, 'mute').save()));
+        return Moderation.bulkSave(mutes.map(m => this._timedModeration(m, 'mute')));
     }
 
     async _importStrikes() {
         const strikes = this.keyValueArray(this.strikes).filter(e => e.value < Number.MAX_SAFE_INTEGER);
-        return Promise.all(strikes.map(m => this._strike(m).save()));
+        return Moderation.bulkSave(strikes.map(m => this._strike(m)));
     }
 
     async _importTempbans() {
         const bans = this.keyValueArray(this.tempbans).filter(e => e.value < Number.MAX_SAFE_INTEGER);
-        return Promise.all(bans.map(m => this._timedModeration(m, 'ban').save()));
+        return Moderation.bulkSave(bans.map(m => this._timedModeration(m, 'ban')));
     }
 
     /**
