@@ -1,6 +1,6 @@
 const util = require('./util');
 const Discord = require('discord.js');
-const GuildConfig = require('./GuildConfig');
+const GuildConfig = require('./config/GuildConfig');
 const {APIErrors} = Discord.Constants;
 
 class Log{

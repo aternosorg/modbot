@@ -1,7 +1,7 @@
 const Guild = require('./Guild');
 const Log = require('./Log');
 const util = require('./util');
-const GuildConfig = require('./GuildConfig');
+const GuildConfig = require('./config/GuildConfig');
 const {APIErrors} = require('discord.js').Constants;
 
 class Member {

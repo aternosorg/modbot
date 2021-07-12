@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
-const GuildConfig = require('./GuildConfig.js');
+const GuildConfig = require('./config/GuildConfig.js');
 const ChatTriggeredFeature = require('./ChatTriggeredFeature');
-const Config = require('./Config');
+const Config = require('./config/Config');
 const RateLimiter = require('./RateLimiter');
 const {APIErrors} = require('discord.js').Constants;
 
@@ -33,9 +33,9 @@ const util = {};
 util.init = (db, client) => {
     database = db;
     bot = client;
-    ChatTriggeredFeature.init(db);
-    Config.init(db, client);
-    RateLimiter.init(db);
+    ChatTriggeredFeature.init(database);
+    Config.init(database, client);
+    RateLimiter.init(database);
 };
 
 /**
@@ -331,60 +331,6 @@ util.resolveGuild = async (guildInfo) => {
             throw e;
         }
     }
-};
-
-/**
- * Sends an embed to the channel
- * @async
- * @param {module:"discord.js".TextBasedChannel}    channel
- * @param {module:"discord.js".MessageEmbed|Object} options options for the embed
- * @return {Promise<module:"discord.js".Message>}
- */
-util.sendEmbed = (channel, options) => {
-    return channel.send(new Discord.MessageEmbed(options));
-};
-
-/**
- * Respond with an embed
- * @async
- * @param {module:"discord.js".TextChannel} channel
- * @param {module:"discord.js".User}    user    user that was moderated
- * @param {String}                      reason  reason for the moderation
- * @param {String}                      type    moderation action
- * @param {String}                      [time]  duration of the moderation as a time string
- * @return {module:"discord.js".Message}
- */
-util.chatSuccess = async (channel, user, reason, type, time) => {
-    let embedColor = util.color.resolve(type);
-
-    const responseEmbed = new Discord.MessageEmbed()
-        .setColor(embedColor)
-        .setDescription(`**${util.escapeFormatting(user.tag)}** has been **${type}** | ${reason.substring(0, 1800)}`);
-    if (time) {
-        responseEmbed.setDescription(`**${util.escapeFormatting(user.tag)}** has been **${type}** for **${time}** | ${reason}`);
-    }
-
-    return await channel.send(responseEmbed);
-};
-
-/**
- * Save a moderation to the database
- * @async
- * @param {module:"discord.js".Snowflake} guildId       id of the guild
- * @param {module:"discord.js".Snowflake} userId        id of the moderated user
- * @param {String}                        action        moderation type
- * @param {String}                        reason        reason for the moderation
- * @param {Number}                        [duration]    duration of the moderation
- * @param {module:"discord.js".Snowflake} [moderatorId] id of the moderator
- * @return {Number} the id of the moderation
- */
-util.moderationDBAdd = async (guildId, userId, action, reason, duration, moderatorId) => {
-    //disable old moderations
-    await database.query('UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = ?', [guildId, userId, action]);
-
-    let now = Math.floor(Date.now()/1000);
-    let insert = await database.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator) VALUES (?,?,?,?,?,?,?)',[guildId, userId, action, now, duration ? now + duration : null, reason, moderatorId]);
-    return insert.insertId;
 };
 
 /**

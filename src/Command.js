@@ -1,5 +1,6 @@
-const GuildConfig = require('./GuildConfig');
-const ChannelConfig = require('./ChannelConfig');
+const GuildConfig = require('./config/GuildConfig');
+const ChannelConfig = require('./config/ChannelConfig');
+const UserConfig = require('./config/UserConfig');
 const util = require('./util');
 const Discord = require('discord.js');
 const defaultPrefix = require('../config.json').prefix;
@@ -80,6 +81,11 @@ class Command {
     channelConfig;
 
     /**
+     * @type {UserConfig}
+     */
+    userConfig;
+
+    /**
      * the name of this command that was used to call it
      * @type {String}
      */
@@ -109,8 +115,9 @@ class Command {
     }
 
     async _loadConfigs() {
-        this.guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */this.message.guild.id);
-        this.channelConfig = await ChannelConfig.get(/** @type {module:"discord.js".Snowflake} */this.message.channel.id);
+        this.guildConfig = await GuildConfig.get(this.message.guild.id);
+        this.channelConfig = await ChannelConfig.get(this.message.channel.id);
+        this.userConfig = await UserConfig.get(this.message.author.id);
     }
 
     /**
