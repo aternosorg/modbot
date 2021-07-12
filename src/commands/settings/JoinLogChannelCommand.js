@@ -8,7 +8,7 @@ class JoinLogChannelCommand extends Command {
 
     static usage = '<#channel|id>|off|status';
 
-    static names = ['joinlogs','memberlogs'];
+    static names = ['joinlog','memberlog'];
 
     static userPerms = ['MANAGE_GUILD'];
 
