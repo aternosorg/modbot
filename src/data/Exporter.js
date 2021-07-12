@@ -1,5 +1,5 @@
-const GuildConfig = require('../GuildConfig');
-const ChannelConfig = require('../ChannelConfig');
+const GuildConfig = require('../config/GuildConfig');
+const ChannelConfig = require('../config/ChannelConfig');
 const Moderation = require('../Moderation');
 const AutoResponse = require('../AutoResponse');
 const BadWord = require('../BadWord');

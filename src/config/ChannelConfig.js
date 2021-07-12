@@ -36,7 +36,7 @@ class ChannelConfig extends Config {
     static async getForGuild(guildID) {
         const result = [];
         for (const {id, config} of await this.database.queryAll('SELECT id, config FROM channels WHERE guildid = ?', [guildID])) {
-            result.push(new ChannelConfig(id, config));
+            result.push(new ChannelConfig(id, JSON.parse(config)));
         }
         return result;
     }

@@ -118,8 +118,8 @@ class Moderation {
      * @return {Promise}
      */
     async save() {
-        return database.query('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value) VALUES (?,?,?,?,?,?,?,?)',
-            [this.guildid, this.userid, this.action, this.created, this.expireTime, this.reason, this.moderator, this.value]);
+        return database.query('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) VALUES (?,?,?,?,?,?,?,?,?)',
+            [this.guildid, this.userid, this.action, this.created, this.expireTime, this.reason, this.moderator, this.value, this.active]);
     }
 }
 
