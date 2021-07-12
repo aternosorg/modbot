@@ -2,6 +2,12 @@ const mysql = require('mysql');
 const monitor = require('./Monitor').getInstance();
 
 class Database {
+
+    /**
+     * @type {Database}
+     */
+    static #instance;
+
     /**
      * Database constructor
      *
@@ -12,6 +18,14 @@ class Database {
         this.con = null;
         this.waiting = [];
         this._connect();
+        Database.#instance = this;
+    }
+
+    /**
+     * @return {Database}
+     */
+    static getInstance() {
+        return this.#instance;
     }
 
     /**

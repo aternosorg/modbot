@@ -29,6 +29,19 @@ class ChannelConfig extends Config {
     }
 
     /**
+     * get all channel configs from this guild
+     * @param {Snowflake} guildID
+     * @return {Promise<ChannelConfig[]>}
+     */
+    static async getForGuild(guildID) {
+        const result = [];
+        for (const {id, config} of await this.database.queryAll('SELECT id, config FROM channels WHERE guildid = ?', [guildID])) {
+            result.push(new ChannelConfig(id, JSON.parse(config)));
+        }
+        return result;
+    }
+
+    /**
      * get the guildID of this channel
      * @return {Promise<null|string>}
      */
@@ -48,6 +61,27 @@ class ChannelConfig extends Config {
 
     async _insert() {
         return this.constructor.database.query(`INSERT INTO ${this.constructor.getTableName()} (config,id,guildid) VALUES (?,?,?)`,[this.toJSONString(), this.id, await this.getGuildID()]);
+    }
+
+    /**
+     * @param {module:"discord.js".Client} bot
+     * @param {Snowflake} guildID
+     * @param {Config} data
+     * @return {Promise<void>}
+     */
+    static async import(bot, guildID, data) {
+        let channel;
+        try {
+            channel = await bot.channels.fetch(data.id);
+        }
+        catch (e) {
+            return false;
+        }
+
+        if (channel.guild.id !== guildID) return false;
+
+        await (new this(data.id, data)).save();
+        return true;
     }
 }
 

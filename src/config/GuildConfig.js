@@ -64,6 +64,14 @@ class GuildConfig extends Config {
     }
 
     /**
+     * @param {String} id
+     * @return {Promise<GuildConfig>}
+     */
+    static async get(id) {
+        return super.get(id);
+    }
+
+    /**
      * generate a settings embed
      * @returns {module:"discord.js".MessageEmbed}
      */
@@ -269,21 +277,18 @@ class GuildConfig extends Config {
         return punishments;
     }
 
-    toJSONString() {
-        //copy this to object
-        const object = {};
-        Object.assign(object,this);
-
-        //delete id property because it is stored in a different column
-        delete object.id;
+    getDataObject(o = this) {
+        //copy to new object
+        /** @type {Config} */
+        const cleanObject = {};
+        Object.assign(cleanObject,o);
 
         //copy private properties
-        object.punishments = this.#punishments;
-        object.modRoles = this.#modRoles;
-        object.protectedRoles = this.#protectedRoles;
+        cleanObject.punishments = this.#punishments;
+        cleanObject.modRoles = this.#modRoles;
+        cleanObject.protectedRoles = this.#protectedRoles;
 
-        //stringify
-        return JSON.stringify(object);
+        return super.getDataObject(cleanObject);
     }
 }
 
