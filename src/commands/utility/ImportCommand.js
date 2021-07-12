@@ -9,7 +9,7 @@ class ImportDataCommand extends Command {
 
     static usage = '';
 
-    static names = ['importv2'];
+    static names = ['import'];
 
     static comment = 'You need to attach the .json file exported from ModBot or Vortex to your message';
 
