@@ -109,7 +109,14 @@ class CommandManager {
             await cmd.execute();
             const memberConfig = await UserConfig.get(message.author.id);
             if (memberConfig.deleteCommands) {
-                await message.delete();
+                try {
+                    await message.delete();
+                }
+                catch (e) {
+                    if (e.code !== APIErrors.UNKNOWN_MESSAGE) {
+                        throw e;
+                    }
+                }
             }
         } catch (e) {
             try {
