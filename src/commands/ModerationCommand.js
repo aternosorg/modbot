@@ -38,7 +38,9 @@ class ModerationCommand extends Command {
                 successes.push(target);
             }
         }
-        await this.sendSuccess(successes);
+        if (successes.length) {
+            await this.sendSuccess(successes);
+        }
     }
 
     /**
