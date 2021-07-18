@@ -14,7 +14,7 @@ class ServerInfoCommand extends Command{
         const guild = this.message.guild;
         
         let generic = '';
-        generic += `**Owner:** <@!${guild.ownerID}> \n`;
+        generic += `**Owner:** <@!${guild.ownerID}> (${guild.owner.user.username}) \n`;
         generic += `**Owner ID:** ${guild.ownerID} \n`;
         generic += `**Created:** ${guild.createdAt.toUTCString()} \n`;
         generic += `**Guild ID:** ${guild.id} \n`;
