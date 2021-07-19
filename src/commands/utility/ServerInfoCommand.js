@@ -16,7 +16,7 @@ class ServerInfoCommand extends Command{
         let owner = await this.bot.users.fetch(guild.ownerID);
       
         let generic = '';
-        generic += `**Owner:** <@!${guild.ownerID}> (${owner.user.username.tag}) \n`;
+        generic += `**Owner:** <@!${guild.ownerID}> (${owner.tag}) \n`;
         generic += `**Owner ID:** ${guild.ownerID} \n`;
         generic += `**Created:** ${guild.createdAt.toUTCString()} \n`;
         generic += `**Guild ID:** ${guild.id} \n`;
