@@ -13,8 +13,10 @@ class ServerInfoCommand extends Command{
     async execute() {
         const guild = this.message.guild;
         
+        let owner = await this.bot.users.fetch(guild.ownerID);
+      
         let generic = '';
-        generic += `**Owner:** <@!${guild.ownerID}> \n`;
+        generic += `**Owner:** <@!${guild.ownerID}> (${owner.tag}) \n`;
         generic += `**Owner ID:** ${guild.ownerID} \n`;
         generic += `**Created:** ${guild.createdAt.toUTCString()} \n`;
         generic += `**Guild ID:** ${guild.id} \n`;
