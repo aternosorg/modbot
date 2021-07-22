@@ -165,13 +165,16 @@ class Log{
      * try to send this message to this channel
      * @param {GuildChannel} channel
      * @param {String} message
-     * @param {MessageEmbed} [options]
+     * @param {MessageEmbed} [embeds]
      * @returns {Promise<null|*>}
      * @private
      */
-    static async _send(channel, message, options) {
+    static async _send(channel, message, ...embeds) {
         try {
-            return channel.send(message.substring(0,2000),options);
+            return channel.send({
+                content: 'message',
+                embeds: embeds
+            });
         }
         catch (e) {
             if ([APIErrors.MISSING_ACCESS, APIErrors.MISSING_PERMISSIONS].includes(e.code)) {
