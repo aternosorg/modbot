@@ -15,31 +15,17 @@ module.exports = {
     GuildInfo: '',
 
     /**
-     * Punishment
+     * Punishment types:
+     * * ban
+     * * kick
+     * * mute
+     * * softban
+     * * strike
+     * @property {String} action
+     * @property {String|Number} [duration] Punishment duration (only for bans and mutes)
+     * @property {String} [message]
      */
-    Punishment: {
-        /**
-         * punishment action - possible values:
-         * * ban
-         * * kick
-         * * mute
-         * * softban
-         * * strike
-         * @type {String}
-         */
-        action: '',
-
-        /**
-         * Punishment duration (only for ban and mute)
-         * @type {String|Number|undefined}
-         */
-        duration: undefined,
-
-        /**
-         * @property {String|undefined}
-         */
-        message: undefined,
-    },
+    Punishment: {},
 
     CommandInfo: {
         isCommand: false,
