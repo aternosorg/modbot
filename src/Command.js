@@ -147,7 +147,7 @@ class Command {
      * @return {boolean|PermissionFlags}
      */
     botHasPerms() {
-        const botMember = this.message.guild.member(this.bot.user);
+        const botMember = this.message.guild.members.resolve(this.bot.user);
         const missingPerms = [];
         for (const perm of this.constructor.botPerms) {
             if (!botMember.hasPermission(perm)) missingPerms.push(perm);
