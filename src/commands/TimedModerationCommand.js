@@ -15,7 +15,7 @@ class TimedModerationCommand extends ModerationCommand {
         }
         description += `| ${this.reason.substring(0, 4000 - description.length)}`;
 
-        return await this.message.channel.send(new MessageEmbed()
+        return await this.reply(new MessageEmbed()
             .setColor(util.color.resolve(type))
             .setDescription(description));
     }
