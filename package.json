@@ -24,7 +24,7 @@
     "@google-cloud/logging": "^9.1.1",
     "@googleapis/youtube": "^2.0.0",
     "diff": "^4.0.2",
-    "discord.js": "^12.5.2",
+    "discord.js": "^13.0.0-dev.5e70694.1626955541",
     "fuse.js": "^6.4.6",
     "got": "^11.8.2",
     "mysql": "^2.18.1",
@@ -35,6 +35,7 @@
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "eslint": "^7.27.0",
     "eslint-plugin-import": "^2.23.3",
+    "eslint-plugin-jsdoc": "^35.5.1",
     "husky": "^6.0.0",
     "jest": "^26.6.3",
     "lint-staged": "^11.0.0"
