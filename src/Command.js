@@ -8,7 +8,8 @@ const {
     Client,
     PermissionFlags,
     MessageEmbed,
-    MessageOptions
+    MessageOptions,
+    ReplyMessageOptions
 } = require('discord.js');
 const Database = require('./Database');
 const defaultPrefix = require('../config.json').prefix;
@@ -224,13 +225,9 @@ class Command {
      * @return {Promise<void>}
      */
     async reply(message, ...additions) {
-        /** @type {MessageOptions}*/
+        /** @type {MessageOptions|ReplyMessageOptions}*/
         const options = {
-            embeds: additions,
-            reply: {
-                messageReference: this.message,
-                failIfNotExists: false
-            }
+            embeds: additions
         };
         if (typeof message === 'string') {
             options.content = message;
@@ -238,7 +235,15 @@ class Command {
         else {
             options.embeds.push(message);
         }
-        await this.message.channel.send(options);
+
+        if (this.userConfig.deleteCommands) {
+            await this.message.channel.send(options);
+        }
+        else {
+            options.failIfNotExists = false;
+            options.allowedMentions = {repliedUser: false};
+            await this.message.reply(options);
+        }
     }
 
     /**
