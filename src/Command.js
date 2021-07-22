@@ -137,7 +137,7 @@ class Command {
             return true;
         const missingPerms = [];
         for (const perm of this.constructor.userPerms) {
-            if (!this.message.member.hasPermission(perm)) missingPerms.push(perm);
+            if (!this.message.member.permissions.has(perm)) missingPerms.push(perm);
         }
         return missingPerms.length ? missingPerms : true;
     }
@@ -150,7 +150,7 @@ class Command {
         const botMember = this.message.guild.members.resolve(this.bot.user);
         const missingPerms = [];
         for (const perm of this.constructor.botPerms) {
-            if (!botMember.hasPermission(perm)) missingPerms.push(perm);
+            if (!botMember.permissions.has(perm)) missingPerms.push(perm);
         }
         return missingPerms.length ? missingPerms : true;
     }
