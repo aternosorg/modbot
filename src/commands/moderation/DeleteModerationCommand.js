@@ -1,5 +1,6 @@
 const Command = require('../../Command');
 const Channel = require('../../Channel');
+const Moderation = require('../../Moderation');
 
 class ClearModerationsCommand extends Command {
 
@@ -20,11 +21,11 @@ class ClearModerationsCommand extends Command {
         }
         const id = parseInt(regex[1]);
 
-        /** @type {ModerationData|null} */
-        const moderation = await this.database.query("SELECT id FROM moderations WHERE id = ? AND guildid = ?",[id, this.message.guild.id]);
+        /** @type {Moderation|null} */
+        const moderation = await this.database.query('SELECT id FROM moderations WHERE id = ? AND guildid = ?',[id, this.message.guild.id]);
 
         if (moderation === null) {
-            await this.message.channel.send('Moderation not found!');
+            await this.reply('Moderation not found!');
             return;
         }
 
@@ -33,12 +34,12 @@ class ClearModerationsCommand extends Command {
         const confirmed = await channel.getConfirmation(this.message.author, `Are you sure you want to delete the moderation #${id}?`);
 
         if (!confirmed) {
-            await this.message.channel.send("Canceled!");
+            await this.reply('Canceled!');
             return;
         }
 
         await this.database.queryAll('DELETE FROM moderations WHERE id = ? AND guildid = ?',[id, this.message.guild.id]);
-        await this.message.channel.send(`Deleted the moderation #${id}!`);
+        await this.reply(`Deleted the moderation #${id}!`);
     }
 
 }
