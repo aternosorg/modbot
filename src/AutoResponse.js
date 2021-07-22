@@ -1,6 +1,11 @@
 const ChatTriggeredFeature = require('./ChatTriggeredFeature');
-const Discord = require('discord.js');
+const {
+    Snowflake,
+    MessageEmbed,
+    Guild
+} = require('discord.js');
 const util = require('./util');
+const Trigger = require('./Trigger');
 
 /**
  * Class representing an auto response
@@ -13,13 +18,13 @@ class AutoResponse extends ChatTriggeredFeature {
 
     /**
      * constructor - create an auto response
-     * @param {module:"discord.js".Snowflake}     gid               guild ID
-     * @param {Object}                            json              options
-     * @param {Trigger}                           json.trigger      filter that triggers the response
-     * @param {String}                            json.response     message to send to the channel
-     * @param {Boolean}                           json.global       does this apply to all channels in this guild
-     * @param {module:"discord.js".Snowflake[]}   [json.channels]   channels that this applies to
-     * @param {Number}                            [id]              id in DB
+     * @param {Snowflake} gid guild ID
+     * @param {Object} json options
+     * @param {Trigger} json.trigger filter that triggers the response
+     * @param {String} json.response message to send to the channel
+     * @param {Boolean} json.global does this apply to all channels in this guild
+     * @param {Snowflake[]} [json.channels] channels that this applies to
+     * @param {Number} [id] id in DB
      * @return {AutoResponse} the auto response
      */
     constructor(gid, json, id) {
@@ -49,10 +54,10 @@ class AutoResponse extends ChatTriggeredFeature {
      * generate an Embed displaying the info of this response
      * @param {String}        title
      * @param {Number}        color
-     * @returns {module:"discord.js".MessageEmbed}
+     * @returns {MessageEmbed}
      */
     embed(title, color) {
-        return new Discord.MessageEmbed()
+        return new MessageEmbed()
             .setTitle(title + ` [${this.id}]`)
             .setColor(color)
             .addFields(
@@ -97,7 +102,7 @@ class AutoResponse extends ChatTriggeredFeature {
      * edit this auto-response
      * @param {String} option option to change
      * @param {String[]} args
-     * @param {module:"discord.js".Guild} guild
+     * @param {Guild} guild
      * @returns {Promise<{success: boolean, message: String}>} response message
      */
     async edit(option, args, guild) {
