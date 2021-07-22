@@ -9,7 +9,10 @@ const {
     PermissionFlags,
     MessageEmbed,
     MessageOptions,
-    ReplyMessageOptions
+    ReplyMessageOptions,
+    ButtonInteraction,
+    MessageActionRow,
+    MessageButton,
 } = require('discord.js');
 const Database = require('./Database');
 const defaultPrefix = require('../config.json').prefix;
@@ -105,6 +108,13 @@ class Command {
      * @type {String}
      */
     prefix;
+
+    /**
+     * the bot's response to this message
+     * sending multiple responses should be avoided
+     * @type {Message}
+     */
+    response;
 
     /**
      * call this command
@@ -300,6 +310,48 @@ class Command {
     static getOverview() {
         return `**${this.names.join(', ')}**\n`+
             `${this.description}\n`;
+    }
+
+    /**
+     * @param {String} text
+     * @param {Object} [options]
+     * @param {Number} [options.time]
+     * @return {Promise<ButtonInteraction>}
+     */
+    async getConfirmation(text, options = {time: 15000}) {
+        const buttons = new MessageActionRow()
+            .addComponents(
+                new MessageButton()
+                    .setCustomId('confirm')
+                    .setLabel('Confirm')
+                    .setStyle('DANGER'),
+                new MessageButton()
+                    .setCustomId('cancel')
+                    .setLabel('Cancel')
+                    .setStyle('SUCCESS')
+            );
+        /** @type {Message} */
+        this.response = await this.message.channel.send({content: text, components: [buttons]});
+        try {
+            const component = await this.response.awaitMessageComponent({
+                max: 1, time: options.time, errors: ['time']
+            });
+            for (const button of buttons.components) {
+                button.setDisabled(true);
+            }
+            await this.response.edit({components: [buttons]});
+            return component;
+        }
+        catch (e) {
+            for (const button of buttons.components) {
+                button.setDisabled(true);
+            }
+            await this.response.edit({components: [buttons]});
+            if (e.code === 'INTERACTION_COLLECTOR_ERROR')
+                return null;
+            else
+                throw e;
+        }
     }
 }
 

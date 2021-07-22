@@ -1,5 +1,4 @@
 const Command = require('../../Command');
-const Channel = require('../../Channel');
 const Moderation = require('../../Moderation');
 
 class ClearModerationsCommand extends Command {
@@ -22,26 +21,27 @@ class ClearModerationsCommand extends Command {
         const id = parseInt(regex[1]);
 
         /** @type {Moderation|null} */
-        const moderation = await this.database.query('SELECT id FROM moderations WHERE id = ? AND guildid = ?',[id, this.message.guild.id]);
+        const moderation = await this.database.query('SELECT id FROM moderations WHERE id = ? AND guildid = ?', [id, this.message.guild.id]);
 
         if (moderation === null) {
             await this.reply('Moderation not found!');
             return;
         }
 
-        const channel = new Channel(this.message.channel);
+        const button = await this.getConfirmation(`Are you sure you want to delete the moderation #${id}?`);
 
-        const confirmed = await channel.getConfirmation(this.message.author, `Are you sure you want to delete the moderation #${id}?`);
-
-        if (!confirmed) {
-            await this.reply('Canceled!');
+        if (!button) {
             return;
         }
 
-        await this.database.queryAll('DELETE FROM moderations WHERE id = ? AND guildid = ?',[id, this.message.guild.id]);
-        await this.reply(`Deleted the moderation #${id}!`);
-    }
+        if (button.customId !== 'confirm') {
+            await button.reply('The moderation was not deleted!');
+            return;
+        }
 
+        await this.database.queryAll('DELETE FROM moderations WHERE id = ? AND guildid = ?', [id, this.message.guild.id]);
+        await button.reply(`Deleted the moderation #${id}!`);
+    }
 }
 
 module.exports = ClearModerationsCommand;
