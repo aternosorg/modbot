@@ -172,7 +172,7 @@ class Log{
     static async _send(channel, message, ...embeds) {
         try {
             return channel.send({
-                content: 'message',
+                content: message || undefined,
                 embeds: embeds
             });
         }
