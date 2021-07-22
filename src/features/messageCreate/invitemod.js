@@ -4,7 +4,7 @@ const GuildConfig = require('../../config/GuildConfig');
 const ChannelConfig = require('../../config/ChannelConfig');
 
 exports.event = async (options, message) => {
-    if (!message.guild || message.author.bot || message.member.hasPermission('MANAGE_MESSAGES')) {
+    if (util.ignoresAutomod(message)) {
         return;
     }
 
