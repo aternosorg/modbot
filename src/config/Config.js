@@ -42,7 +42,7 @@ class Config {
                 cache.delete(key);
             }
         }
-    },60*1000);
+    }, 60 * 1000);
 
     /**
      * @type {String}
@@ -122,10 +122,9 @@ class Config {
      */
     async save() {
         const result = await this._select();
-        if(result){
+        if (result) {
             await this._update();
-        }
-        else {
+        } else {
             await this._insert();
             this.constructor.getCache().set(this.id, this);
         }
@@ -137,7 +136,7 @@ class Config {
      * @private
      */
     static async _select(key) {
-        return this.database.query(`SELECT id, config FROM ${this.getTableName()} WHERE id = ?`,[key]);
+        return this.database.query(`SELECT id, config FROM ${this.getTableName()} WHERE id = ?`, [key]);
     }
 
     /**
@@ -155,7 +154,7 @@ class Config {
      * @private
      */
     async _update() {
-        return this.constructor.database.query(`UPDATE ${this.constructor.getTableName()} SET config = ? WHERE id = ?`,[this.toJSONString(),this.id]);
+        return this.constructor.database.query(`UPDATE ${this.constructor.getTableName()} SET config = ? WHERE id = ?`, [this.toJSONString(), this.id]);
     }
 
     /**
@@ -164,7 +163,7 @@ class Config {
      * @private
      */
     async _insert() {
-        return this.constructor.database.query(`INSERT INTO ${this.constructor.getTableName()} (config,id) VALUES (?,?)`,[this.toJSONString(), this.id]);
+        return this.constructor.database.query(`INSERT INTO ${this.constructor.getTableName()} (config,id) VALUES (?,?)`, [this.toJSONString(), this.id]);
     }
 
     /**
@@ -176,7 +175,7 @@ class Config {
         const cache = this.getCache();
         if (!cache.has(id)) {
             const result = await this._select(id);
-            if(!result) return this.empty(id);
+            if (!result) return this.empty(id);
 
             cache.set(result.id, this.create(result));
         }
@@ -189,7 +188,24 @@ class Config {
      * @return {string}
      */
     toJSONString() {
-        return JSON.stringify(this);
+        return JSON.stringify(this.getDataObject());
+    }
+
+    /**
+     * get a clean data object
+     * @param {Config} [original]
+     * @return {Config}
+     */
+    getDataObject(original = this) {
+        //copy to new object
+        /** @type {Config} */
+        const cleanObject = {};
+        Object.assign(cleanObject,original);
+
+        //delete createdAt attribute used for cache
+        delete cleanObject.createdAt;
+
+        return cleanObject;
     }
 }
 
