@@ -23,26 +23,26 @@ class RaidModeCommand extends Command {
         }
 
         switch (this.args[0].toLowerCase()) {
-            case "on":
+            case 'on':
                 this.guildConfig.raidMode = true;
                 await this.guildConfig.save();
-                await this.message.channel.send("Enabled anti-raid-mode! Nobody can join this server now.");
+                await this.message.channel.send('Enabled anti-raid-mode! Nobody can join this server now.');
                 await Log.logEmbed(/** @type {module:"discord.js".Snowflake} */this.message.guild.id, {
                     description: `<@!${this.message.author.id}> enabled anti-raid-mode!`
                 });
                 break;
 
-            case "off":
+            case 'off':
                 this.guildConfig.raidMode = false;
                 await this.guildConfig.save();
-                await this.message.channel.send("Disabled anti-raid-mode!")
+                await this.message.channel.send('Disabled anti-raid-mode!');
                 await Log.logEmbed(/** @type {module:"discord.js".Snowflake} */this.message.guild.id, {
                     description: `<@!${this.message.author.id}> disabled anti-raid-mode!`
                 });
                 break;
 
-            case "status":
-                await this.message.channel.send(`Anti-raid-mode is currently ${this.guildConfig.raidMode === true ? 'enabled' : 'disabled'}!`)
+            case 'status':
+                await this.message.channel.send(`Anti-raid-mode is currently ${this.guildConfig.raidMode === true ? 'enabled' : 'disabled'}!`);
                 break;
 
             default:
