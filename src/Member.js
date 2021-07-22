@@ -8,6 +8,7 @@ const {
     GuildMember,
     ClientUser,
     Snowflake,
+    GuildBan,
 } = require('discord.js');
 const Database = require('./Database');
 const {Punishment, GuildInfo} = require('./Typedefs');
@@ -30,9 +31,7 @@ class Member {
     member;
 
     /**
-     * @type {Object|null}
-     * @property {String|null} reason
-     * @property {User} user
+     * @type {GuildBan}
      */
     banInfo;
 
@@ -60,7 +59,7 @@ class Member {
      * @returns {Promise<null|{reason: String|null}>}
      */
     async fetchBanInfo() {
-        this.banInfo = await this.guild.fetchBan(this.user.id);
+        this.banInfo = await this.guild.bans.fetch(this.user.id);
         return this.banInfo;
     }
 
