@@ -19,7 +19,7 @@ class ReasonCommand extends Command {
         const reason = this.args.join(' ').substring(0, 1000);
 
         const { affectedRows } = await this.database.queryAll('UPDATE moderations SET reason = ? WHERE id = ? AND guildid = ?', [reason, id, this.message.guild.id]);
-        await this.message.channel.send(affectedRows ? `Updated reason of ${id} | ${reason}` : 'Moderation not found!');
+        await this.reply(affectedRows ? `Updated reason of ${id} | ${reason}` : 'Moderation not found!');
     }
 }
 

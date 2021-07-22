@@ -1,5 +1,6 @@
 const Command = require('../../Command');
 const Log = require('../../Log');
+const {GuildInfo} = require('../../Typedefs');
 
 class RaidModeCommand extends Command {
 
@@ -26,8 +27,8 @@ class RaidModeCommand extends Command {
             case 'on':
                 this.guildConfig.raidMode = true;
                 await this.guildConfig.save();
-                await this.message.channel.send('Enabled anti-raid-mode! Nobody can join this server now.');
-                await Log.logEmbed(/** @type {module:"discord.js".Snowflake} */this.message.guild.id, {
+                await this.reply('Enabled anti-raid-mode! Nobody can join this server now.');
+                await Log.logEmbed(/** @type {GuildInfo} */ this.message.guild.id, {
                     description: `<@!${this.message.author.id}> enabled anti-raid-mode!`
                 });
                 break;
@@ -35,14 +36,14 @@ class RaidModeCommand extends Command {
             case 'off':
                 this.guildConfig.raidMode = false;
                 await this.guildConfig.save();
-                await this.message.channel.send('Disabled anti-raid-mode!');
-                await Log.logEmbed(/** @type {module:"discord.js".Snowflake} */this.message.guild.id, {
+                await this.reply('Disabled anti-raid-mode!');
+                await Log.logEmbed(/** @type {GuildInfo} */ this.message.guild.id, {
                     description: `<@!${this.message.author.id}> disabled anti-raid-mode!`
                 });
                 break;
 
             case 'status':
-                await this.message.channel.send(`Anti-raid-mode is currently ${this.guildConfig.raidMode === true ? 'enabled' : 'disabled'}!`);
+                await this.reply(`Anti-raid-mode is currently ${this.guildConfig.raidMode === true ? 'enabled' : 'disabled'}!`);
                 break;
 
             default:
