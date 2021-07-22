@@ -25,6 +25,7 @@ class DeleteCommandsCommand extends Command {
 
             case 'off':
                 this.userConfig.deleteCommands = false;
+                await this.userConfig.save();
                 await this.message.channel.send('Your commands will no longer be deleted!');
                 break;
 
