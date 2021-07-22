@@ -1,9 +1,22 @@
-const Discord = require('discord.js');
+const {
+    Constants,
+    Client,
+    Snowflake,
+    Guild,
+    Message,
+    TextChannel,
+    DMChannel,
+    ChannelLogsQueryOptions,
+    Collection,
+    NewsChannel,
+} = require('discord.js');
+const Database = require('./Database');
 const GuildConfig = require('./config/GuildConfig.js');
 const ChatTriggeredFeature = require('./ChatTriggeredFeature');
 const Config = require('./config/Config');
 const RateLimiter = require('./RateLimiter');
-const {APIErrors} = require('discord.js').Constants;
+const {APIErrors} = Constants;
+const {GuildInfo} = require('./Typedefs');
 
 /**
  * Default timeout for responses in minutes
@@ -19,7 +32,7 @@ let database;
 
 /**
  * Discord client
- * @type {module:"discord.js".Client}
+ * @type {Client}
  */
 let bot;
 
@@ -28,7 +41,7 @@ const util = {};
 /**
  * Init - saves database and discord client
  * @param  {Database}                   db      the database storing moderations, guilds, channels etc.
- * @param  {module:"discord.js".Client} client  the Discord client of the bot
+ * @param  {Client} client  the Discord client of the bot
  */
 util.init = (db, client) => {
     database = db;
@@ -108,12 +121,12 @@ util.retry = async (fn, thisArg, args = [], maxRetries = 5, returnValMatch = nul
 
 /**
  * Converts a channel mention (<#channelId>) or channel id to a channel id
- * @param {String|module:"discord.js".Snowflake}  mention channel mention (<#channelId>) or channel id
- * @return {module:"discord.js".Snowflake|null}   channel id or null
+ * @param {String|Snowflake}  mention channel mention (<#channelId>) or channel id
+ * @return {Snowflake|null}   channel id or null
  */
 util.channelMentionToId = (mention) => {
     if (/^<#\d+>$/.test(mention)) {
-        return /** @type {module:"discord.js".Snowflake|null} */ mention.match(/^<#(\d+)>$/)[1];
+        return /** @type {Snowflake|null} */ mention.match(/^<#(\d+)>$/)[1];
     }
     else if(/^\d+$/.test(mention)) {
         return mention;
@@ -125,12 +138,12 @@ util.channelMentionToId = (mention) => {
 
 /**
  * Converts a role mention (<@&roleId>) or role id to a role id
- * @param {String|module:"discord.js".Snowflake}  mention role mention (<@&roleId>) or role id
- * @return {module:"discord.js".Snowflake|null}   role id or null
+ * @param {String|Snowflake}  mention role mention (<@&roleId>) or role id
+ * @return {Snowflake|null}   role id or null
  */
 util.roleMentionToId = (mention) => {
     if (/^<@&\d+>$/.test(mention)) {
-        return /** @type {module:"discord.js".Snowflake|null} */ mention.match(/^<@&?(\d+)>$/)[1];
+        return /** @type {Snowflake|null} */ mention.match(/^<@&?(\d+)>$/)[1];
     }
     else if(/^\d+$/.test(mention)) {
         return mention;
@@ -142,12 +155,12 @@ util.roleMentionToId = (mention) => {
 
 /**
  * Converts a user mention (<@!userId> or <@userId>) or user id to a user id
- * @param {String|module:"discord.js".Snowflake}  mention user mention (<@!userId> or <@userId>) or user id
+ * @param {String|Snowflake}  mention user mention (<@!userId> or <@userId>) or user id
  * @return {Snowflake|null}   user id or null
  */
 util.userMentionToId = (mention) => {
     if (/^<@!?\d+>$/.test(mention)) {
-        return /** @type {module:"discord.js".Snowflake|null} */ mention.match(/^<@!?(\d+)>$/)[1];
+        return /** @type {Snowflake|null} */ mention.match(/^<@!?(\d+)>$/)[1];
     }
     else if(/^\d+$/.test(mention)) {
         return mention;
@@ -160,7 +173,7 @@ util.userMentionToId = (mention) => {
 /**
  * Is this mention a valid user mention?
  * @async
- * @param {String|module:"discord.js".Snowflake} mention user mention (<@!userId> or <@userId>) or user id
+ * @param {String|Snowflake} mention user mention (<@!userId> or <@userId>) or user id
  * @return {Promise<Boolean>}
  */
 util.isUserMention = async(mention) => {
@@ -170,13 +183,13 @@ util.isUserMention = async(mention) => {
 /**
  * Is this id a valid user id?
  * @async
- * @param {module:"discord.js".Snowflake} id user id
+ * @param {Snowflake} id user id
  * @return {Promise<Boolean>}
  */
 util.isUser = async (id) => {
     if (!id) return false;
     try {
-        await bot.users.fetch(/** @type {Snowflake} */ id);
+        await bot.users.fetch(id);
     } catch (e) {
         if (e.code === APIErrors.UNKNOWN_USER || e.httpStatus === 404) {
             return false;
@@ -191,8 +204,8 @@ util.isUser = async (id) => {
 /**
  * Is this mention a valid channel mention?
  * @async
- * @param {module:"discord.js".Guild}             guild the guild that should have this channel
- * @param {String|module:"discord.js".Snowflake}  mention channel mention (<#channelId>) or channel id
+ * @param {Guild}             guild the guild that should have this channel
+ * @param {String|Snowflake}  mention channel mention (<#channelId>) or channel id
  * @return {Boolean}
  */
 util.isChannelMention = (guild, mention) => {
@@ -202,23 +215,23 @@ util.isChannelMention = (guild, mention) => {
 /**
  * Is this id a valid channel id?
  * @async
- * @param {module:"discord.js".Guild}     guild the guild that should have this channel
- * @param {module:"discord.js".Snowflake} id channel id
+ * @param {Guild}     guild the guild that should have this channel
+ * @param {Snowflake} id channel id
  * @return {Boolean}
  */
 util.isChannel = (guild, id) => {
-    return !!guild.channels.resolve(/** @type {Snowflake} */ id);
+    return !!guild.channels.resolve(id);
 };
 
 /**
  * Is this id a valid role id?
  * @async
- * @param {module:"discord.js".Guild}     guild the guild that should have this role
- * @param {module:"discord.js".Snowflake} id role id
+ * @param {Guild}     guild the guild that should have this role
+ * @param {Snowflake} id role id
  * @return {Boolean}
  */
 util.isRole = (guild, id) => {
-    return !!guild.roles.fetch(/** @type {Snowflake} */ id);
+    return !!guild.roles.fetch(id);
 };
 
 /**
@@ -311,13 +324,13 @@ util.isTime = (word) => {
  * Resolves a guildInfo to a guild
  * @async
  * @param {GuildInfo} guildInfo
- * @return {module:"discord.js".Guild}
+ * @return {Guild}
  */
 util.resolveGuild = async (guildInfo) => {
-    if (guildInfo instanceof Discord.Message){
+    if (guildInfo instanceof Message){
         return guildInfo.guild;
     }
-    if (guildInfo instanceof Discord.Guild) {
+    if (guildInfo instanceof Guild) {
         return guildInfo;
     }
     try {
@@ -397,20 +410,20 @@ util.split = (str, ...splitAt) => {
 /**
 * Fetch messages (even more than 100) from a channel
 * @async
-* @param {module:"discord.js".TextChannel|module:"discord.js".DMChannel}  channel
-* @param {module:"discord.js".ChannelLogsQueryOptions}                    options
-* @return {Promise<module:"discord.js".Collection>} fetched messages
+* @param {TextChannel|DMChannel} channel
+* @param {ChannelLogsQueryOptions} options
+* @return {Promise<Collection>} fetched messages
 */
 util.getMessages = async (channel, options) => {
     if (options.before) {
-        return messagesBefore(channel, /** @type {module:"discord.js".Snowflake} */ options.before, options.limit);
+        return messagesBefore(channel, /** @type {Snowflake} */ options.before, options.limit);
     }
     else if (options.after) {
-        return messagesAfter(channel, /** @type {module:"discord.js".Snowflake} */ options.before, options.limit);
+        return messagesAfter(channel, /** @type {Snowflake} */ options.before, options.limit);
     }
     else if (options.around) {
-        let before = await messagesBefore(channel, /** @type {module:"discord.js".Snowflake} */ options.around, Math.floor(options.limit / 2));
-        return before.concat(await messagesAfter(channel, /** @type {module:"discord.js".Snowflake} */ options.around, Math.floor(options.limit / 2)));
+        let before = await messagesBefore(channel, /** @type {Snowflake} */ options.around, Math.floor(options.limit / 2));
+        return before.concat(await messagesAfter(channel, /** @type {Snowflake} */ options.around, Math.floor(options.limit / 2)));
     }
     else {
         return messagesBefore(channel, undefined, options.limit);
@@ -420,20 +433,20 @@ util.getMessages = async (channel, options) => {
 /**
  * Fetch messages before this message
  * @async
- * @param  {module:"discord.js".TextChannel|module:"discord.js".DMChannel}  channel
- * @param  {module:"discord.js".Snowflake}                                  message last message
- * @param  {Number}                                                         limit   max message count
- * @return {module:"discord.js".Collection} fetched messages
+ * @param  {TextChannel|DMChannel} channel
+ * @param  {Snowflake} message last message
+ * @param  {Number} limit   max message count
+ * @return {Collection<Snowflake, Message>} fetched messages
  */
 async function messagesBefore(channel, message, limit) {
     let before = message;
-    let messages = new Discord.Collection();
+    let messages = new Collection();
     for (let remaining = limit; remaining > 0; remaining -= 100) {
-    /** @type {Collection<module:"discord.js".Snowflake, module:"discord.js".Message>} */
-        const res = await channel.messages.fetch( /** @type {module:"discord.js".Snowflake} */{
+        /** @type {Collection<Snowflake, Message>} */
+        const res = await channel.messages.fetch( /** @type {ChannelLogsQueryOptions} */{
             before: before,
             limit: remaining > 100 ? 100: remaining
-        }, false);
+        }, {cache: false});
 
         if (res.size === 0) return messages;
 
@@ -446,19 +459,19 @@ async function messagesBefore(channel, message, limit) {
 /**
  * Fetch messages after this message
  * @async
- * @param  {module:"discord.js".TextChannel|module:"discord.js".DMChannel}  channel
- * @param  {module:"discord.js".Snowflake}                      message first message
+ * @param  {TextChannel|DMChannel}  channel
+ * @param  {Snowflake}                      message first message
  * @param  {Number}                                             limit   max message count
- * @return {module:"discord.js".Collection} fetched messages
+ * @return {Collection<Snowflake, Message>} fetched messages
  */
 async function messagesAfter(channel, message, limit) {
     let after = message;
-    let messages = new Discord.Collection();
+    let messages = new Collection();
     for (let remaining = limit; remaining > 0; remaining -= 100) {
-        let res = await channel.messages.fetch(/** @type {module:"discord.js".Snowflake} */ {
+        let res = await channel.messages.fetch(/** @type {ChannelLogsQueryOptions} */ {
             after: after,
             limit: remaining > 100 ? 100: remaining
-        }, false);
+        }, {cache: false});
         messages = messages.concat(res);
         after = res.first().id;
     }
@@ -469,7 +482,7 @@ async function messagesAfter(channel, message, limit) {
 /**
  * Is this message ignored by auto-moderation
  * @async
- * @param {module:"discord.js".Message} message
+ * @param {Message} message
  * @return {Boolean}
  */
 util.ignoresAutomod = async (message) => {
@@ -482,8 +495,8 @@ util.ignoresAutomod = async (message) => {
  * Delete messages (even more than 100)
  * @async
  * @param {TextChannel | DMChannel | NewsChannel}                          channel
- * @param {module:"discord.js".Collection.<module:"discord.js".Message>}  messages messages to delete
- * @return {Promise.<Array.<module:"discord.js".Collection.<module:"discord.js".Message>>>} deleted messages
+ * @param {Collection<Snowflake>}  messages messages to delete
+ * @return {Promise<Collection<Snowflake, Message>[]>} deleted messages
  */
 util.bulkDelete = async (channel, messages) => {
     const keys = messages.keyArray();
@@ -511,9 +524,9 @@ util.startsWithMultiple = (str, ...starts) => {
 
 /**
  * delete - deletes a message and ignores it in message logs
- * @param {module:"discord.js".Message} message
+ * @param {Message} message
  * @param {Object}                      [options] options to pass to the delete function
- * @returns {Promise<module:"discord.js".Message>}
+ * @returns {Promise<Message>}
  */
 util.delete = async(message, options) => {
     const deleteLog = require('./features/messageDelete/deletion.js');
@@ -531,7 +544,7 @@ util.delete = async(message, options) => {
 /**
  * get all mentioned users
  * @param {String[]}  mentions array of strings with a user mention or id
- * @return {module:"discord.js".Snowflake[]} user ids
+ * @return {Snowflake[]} user ids
  */
 util.userMentions = async(mentions) => {
     let res = [];
@@ -543,9 +556,9 @@ util.userMentions = async(mentions) => {
 
 /**
  * get all mentioned channels
- * @param {module:"discord.js".Guild} guild     the guild that should have this channel
+ * @param {Guild} guild     the guild that should have this channel
  * @param {String[]}                  mentions  array of strings with a channel mention or id
- * @return {module:"discord.js".Snowflake[]} channel ids
+ * @return {Snowflake[]} channel ids
  */
 util.channelMentions = async(guild, mentions) => {
     let res = [];
