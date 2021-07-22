@@ -78,7 +78,7 @@ class Guild {
      */
     async fetchBan(id) {
         try {
-            return await this.guild.fetchBan(id);
+            return await this.guild.bans.fetch(id);
         }
         catch (e) {
             if (e.code === APIErrors.UNKNOWN_BAN) {
