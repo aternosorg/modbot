@@ -1,54 +1,50 @@
-/**
- *
- * @typedef {Object} ModerationData
- * @property {Number} id
- * @property {module:"discord.js".Snowflake} guildid
- * @property {module:"discord.js".Snowflake} userid
- * @property {String} action
- * @property {Number} created
- * @property {Number} value
- * @property {Number|null} expireTime
- * @property {String} reason
- * @property {module:"discord.js".Snowflake} moderator
- * @property {boolean} active
- */
+const {
+    Message,
+    Guild,
+    Snowflake
+} = require('discord.js');
 
-/**
- * Data imported from Vortex
- * @typedef {Object} VortexData
- * @property {Object} tempmutes
- * @property {Object} strikes
- * @property {Object} tempbans
- */
+module.exports = {
+    /**
+     *  Data that resolves to give a Guild object. This can be:
+     *  * A Message object
+     *  * A Guild object
+     *  * A Snowflake
+     *  @type {Message|Guild|Snowflake}
+     */
+    GuildInfo: '',
 
-/**
- * Data that resolves to give a Guild object. This can be:
- * * A Message object
- * * A Guild object
- * * A Snowflake
- * @typedef {module:"discord.js".Message|module:"discord.js".Guild|module:"discord.js".Snowflake|Snowflake} GuildInfo
- */
+    /**
+     * Punishment
+     */
+    Punishment: {
+        /**
+         * punishment action - possible values:
+         * * ban
+         * * kick
+         * * mute
+         * * softban
+         * * strike
+         * @type {String}
+         */
+        action: '',
 
-/**
- * @typedef {Object} Punishment
- * @property {String} action possible values:
- * * ban
- * * kick
- * * mute
- * * softban
- * * strike
- * @property {String|Number} [duration]
- * @property {String} [message]
- */
+        /**
+         * Punishment duration (only for ban and mute)
+         * @type {String|Number|undefined}
+         */
+        duration: undefined,
 
-/**
- * @typedef {module:"discord.js".Snowflake} Snowflake
- */
+        /**
+         * @property {String|undefined}
+         */
+        message: undefined,
+    },
 
-/**
- * @typedef {Object} CommandInfo
- * @property {Boolean} isCommand
- * @property {String} name
- * @property {String} prefix
- * @property {String[]} args
- */
+    CommandInfo: {
+        isCommand: false,
+        name: '',
+        prefix: '',
+        args: ['']
+    }
+};
