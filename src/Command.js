@@ -247,12 +247,12 @@ class Command {
         }
 
         if (this.userConfig.deleteCommands) {
-            await this.message.channel.send(options);
+            this.response = await this.message.channel.send(options);
         }
         else {
             options.failIfNotExists = false;
             options.allowedMentions = {repliedUser: false};
-            await this.message.reply(options);
+            this.response = await this.message.reply(options);
         }
     }
 
