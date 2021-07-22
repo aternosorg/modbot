@@ -1,4 +1,4 @@
-const Discord = require('discord.js');
+const {Client} = require('discord.js');
 const Database = require('./Database');
 const util = require('./util');
 const fs = require('fs').promises;
@@ -13,7 +13,7 @@ class Bot {
     }
 
     /**
-     * @type {module:"discord.js".Client}
+     * @type {Client}
      */
     #client;
 
@@ -28,9 +28,16 @@ class Bot {
     #monitor = Monitor.getInstance();
 
     constructor() {
-        this.#client = new Discord.Client({
+        this.#client = new Client({
+            intents: [
+                'GUILDS',
+                'GUILD_MEMBERS',
+                'GUILD_BANS',
+                'GUILD_MESSAGES',
+                'GUILD_MESSAGE_REACTIONS'
+            ],
             disableMentions: 'everyone',
-            presence: { status: "dnd", activity: { type: "WATCHING", name: "you" } }
+            presence: { status: 'dnd', activity: { type: 'WATCHING', name: 'you' } }
         });
 
         this.#database = new Database(config.db);
@@ -40,7 +47,7 @@ class Bot {
         await this.#monitor.notice('Starting modbot');
         await this.#database.waitForConnection();
         await this.#monitor.info('Connected to database!');
-        console.log("Connected!");
+        console.log('Connected!');
 
         await this.#database.createTables();
         util.init(this.#database, this.#client);
@@ -94,7 +101,7 @@ class Bot {
                 try {
                     features.push(require(path));
                 } catch (e) {
-                    await this.#monitor.critical(`Failed to load feature '${folder}/${file}'`, e)
+                    await this.#monitor.critical(`Failed to load feature '${folder}/${file}'`, e);
                     console.error(`Failed to load feature '${folder}/${file}'`, e);
                 }
             }
