@@ -25,7 +25,7 @@ exports.event = async (options, message) => {
 
 };
 
-const invites = ['discord.gg','discord.com/invite', 'discordapp.com/invite', 'invite.gg', 'discord.me', 'top.gg/servers'];
+const invites = ['discord.gg','discord.com/invite', 'discordapp.com/invite', 'invite.gg', 'discord.me', 'top.gg/servers', 'dsc.gg'];
 
 function includesInvite(string) {
     for (let url of invites) {
