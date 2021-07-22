@@ -37,7 +37,7 @@ class User {
     /**
      * fetch this user
      * @return {Promise<User>}
-     * @deprecated
+     * @deprecated use this.fetchUser() instead
      */
     async fetch() {
         await this.fetchUser();

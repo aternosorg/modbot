@@ -1,5 +1,5 @@
 const Command = require('../../Command');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Message} = require('discord.js');
 const util = require('../../util');
 const regexRegex = /^\/(.*)\/([gimsuy]*)$/;
 const Log = require('../../Log');
@@ -58,7 +58,7 @@ class PurgeCommand extends Command {
             limit: filter.count || 100
         });
 
-        messages = messages.filter(/** @type {module:"discord.js".Message} */message => {
+        messages = messages.filter(/** @type {Message} */message => {
             if (this.message.createdAt - message.createdAt > 14*24*60*60*1000) return false;
             if (filter.users.length && !filter.users.includes(message.author.id)) return false;
             if (filter.regex && !this.matches(message, s => filter.regex.test(s))) return false;
@@ -74,7 +74,7 @@ class PurgeCommand extends Command {
 
         if (filter.users.length) embed.addField('Users', filter.users.map(u => `<@!${u}>`).join(', '), true);
         if (filter.regex) embed.addField('Regex', '`' + filter.regex + '`', true);
-        if (filter.count) embed.addField('Tested messages', filter.count, true);
+        if (filter.count) embed.addField('Tested messages', filter.count.toString(), true);
 
         await Promise.all([
             util.delete(this.message),
@@ -82,16 +82,16 @@ class PurgeCommand extends Command {
             Log.logEmbed(this.message.guild.id, embed)
         ]);
 
-        const response = await this.message.channel.send(new MessageEmbed()
+        await this.reply(new MessageEmbed()
             .setColor(util.color.green)
             .setDescription(`Deleted ${messages.size} messages`)
         );
-        return util.delete(response,{timeout: 5000});
+        return util.delete(this.response,{timeout: 5000});
     }
 
     /**
      *
-     * @param {module:"discord.js".Message} message
+     * @param {Message} message
      * @param {function} fn
      * @return {boolean}
      */

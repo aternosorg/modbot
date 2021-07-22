@@ -526,14 +526,22 @@ util.startsWithMultiple = (str, ...starts) => {
 /**
  * delete - deletes a message and ignores it in message logs
  * @param {Message} message
- * @param {Object}                      [options] options to pass to the delete function
- * @returns {Promise<Message>}
+ * @param {Object} [options]
+ * @param {Number} [options.timeout]
+ * @returns {Promise}
  */
-util.delete = async(message, options) => {
+util.delete = async(message, options = {}) => {
+    if (options.timeout) {
+        setTimeout(() => {
+            util.delete(message).catch(console.error);
+        }, options.timeout);
+        return;
+    }
+
     const deleteLog = require('./features/messageDelete/deletion.js');
     deleteLog.ignore(message.id);
     try {
-        return await util.retry(message.delete, message, [options]);
+        return await util.retry(message.delete, message);
     } catch (e) {
         if (e.code === APIErrors.UNKNOWN_MESSAGE) {
             return Promise.resolve(message);

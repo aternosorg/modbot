@@ -1,7 +1,8 @@
 const Command = require('../../Command');
-const Discord = require('discord.js');
+const {MessageEmbed} = require('discord.js');
 const util = require('../../util');
 const User = require('../../User');
+const Moderation = require('../../Moderation');
 
 /**
  * number of moderations that will be displayed on a single page. (3-25)
@@ -27,17 +28,17 @@ class ModInfoCommand extends Command {
         }
 
         const userID = util.userMentionToId(this.args[0]);
-        const user = (await (new User(userID, this.bot)).fetch()).user;
+        const user = await (new User(userID, this.bot)).fetchUser();
 
         const moderations = await this.database.queryAll('SELECT * FROM moderations WHERE userid = ? AND guildid = ?', [userID, this.message.guild.id]);
 
         if (moderations.length === 0) {
-            return this.message.channel.send(
-                new Discord.MessageEmbed()
+            return this.message.channel.send({embeds:[
+                new MessageEmbed()
                     .setColor(util.color.green)
                     .setAuthor(`Moderations for ${user.tag}`, user.avatarURL())
                     .setDescription('No moderations')
-            );
+            ]});
         }
 
         await this.multiPageResponse((index) => {
@@ -45,11 +46,11 @@ class ModInfoCommand extends Command {
             let end = (index + 1) * moderationsPerPage;
             if (end > moderations.length) end = moderations.length;
 
-            const embed = new Discord.MessageEmbed()
+            const embed = new MessageEmbed()
                 .setColor(util.color.orange)
                 .setAuthor(`Moderations for ${user.tag}`, user.avatarURL());
 
-            for (const /** @type {ModerationData} */ data of moderations.slice(start, end)) {
+            for (const /** @type {Moderation} */ data of moderations.slice(start, end)) {
                 let text = '';
 
                 if (data.action === 'strike') {
