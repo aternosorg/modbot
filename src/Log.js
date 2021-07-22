@@ -2,6 +2,7 @@ const util = require('./util');
 const Discord = require('discord.js');
 const GuildConfig = require('./config/GuildConfig');
 const {APIErrors} = Discord.Constants;
+const {GuildInfo} = require('./Typedefs');
 
 class Log{
     /**

@@ -488,7 +488,7 @@ async function messagesAfter(channel, message, limit) {
 util.ignoresAutomod = async (message) => {
     /** @type {GuildConfig} */
     const guildconfig = await GuildConfig.get(message.guild.id);
-    return message.author.bot || message.member.hasPermission('MANAGE_MESSAGES') || guildconfig.isProtected(message.member);
+    return message.author.bot || message.member.permissions.has('MANAGE_MESSAGES') || guildconfig.isProtected(message.member);
 };
 
 /**
@@ -577,7 +577,10 @@ util.channelMentions = async(guild, mentions) => {
  */
 util.getResponse = async(channel, author, timeout = responseWaitTime*60*1000) => {
     try {
-        let result = await channel.awaitMessages(message => { return message.author.id === author; }, { max: 1, time: timeout, errors: ['time'] });
+        let result = await channel.awaitMessages({
+            filter: message => { return message.author.id === author;},
+            max: 1, time: timeout, errors: ['time']
+        });
         result = result.first().content;
         if (result.toLowerCase() === '!cancel')
             return null;
