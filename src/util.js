@@ -486,6 +486,7 @@ async function messagesAfter(channel, message, limit) {
  * @return {Boolean}
  */
 util.ignoresAutomod = async (message) => {
+    if (!message.guild) return false;
     /** @type {GuildConfig} */
     const guildconfig = await GuildConfig.get(message.guild.id);
     return message.author.bot || message.member.permissions.has('MANAGE_MESSAGES') || guildconfig.isProtected(message.member);
