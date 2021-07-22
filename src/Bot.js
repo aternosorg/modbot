@@ -37,7 +37,7 @@ class Bot {
                 'GUILD_MESSAGE_REACTIONS'
             ],
             disableMentions: 'everyone',
-            presence: { status: 'dnd', activity: { type: 'WATCHING', name: 'you' } }
+            presence: { status: 'dnd', activities: [{ type: 'WATCHING', name: 'you' }] }
         });
 
         this.#database = new Database(config.db);
