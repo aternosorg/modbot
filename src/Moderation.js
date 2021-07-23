@@ -135,7 +135,6 @@ class Moderation {
      * insert multiple moderations at once
      * @param {Moderation[]} moderations
      * @return {Promise}
-     * @private
      */
     static async bulkSave(moderations) {
         moderations = moderations.map(m => m.getParameters());
