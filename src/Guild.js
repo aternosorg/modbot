@@ -6,7 +6,8 @@ const {
     Snowflake,
     GuildMember,
     Role,
-    User
+    User,
+    GuildBan,
 } = Discord;
 const {APIErrors} = require('discord.js').Constants;
 
@@ -74,7 +75,7 @@ class Guild {
     /**
      * fetch a ban
      * @param {Snowflake} id user id
-     * @return {Promise<null|{reason: String|null}>}
+     * @return {Promise<null|GuildBan>}
      */
     async fetchBan(id) {
         try {
