@@ -25,7 +25,7 @@ class MuteCommand extends TimedModerationCommand {
 
     async checkRequirements() {
         if(!this.guildConfig.mutedRole) {
-            await this.message.channel.send(new Discord.MessageEmbed()
+            await this.reply(new Discord.MessageEmbed()
                 .setDescription(`There is no muted role set for this server. Please use \`${this.prefix}mutedrole\` to specify it.`)
             );
             return false;

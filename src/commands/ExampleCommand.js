@@ -15,7 +15,7 @@ class ExampleCommand extends Command {
     static botPerms = [];
 
     async execute() {
-        await this.message.channel.send('This is an example');
+        await this.reply('This is an example');
     }
 }
 

@@ -60,7 +60,7 @@ class LockCommand extends Command {
 
         if (notLockable.length > 0) {
             const mentions = notLockable.map(id => `<#${id}>`).join(', ');
-            await this.message.channel.send(`The following channels don't need to be locked ${mentions}`);
+            await this.reply(`The following channels don't need to be locked ${mentions}`);
         }
 
         if (channels.length === 0) return;

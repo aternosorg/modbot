@@ -33,7 +33,7 @@ class VideoCommand extends Command {
     }, 60*1000);
 
     async execute() {
-        if (!this.guildConfig.playlist) return this.message.channel.send('No playlist specified!');
+        if (!this.guildConfig.playlist) return this.reply('No playlist specified!');
 
         const query = this.args.join(' ');
         if (!query) return this.sendUsage();
@@ -44,13 +44,13 @@ class VideoCommand extends Command {
         }
         catch (e) {
             if (e.response.data.error.code === 404) {
-                return this.message.channel.send('The playlist couln\'t be found. It was most likely deleted or set to private!');
+                return this.reply('The playlist couln\'t be found. It was most likely deleted or set to private!');
             }
             throw e;
         }
         const video = new Fuse(videos, {keys:['snippet.title']}).search(query)[0];
 
-        if (!video) return this.message.channel.send('No video found!');
+        if (!video) return this.reply('No video found!');
 
         /** @type {MessageOptions} */
         const options = {content: `https://youtu.be/${video.item.snippet.resourceId.videoId}`};

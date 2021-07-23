@@ -12,7 +12,7 @@ class ArticleCommand extends Command {
 
     async execute() {
         if (!this.guildConfig.helpcenter) {
-            await this.message.channel.send('No help center configured!');
+            await this.reply('No help center configured!');
             return;
         }
 
@@ -40,7 +40,7 @@ class ArticleCommand extends Command {
             await this.message.channel.send(options);
         }
         else {
-            await this.message.channel.send('No article found!');
+            await this.reply('No article found!');
         }
     }
 }
