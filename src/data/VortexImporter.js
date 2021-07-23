@@ -1,4 +1,4 @@
-const Discord = require('discord.js');
+const {Client, Snowflake, MessageEmbed} = require('discord.js');
 const Moderation = require('../Moderation');
 
 class VortexImporter {
@@ -24,7 +24,7 @@ class VortexImporter {
     tempbans;
 
     /**
-     * @param {module:"discord.js".Client} bot
+     * @param {Client} bot
      * @param {Snowflake} guildID
      * @param {Object} data JSON exported data from vortex
      * @param {Object} data.tempmutes
@@ -108,11 +108,11 @@ class VortexImporter {
     }
 
     generateEmbed() {
-        return new Discord.MessageEmbed()
+        return new MessageEmbed()
             .setTitle('Imported Data')
-            .addField('Mutes', Object.keys(this.tempmutes).length, true)
-            .addField('Strikes', Object.keys(this.strikes).length, true)
-            .addField('Bans', Object.keys(this.tempbans).length, true);
+            .addField('Mutes', Object.keys(this.tempmutes).length.toString(), true)
+            .addField('Strikes', Object.keys(this.strikes).length.toString(), true)
+            .addField('Bans', Object.keys(this.tempbans).length.toString(), true);
     }
 }
 

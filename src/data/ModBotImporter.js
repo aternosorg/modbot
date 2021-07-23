@@ -3,12 +3,13 @@ const ChannelConfig = require('../config/ChannelConfig');
 const Moderation = require('../Moderation');
 const AutoResponse = require('../AutoResponse');
 const BadWord = require('../BadWord');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Client, Snowflake} = require('discord.js');
+const Exporter = require('./Exporter');
 
 class ModBotImporter {
 
     /**
-     * @type {module:"discord.js".Client}
+     * @type {Client}
      */
     bot;
 
@@ -23,7 +24,7 @@ class ModBotImporter {
     data;
     
     /**
-     * @param {module:"discord.js".Client} bot
+     * @param {Client} bot
      * @param {Snowflake} guildID
      * @param {Exporter} data JSON exported data (modbot-1.0.0)
      */

@@ -3,6 +3,7 @@ const ChannelConfig = require('../config/ChannelConfig');
 const Moderation = require('../Moderation');
 const AutoResponse = require('../AutoResponse');
 const BadWord = require('../BadWord');
+const {Snowflake} = require('discord.js');
 
 class Exporter {
 
