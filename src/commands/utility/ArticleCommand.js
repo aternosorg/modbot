@@ -1,5 +1,6 @@
 const Command = require('../../Command');
 const Request = require('../../Request');
+const {MessageOptions} = require('discord.js');
 
 class ArticleCommand extends Command {
 
@@ -26,7 +27,17 @@ class ArticleCommand extends Command {
         await request.getJSON();
 
         if(request.JSON.count !== 0){
-            await this.message.channel.send(request.JSON.results[0].html_url);
+            /** @type {MessageOptions} */
+            const options = {content: request.JSON.results[0].html_url};
+
+            if (this.userConfig.deleteCommands && this.message.reference) {
+                options.reply = {
+                    messageReference: this.message.reference.messageId,
+                    failIfNotExists: false
+                };
+            }
+
+            await this.message.channel.send(options);
         }
         else {
             await this.message.channel.send('No article found!');

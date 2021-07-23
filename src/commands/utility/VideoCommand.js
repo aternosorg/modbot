@@ -1,5 +1,5 @@
 const Command = require('../../Command');
-const {Collection} = require('discord.js');
+const {Collection, MessageOptions} = require('discord.js');
 const youtube = require('@googleapis/youtube').youtube('v3');
 const {googleapikey} = require('../../../config.json');
 const Fuse = require('fuse.js');
@@ -16,7 +16,7 @@ class VideoCommand extends Command {
 
     /**
      * playlist cache
-     * @type {module:"discord.js".Collection<String, {data: Object, expires: Number}[]>}
+     * @type {Collection<String, {data: Object, expires: Number}[]>}
      */
     static #cache = new Collection();
 
@@ -52,7 +52,17 @@ class VideoCommand extends Command {
 
         if (!video) return this.message.channel.send('No video found!');
 
-        await this.message.channel.send(`https://youtu.be/${video.item.snippet.resourceId.videoId}`);
+        /** @type {MessageOptions} */
+        const options = {content: `https://youtu.be/${video.item.snippet.resourceId.videoId}`};
+
+        if (this.userConfig.deleteCommands && this.message.reference) {
+            options.reply = {
+                messageReference: this.message.reference.messageId,
+                failIfNotExists: false
+            };
+        }
+
+        await this.message.channel.send(options);
     }
 
     /**
