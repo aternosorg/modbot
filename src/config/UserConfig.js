@@ -1,4 +1,5 @@
 const Config = require('./Config');
+const {Snowflake} = require('discord.js');
 
 class UserConfig extends Config {
 

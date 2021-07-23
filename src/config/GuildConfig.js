@@ -1,8 +1,13 @@
 const config = require('../../config.json');
 const Config = require('./Config');
 const Discord = require('discord.js');
-const {MessageEmbed} = require('discord.js');
-
+const {
+    MessageEmbed,
+    Snowflake,
+    GuildMember,
+    Collection,
+} = require('discord.js');
+const {Punishment} = require('../Typedefs');
 /**
  * Class representing the config of a guild
  */
@@ -73,7 +78,7 @@ class GuildConfig extends Config {
 
     /**
      * generate a settings embed
-     * @returns {module:"discord.js".MessageEmbed}
+     * @returns {MessageEmbed}
      */
     getSettings() {
         const util = require('../util');
@@ -123,7 +128,7 @@ class GuildConfig extends Config {
 
     /**
      * Is this a moderator role?
-     * @param  {module:"discord.js".Snowflake} role role id
+     * @param  {Snowflake} role role id
      * @return {Boolean}
      */
     isModRole(role) {
@@ -133,12 +138,12 @@ class GuildConfig extends Config {
     /**
      * Is this member a mod
      * @async
-     * @param {module:"discord.js".GuildMember} member member object of the user in the specific guild
+     * @param {GuildMember} member member object of the user in the specific guild
      * @return {Boolean}
      */
     isMod(member) {
         for (let [key] of member.roles.cache) {
-            if (this.isModRole(/** @type {module:"discord.js".Snowflake} */ key))
+            if (this.isModRole(/** @type {Snowflake} */ key))
                 return true;
         }
         return false;
@@ -146,7 +151,7 @@ class GuildConfig extends Config {
 
     /**
      * Add this role to the moderator roles
-     * @param  {module:"discord.js".Snowflake} role role id
+     * @param  {Snowflake} role role id
      */
     addModRole(role) {
         this.#modRoles.push(role);
@@ -154,7 +159,7 @@ class GuildConfig extends Config {
 
     /**
      * Remove this role from the moderator roles
-     * @param  {module:"discord.js".Snowflake} role role id
+     * @param  {Snowflake} role role id
      */
     removeModRole(role) {
         const newRoles = [];
@@ -175,7 +180,7 @@ class GuildConfig extends Config {
 
     /**
      * Is this a protected role?
-     * @param  {module:"discord.js".Snowflake} role role id
+     * @param  {Snowflake} role role id
      * @return {Boolean}
      */
     isProtectedRole(role) {
@@ -185,13 +190,13 @@ class GuildConfig extends Config {
     /**
      * Is this member protected?
      * @async
-     * @param {module:"discord.js".GuildMember} member member object of the user in the specific guild
+     * @param {GuildMember} member member object of the user in the specific guild
      * @return {Boolean}
      */
     isProtected(member) {
         if (this.isMod(member)) return true;
         for (let [key] of member.roles.cache) {
-            if (this.isProtectedRole(/** @type {module:"discord.js".Snowflake} */ key))
+            if (this.isProtectedRole(/** @type {Snowflake} */ key))
                 return true;
         }
         return false;
@@ -199,7 +204,7 @@ class GuildConfig extends Config {
 
     /**
      * Add this role to the protected roles
-     * @param  {module:"discord.js".Snowflake} role role id
+     * @param  {Snowflake} role role id
      */
     addProtectedRole(role) {
         this.#protectedRoles.push(role);
@@ -207,7 +212,7 @@ class GuildConfig extends Config {
 
     /**
      * Remove this role from the protected roles
-     * @param  {module:"discord.js".Snowflake} role role id
+     * @param  {Snowflake} role role id
      */
     removeProtectedRole(role) {
         let newRoles = [];
@@ -265,7 +270,7 @@ class GuildConfig extends Config {
 
     /**
      * get all punishments
-     * @return {module:"discord.js".Collection<Number, Punishment>}
+     * @return {Collection<Number, Punishment>}
      */
     getPunishments() {
         const punishments = new Discord.Collection();

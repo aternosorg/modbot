@@ -1,4 +1,5 @@
-const Discord = require('discord.js');
+const {Client, Snowflake, Collection} = require('discord.js');
+const Database = require('../Database');
 
 /**
  * Config cache time (ms)
@@ -16,7 +17,7 @@ class Config {
 
     /**
      * Discord Client
-     * @type {module:"discord.js".Client}
+     * @type {Client}
      */
     static client;
 
@@ -55,7 +56,7 @@ class Config {
     createdAt;
 
     /**
-     * @param {module:"discord.js".Snowflake} id ID in the database
+     * @param {Snowflake} id ID in the database
      */
     constructor(id) {
         this.id = id;
@@ -65,7 +66,7 @@ class Config {
     /**
      * save database
      * @param {Database} db
-     * @param {module:"discord.js".Client} client
+     * @param {Client} client
      */
     static init(db, client) {
         this.database = db;
@@ -73,16 +74,16 @@ class Config {
     }
 
     /**
-     * @return {module:"discord.js".Collection<String, Config>}
+     * @return {Collection<String, Config>}
      */
     static getCache() {
         let cache = this.cache[this.tableName];
         if (!cache) {
             /**
              * config cache
-             * @type {module:"discord.js".Collection}
+             * @type {Collection}
              */
-            cache = new Discord.Collection();
+            cache = new Collection();
 
             this.cache[this.tableName] = cache;
         }
