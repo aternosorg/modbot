@@ -1,5 +1,5 @@
 const Config = require('./Config');
-const {Constants, Snowflake, GuildChannel} = require('discord.js');
+const {Constants, Snowflake, GuildChannel, Client} = require('discord.js');
 const {APIErrors} = Constants;
 
 /**
@@ -65,7 +65,7 @@ class ChannelConfig extends Config {
     }
 
     /**
-     * @param {module:"discord.js".Client} bot
+     * @param {Client} bot
      * @param {Snowflake} guildID
      * @param {Config} data
      * @return {Promise<void>}

@@ -131,8 +131,8 @@ class Log{
             logEmbed.addField('Duration', options.time, true);
         }
         if (options.amount) {
-            logEmbed.addField('Amount', options.amount, true);
-            logEmbed.addField('Total Strikes', options.total, true);
+            logEmbed.addField('Amount', '' + options.amount, true);
+            logEmbed.addField('Total Strikes', '' + options.total, true);
         }
         return this.logEmbed(guildInfo, logEmbed);
     }

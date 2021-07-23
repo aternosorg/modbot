@@ -79,10 +79,10 @@ class ModBotImporter {
     generateEmbed() {
         return new MessageEmbed()
             .setTitle('Imported Data')
-            .addField('Channel Configs', this.data.channels.length, true)
-            .addField('Moderations', this.data.moderations.length, true)
-            .addField('Responses', this.data.responses.length, true)
-            .addField('BadWords', this.data.badWords.length, true);
+            .addField('Channel Configs', this.data.channels.length.toString(), true)
+            .addField('Moderations', this.data.moderations.length.toString(), true)
+            .addField('Responses', this.data.responses.length.toString(), true)
+            .addField('BadWords', this.data.badWords.length.toString(), true);
     }
 }
 
