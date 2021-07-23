@@ -2,6 +2,7 @@ const Command = require('../../Command');
 const Request = require('../../Request');
 const ModBotImporter = require('../../data/ModBotImporter');
 const VortexImporter = require('../../data/VortexImporter');
+const Exporter = require('../../data/Exporter');
 
 class ImportDataCommand extends Command {
 
@@ -19,7 +20,7 @@ class ImportDataCommand extends Command {
 
     async execute() {
         if (!this.message.attachments.size) {
-            await this.message.channel.send('Please attach a file to your message.');
+            await this.reply('Please attach a file to your message.');
             return;
         }
 
@@ -31,7 +32,7 @@ class ImportDataCommand extends Command {
         }
         catch (e) {
             if (typeof(e) === 'string' && e.startsWith('Failed to parse JSON response of')){
-                await this.message.channel.send('Invalid JSON');
+                await this.reply('Invalid JSON');
             }
             throw e;
         }
@@ -45,7 +46,7 @@ class ImportDataCommand extends Command {
         importer = new importer(this.bot, this.message.guild.id, data);
 
         await importer.import();
-        await this.message.channel.send(importer.generateEmbed());
+        await this.reply(importer.generateEmbed());
     }
 
     /**

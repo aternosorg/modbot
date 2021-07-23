@@ -21,17 +21,17 @@ class LinkCooldownCommand extends Command {
             case 'off':
                 this.guildConfig.linkCooldown = -1;
                 await this.guildConfig.save();
-                await this.message.channel.send('Disabled link cooldown!');
+                await this.reply('Disabled link cooldown!');
                 break;
             case 'status':
-                await this.message.channel.send(`Link cooldown is currently ${this.guildConfig.linkCooldown === -1 ? 'disabled' : `set to ${util.secToTime(this.guildConfig.linkCooldown)}`}.`);
+                await this.reply(`Link cooldown is currently ${this.guildConfig.linkCooldown === -1 ? 'disabled' : `set to ${util.secToTime(this.guildConfig.linkCooldown)}`}.`);
                 break;
             default: {
                 const cooldown = util.timeToSec(this.args.join(' '));
                 if (cooldown > 0) {
                     this.guildConfig.linkCooldown = cooldown;
                     await this.guildConfig.save();
-                    await this.message.channel.send(`Set link cooldown to ${util.secToTime(cooldown)}!`);
+                    await this.reply(`Set link cooldown to ${util.secToTime(cooldown)}!`);
                 } else {
                     await this.sendUsage();
                 }

@@ -41,7 +41,7 @@ class InvitesCommand extends Command {
                 default:
                     return this.sendUsage();
             }
-            return this.message.channel.send(embed.setFooter('This can be overwritten per channel'));
+            return this.reply(embed.setFooter('This can be overwritten per channel'));
         }
 
         const action = this.args.shift();
@@ -84,7 +84,7 @@ class InvitesCommand extends Command {
             default:
                 await this.sendUsage();
         }
-        return this.message.channel.send(embed);
+        return this.reply(embed);
     }
 }
 

@@ -22,17 +22,17 @@ class SimilarMessagesCommand extends Command {
             case 'off':
                 this.guildConfig.similarMessages = -1;
                 await this.guildConfig.save();
-                await this.message.channel.send('Disabled repeated message protection!');
+                await this.reply('Disabled repeated message protection!');
                 break;
             case 'status':
-                await this.message.channel.send(`Repeated message protection is currently ${this.guildConfig.similarMessages === -1 ? 'disabled' : `set to ${this.guildConfig.similarMessages} similar messages per minute`}.`);
+                await this.reply(`Repeated message protection is currently ${this.guildConfig.similarMessages === -1 ? 'disabled' : `set to ${this.guildConfig.similarMessages} similar messages per minute`}.`);
                 break;
             default: {
                 const count = parseInt(this.args[0]);
                 if (count > 0 && count <= 60) {
                     this.guildConfig.similarMessages = count;
                     await this.guildConfig.save();
-                    await this.message.channel.send(`Enabled repeated message protection! Users can now only send ${count} similar messages per minute.`);
+                    await this.reply(`Enabled repeated message protection! Users can now only send ${count} similar messages per minute.`);
                 } else {
                     await this.sendUsage();
                 }

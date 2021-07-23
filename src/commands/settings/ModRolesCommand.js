@@ -23,7 +23,7 @@ class ModRolesCommand extends Command {
         let role;
         switch (this.args[0].toLowerCase()) {
             case 'list':
-                await this.message.channel.send(new Discord.MessageEmbed()
+                await this.reply(new Discord.MessageEmbed()
                     .setDescription(`Active moderator roles: ${this.guildConfig.listModRoles()}`)
                     .setColor(util.color.green)
                 );
@@ -36,7 +36,7 @@ class ModRolesCommand extends Command {
                 if (role === null || await guild.fetchRole(role) === null) return this.sendUsage();
 
                 if (this.guildConfig.isModRole(role)) {
-                    return this.message.channel.send(new Discord.MessageEmbed()
+                    return this.reply(new Discord.MessageEmbed()
                         .setDescription(`<@&${role}> is already a moderator role!`)
                         .setColor(util.color.red)
                     );
@@ -44,7 +44,7 @@ class ModRolesCommand extends Command {
 
                 this.guildConfig.addModRole(role);
                 await this.guildConfig.save();
-                await this.message.channel.send(new Discord.MessageEmbed()
+                await this.reply(new Discord.MessageEmbed()
                     .setDescription(`Added <@&${role}> as a moderator role!`)
                     .setColor(util.color.green)
                 );
@@ -57,7 +57,7 @@ class ModRolesCommand extends Command {
                 if (role === null || await guild.fetchRole(role) === null) return this.sendUsage();
 
                 if (!this.guildConfig.isModRole(role)) {
-                    return this.message.channel.send(new Discord.MessageEmbed()
+                    return this.reply(new Discord.MessageEmbed()
                         .setDescription(`<@&${role}> is not a moderator role!`)
                         .setColor(util.color.red)
                     );
@@ -65,7 +65,7 @@ class ModRolesCommand extends Command {
 
                 this.guildConfig.removeModRole(role);
                 await this.guildConfig.save();
-                await this.message.channel.send(new Discord.MessageEmbed()
+                await this.reply(new Discord.MessageEmbed()
                     .setDescription(`<@&${role}> is no longer a moderator role!`)
                     .setColor(util.color.green)
                 );

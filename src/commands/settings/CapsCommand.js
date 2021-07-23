@@ -20,15 +20,15 @@ class CapsCommand extends Command {
             case 'on':
                 this.guildConfig.caps = true;
                 await this.guildConfig.save();
-                await this.message.channel.send('Enabled caps moderation!');
+                await this.reply('Enabled caps moderation!');
                 break;
             case 'off':
                 this.guildConfig.caps = false;
                 await this.guildConfig.save();
-                await this.message.channel.send('Disabled caps moderation!');
+                await this.reply('Disabled caps moderation!');
                 break;
             case 'status':
-                await this.message.channel.send(`Caps moderation is currently ${this.guildConfig.caps === false ? 'disabled' : 'enabled'}.`);
+                await this.reply(`Caps moderation is currently ${this.guildConfig.caps === false ? 'disabled' : 'enabled'}.`);
                 break;
             default:
                 await this.sendUsage();

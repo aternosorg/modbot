@@ -24,7 +24,7 @@ class InfoCommand extends Command {
             )
             .setTimestamp()
             .setFooter(util.escapeFormatting(this.message.author.tag));
-        await this.message.channel.send(embed);
+        await this.reply(embed);
     }
 }
 

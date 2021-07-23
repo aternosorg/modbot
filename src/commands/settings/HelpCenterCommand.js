@@ -21,14 +21,14 @@ class HelpCenterCommand extends Command {
             case 'off':
                 this.guildConfig.helpcenter = null;
                 await this.guildConfig.save();
-                await this.message.channel.send('Disabled Zendesk help center!');
+                await this.reply('Disabled Zendesk help center!');
                 break;
             case 'show':
                 if (!this.guildConfig.helpcenter) {
-                    await this.message.channel.send('There is no help center configured');
+                    await this.reply('There is no help center configured');
                 }
                 else {
-                    await this.message.channel.send(`Active help center: https://${this.guildConfig.helpcenter}.zendesk.com`);
+                    await this.reply(`Active help center: https://${this.guildConfig.helpcenter}.zendesk.com`);
                 }
                 break;
             default: {
@@ -44,7 +44,7 @@ class HelpCenterCommand extends Command {
                     await request.getJSON();
                 } catch (e) {
                     if (e.response?.statusCode === 404 || e.code === 'ENOTFOUND') {
-                        await this.message.channel.send('This is not a valid helpcenter subdomain!');
+                        await this.reply('This is not a valid helpcenter subdomain!');
                         return;
                     } else {
                         throw e;
@@ -52,7 +52,7 @@ class HelpCenterCommand extends Command {
                 }
                 this.guildConfig.helpcenter = subdomain;
                 await this.guildConfig.save();
-                await this.message.channel.send(`Set help center to https://${subdomain}.zendesk.com`);
+                await this.reply(`Set help center to https://${subdomain}.zendesk.com`);
             }
         }
     }

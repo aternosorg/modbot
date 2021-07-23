@@ -9,7 +9,7 @@ class ExampleCommand extends Command {
     static userPerms = ['MANAGE_GUILD'];
 
     async execute() {
-        await this.message.channel.send(this.guildConfig.getSettings());
+        await this.reply(this.guildConfig.getSettings());
     }
 }
 

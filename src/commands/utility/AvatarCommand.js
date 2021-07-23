@@ -1,5 +1,5 @@
 const Command = require('../../Command');
-const Discord = require('discord.js');
+const {User, Snowflake, MessageEmbed} = require('discord.js');
 const util = require('../../util');
 
 class AvatarCommand extends Command{
@@ -11,9 +11,9 @@ class AvatarCommand extends Command{
     static description = 'Show someones avatar';
 
     async execute() {
-        /** @type {module:"discord.js".User|Snowflake} */
+        /** @type {User|Snowflake} */
         let user = this.args.length ? util.userMentionToId(this.args[0]) : this.message.author;
-        if (!(user instanceof Discord.User)) {
+        if (!(user instanceof User)) {
             try {
                 user = await this.bot.users.fetch(user);
             }
@@ -25,13 +25,13 @@ class AvatarCommand extends Command{
                 throw e;
             }
         }
-        const avatarEmbed = new Discord.MessageEmbed()
+        const avatarEmbed = new MessageEmbed()
             .setTitle(`Avatar of ${util.escapeFormatting(user.tag)}`)
             .setImage(user.displayAvatarURL({dynamic: true, size: 2048}))
             .setFooter(`Command executed by ${util.escapeFormatting(this.message.author.tag)}`)
             .setTimestamp();
 
-        await this.message.channel.send(avatarEmbed);
+        await this.reply(avatarEmbed);
     }
 }
 
