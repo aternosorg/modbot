@@ -16,7 +16,7 @@ class InfoCommand extends Command {
         const embed = new Discord.MessageEmbed()
             .setTitle('ModBot by Aternos')
             .setDescription(
-            '[ModBot](https://github.com/aternosorg/modbot/) is a moderation bot developed by [Aternos](https://aternos.org/)\n\n' +
+                '[ModBot](https://github.com/aternosorg/modbot/) is a moderation bot developed by [Aternos](https://aternos.org/)\n\n' +
             '[[Privacy Policy]](https://aternos.gmbh/en/modbot/privacy) ' +
             '[[Invite]](https://discordapp.com/oauth2/authorize?client_id=790967448111153153&scope=bot&permissions=268446806) '+
             '[[GitHub]](https://github.com/aternosorg/modbot/) ' +

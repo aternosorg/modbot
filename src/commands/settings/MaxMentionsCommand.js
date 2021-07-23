@@ -15,7 +15,7 @@ class MaxMentionsCommand extends Command {
     async execute() {
         if (this.args.length === 0) {
             if (this.guildConfig.maxMentions === -1) {
-                await this.message.channel.send('The mention limit is currently disabled.')
+                await this.message.channel.send('The mention limit is currently disabled.');
             }
             else {
                 await this.message.channel.send(`Users can currently mention up to ${this.guildConfig.maxMentions} users in one message.`);
