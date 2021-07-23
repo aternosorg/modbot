@@ -39,13 +39,13 @@ class PunishCommand extends Command {
         const action = this.args.shift().toLowerCase();
         if (action === 'none') {
             await this.guildConfig.setPunishment(count, null);
-            return this.message.channel.send(`Removed punishment for ${count} ${count === 1 ? 'strike': 'strikes'}`);
+            return this.reply(`Removed punishment for ${count} ${count === 1 ? 'strike': 'strikes'}`);
         }
         if (!['ban','kick','mute','softban'].includes(action)) return this.sendUsage();
 
         const duration = this.args.length ? util.timeToSec(this.args.join(' ')) : null;
         await this.guildConfig.setPunishment(count, /** @type {Punishment} */{action, duration});
-        await this.message.channel.send(`Set punishment for ${count} ${count === 1 ? 'strike': 'strikes'} to ${action} ${duration ? `for ${util.secToTime(duration)}` : ''}.`);
+        await this.reply(`Set punishment for ${count} ${count === 1 ? 'strike': 'strikes'} to ${action} ${duration ? `for ${util.secToTime(duration)}` : ''}.`);
     }
 }
 

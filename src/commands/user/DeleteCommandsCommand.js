@@ -1,4 +1,5 @@
 const Command = require('../../Command');
+const util = require('../../util');
 
 class DeleteCommandsCommand extends Command {
 
@@ -18,15 +19,15 @@ class DeleteCommandsCommand extends Command {
             case 'on': {
                 this.userConfig.deleteCommands = true;
                 await this.userConfig.save();
-                const response = await this.message.channel.send('Your commands will now be deleted!');
-                await response.delete({timeout: 5000});
+                await this.reply('Your commands will now be deleted!');
+                await util.delete(this.response, {timeout: 5000});
                 break;
             }
 
             case 'off':
                 this.userConfig.deleteCommands = false;
                 await this.userConfig.save();
-                await this.message.channel.send('Your commands will no longer be deleted!');
+                await this.reply('Your commands will no longer be deleted!');
                 break;
 
             default:
