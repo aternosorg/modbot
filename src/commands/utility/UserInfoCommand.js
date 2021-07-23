@@ -42,8 +42,8 @@ class UserInfoCommand extends Command {
             .setAuthor(user.tag, user.avatarURL())
             .setDescription(
                 `**ID:** ${userID}\n` +
-                `**Account Created:** ${user.createdAt.toUTCString()}\n` +
-                (guildMember?.joinedAt ? `**Joined Guild:** ${guildMember.joinedAt.toUTCString()}\n` : '') +
+                `**Account Created:** <t:${Math.floor(user.createdTimestamp/1000)}:D>\n` +
+                (guildMember?.joinedAt ? `**Joined Guild:** <t:${Math.floor(guildMember.joinedTimestamp/1000)}:D>\n` : '') +
                 `**Moderations:** ${moderations.count}\n` +
                 `**Strikes:** ${strikes}\n` +
                 `**Muted:** ${mute ? `${icons.yes} - ${mute.reason}`: icons.no}\n` +
@@ -53,7 +53,7 @@ class UserInfoCommand extends Command {
             )
             .setColor(getColor(ban, mute));
 
-        await this.message.channel.send(embed);
+        await this.reply(embed);
 
     }
 }
@@ -63,7 +63,7 @@ function getRemainingDuration(info) {
     /** @type {Number|null} */
     let remaining = info.expireTime - Math.floor(Date.now()/1000);
     if (remaining <= 0) return '1s';
-    return util.secToTime(remaining);
+    return `<t:${remaining}:R>`;
 }
 
 function getColor(ban, mute) {
