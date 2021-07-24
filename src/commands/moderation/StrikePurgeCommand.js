@@ -2,7 +2,7 @@ const ModerationCommand = require('../ModerationCommand');
 const Member = require('../../Member');
 const util = require('../../util');
 
-class StrikeCommand extends ModerationCommand {
+class StrikePurgeCommand extends ModerationCommand {
 
     static description = 'Strike a user and purge their messages';
 
@@ -43,4 +43,4 @@ class StrikeCommand extends ModerationCommand {
     }
 }
 
-module.exports = StrikeCommand;
+module.exports = StrikePurgeCommand;
