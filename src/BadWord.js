@@ -61,7 +61,7 @@ class BadWord extends ChatTriggeredFeature {
     static checkTypes(json) {
         TypeChecker.assertOfTypes(json, ['object'], 'Data object');
 
-        TypeChecker.assertStringOrUndefined(json.response, 'Response');
+        TypeChecker.assertStringUndefinedOrNull(json.response, 'Response');
         TypeChecker.assertOfTypes(json.global, ['boolean'], 'Global');
         if (json.global && !(json.channels instanceof Array && json.channels.every(c => typeof c === 'string'))) {
             throw new TypeError('Channels must be an array of strings');
@@ -71,10 +71,10 @@ class BadWord extends ChatTriggeredFeature {
         if (!this.triggerTypes.includes(json.trigger.type)) {
             throw new TypeError('Invalid trigger type!');
         }
-        TypeChecker.assertString(json.content, 'Content');
-        TypeChecker.assertStringOrUndefined(json.flags, 'Flags');
+        TypeChecker.assertString(json.trigger.content, 'Content');
+        TypeChecker.assertStringUndefinedOrNull(json.trigger.flags, 'Flags');
 
-        TypeChecker.assertNumberOrUndefined(json.priority, 'Priority');
+        TypeChecker.assertNumberUndefinedOrNull(json.priority, 'Priority');
     }
 
     /**

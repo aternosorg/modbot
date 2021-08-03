@@ -38,7 +38,7 @@ class ChannelConfig extends Config {
     static checkTypes(json) {
         TypeChecker.assertOfTypes(json, ['object'], 'Data object');
 
-        TypeChecker.assertOfTypes(json.invites, ['undefined','boolean'], 'Invites');
+        TypeChecker.assertOfTypes(json.invites, ['undefined','boolean'], 'Invites', true);
         TypeChecker.assertOfTypes(json.lock, ['object'], 'Lock');
     }
 

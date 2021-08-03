@@ -4,9 +4,13 @@ class TypeChecker {
      * @param value
      * @param {("undefined"|"object"|"boolean"|"number"|"string"|"function"|"symbol"|"bigint")[]} types
      * @param {String} name
+     * @param {boolean} [allowNull]
      * @throws {TypeError}
      */
-    static assertOfTypes(value, types, name) {
+    static assertOfTypes(value, types, name, allowNull = false) {
+        if (allowNull && value === null) {
+            return;
+        }
         if (!types.includes(typeof value)) {
             throw new TypeError(`${name} has the wrong type. Expected: ${types.join(', ')} Found: ${typeof value}`);
         }
@@ -17,8 +21,8 @@ class TypeChecker {
      * @param value
      * @param {String} name
      */
-    static assertNumberOrUndefined(value, name) {
-        return this.assertOfTypes(value, ['number', 'undefined'], name);
+    static assertNumberUndefinedOrNull(value, name) {
+        return this.assertOfTypes(value, ['number', 'undefined'], name, true);
     }
 
     /**
@@ -35,8 +39,8 @@ class TypeChecker {
      * @param value
      * @param {String} name
      */
-    static assertStringOrUndefined(value, name) {
-        return this.assertOfTypes(value, ['string', 'undefined'], name);
+    static assertStringUndefinedOrNull(value, name) {
+        return this.assertOfTypes(value, ['string', 'undefined'], name, true);
     }
 
 

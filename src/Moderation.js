@@ -89,7 +89,7 @@ class Moderation {
         this.reason = data.reason || 'No reason provided.';
         this.expireTime = data.expireTime;
         this.moderator = data.moderator;
-        this.active = data.active ?? true;
+        this.active = !!data.active;
     }
 
     /**
@@ -103,11 +103,11 @@ class Moderation {
         TypeChecker.assertString(data.guildid, 'Guild ID');
         TypeChecker.assertString(data.userid, 'User ID');
         TypeChecker.assertString(data.action, 'Action');
-        TypeChecker.assertNumberOrUndefined(data.created, 'Created');
-        TypeChecker.assertNumberOrUndefined(data.value, 'Value');
-        TypeChecker.assertStringOrUndefined(data.reason, 'Reason');
-        TypeChecker.assertNumberOrUndefined(data.expireTime, 'Expire time');
-        TypeChecker.assertString(data.moderator, 'Moderator');
+        TypeChecker.assertOfTypes(data.created, ['number','string','undefined'], 'Created', true);
+        TypeChecker.assertNumberUndefinedOrNull(data.value, 'Value');
+        TypeChecker.assertStringUndefinedOrNull(data.reason, 'Reason');
+        TypeChecker.assertOfTypes(data.expireTime, ['number','string','undefined'], 'Expire time', true);
+        TypeChecker.assertStringUndefinedOrNull(data.moderator, 'Moderator');
         TypeChecker.assertOfTypes(data.active, ['boolean', 'undefined'], 'Active');
     }
 

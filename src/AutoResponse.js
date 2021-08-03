@@ -55,8 +55,8 @@ class AutoResponse extends ChatTriggeredFeature {
         if (!this.triggerTypes.includes(json.trigger.type)) {
             throw new TypeError('Invalid trigger type!');
         }
-        TypeChecker.assertString(json.content, 'Content');
-        TypeChecker.assertStringOrUndefined(json.flags, 'Flags');
+        TypeChecker.assertString(json.trigger.content, 'Content');
+        TypeChecker.assertStringUndefinedOrNull(json.trigger.flags, 'Flags');
     }
 
     /**

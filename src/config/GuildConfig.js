@@ -72,9 +72,9 @@ class GuildConfig extends Config {
     static checkTypes(json) {
         TypeChecker.assertOfTypes(json, ['object'], 'Data object');
 
-        TypeChecker.assertStringOrUndefined(json.logChannel, 'Log channel');
-        TypeChecker.assertStringOrUndefined(json.messageLogChannel, 'Message log channel');
-        TypeChecker.assertStringOrUndefined(json.mutedRole, 'Muted role');
+        TypeChecker.assertStringUndefinedOrNull(json.logChannel, 'Log channel');
+        TypeChecker.assertStringUndefinedOrNull(json.messageLogChannel, 'Message log channel');
+        TypeChecker.assertStringUndefinedOrNull(json.mutedRole, 'Muted role');
 
         if (!(json.modRoles instanceof Array) || !json.modRoles.every(r => typeof r === 'string')) {
             throw new TypeError('Mod roles must be an array of strings!');
@@ -88,14 +88,14 @@ class GuildConfig extends Config {
             throw new TypeError('Invalid punishments');
         }
 
-        TypeChecker.assertStringOrUndefined(json.playlist, 'Playlist');
-        TypeChecker.assertStringOrUndefined(json.helpcenter, 'Help center');
+        TypeChecker.assertStringUndefinedOrNull(json.playlist, 'Playlist');
+        TypeChecker.assertStringUndefinedOrNull(json.helpcenter, 'Help center');
         TypeChecker.assertOfTypes(json.invites, ['boolean', 'undefined'], 'Invites');
-        TypeChecker.assertNumberOrUndefined(json.linkCooldown, 'Link cooldown');
-        TypeChecker.assertStringOrUndefined(json.prefix, 'Prefix');
-        TypeChecker.assertNumberOrUndefined(json.maxMentions, 'Max mentions');
-        TypeChecker.assertNumberOrUndefined(json.antiSpam, 'Anti Spam');
-        TypeChecker.assertNumberOrUndefined(json.similarMessages, 'Similar Messages');
+        TypeChecker.assertNumberUndefinedOrNull(json.linkCooldown, 'Link cooldown');
+        TypeChecker.assertStringUndefinedOrNull(json.prefix, 'Prefix');
+        TypeChecker.assertNumberUndefinedOrNull(json.maxMentions, 'Max mentions');
+        TypeChecker.assertNumberUndefinedOrNull(json.antiSpam, 'Anti Spam');
+        TypeChecker.assertNumberUndefinedOrNull(json.similarMessages, 'Similar Messages');
     }
 
     /**

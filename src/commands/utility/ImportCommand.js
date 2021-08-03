@@ -47,7 +47,8 @@ class ImportDataCommand extends Command {
         }
         catch (e) {
             if (e instanceof TypeError) {
-                await this.message.channel.send('Invalid Vortex Data!');
+                await this.message.channel.send('Invalid Data! Unable to import this');
+                return;
             }
             else {
                 throw e;
