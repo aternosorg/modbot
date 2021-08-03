@@ -2,6 +2,7 @@ const config = require('../../config.json');
 const Config = require('./Config');
 const Discord = require('discord.js');
 const {MessageEmbed} = require('discord.js');
+const TypeChecker = require('./TypeChecker');
 
 /**
  * Class representing the config of a guild
@@ -61,6 +62,40 @@ class GuildConfig extends Config {
         this.raidMode = json.raidMode || false;
         this.antiSpam = typeof(json.antiSpam) === 'number' ? json.antiSpam : -1;
         this.similarMessages = json.similarMessages || -1;
+    }
+
+    /**
+     * check if the types of this object are a valid guild config
+     * @param {Object} json
+     * @throws {TypeError} incorrect types
+     */
+    static checkTypes(json) {
+        TypeChecker.assertOfTypes(json, ['object'], 'Data object');
+
+        TypeChecker.assertStringOrUndefined(json.logChannel, 'Log channel');
+        TypeChecker.assertStringOrUndefined(json.messageLogChannel, 'Message log channel');
+        TypeChecker.assertStringOrUndefined(json.mutedRole, 'Muted role');
+
+        if (!(json.modRoles instanceof Array) || !json.modRoles.every(r => typeof r === 'string')) {
+            throw new TypeError('Mod roles must be an array of strings!');
+        }
+        if (!(json.protectedRoles instanceof Array) || !json.protectedRoles.every(r => typeof r === 'string')) {
+            throw new TypeError('Protected roles must be an array of strings!');
+        }
+
+        if (!(json.punishments instanceof Object) ||
+            !Object.values(json.punishments).every(punishment => ['ban','kick','mute','softban','strike'].includes(punishment.action))) {
+            throw new TypeError('Invalid punishments');
+        }
+
+        TypeChecker.assertStringOrUndefined(json.playlist, 'Playlist');
+        TypeChecker.assertStringOrUndefined(json.helpcenter, 'Help center');
+        TypeChecker.assertOfTypes(json.invites, ['boolean', 'undefined'], 'Invites');
+        TypeChecker.assertNumberOrUndefined(json.linkCooldown, 'Link cooldown');
+        TypeChecker.assertStringOrUndefined(json.prefix, 'Prefix');
+        TypeChecker.assertNumberOrUndefined(json.maxMentions, 'Max mentions');
+        TypeChecker.assertNumberOrUndefined(json.antiSpam, 'Anti Spam');
+        TypeChecker.assertNumberOrUndefined(json.similarMessages, 'Similar Messages');
     }
 
     /**

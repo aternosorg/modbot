@@ -1,5 +1,6 @@
 const Database = require('./Database');
 const database = Database.getInstance();
+const TypeChecker = require('./config/TypeChecker');
 
 class Moderation {
 
@@ -92,6 +93,25 @@ class Moderation {
     }
 
     /**
+     * check if the types of this object are a valid Moderation
+     * @param {Object} data
+     */
+    static checkTypes(data) {
+        TypeChecker.assertOfTypes(data, ['object'], 'Data object');
+
+        TypeChecker.assertNumber(data.id, 'ID');
+        TypeChecker.assertString(data.guildid, 'Guild ID');
+        TypeChecker.assertString(data.userid, 'User ID');
+        TypeChecker.assertString(data.action, 'Action');
+        TypeChecker.assertNumberOrUndefined(data.created, 'Created');
+        TypeChecker.assertNumberOrUndefined(data.value, 'Value');
+        TypeChecker.assertStringOrUndefined(data.reason, 'Reason');
+        TypeChecker.assertNumberOrUndefined(data.expireTime, 'Expire time');
+        TypeChecker.assertString(data.moderator, 'Moderator');
+        TypeChecker.assertOfTypes(data.active, ['boolean', 'undefined'], 'Active');
+    }
+
+    /**
      * get all moderations for a guild
      * @param guildID
      * @return {Promise<*[]>}
@@ -135,7 +155,6 @@ class Moderation {
      * insert multiple moderations at once
      * @param {Moderation[]} moderations
      * @return {Promise}
-     * @private
      */
     static async bulkSave(moderations) {
         moderations = moderations.map(m => m.getParameters());

@@ -1,7 +1,9 @@
 const Discord = require('discord.js');
 const Moderation = require('../Moderation');
+const TypeChecker = require('../config/TypeChecker');
+const Importer = require('./Importer');
 
-class VortexImporter {
+class VortexImporter extends Importer {
     /**
      * key: userid
      * value: timestamp
@@ -32,6 +34,7 @@ class VortexImporter {
      * @param {Object} data.tempbans
      */
     constructor(bot, guildID, data) {
+        super();
         this.bot = bot;
         this.guildID = guildID;
         this.tempmutes = data.tempmutes;
@@ -50,6 +53,19 @@ class VortexImporter {
             result.push({id, value: object[id]});
         }
         return result;
+    }
+
+    /**
+     * verify that all data is of correct types before importing
+     * @throws {TypeError}
+     */
+    checkAllTypes() {
+        Object.keys(this.tempbans).forEach(id => TypeChecker.assertString(id, 'User ID'));
+        Object.values(this.tempbans).forEach(value => value < Number.MAX_SAFE_INTEGER && TypeChecker.assertNumber(value, 'Expire Time'));
+        Object.keys(this.tempmutes).forEach(id => TypeChecker.assertString(id, 'User ID'));
+        Object.values(this.tempmutes).forEach(value => value < Number.MAX_SAFE_INTEGER && TypeChecker.assertNumber(value, 'Expire Time'));
+        Object.keys(this.strikes).forEach(id => TypeChecker.assertString(id, 'User ID'));
+        Object.values(this.strikes).forEach(value => value < Number.MAX_SAFE_INTEGER && TypeChecker.assertNumber(value, 'Expire Time'));
     }
 
     async import() {

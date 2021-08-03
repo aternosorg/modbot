@@ -1,6 +1,7 @@
 const ChatTriggeredFeature = require('./ChatTriggeredFeature');
 const Discord = require('discord.js');
 const util = require('./util');
+const TypeChecker = require('./config/TypeChecker');
 
 /**
  * Class representing an auto response
@@ -35,6 +36,27 @@ class AutoResponse extends ChatTriggeredFeature {
         if (!this.channels) {
             this.channels = [];
         }
+    }
+
+    /**
+     * heck if the types of this object are a valid auto-response
+     * @param {Object} json
+     */
+    static checkTypes(json) {
+        TypeChecker.assertOfTypes(json, ['object'], 'Data object');
+
+        TypeChecker.assertString(json.response, 'Response');
+        TypeChecker.assertOfTypes(json.global, ['boolean'], 'Global');
+        if (json.global && !(json.channels instanceof Array && json.channels.every(c => typeof c === 'string'))) {
+            throw new TypeError('Channels must be an array of strings');
+        }
+
+        TypeChecker.assertOfTypes(json.trigger, ['object'], 'Data object');
+        if (!this.triggerTypes.includes(json.trigger.type)) {
+            throw new TypeError('Invalid trigger type!');
+        }
+        TypeChecker.assertString(json.content, 'Content');
+        TypeChecker.assertStringOrUndefined(json.flags, 'Flags');
     }
 
     /**

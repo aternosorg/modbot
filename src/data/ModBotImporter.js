@@ -4,8 +4,9 @@ const Moderation = require('../Moderation');
 const AutoResponse = require('../AutoResponse');
 const BadWord = require('../BadWord');
 const {MessageEmbed} = require('discord.js');
+const Importer = require('./Importer');
 
-class ModBotImporter {
+class ModBotImporter extends Importer {
 
     /**
      * @type {module:"discord.js".Client}
@@ -28,9 +29,41 @@ class ModBotImporter {
      * @param {Exporter} data JSON exported data (modbot-1.0.0)
      */
     constructor(bot, guildID, data) {
+        super();
         this.bot = bot;
         this.guildID = guildID;
         this.data = data;
+    }
+
+    /**
+     * verify that all data is of correct types before importing
+     * @throws {TypeError}
+     */
+    checkAllTypes() {
+        GuildConfig.checkTypes(this.data.guildConfig);
+
+        if (!(this.data.channels instanceof Array)) {
+            throw new TypeError('Channels must be an array');
+        }
+        this.data.channels.forEach(c => ChannelConfig.checkTypes(c));
+
+        if (!(this.data.responses instanceof Array)) {
+            throw new TypeError('Responses must be an array');
+        }
+        this.data.responses.forEach(r => AutoResponse.checkTypes(r));
+
+        if (!(this.data.badWords instanceof Array)) {
+            throw new TypeError('BadWords must be an array');
+        }
+        this.data.badWords.forEach(b => BadWord.checkTypes(b));
+
+        if (!(this.data.moderations instanceof Array)) {
+            throw new TypeError('Moderations must be an array');
+        }
+        for (const moderation of this.data.moderations) {
+            moderation.guildid = this.guildID;
+            Moderation.checkTypes(moderation);
+        }
     }
 
     /**

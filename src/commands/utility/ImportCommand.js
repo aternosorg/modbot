@@ -36,28 +36,37 @@ class ImportDataCommand extends Command {
             throw e;
         }
 
-        let importer = this.getImporter(data.dataType);
+        const importer = this.getImporter(data);
         if (!importer) {
             await this.sendError('Unknown data type!');
             return;
         }
 
-        importer = new importer(this.bot, this.message.guild.id, data);
-
+        try {
+            importer.checkAllTypes();
+        }
+        catch (e) {
+            if (e instanceof TypeError) {
+                await this.message.channel.send('Invalid Vortex Data!');
+            }
+            else {
+                throw e;
+            }
+        }
         await importer.import();
         await this.message.channel.send(importer.generateEmbed());
     }
 
     /**
-     * get the correct importer class for this datatype
-     * @param dataType
-     * @return {VortexImporter|ModBotImporter|null}
+     * get the correct importer for this datatype
+     * @param data
+     * @return {Importer|null}
      */
-    getImporter(dataType) {
-        if (!dataType)
-            return VortexImporter;
-        if (dataType.toLowerCase().startsWith('modbot-1.'))
-            return ModBotImporter;
+    getImporter(data) {
+        if (!data.dataType)
+            return new VortexImporter(this.bot, this.message.guild.id, data);
+        if (data.dataType.toLowerCase().startsWith('modbot-1.'))
+            return new ModBotImporter(this.bot, this.message.guild.id, data);
 
         return null;
     }
