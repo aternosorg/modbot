@@ -1,6 +1,8 @@
 const Database = require('./Database');
 const database = Database.getInstance();
 const {Snowflake} = require('discord.js');
+const TypeChecker = require('./config/TypeChecker');
+
 class Moderation {
 
     /**
@@ -88,7 +90,26 @@ class Moderation {
         this.reason = data.reason || 'No reason provided.';
         this.expireTime = data.expireTime;
         this.moderator = data.moderator;
-        this.active = data.active ?? true;
+        this.active = !!data.active;
+    }
+
+    /**
+     * check if the types of this object are a valid Moderation
+     * @param {Object} data
+     */
+    static checkTypes(data) {
+        TypeChecker.assertOfTypes(data, ['object'], 'Data object');
+
+        TypeChecker.assertNumber(data.id, 'ID');
+        TypeChecker.assertString(data.guildid, 'Guild ID');
+        TypeChecker.assertString(data.userid, 'User ID');
+        TypeChecker.assertString(data.action, 'Action');
+        TypeChecker.assertOfTypes(data.created, ['number','string','undefined'], 'Created', true);
+        TypeChecker.assertNumberUndefinedOrNull(data.value, 'Value');
+        TypeChecker.assertStringUndefinedOrNull(data.reason, 'Reason');
+        TypeChecker.assertOfTypes(data.expireTime, ['number','string','undefined'], 'Expire time', true);
+        TypeChecker.assertStringUndefinedOrNull(data.moderator, 'Moderator');
+        TypeChecker.assertOfTypes(data.active, ['boolean', 'undefined'], 'Active');
     }
 
     /**

@@ -1,6 +1,7 @@
 const Config = require('./Config');
 const {Constants, Snowflake, GuildChannel, Client} = require('discord.js');
 const {APIErrors} = Constants;
+const TypeChecker = require('./TypeChecker');
 
 /**
  * Class representing the config of a channel
@@ -27,6 +28,18 @@ class ChannelConfig extends Config {
 
         this.invites = json.invites ?? null;
         this.lock = json.lock || {};
+    }
+
+    /**
+     * check if the types of this object are a valid guild config
+     * @param {Object} json
+     * @throws {TypeError} incorrect types
+     */
+    static checkTypes(json) {
+        TypeChecker.assertOfTypes(json, ['object'], 'Data object');
+
+        TypeChecker.assertOfTypes(json.invites, ['undefined','boolean'], 'Invites', true);
+        TypeChecker.assertOfTypes(json.lock, ['object'], 'Lock');
     }
 
     /**
