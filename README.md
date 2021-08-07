@@ -40,7 +40,7 @@ If you think you found a bug in ModBot then please create an [issue](https://git
 For security vulnerabilities send a mail to [security@aternos.org](mailto://security@aternos.org).
 
 ### Self Hosting
-Requirements: [Node.js](https://nodejs.org/en/download/) (v14+), a [MySQL](https://dev.mysql.com/downloads/mysql/) database
+Requirements: [Node.js](https://nodejs.org/en/download/) (v16.6.0+), a [MySQL](https://dev.mysql.com/downloads/mysql/) database
 1. Download the code and run `npm install`
 2. Create a [Discord application](https://discordapp.com/developers/applications/).
    You also have to enable the SERVER MEMBERS intent.
