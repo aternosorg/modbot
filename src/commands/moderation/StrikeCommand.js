@@ -7,7 +7,7 @@ class StrikeCommand extends ModerationCommand {
 
     static usage = '<@user|id> [<@user|id…>] [<count>] [<reason>]';
 
-    static names = ['strike'];
+    static names = ['strike', 's'];
 
     static userPerms = ['BAN_MEMBERS'];
 
