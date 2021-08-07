@@ -18,13 +18,13 @@
   },
   "homepage": "https://github.com/aternosorg/modbot#readme",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.6.0"
   },
   "dependencies": {
     "@google-cloud/logging": "^9.1.1",
     "@googleapis/youtube": "^2.0.0",
     "diff": "^4.0.2",
-    "discord.js": "^13.0.0-dev.5e70694.1626955541",
+    "discord.js": "^13.0.1",
     "fuse.js": "^6.4.6",
     "got": "^11.8.2",
     "mysql": "^2.18.1",
