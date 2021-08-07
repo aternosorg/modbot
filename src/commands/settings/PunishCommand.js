@@ -6,7 +6,7 @@ class PunishCommand extends Command {
 
     static description = 'Configure punishments for strikes';
 
-    static usage = '[<count> <ban|kick|mute|softban>] [<duration>]';
+    static usage = '[<count> <ban|kick|mute|softban|none>] [<duration>]';
 
     static comment = 'If no punishment is set for a specific strike count the previous punishment will be used';
 
