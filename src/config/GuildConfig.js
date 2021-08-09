@@ -2,6 +2,7 @@ const config = require('../../config.json');
 const Config = require('./Config');
 const Discord = require('discord.js');
 const {MessageEmbed} = require('discord.js');
+const TypeChecker = require('./TypeChecker');
 
 /**
  * Class representing the config of a guild
@@ -61,6 +62,48 @@ class GuildConfig extends Config {
         this.raidMode = json.raidMode || false;
         this.antiSpam = typeof(json.antiSpam) === 'number' ? json.antiSpam : -1;
         this.similarMessages = json.similarMessages || -1;
+    }
+
+    /**
+     * check if the types of this object are a valid guild config
+     * @param {Object} json
+     * @throws {TypeError} incorrect types
+     */
+    static checkTypes(json) {
+        TypeChecker.assertOfTypes(json, ['object'], 'Data object');
+
+        TypeChecker.assertStringUndefinedOrNull(json.logChannel, 'Log channel');
+        TypeChecker.assertStringUndefinedOrNull(json.messageLogChannel, 'Message log channel');
+        TypeChecker.assertStringUndefinedOrNull(json.mutedRole, 'Muted role');
+
+        if (!(json.modRoles instanceof Array) || !json.modRoles.every(r => typeof r === 'string')) {
+            throw new TypeError('Mod roles must be an array of strings!');
+        }
+        if (!(json.protectedRoles instanceof Array) || !json.protectedRoles.every(r => typeof r === 'string')) {
+            throw new TypeError('Protected roles must be an array of strings!');
+        }
+
+        if (!(json.punishments instanceof Object) ||
+            !Object.values(json.punishments).every(punishment => ['ban','kick','mute','softban','strike'].includes(punishment.action))) {
+            throw new TypeError('Invalid punishments');
+        }
+
+        TypeChecker.assertStringUndefinedOrNull(json.playlist, 'Playlist');
+        TypeChecker.assertStringUndefinedOrNull(json.helpcenter, 'Help center');
+        TypeChecker.assertOfTypes(json.invites, ['boolean', 'undefined'], 'Invites');
+        TypeChecker.assertNumberUndefinedOrNull(json.linkCooldown, 'Link cooldown');
+        TypeChecker.assertStringUndefinedOrNull(json.prefix, 'Prefix');
+        TypeChecker.assertNumberUndefinedOrNull(json.maxMentions, 'Max mentions');
+        TypeChecker.assertNumberUndefinedOrNull(json.antiSpam, 'Anti Spam');
+        TypeChecker.assertNumberUndefinedOrNull(json.similarMessages, 'Similar Messages');
+    }
+
+    /**
+     * @param {String} id
+     * @return {Promise<GuildConfig>}
+     */
+    static async get(id) {
+        return super.get(id);
     }
 
     /**
@@ -269,21 +312,18 @@ class GuildConfig extends Config {
         return punishments;
     }
 
-    toJSONString() {
-        //copy this to object
-        const object = {};
-        Object.assign(object,this);
-
-        //delete id property because it is stored in a different column
-        delete object.id;
+    getDataObject(o = this) {
+        //copy to new object
+        /** @type {Config} */
+        const cleanObject = {};
+        Object.assign(cleanObject,o);
 
         //copy private properties
-        object.punishments = this.#punishments;
-        object.modRoles = this.#modRoles;
-        object.protectedRoles = this.#protectedRoles;
+        cleanObject.punishments = this.#punishments;
+        cleanObject.modRoles = this.#modRoles;
+        cleanObject.protectedRoles = this.#protectedRoles;
 
-        //stringify
-        return JSON.stringify(object);
+        return super.getDataObject(cleanObject);
     }
 }
 
