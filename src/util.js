@@ -489,7 +489,7 @@ util.ignoresAutomod = async (message) => {
     if (!message.guild) return false;
     /** @type {GuildConfig} */
     const guildconfig = await GuildConfig.get(message.guild.id);
-    return message.author.bot || message.member.permissions.has('MANAGE_MESSAGES') || guildconfig.isProtected(message.member);
+    return message.system || message.author.bot || message.member.permissions.has('MANAGE_MESSAGES') || guildconfig.isProtected(message.member);
 };
 
 /**

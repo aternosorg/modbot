@@ -1,13 +1,14 @@
 const ModerationCommand = require('../ModerationCommand');
 const Member = require('../../Member');
+const util = require('../../util');
 
-class StrikeCommand extends ModerationCommand {
+class StrikePurgeCommand extends ModerationCommand {
 
-    static description = 'Strike a user';
+    static description = 'Strike a user and purge their messages';
 
     static usage = '<@user|id> [<@user|id…>] [<count>] [<reason>]';
 
-    static names = ['strike', 's'];
+    static names = ['strikepurge', 'sp'];
 
     static userPerms = ['BAN_MEMBERS'];
 
@@ -22,6 +23,15 @@ class StrikeCommand extends ModerationCommand {
         return true;
     }
 
+    async postPunishment(successes) {
+        let messages = await util.getMessages(this.message.channel, {
+            before: this.message.id,
+            limit: 100
+        });
+        messages = messages.filter(/** @type {module:"discord.js".Message} */msg => successes.some( u => msg.author.id === u.id));
+        await util.bulkDelete(this.message.channel, messages);
+    }
+
     loadInfo() {
         this.count = this.getCount();
         super.loadInfo();
@@ -33,4 +43,4 @@ class StrikeCommand extends ModerationCommand {
     }
 }
 
-module.exports = StrikeCommand;
+module.exports = StrikePurgeCommand;

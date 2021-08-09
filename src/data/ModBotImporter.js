@@ -86,9 +86,9 @@ class ModBotImporter extends Importer {
         return guildConfig.save();
     }
 
-    _importChannelConfigs() {
+    async _importChannelConfigs() {
         const channels = this.data.channels;
-        return Promise.all(channels.map(c => ChannelConfig.import(this.bot, this.guildID, c)));
+        return this.data.channels = await Promise.all(channels.map(c => ChannelConfig.import(this.bot, this.guildID, c)));
     }
 
     _importModerations() {
@@ -112,7 +112,7 @@ class ModBotImporter extends Importer {
     generateEmbed() {
         return new MessageEmbed()
             .setTitle('Imported Data')
-            .addField('Channel Configs', this.data.channels.length.toString(), true)
+            .addField('Channel Configs', this.data.channels.filter(c => c === true).length.toString(), true)
             .addField('Moderations', this.data.moderations.length.toString(), true)
             .addField('Responses', this.data.responses.length.toString(), true)
             .addField('BadWords', this.data.badWords.length.toString(), true);

@@ -101,6 +101,24 @@ class Log{
     }
 
     /**
+     * Logs a message to the guilds join log channel (if specified)
+     * @param {GuildInfo}                        guildInfo
+     * @param {String}                           message   content of the log message
+     * @param {module:"discord.js".MessageEmbed} [options]
+     * @return {Promise<module:"discord.js".Message|null>} log message
+     */
+    static async joinLog(guildInfo, message, options) {
+        /** @type {module:"discord.js".Guild} */
+        const guild = await util.resolveGuild(guildInfo);
+
+        /** @type {GuildConfig} */
+        const guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */guild.id);
+        if (!guildConfig.joinLogChannel) return null;
+
+        return this._send(guild.channels.resolve(/** @type {String} */guildConfig.joinLogChannel), message, options);
+    }
+
+    /**
      * Log a moderation
      * @async
      * @param {GuildInfo} guildInfo

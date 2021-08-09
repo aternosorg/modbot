@@ -38,6 +38,7 @@ class ModerationCommand extends Command {
                 successes.push(target);
             }
         }
+        await this.postPunishment(successes);
         if (successes.length) {
             await this.sendSuccess(successes);
         }
@@ -131,6 +132,14 @@ class ModerationCommand extends Command {
      */
     // eslint-disable-next-line no-unused-vars
     async executePunishment(target) {}
+
+    /**
+     * run something after all targets have been punished
+     * @param {module:"discord.js".User[]} successes
+     * @return {Promise<void>}
+     */
+    // eslint-disable-next-line no-unused-vars
+    async postPunishment(successes) {}
 }
 
 module.exports = ModerationCommand;

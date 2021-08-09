@@ -61,7 +61,7 @@ class BadWord extends ChatTriggeredFeature {
 
 
     /**
-     * heck if the types of this object are a valid auto-response
+     * check if the types of this object are a valid auto-response
      * @param {Object} json
      */
     static checkTypes(json) {
