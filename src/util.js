@@ -8,7 +8,7 @@ const {
     DMChannel,
     ChannelLogsQueryOptions,
     Collection,
-    NewsChannel,
+    TextBasedChannelFields
 } = require('discord.js');
 const Database = require('./Database');
 const GuildConfig = require('./config/GuildConfig.js');
@@ -495,12 +495,12 @@ util.ignoresAutomod = async (message) => {
 /**
  * Delete messages (even more than 100)
  * @async
- * @param {TextChannel | DMChannel | NewsChannel}                          channel
+ * @param {TextBasedChannelFields}                          channel
  * @param {Collection<Snowflake>}  messages messages to delete
  * @return {Promise<Collection<Snowflake, Message>[]>} deleted messages
  */
 util.bulkDelete = async (channel, messages) => {
-    const keys = messages.keyArray();
+    const keys = Array.from(messages.keys());
     let requests = [];
     for (let start = 0; start < keys.length; start += 100) {
         requests.push(channel.bulkDelete(keys.slice(start,start+100), true));

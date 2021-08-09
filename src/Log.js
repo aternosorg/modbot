@@ -104,15 +104,15 @@ class Log{
      * Logs a message to the guilds join log channel (if specified)
      * @param {GuildInfo}                        guildInfo
      * @param {String}                           message   content of the log message
-     * @param {module:"discord.js".MessageEmbed} [options]
-     * @return {Promise<module:"discord.js".Message|null>} log message
+     * @param {MessageEmbed} [options]
+     * @return {Promise<Message|null>} log message
      */
     static async joinLog(guildInfo, message, options) {
-        /** @type {module:"discord.js".Guild} */
+        /** @type {Guild} */
         const guild = await util.resolveGuild(guildInfo);
 
         /** @type {GuildConfig} */
-        const guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */guild.id);
+        const guildConfig = await GuildConfig.get(guild.id);
         if (!guildConfig.joinLogChannel) return null;
 
         return this._send(guild.channels.resolve(/** @type {String} */guildConfig.joinLogChannel), message, options);

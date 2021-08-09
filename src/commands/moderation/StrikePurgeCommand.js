@@ -1,6 +1,7 @@
 const ModerationCommand = require('../ModerationCommand');
 const Member = require('../../Member');
 const util = require('../../util');
+const {Message} = require('discord.js');
 
 class StrikePurgeCommand extends ModerationCommand {
 
@@ -28,7 +29,7 @@ class StrikePurgeCommand extends ModerationCommand {
             before: this.message.id,
             limit: 100
         });
-        messages = messages.filter(/** @type {module:"discord.js".Message} */msg => successes.some( u => msg.author.id === u.id));
+        messages = messages.filter(/** @type {Message} */msg => successes.some( u => msg.author.id === u.id));
         await util.bulkDelete(this.message.channel, messages);
     }
 
