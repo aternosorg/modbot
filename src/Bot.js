@@ -36,7 +36,9 @@ class Bot {
                 'GUILD_MESSAGES',
                 'GUILD_MESSAGE_REACTIONS'
             ],
-            disableMentions: 'everyone',
+            allowedMentions: {
+                parse: ['roles', 'users']
+            },
             presence: { status: 'dnd', activities: [{ type: 'WATCHING', name: 'you' }] },
             partials: ['GUILD_MEMBER'],
         });
