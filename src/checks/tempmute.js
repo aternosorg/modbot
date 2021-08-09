@@ -1,7 +1,7 @@
 const Log = require('../Log');
 const GuildConfig = require('../config/GuildConfig');
 const RateLimiter = require('../RateLimiter');
-const {APIErrors} = require('discord.js').Constants;
+const {Guild, Constants: {APIErrors}} = require('discord.js');
 const deleteGuild = require('../features/guildDelete/deleteConfig');
 const monitor = require('../Monitor').getInstance();
 
@@ -11,7 +11,7 @@ exports.check = async (database, bot) => {
         try {
             let member;
             try {
-                /** @type {module:"discord.js".Guild} */
+                /** @type {Guild} */
                 const guild = await bot.guilds.fetch(result.guildid);
                 member = await guild.members.fetch(result.userid);
                 if (member) {

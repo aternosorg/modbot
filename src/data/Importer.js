@@ -1,3 +1,5 @@
+const {MessageEmbed} = require('discord.js');
+
 class Importer {
 
     /**
@@ -18,7 +20,7 @@ class Importer {
 
     /**
      * generate an embed showing an overview of imported data
-     * @return {module:"discord.js".MessageEmbed}
+     * @return {MessageEmbed}
      */
     generateEmbed() {
 

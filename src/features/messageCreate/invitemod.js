@@ -17,7 +17,7 @@ exports.event = async (options, message) => {
     let allowed = channelConfig.invites ?? guildConfig.invites;
 
     if (!allowed) {
-        await util.delete(message, {reason: 'Invites are not allowed here'});
+        await util.delete(message);
         await Log.logMessageDeletion(message, 'Invites are not allowed here');
         let response = await message.channel.send(`<@!${message.author.id}> Invites are not allowed here!`);
         await util.delete(response, {timeout: 5000});

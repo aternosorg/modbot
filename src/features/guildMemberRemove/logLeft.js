@@ -1,10 +1,10 @@
 const Log = require('../../Log');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, GuildMember} = require('discord.js');
 const util = require('../../util');
 
 /**
  * @param options
- * @param {module:"discord.js".GuildMember} member
+ * @param {GuildMember} member
  * @return {Promise<void>}
  */
 exports.event = async (options, member) => {

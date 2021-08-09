@@ -135,7 +135,7 @@ class ModerationCommand extends Command {
 
     /**
      * run something after all targets have been punished
-     * @param {module:"discord.js".User[]} successes
+     * @param {User[]} successes
      * @return {Promise<void>}
      */
     // eslint-disable-next-line no-unused-vars
