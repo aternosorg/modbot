@@ -62,7 +62,7 @@ class VideoCommand extends Command {
             };
         }
 
-        await this.message.channel.send(options);
+        await this.reply(options);
     }
 
     /**

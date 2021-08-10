@@ -37,7 +37,7 @@ class ArticleCommand extends Command {
                 };
             }
 
-            await this.message.channel.send(options);
+            await this.reply(options);
         }
         else {
             await this.reply('No article found!');

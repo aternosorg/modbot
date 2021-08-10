@@ -264,8 +264,8 @@ class Command {
             this.response = await this.message.channel.send(options);
         }
         else {
-            options.failIfNotExists = false;
-            options.allowedMentions = {repliedUser: false};
+            options.failIfNotExists ??= false;
+            options.allowedMentions ??= {repliedUser: false};
             this.response = await this.message.reply(options);
         }
     }
