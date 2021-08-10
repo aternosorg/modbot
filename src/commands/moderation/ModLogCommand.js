@@ -33,12 +33,12 @@ class ModInfoCommand extends Command {
         const moderations = await this.database.queryAll('SELECT * FROM moderations WHERE userid = ? AND guildid = ?', [userID, this.message.guild.id]);
 
         if (moderations.length === 0) {
-            return this.message.channel.send({embeds:[
+            return this.reply(
                 new MessageEmbed()
                     .setColor(util.color.green)
                     .setAuthor(`Moderations for ${user.tag}`, user.avatarURL())
                     .setDescription('No moderations')
-            ]});
+            );
         }
 
         await this.multiPageResponse((index) => {
