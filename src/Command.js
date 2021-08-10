@@ -316,7 +316,7 @@ class Command {
      * @param {String} text
      * @param {Object} [options]
      * @param {Number} [options.time]
-     * @return {Promise<ButtonInteraction>}
+     * @return {Promise<{interaction: ButtonInteraction, confirmed: boolean}>}
      */
     async getConfirmation(text, options = {time: 15000}) {
         const buttons = new MessageActionRow()
@@ -340,7 +340,7 @@ class Command {
                 button.setDisabled(true);
             }
             await this.response.edit({components: [buttons]});
-            return component;
+            return {component, confirmed: component.customId === 'confirmed'};
         }
         catch (e) {
             for (const button of buttons.components) {
@@ -348,7 +348,7 @@ class Command {
             }
             await this.response.edit({components: [buttons]});
             if (e.code === 'INTERACTION_COLLECTOR_ERROR')
-                return null;
+                return {component: null, confirmed: false};
             else
                 throw e;
         }
