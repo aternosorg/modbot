@@ -78,11 +78,11 @@ class Exporter {
     }
 
     async _getResponses() {
-        this.responses = (await AutoResponse.getAll(this.guildID)).array();
+        this.responses = Array.from((await AutoResponse.getAll(this.guildID)).values());
     }
 
     async _getBadWords() {
-        this.badWords = (await BadWord.getAll(this.guildID)).array();
+        this.badWords = Array.from((await BadWord.getAll(this.guildID)).values());
     }
 }
 
