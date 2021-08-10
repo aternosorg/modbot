@@ -230,20 +230,29 @@ class Command {
 
     /**
      *
-     * @param {String|MessageEmbed} message
+     * @param {String|MessageOptions|ReplyMessageOptions|MessageEmbed} message
      * @param {MessageEmbed} additions
      * @return {Promise<void>}
      */
     async reply(message, ...additions) {
         /** @type {MessageOptions|ReplyMessageOptions}*/
-        const options = {
+        let options = {
             embeds: additions
         };
         if (typeof message === 'string') {
             options.content = message;
         }
-        else {
+        else if (message instanceof MessageEmbed) {
             options.embeds.unshift(message);
+        }
+        else if (message instanceof Object) {
+            options = message;
+            if (options.embeds instanceof Array) {
+                options.embeds.concat(additions);
+            }
+            else {
+                options.embeds = additions;
+            }
         }
 
         if (this.userConfig.deleteCommands) {
