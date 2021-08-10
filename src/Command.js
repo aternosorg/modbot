@@ -243,7 +243,7 @@ class Command {
             options.content = message;
         }
         else {
-            options.embeds.push(message);
+            options.embeds.unshift(message);
         }
 
         if (this.userConfig.deleteCommands) {
