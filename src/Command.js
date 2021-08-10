@@ -13,6 +13,7 @@ const {
     ButtonInteraction,
     MessageActionRow,
     MessageButton,
+    MessageAttachment,
 } = require('discord.js');
 const Database = require('./Database');
 const defaultPrefix = require('../config.json').prefix;
@@ -230,20 +231,24 @@ class Command {
 
     /**
      *
-     * @param {String|MessageOptions|ReplyMessageOptions|MessageEmbed} message
-     * @param {MessageEmbed} additions
+     * @param {String|MessageOptions|ReplyMessageOptions|MessageEmbed|MessageAttachment} message
+     * @param {MessageEmbed|MessageAttachment} additions
      * @return {Promise<void>}
      */
     async reply(message, ...additions) {
         /** @type {MessageOptions|ReplyMessageOptions}*/
         let options = {
-            embeds: additions
+            embeds: additions.filter(a => a instanceof MessageEmbed),
+            files: additions.filter(a => a instanceof MessageAttachment),
         };
         if (typeof message === 'string') {
             options.content = message;
         }
         else if (message instanceof MessageEmbed) {
             options.embeds.unshift(message);
+        }
+        else if (message instanceof MessageAttachment) {
+            options.files.unshift(message);
         }
         else if (message instanceof Object) {
             options = message;
