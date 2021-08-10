@@ -39,7 +39,7 @@ class ModInfoCommand extends Command {
             embed.addField('Strikes', moderation.value.toString(), true);
         }
         else if (moderation.action === 'pardon') {
-            embed.addField('Pardoned strikes', (-moderation.value).toString(10), true);
+            embed.addField('Pardoned strikes', (-moderation.value).toString(), true);
         }
 
         if (moderation.expireTime) {
