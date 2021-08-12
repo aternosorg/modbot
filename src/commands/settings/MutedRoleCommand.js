@@ -67,7 +67,7 @@ class LogChannelCommand extends Command {
         await this.reply('Updating permission overrides...');
 
         //channel perms
-        const channels = this.message.guild.channels.cache.array();
+        const channels = Array.from(this.message.guild.channels.cache.values());
         for (const channel of channels) {
             if (!channel.manageable) continue;
             if (!channel.permissionsFor(id).any(['SEND_MESSAGES', 'ADD_REACTIONS', 'SPEAK'])) continue;

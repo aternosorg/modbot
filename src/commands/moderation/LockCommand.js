@@ -41,7 +41,7 @@ class LockCommand extends Command {
                 embed.setDescription(this.message.content.substring(start));
             }
             /** @type {GuildChannel[]} */
-            const channels = this.message.guild.channels.cache.filter(this.lockable, this).array();
+            const channels = Array.from(this.message.guild.channels.cache.filter(this.lockable, this).values());
             if (channels.length === 0) return this.sendUsage();
             return this.lock(channels, embed);
         }

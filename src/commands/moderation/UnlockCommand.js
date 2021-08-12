@@ -37,7 +37,7 @@ class UnlockCommand extends Command {
                 embed.setDescription(this.message.content.substring(start));
             }
             /** @type {GuildChannel[]} */
-            const channels = await util.asyncFilter(this.message.guild.channels.cache.array(), this.locked, this);
+            const channels = await util.asyncFilter(Array.from(this.message.guild.channels.cache.values()), this.locked, this);
             if (channels.length === 0) return this.sendUsage();
             return this.unlock(channels, embed);
         }

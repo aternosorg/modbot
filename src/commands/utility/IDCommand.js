@@ -38,7 +38,7 @@ class IDCommand extends Command {
         }
         if (users.size > resultLimit) {
             embed.setTitle(`First ${resultLimit} results of user search for ${fullName}`);
-            users = users.array().slice(0, resultLimit);
+            users = Array.from(users.values()).slice(0, resultLimit);
         }
 
         users = users.map(u => `${util.escapeFormatting(u.user.tag)}: ${u.user.id}`);
