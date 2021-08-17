@@ -66,7 +66,7 @@ class ModerationCommand extends Command {
      */
     async sendSuccess(targets) {
         const type = this.constructor.type.done;
-        let description = `${targets.map(user => `\`${user.tag}\``).join(', ')} ${targets.length === 1 ? 'has' : 'have'} been **${type}** `;
+        let description = `${targets.map(user => `\`${user.tag.replace(/`/g, '')}\``).join(', ')} ${targets.length === 1 ? 'has' : 'have'} been **${type}** `;
         description += `| ${this.reason.substring(0, 4000 - description.length)}`;
 
         return await this.message.channel.send(new MessageEmbed()
