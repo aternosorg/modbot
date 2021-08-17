@@ -1,4 +1,4 @@
-const {Client, Constants: {APIErrors}} = require('discord.js');
+const {Client} = require('discord.js');
 const Database = require('./Database');
 const util = require('./util');
 const fs = require('fs').promises;
@@ -110,15 +110,7 @@ class Bot {
             }
             this.#client.on(folder, async (...args) => {
                 for (let f of features) {
-                    try {
-                        await Promise.resolve(f.event({database: this.#database, bot: this.#client}, ...args));
-                    }
-                    catch (e) {
-                        if (e.code === APIErrors.UNKNOWN_MESSAGE) {
-                            console.error(`Unknown message in feature ${folder}`, e);
-                            this.#monitor.error(`Unknown message in feature ${folder}`, e);
-                        }
-                    }
+                    await Promise.resolve(f.event({database: this.#database,bot: this.#client}, ...args));
                 }
             });
         }
