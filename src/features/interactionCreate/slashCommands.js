@@ -1,7 +1,6 @@
 const CommandManager = require('../../CommandManager');
-const UserConfig = require('../../config/UserConfig');
 const Database = require('../../Database');
-const {Client, Message, Constants: {APIErrors}} = require('discord.js');
+const {Client, CommandInteraction, Constants: {APIErrors}} = require('discord.js');
 const Command = require('../../Command');
 const monitor = require('../../Monitor').getInstance();
 const CommandSource = require('../../CommandSource');
@@ -11,46 +10,38 @@ module.exports = {
      * @param {Object} options
      * @param {Database} options.database
      * @param {Client} options.bot
-     * @param {Message} message
+     * @param {CommandInteraction} interaction
      * @return {Promise<void>}
      */
-    async event(options, message) {
-        const {isCommand, name, prefix} = await CommandManager.getCommandName(message);
+    async event(options, interaction) {
+        if (!interaction.isCommand())
+            return;
+
+        const name = interaction.commandName;
         const CommandClass = CommandManager.getCommands().get(name);
-        if (!isCommand || CommandClass === undefined) return;
+        if (CommandClass === undefined) return;
 
         try {
             /** @type {Command} */
-            const cmd = new CommandClass(new CommandSource(message), options.database, options.bot, name, prefix);
+            const cmd = new CommandClass(new CommandSource(interaction), options.database, options.bot, name, '/');
             await cmd._loadConfigs();
             const userPerms = cmd.userHasPerms(), botPerms = cmd.botHasPerms();
             if (userPerms !== true) {
-                await message.reply(`You are missing the following permissions to execute this command: ${userPerms.join(', ')}`);
+                await interaction.reply(`You are missing the following permissions to execute this command: ${userPerms.join(', ')}`);
                 return;
             }
             if (botPerms !== true) {
-                await message.reply(`I am missing the following permissions to execute this command: ${botPerms.join(', ')}`);
+                await interaction.reply(`I am missing the following permissions to execute this command: ${botPerms.join(', ')}`);
                 return;
             }
             await cmd.execute();
-            const memberConfig = await UserConfig.get(message.author.id);
-            if (memberConfig.deleteCommands) {
-                try {
-                    await message.delete();
-                }
-                catch (e) {
-                    if (e.code !== APIErrors.UNKNOWN_MESSAGE) {
-                        throw e;
-                    }
-                }
-            }
         } catch (e) {
             try {
                 if  (e.code === APIErrors.MISSING_PERMISSIONS) {
-                    await message.reply('I am missing permissions to execute that command!');
+                    await interaction.reply('I am missing permissions to execute that command!');
                 }
                 else {
-                    await message.reply('An error occurred while executing that command!');
+                    await interaction.reply('An error occurred while executing that command!');
                 }
             }
             catch (e2) {

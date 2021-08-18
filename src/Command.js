@@ -15,10 +15,13 @@ const {
     MessageButton,
     MessageAttachment,
     ApplicationCommandOptionData,
+    CommandInteractionOptionResolver,
+    CommandInteractionOption,
 } = require('discord.js');
 const Database = require('./Database');
 const defaultPrefix = require('../config.json').prefix;
 const icons = require('./icons');
+const CommandSource = require('./CommandSource');
 
 class Command {
     /**
@@ -71,8 +74,15 @@ class Command {
 
     /**
      * @type {Message}
+     * @deprecated
      */
     message;
+
+    /**
+     * command source
+     * @type {CommandSource}
+     */
+    source;
 
     /**
      * @type {Database}
@@ -125,20 +135,33 @@ class Command {
     response;
 
     /**
+     * @type {CommandInteractionOptionResolver}
+     */
+    options;
+
+    /**
      * call this command
-     * @param {Message} message
-     * @param {Database}                    database
-     * @param {Client}  bot
+     * @param {CommandSource} source
+     * @param {Database} database
+     * @param {Client} bot
      * @param {String} name
      * @param {String} prefix
      */
-    constructor(message, database, bot, name, prefix) {
-        this.message = message;
+    constructor(source, database, bot, name, prefix) {
         this.database = database;
         this.bot = bot;
-        this.args = util.split(message.content.substring(prefix.length + name.length),' ');
         this.name = name;
         this.prefix = prefix;
+        this.source = source;
+
+        if (source.isInteraction) {
+            this.options = source.getOptions();
+        }
+        else {
+            this.message = source.getRaw();
+            this.args = util.split(source.getRaw().content.substring(prefix.length + name.length), ' ');
+            this.options = new CommandInteractionOptionResolver(bot, this.parseOptions());
+        }
     }
 
     /**
@@ -146,13 +169,13 @@ class Command {
      * @return {ApplicationCommandOptionData[]}
      */
     static getOptions() {
-        return [];
+        return null;
     }
 
     async _loadConfigs() {
-        this.guildConfig = await GuildConfig.get(this.message.guild.id);
-        this.channelConfig = await ChannelConfig.get(this.message.channel.id);
-        this.userConfig = await UserConfig.get(this.message.author.id);
+        this.guildConfig = await GuildConfig.get(this.source.getGuild().id);
+        this.channelConfig = await ChannelConfig.get(this.source.getChannel().id);
+        this.userConfig = await UserConfig.get(this.source.getUser().id);
     }
 
     /**
@@ -160,11 +183,11 @@ class Command {
      * @return {boolean|PermissionFlags[]}
      */
     userHasPerms() {
-        if (this.constructor.modCommand && this.guildConfig.isMod(this.message.member))
+        if (this.constructor.modCommand && this.guildConfig.isMod(this.source.getMember()))
             return true;
         const missingPerms = [];
         for (const perm of this.constructor.userPerms) {
-            if (!this.message.member.permissions.has(perm)) missingPerms.push(perm);
+            if (!this.source.getMember().permissions.has(perm)) missingPerms.push(perm);
         }
         return missingPerms.length ? missingPerms : true;
     }
@@ -174,12 +197,20 @@ class Command {
      * @return {boolean|PermissionFlags[]}
      */
     botHasPerms() {
-        const botMember = this.message.guild.members.resolve(this.bot.user);
+        const botMember = this.source.getGuild().members.resolve(this.bot.user);
         const missingPerms = [];
         for (const perm of this.constructor.botPerms) {
             if (!botMember.permissions.has(perm)) missingPerms.push(perm);
         }
         return missingPerms.length ? missingPerms : true;
+    }
+
+    /**
+     * parse options from a message
+     * @return {CommandInteractionOption[]}
+     */
+    parseOptions() {
+        return [];
     }
 
     /**
@@ -190,17 +221,17 @@ class Command {
 
     /**
      * Generate a usage embed
-     * @param {Message} message
+     * @param {CommandSource} source
      * @param {String}                      cmd
      * @param {GuildConfig}                 [guildConfig]
      * @return {MessageEmbed}
      */
-    static async getUsage(message, cmd, guildConfig) {
-        if (!guildConfig) guildConfig = await GuildConfig.get(message.guild.id);
+    static async getUsage(source, cmd, guildConfig) {
+        if (!guildConfig) guildConfig = await GuildConfig.get(source.getGuild().id);
         const prefix = guildConfig.prefix || defaultPrefix;
         const embed = new MessageEmbed()
             .setAuthor(`Help for ${cmd} | Prefix: ${prefix}`)
-            .setFooter(`Command executed by ${util.escapeFormatting(message.author.tag)}`)
+            .setFooter(`Command executed by ${util.escapeFormatting(source.getUser().tag)}`)
             .addFields(
                 /** @type {any} */ { name: 'Usage', value: `\`${prefix}${cmd} ${this.usage}\``, inline: true},
                 /** @type {any} */ { name: 'Description', value: this.description, inline: true},
@@ -230,7 +261,7 @@ class Command {
      * @return {Promise<void>}
      */
     async sendUsage() {
-        await this.reply(await this.constructor.getUsage(this.message,this.name , this.guildConfig));
+        await this.reply(await this.constructor.getUsage(this.source,this.name , this.guildConfig));
     }
 
     /**
@@ -276,12 +307,12 @@ class Command {
         }
 
         if (this.userConfig.deleteCommands) {
-            this.response = await this.message.channel.send(options);
+            this.response = await this.source.getChannel().send(options);
         }
         else {
             options.failIfNotExists ??= false;
             options.allowedMentions ??= {repliedUser: false};
-            this.response = await this.message.reply(options);
+            this.response = await this.source.reply(options);
         }
     }
 
@@ -299,7 +330,7 @@ class Command {
         await message.react(icons.right);
 
         const reactions = message.createReactionCollector( async (reaction, user) => {
-            if (user.id === this.message.author.id && [icons.left,icons.right].includes(reaction.emoji.name)) {
+            if (user.id === this.source.getUser().id && [icons.left,icons.right].includes(reaction.emoji.name)) {
                 return true;
             }
             else {
@@ -360,7 +391,7 @@ class Command {
                     .setStyle('SUCCESS')
             );
         /** @type {Message} */
-        this.response = await this.message.channel.send({content: text, components: [buttons]});
+        this.response = await this.source.getChannel().channel.send({content: text, components: [buttons]});
         try {
             const component = await this.response.awaitMessageComponent({
                 max: 1, time: options.time, errors: ['time']
