@@ -142,7 +142,7 @@ class Command {
 
     /**
      * Can this user run this command?
-     * @return {boolean|String[]}
+     * @return {boolean|PermissionFlags[]}
      */
     userHasPerms() {
         if (this.constructor.modCommand && this.guildConfig.isMod(this.message.member))
@@ -156,7 +156,7 @@ class Command {
 
     /**
      * Can the bot run this command
-     * @return {boolean|PermissionFlags}
+     * @return {boolean|PermissionFlags[]}
      */
     botHasPerms() {
         const botMember = this.message.guild.members.resolve(this.bot.user);

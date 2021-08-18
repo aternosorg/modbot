@@ -1,14 +1,11 @@
 const fs = require('fs');
-const defaultPrefix = require('../../../config.json').prefix;
-const util = require('../../util');
-const GuildConfig = require('../../config/GuildConfig');
-const UserConfig = require('../../config/UserConfig');
-const {Collection, Constants, Client, Message} = require('discord.js');
-const {APIErrors} = Constants;
-const monitor = require('../../Monitor').getInstance();
-const Command = require('../../Command');
-const Database = require('../../Database');
-const {CommandInfo} = require('../../Typedefs');
+const defaultPrefix = require('../config.json').prefix;
+const util = require('./util');
+const GuildConfig = require('./config/GuildConfig');
+const {Collection, Message} = require('discord.js');
+const monitor = require('./Monitor').getInstance();
+const Command = require('./Command');
+const {CommandInfo} = require('./Typedefs');
 
 class CommandManager {
 
@@ -80,63 +77,6 @@ class CommandManager {
      */
     static getCommands() {
         return this.#commands;
-    }
-
-    /**
-     *
-     * @param {Object} options
-     * @param {Database} options.database
-     * @param {Client} options.bot
-     * @param {Message} message
-     * @return {Promise<void>}
-     */
-    static async event(options, message) {
-        const {isCommand, name, prefix} = await this.getCommandName(message);
-        const Command = this.#commands.get(name);
-        if (!isCommand || Command === undefined) return;
-
-        try {
-            /** @type {Command} */
-            const cmd = new Command(message, options.database, options.bot, name, prefix);
-            await cmd._loadConfigs();
-            const userPerms = cmd.userHasPerms(), botPerms = cmd.botHasPerms();
-            if (userPerms !== true) {
-                await message.reply(`You are missing the following permissions to execute this command: ${userPerms.join(', ')}`);
-                return;
-            }
-            if (botPerms !== true) {
-                await message.reply(`I am missing the following permissions to execute this command: ${botPerms.join(', ')}`);
-                return;
-            }
-            await cmd.execute();
-            const memberConfig = await UserConfig.get(message.author.id);
-            if (memberConfig.deleteCommands) {
-                try {
-                    await message.delete();
-                }
-                catch (e) {
-                    if (e.code !== APIErrors.UNKNOWN_MESSAGE) {
-                        throw e;
-                    }
-                }
-            }
-        } catch (e) {
-            try {
-                if  (e.code === APIErrors.MISSING_PERMISSIONS) {
-                    await message.reply('I am missing permissions to execute that command!');
-                }
-                else {
-                    await message.reply('An error occurred while executing that command!');
-                }
-            }
-            catch (e2) {
-                if (e2.code === APIErrors.MISSING_PERMISSIONS) {
-                    return;
-                }
-            }
-            await monitor.error(`Failed to execute command ${name}`, e);
-            console.error(`An error occurred while executing command ${name}:`,e);
-        }
     }
 
     /**

@@ -12,7 +12,7 @@ class HelpCommand extends Command {
 
     async execute() {
 
-        const commandManager = require('../../features/messageCreate/CommandManager');
+        const commandManager = require('../../CommandManager');
 
         const categories = commandManager.getCategories();
         const commands = commandManager.getCommands();
