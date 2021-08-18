@@ -12,7 +12,7 @@ class RoleInfoCommand extends Command{
   
   async execute() {
       if (!this.args.length) {
-          return await this.message.channel.send(`You have to provide a role ID ${this.message.author}!`);
+          return await this.reply(`You have to provide a role ID ${this.message.author}!`);
       }
 
       let roleid = util.roleMentionToId(this.args[0]);
@@ -20,7 +20,7 @@ class RoleInfoCommand extends Command{
       if (!roleid) return this.sendUsage();
     
       let role = this.message.guild.roles.resolve(roleid);
-      if (!role) return await this.message.channel.send('This is not a valid role ID.');
+      if (!role) return await this.reply('This is not a valid role ID.');
 
 
       let permissions;
@@ -43,7 +43,7 @@ class RoleInfoCommand extends Command{
                               `**Color:** \`${role.hexColor}\` (\`${role.color}\`)\n` +
                               `**Permissions:** ${permissions}`);
 
-      await this.message.channel.send(embed);
+      await this.reply(embed);
   }
 }
 

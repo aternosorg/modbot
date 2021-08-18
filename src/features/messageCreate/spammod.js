@@ -1,10 +1,11 @@
 const util = require('../../util');
 const RepeatedMessage = require('../../RepeatedMessage');
 const GuildConfig = require('../../config/GuildConfig');
+const {Message} = require('discord.js');
 
 /**
  * @param options
- * @param {module:"discord.js".Message} message
+ * @param {Message} message
  * @return {Promise<void>}
  */
 exports.event = async (options, message) => {

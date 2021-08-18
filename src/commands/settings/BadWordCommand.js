@@ -1,7 +1,12 @@
 const Command = require('../../Command');
-const Discord = require('discord.js');
-const util = require('../../util');
+const {
+    Collection,
+    Snowflake,
+    Message,
+    MessageEmbed,
+} = require('discord.js');const util = require('../../util');
 const BadWord = require('../../BadWord');
+const ChatTriggeredFeature = require('../../ChatTriggeredFeature');
 
 class BadWordCommand extends Command {
 
@@ -42,12 +47,12 @@ class BadWordCommand extends Command {
             return;
         }
 
-        /** @type {module:"discord.js".Collection<Number,ChatTriggeredFeature>} */
+        /** @type {Collection<Number,ChatTriggeredFeature>} */
         const badWords = await BadWord.getAll(/** @type {Snowflake} */ this.message.guild.id);
 
         switch (this.args.shift().toLowerCase()) {
             case 'list': {
-                if (!badWords.size) return this.message.channel.send('No bad words!');
+                if (!badWords.size) return this.reply('No bad words!');
 
                 let text = '';
                 for (const [id, badWord] of badWords) {
@@ -57,11 +62,11 @@ class BadWordCommand extends Command {
                     if (text.length + info.length < 2000) {
                         text += info;
                     } else {
-                        await this.message.channel.send(text);
+                        await this.reply(text);
                         text = info;
                     }
                 }
-                if (text.length) await this.message.channel.send(text);
+                if (text.length) await this.reply(text);
                 break;
             }
 
@@ -80,9 +85,9 @@ class BadWordCommand extends Command {
                 const content = this.args.join(' ');
 
                 let badWord = await BadWord.new(this.message.guild.id, global, channels, type, content);
-                if (!badWord.success) return this.message.channel.send(badWord.message);
+                if (!badWord.success) return this.reply(badWord.message);
 
-                await this.message.channel.send(badWord.badWord.embed('Added new bad word', util.color.green));
+                await this.reply(badWord.badWord.embed('Added new bad word', util.color.green));
                 break;
             }
 
@@ -90,14 +95,14 @@ class BadWordCommand extends Command {
                 const badWord = await this.getBadWord(this.args.shift(), 'remove');
                 if (!badWord) return;
                 await badWord.remove();
-                await this.message.channel.send(badWord.embed(`Removed bad word ${badWord.id}`, util.color.red));
+                await this.reply(badWord.embed(`Removed bad word ${badWord.id}`, util.color.red));
                 break;
             }
 
             case 'show': {
                 const badWord = await this.getBadWord(this.args.shift(), 'remove');
                 if (!badWord) return;
-                await this.message.channel.send(badWord.embed(`Bad Word ${badWord.id}`, util.color.green));
+                await this.reply(badWord.embed(`Bad Word ${badWord.id}`, util.color.green));
                 break;
             }
 
@@ -112,7 +117,7 @@ class BadWordCommand extends Command {
                     return this.sendError(edit.message);
                 }
 
-                await this.message.channel.send(badWord.embed(edit.message, util.color.green));
+                await this.reply(badWord.embed(edit.message, util.color.green));
                 break;
             }
 
@@ -151,7 +156,7 @@ class BadWordCommand extends Command {
         let subCommand = this.constructor.subCommands[commandName];
         if (!subCommand) throw 'Unknown subcommand';
 
-        return this.message.channel.send(new Discord.MessageEmbed()
+        return this.reply(new MessageEmbed()
             .setAuthor(`Help for ${this.name} ${commandName} | Prefix: ${this.prefix}`)
             .setFooter(`Command executed by ${util.escapeFormatting(this.message.author.tag)}`)
             .addFields(

@@ -1,7 +1,7 @@
 const Command = require('../Command');
 const util = require('../util');
 const Guild = require('../Guild');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, User, Message} = require('discord.js');
 
 class ModerationCommand extends Command {
 
@@ -61,15 +61,15 @@ class ModerationCommand extends Command {
 
     /**
      * send an embed showing that the command was executed successfully.
-     * @param {module:"discord.js".User[]} targets
-     * @return {Promise<module:"discord.js".Message>}
+     * @param {User[]} targets
+     * @return {Promise<Message>}
      */
     async sendSuccess(targets) {
         const type = this.constructor.type.done;
         let description = `${targets.map(user => `\`${user.tag.replace(/`/g, '')}\``).join(', ')} ${targets.length === 1 ? 'has' : 'have'} been **${type}** `;
         description += `| ${this.reason.substring(0, 4000 - description.length)}`;
 
-        return await this.message.channel.send(new MessageEmbed()
+        return await this.reply(new MessageEmbed()
             .setColor(util.color.resolve(type))
             .setDescription(description));
     }
@@ -84,7 +84,7 @@ class ModerationCommand extends Command {
 
     /**
      * can this user be moderated?
-     * @param {module:"discord.js".User} target
+     * @param {User} target
      * @return {Promise<boolean>}
      */
     async isProtected(target) {
@@ -93,7 +93,7 @@ class ModerationCommand extends Command {
             return true;
         }
         const guild = Guild.get(this.message.guild);
-        const member = await guild.fetchMember(/** @type {module:"discord.js".Snowflake} */ target.id);
+        const member = await guild.fetchMember(target.id);
         if (member === null) return false;
 
         if (this.message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || this.guildConfig.isProtected(member)) {
@@ -105,7 +105,7 @@ class ModerationCommand extends Command {
 
     /**
      * get users targeted by this command
-     * @return {Promise<null|module:"discord.js".User[]>}
+     * @return {Promise<null|User[]>}
      */
     async getTargetedUsers() {
         const targetedIDs = await util.userMentions(this.args);
@@ -127,7 +127,7 @@ class ModerationCommand extends Command {
 
     /**
      * execute the punishment on this user
-     * @param {module:"discord.js".User} target
+     * @param {User} target
      * @return {Promise<boolean>}
      */
     // eslint-disable-next-line no-unused-vars
@@ -135,7 +135,7 @@ class ModerationCommand extends Command {
 
     /**
      * run something after all targets have been punished
-     * @param {module:"discord.js".User[]} successes
+     * @param {User[]} successes
      * @return {Promise<void>}
      */
     // eslint-disable-next-line no-unused-vars

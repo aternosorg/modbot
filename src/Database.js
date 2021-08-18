@@ -1,5 +1,6 @@
 const mysql = require('mysql');
 const monitor = require('./Monitor').getInstance();
+const {Snowflake} = require('discord.js');
 
 class Database {
 
@@ -173,12 +174,12 @@ class Database {
 
     /**
      * add a moderation
-     * @param {module:"discord.js".Snowflake|Snowflake} guildId       id of the guild
-     * @param {module:"discord.js".Snowflake|Snowflake} userId        id of the moderated user
+     * @param {Snowflake} guildId       id of the guild
+     * @param {Snowflake} userId        id of the moderated user
      * @param {String}                                  action        moderation type (e.g. 'ban')
      * @param {String}                                  reason        reason for the moderation
      * @param {Number}                                  [duration]    duration of the moderation
-     * @param {module:"discord.js".Snowflake|Snowflake} [moderatorId] id of the moderator
+     * @param {Snowflake} [moderatorId] id of the moderator
      * @param {Number}                                  [value]       strike count
      * @return {Number} the id of the moderation
      */

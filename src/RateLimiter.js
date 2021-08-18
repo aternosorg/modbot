@@ -1,5 +1,12 @@
-const Discord = require('discord.js');
+const {
+    Guild,
+    Collection,
+    User,
+    GuildMember,
+
+} = require('discord.js');
 const monitor = require('./Monitor').getInstance();
+const Database = require('./Database');
 
 /**
  * Database
@@ -20,14 +27,14 @@ class RateLimiter {
         database = db;
     }
 
-    static #modCountCache = new Discord.Collection();
-    static #modCountTimeouts = new Discord.Collection();
+    static #modCountCache = new Collection();
+    static #modCountTimeouts = new Collection();
 
     /**
      * send a user a direct message
-     * @param {module:"discord.js".Guild}                                   guild
-     * @param {module:"discord.js".User|module:"discord.js".GuildMember}    user
-     * @param {String}                                                      message
+     * @param {Guild} guild
+     * @param {User|GuildMember} user
+     * @param {String} message
      * @return {Promise<void>}
      */
     static async sendDM(guild, user, message) {
@@ -53,7 +60,7 @@ class RateLimiter {
                 memberCount: guild.memberCount,
                 guildID: guild.id,
                 guildName: guild.name
-            })
+            });
             console.log(`Didn't send DM in guild ${guild.name}(${guild.id}), count: ${count}`);
         }
     }

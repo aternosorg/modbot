@@ -1,6 +1,6 @@
 const Command = require('../../Command');
 const User = require('../../User');
-const Channel = require('../../Channel');
+const Moderation = require('../../Moderation');
 
 class ClearModerationsCommand extends Command {
 
@@ -20,25 +20,29 @@ class ClearModerationsCommand extends Command {
             return await this.sendUsage();
         }
 
-        /** @type {ModerationData[]} */
-        const moderations = await this.database.queryAll("SELECT COUNT(id) AS modCount FROM moderations WHERE userid = ? AND guildid = ?",[user.id,this.message.guild.id]);
-        const count = moderations[0]["modCount"];
+        /** @type {Moderation[]} */
+        const moderations = await this.database.queryAll('SELECT COUNT(id) AS modCount FROM moderations WHERE userid = ? AND guildid = ?',[user.id,this.message.guild.id]);
+        const count = moderations[0]['modCount'];
 
-        if (count === "0") {
-            await this.message.channel.send('This user doesn\'t have any moderations!');
+        if (parseInt(count) === 0) {
+            await this.reply('This user doesn\'t have any moderations!');
             return;
         }
 
-        const channel = new Channel(this.message.channel);
-        let confirmed = await channel.getConfirmation(this.message.author, `Are you sure you want to delete ${count} ${count === 1 ? `moderations` : 'moderation'} for <@${user.id}>?`);
+        const {confirmed, interaction} = await this.getConfirmation(`Are you sure you want to delete ${count} ${count === 1 ? 'moderations' : 'moderation'} for <@${user.id}>?`);
+
+        if (!interaction) {
+            return;
+        }
+
         if (!confirmed) {
-            await this.message.channel.send("Canceled!");
+            await interaction.reply('The moderation was not deleted!');
             return;
         }
 
         /** @property {Number} affectedRows */
         const deletion = await this.database.queryAll('DELETE FROM moderations WHERE guildid = ? AND userid = ?',[this.message.guild.id, user.id]);
-        await this.message.channel.send(`Deleted ${deletion.affectedRows} ${deletion.affectedRows === 1 ? 'moderation' : 'moderations'}!`);
+        await interaction.reply(`Deleted ${deletion.affectedRows} ${deletion.affectedRows === 1 ? 'moderation' : 'moderations'}!`);
     }
 
 }

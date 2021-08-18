@@ -2,7 +2,20 @@ const GuildConfig = require('./config/GuildConfig');
 const ChannelConfig = require('./config/ChannelConfig');
 const UserConfig = require('./config/UserConfig');
 const util = require('./util');
-const Discord = require('discord.js');
+const {
+    PermissionResolvable,
+    Message,
+    Client,
+    PermissionFlags,
+    MessageEmbed,
+    MessageOptions,
+    ReplyMessageOptions,
+    ButtonInteraction,
+    MessageActionRow,
+    MessageButton,
+    MessageAttachment,
+} = require('discord.js');
+const Database = require('./Database');
 const defaultPrefix = require('../config.json').prefix;
 const icons = require('./icons');
 
@@ -50,7 +63,7 @@ class Command {
     static botPerms = [];
 
     /**
-     * @type {module:"discord.js".Message}
+     * @type {Message}
      */
     message;
 
@@ -60,7 +73,7 @@ class Command {
     database;
 
     /**
-     * @type {module:"discord.js".Client}
+     * @type {Client}
      */
     bot;
 
@@ -98,10 +111,17 @@ class Command {
     prefix;
 
     /**
+     * the bot's response to this message
+     * sending multiple responses should be avoided
+     * @type {Message}
+     */
+    response;
+
+    /**
      * call this command
-     * @param {module:"discord.js".Message} message
+     * @param {Message} message
      * @param {Database}                    database
-     * @param {module:"discord.js".Client}  bot
+     * @param {Client}  bot
      * @param {String} name
      * @param {String} prefix
      */
@@ -129,20 +149,20 @@ class Command {
             return true;
         const missingPerms = [];
         for (const perm of this.constructor.userPerms) {
-            if (!this.message.member.hasPermission(perm)) missingPerms.push(perm);
+            if (!this.message.member.permissions.has(perm)) missingPerms.push(perm);
         }
         return missingPerms.length ? missingPerms : true;
     }
 
     /**
      * Can the bot run this command
-     * @return {boolean|module:"discord.js".PermissionFlags}
+     * @return {boolean|PermissionFlags}
      */
     botHasPerms() {
-        const botMember = this.message.guild.member(this.bot.user);
+        const botMember = this.message.guild.members.resolve(this.bot.user);
         const missingPerms = [];
         for (const perm of this.constructor.botPerms) {
-            if (!botMember.hasPermission(perm)) missingPerms.push(perm);
+            if (!botMember.permissions.has(perm)) missingPerms.push(perm);
         }
         return missingPerms.length ? missingPerms : true;
     }
@@ -155,16 +175,15 @@ class Command {
 
     /**
      * Generate a usage embed
-     * @param {module:"discord.js".Message} message
+     * @param {Message} message
      * @param {String}                      cmd
      * @param {GuildConfig}                 [guildConfig]
-     * @return {module:"discord.js".MessageEmbed}
-     *
+     * @return {MessageEmbed}
      */
     static async getUsage(message, cmd, guildConfig) {
         if (!guildConfig) guildConfig = await GuildConfig.get(message.guild.id);
         const prefix = guildConfig.prefix || defaultPrefix;
-        const embed = new Discord.MessageEmbed()
+        const embed = new MessageEmbed()
             .setAuthor(`Help for ${cmd} | Prefix: ${prefix}`)
             .setFooter(`Command executed by ${util.escapeFormatting(message.author.tag)}`)
             .addFields(
@@ -196,7 +215,7 @@ class Command {
      * @return {Promise<void>}
      */
     async sendUsage() {
-        await this.message.channel.send(await this.constructor.getUsage(this.message,this.name , this.guildConfig));
+        await this.reply(await this.constructor.getUsage(this.message,this.name , this.guildConfig));
     }
 
     /**
@@ -204,10 +223,51 @@ class Command {
      * @return {Promise<void>}
      */
     async sendError(message) {
-        await this.message.channel.send(new Discord.MessageEmbed({
+        await this.reply(new MessageEmbed({
             color: util.color.red,
             description: message,
         }));
+    }
+
+    /**
+     *
+     * @param {String|MessageOptions|ReplyMessageOptions|MessageEmbed|MessageAttachment} message
+     * @param {MessageEmbed|MessageAttachment} additions
+     * @return {Promise<void>}
+     */
+    async reply(message, ...additions) {
+        /** @type {MessageOptions|ReplyMessageOptions}*/
+        let options = {
+            embeds: additions.filter(a => a instanceof MessageEmbed),
+            files: additions.filter(a => a instanceof MessageAttachment),
+        };
+        if (typeof message === 'string') {
+            options.content = message;
+        }
+        else if (message instanceof MessageEmbed) {
+            options.embeds.unshift(message);
+        }
+        else if (message instanceof MessageAttachment) {
+            options.files.unshift(message);
+        }
+        else if (message instanceof Object) {
+            options = message;
+            if (options.embeds instanceof Array) {
+                options.embeds.concat(additions);
+            }
+            else {
+                options.embeds = additions;
+            }
+        }
+
+        if (this.userConfig.deleteCommands) {
+            this.response = await this.message.channel.send(options);
+        }
+        else {
+            options.failIfNotExists ??= false;
+            options.allowedMentions ??= {repliedUser: false};
+            this.response = await this.message.reply(options);
+        }
     }
 
     /**
@@ -217,10 +277,8 @@ class Command {
      * @param {Number} [duration] inactivity timeout in ms (default: 60s)
      */
     async multiPageResponse(generatePage, pages, duration = 60000) {
-        /**
-         * @type {module:"discord.js".Message}
-         */
-        const message = await this.message.channel.send(await generatePage(0));
+        /** @type {Message} */
+        const message = await this.reply(await generatePage(0));
 
         if (pages === 1) return;
         await message.react(icons.right);
@@ -266,6 +324,48 @@ class Command {
     static getOverview() {
         return `**${this.names.join(', ')}**\n`+
             `${this.description}\n`;
+    }
+
+    /**
+     * @param {String} text
+     * @param {Object} [options]
+     * @param {Number} [options.time]
+     * @return {Promise<{interaction: ButtonInteraction, confirmed: boolean}>}
+     */
+    async getConfirmation(text, options = {time: 15000}) {
+        const buttons = new MessageActionRow()
+            .addComponents(
+                new MessageButton()
+                    .setCustomId('confirm')
+                    .setLabel('Confirm')
+                    .setStyle('DANGER'),
+                new MessageButton()
+                    .setCustomId('cancel')
+                    .setLabel('Cancel')
+                    .setStyle('SUCCESS')
+            );
+        /** @type {Message} */
+        this.response = await this.message.channel.send({content: text, components: [buttons]});
+        try {
+            const component = await this.response.awaitMessageComponent({
+                max: 1, time: options.time, errors: ['time']
+            });
+            for (const button of buttons.components) {
+                button.setDisabled(true);
+            }
+            await this.response.edit({components: [buttons]});
+            return {component, confirmed: component.customId === 'confirmed'};
+        }
+        catch (e) {
+            for (const button of buttons.components) {
+                button.setDisabled(true);
+            }
+            await this.response.edit({components: [buttons]});
+            if (e.code === 'INTERACTION_COLLECTOR_ERROR')
+                return {component: null, confirmed: false};
+            else
+                throw e;
+        }
     }
 }
 

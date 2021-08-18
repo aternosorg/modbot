@@ -1,4 +1,5 @@
 const Command = require('../../Command');
+const {Message} = require('discord.js');
 
 class PingCommand extends Command {
 
@@ -7,9 +8,12 @@ class PingCommand extends Command {
     static names = ['ping'];
 
     async execute() {
-        /** @type {module:"discord.js".Message} */
-        const pong = await this.message.channel.send(`Pinging...`);
-        await pong.edit(`Ping: ${pong.createdTimestamp-this.message.createdTimestamp}ms \nWebsocket: ${this.bot.ws.ping}ms\n*This is the bot's ping*`);
+        /** @type {Message} */
+        await this.reply('Pinging...');
+        await this.response.edit(`Ping: ${this.response.createdTimestamp-this.message.createdTimestamp}ms \n`+
+            `Websocket: ${this.bot.ws.ping}ms\n`+
+            '*This is the bot\'s ping*'
+        );
     }
 }
 

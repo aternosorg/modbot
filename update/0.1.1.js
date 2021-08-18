@@ -1,8 +1,10 @@
 const Database = require('../src/Database');
 const config = require('../config.json');
-const Discord = require('discord.js');
+const {Client, GuildChannel} = require('discord.js');
 const database = new Database(config.db);
-const client = new Discord.Client();
+const client = new Client({
+    intents: []
+});
 
 async function update() {
     console.log('Starting update to v0.1.1');
@@ -17,8 +19,8 @@ async function update() {
         else
             throw e;
     }
-    console.log('Done!')
-    console.log('Updating entries...')
+    console.log('Done!');
+    console.log('Updating entries...');
     const channelIDs = await database.queryAll('SELECT id FROM channels WHERE guildid IS null');
     if (channelIDs.length === 0) {
         console.log('No entries to update!');
@@ -52,13 +54,13 @@ update().catch(e => {
 });
 
 /**
- * @param {Snowflake} channelID
+ * @param {String} channelID
  * @return {Promise<Boolean>}
  */
 async function updateGuildID(channelID) {
     try {
-        /** @type {module:"discord.js".GuildChannel} */
-        const channel = await client.channels.fetch(/** @type {Snowflake} */ channelID);
+        /** @type {GuildChannel} */
+        const channel = await client.channels.fetch(channelID);
         await database.query('UPDATE channels SET guildid = ? WHERE id = ?',[channel.guild.id, channelID]);
     }
     catch (e) {

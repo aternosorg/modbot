@@ -1,36 +1,45 @@
 const util = require('./util');
-const Discord = require('discord.js');
+const {
+    Constants,
+    MessageEmbed,
+    Message,
+    Guild,
+    ClientUser,
+    User,
+    GuildChannel,
+} = require('discord.js');
 const GuildConfig = require('./config/GuildConfig');
-const {APIErrors} = Discord.Constants;
+const {APIErrors} = Constants;
+const {GuildInfo} = require('./Typedefs');
 
 class Log{
     /**
      * Logs a message to the guilds log channel (if specified)
-     * @param {GuildInfo}                        guildInfo
-     * @param {String}                           message   content of the log message
-     * @param {module:"discord.js".MessageEmbed} [options]
-     * @return {Promise<module:"discord.js".Message|null>} log message
+     * @param {GuildInfo} guildInfo
+     * @param {String} message content of the log message
+     * @param {MessageEmbed} [options]
+     * @return {Promise<Message|null>} log message
      */
     static async log(guildInfo, message, options) {
-        /** @type {module:"discord.js".Guild} */
+        /** @type {Guild} */
         const guild = await util.resolveGuild(guildInfo);
 
         /** @type {GuildConfig} */
-        const guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */guild.id);
+        const guildConfig = await GuildConfig.get(guild.id);
         if (!guildConfig.logChannel) return null;
 
-        return this._send(guild.channels.resolve(/** @type {String} */guildConfig.logChannel), message, options);
+        return this._send(guild.channels.resolve(guildConfig.logChannel), message, options);
     }
 
     /**
      * Logs an embed to the guilds log channel (if specified)
      * @async
      * @param {GuildInfo}                               guildInfo guild
-     * @param {module:"discord.js".MessageEmbed|Object} embed     embed to log
-     * @return {Promise<module:"discord.js".Message|null>} log message
+     * @param {MessageEmbed|Object} embed     embed to log
+     * @return {Promise<Message|null>} log message
      */
     static logEmbed(guildInfo, embed) {
-        return this.log(guildInfo,'',new Discord.MessageEmbed(embed));
+        return this.log(guildInfo,'',new MessageEmbed(embed));
     }
 
     /**
@@ -38,11 +47,11 @@ class Log{
      * @async
      * @param message deleted message
      * @param reason  reason for the deletion
-     * @return {Promise<module:"discord.js".Message|null>} log message
+     * @return {Promise<Message|null>} log message
      */
     static async logMessageDeletion(message, reason) {
         if (message.content.length === 0) return;
-        return this.log(message, `Message in <#${message.channel.id}> deleted`, new Discord.MessageEmbed({
+        return this.log(message, `Message in <#${message.channel.id}> deleted`, new MessageEmbed({
             footer: {
                 text: message.author.id,
                 iconURL: message.author.avatarURL()
@@ -67,43 +76,43 @@ class Log{
      * Logs a message to the guilds message log channel (if specified)
      * @param {GuildInfo}                        guildInfo
      * @param {String}                           message   content of the log message
-     * @param {module:"discord.js".MessageEmbed} [options]
-     * @return {Promise<module:"discord.js".Message|null>} log message
+     * @param {MessageEmbed} [options]
+     * @return {Promise<Message|null>} log message
      */
     static async messageLog(guildInfo, message, options) {
-        /** @type {module:"discord.js".Guild} */
+        /** @type {Guild} */
         const guild = await util.resolveGuild(guildInfo);
 
         /** @type {GuildConfig} */
-        const guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */guild.id);
+        const guildConfig = await GuildConfig.get(guild.id);
         if (!guildConfig.messageLogChannel) return null;
 
-        return this._send(guild.channels.resolve(/** @type {String} */guildConfig.messageLogChannel), message, options);
+        return this._send(guild.channels.resolve(guildConfig.messageLogChannel), message, options);
     }
 
     /**
      * Logs an embed to the guilds message log channel (if specified)
      * @param {GuildInfo}                               guildInfo
-     * @param {module:"discord.js".MessageEmbed|Object} embed     embed to log
-     * @return {Promise<module:"discord.js".Message|null>} log message
+     * @param {MessageEmbed|Object} embed     embed to log
+     * @return {Promise<Message|null>} log message
      */
     static async messageLogEmbed(guildInfo, embed) {
-        return this.messageLog(guildInfo,'',new Discord.MessageEmbed(embed));
+        return this.messageLog(guildInfo,'',new MessageEmbed(embed));
     }
 
     /**
      * Logs a message to the guilds join log channel (if specified)
      * @param {GuildInfo}                        guildInfo
      * @param {String}                           message   content of the log message
-     * @param {module:"discord.js".MessageEmbed} [options]
-     * @return {Promise<module:"discord.js".Message|null>} log message
+     * @param {MessageEmbed} [options]
+     * @return {Promise<Message|null>} log message
      */
     static async joinLog(guildInfo, message, options) {
-        /** @type {module:"discord.js".Guild} */
+        /** @type {Guild} */
         const guild = await util.resolveGuild(guildInfo);
 
         /** @type {GuildConfig} */
-        const guildConfig = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */guild.id);
+        const guildConfig = await GuildConfig.get(guild.id);
         if (!guildConfig.joinLogChannel) return null;
 
         return this._send(guild.channels.resolve(/** @type {String} */guildConfig.joinLogChannel), message, options);
@@ -112,21 +121,21 @@ class Log{
     /**
      * Log a moderation
      * @async
-     * @param {GuildInfo}                           guildInfo
-     * @param {module:"discord.js".User|ClientUser} moderator           user that started the moderation
-     * @param {module:"discord.js".User}            user                user that was moderated
-     * @param {String}                              reason              reason for the moderation
-     * @param {Number}                              insertId            id in the moderations table of the db
-     * @param {String}                              type                moderation action
-     * @param {Object}                              [options]           optional information
-     * @param {String}                              [options.time]      duration of the moderation as a time string
-     * @param {Number}                              [options.amount]    amount of strikes that were given/pardoned
-     * @param {Number}                              [options.total]     total strike count
-     * @return {Promise<module:"discord.js".Message|null>}
+     * @param {GuildInfo} guildInfo
+     * @param {User|ClientUser} moderator user that started the moderation
+     * @param {User} user user that was moderated
+     * @param {String} reason reason for the moderation
+     * @param {Number} insertId id in the moderations table of the db
+     * @param {String} type moderation action
+     * @param {Object} [options] optional information
+     * @param {String} [options.time] duration of the moderation as a time string
+     * @param {Number} [options.amount] amount of strikes that were given/pardoned
+     * @param {Number} [options.total] total strike count
+     * @return {Promise<Message|null>}
      */
     static async logModeration (guildInfo, moderator, user, reason, insertId, type, options = {}) {
         const embedColor = util.color.resolve(type);
-        const logEmbed = new Discord.MessageEmbed()
+        const logEmbed = new MessageEmbed()
             .setColor(embedColor)
             .setAuthor(`Case ${insertId} | ${util.toTitleCase(type)} | ${util.escapeFormatting(user.tag)}`, user.avatarURL())
             .setFooter(`ID: ${user.id}`)
@@ -140,8 +149,8 @@ class Log{
             logEmbed.addField('Duration', options.time, true);
         }
         if (options.amount) {
-            logEmbed.addField('Amount', options.amount, true);
-            logEmbed.addField('Total Strikes', options.total, true);
+            logEmbed.addField('Amount', '' + options.amount, true);
+            logEmbed.addField('Total Strikes', '' + options.total, true);
         }
         return this.logEmbed(guildInfo, logEmbed);
     }
@@ -149,15 +158,15 @@ class Log{
     /**
      * Log automatic unbans etc.
      * @async
-     * @param {GuildInfo}                 guildInfo
-     * @param {module:"discord.js".User}  user      user that was moderated
-     * @param {String}                    reason    reason for the moderation
-     * @param {Number}                    insertId  id in the moderations table of the db
-     * @param {String}                    type      moderation action
-     * @return {module:"discord.js".Message}
+     * @param {GuildInfo} guildInfo
+     * @param {User} user user that was moderated
+     * @param {String} reason reason for the moderation
+     * @param {Number} insertId id in the moderations table of the db
+     * @param {String} type moderation action
+     * @return {Message}
      */
     static async logCheck(guildInfo, user, reason, insertId, type) {
-        const logEmbed = new Discord.MessageEmbed()
+        const logEmbed = new MessageEmbed()
             .setColor(util.color.green)
             .setAuthor(`Case ${insertId} | ${type} | ${util.escapeFormatting(user.tag)}`, user.avatarURL())
             .setFooter(`ID: ${user.id}`)
@@ -172,15 +181,18 @@ class Log{
 
     /**
      * try to send this message to this channel
-     * @param {module:"discord.js".GuildChannel} channel
+     * @param {GuildChannel} channel
      * @param {String} message
-     * @param {module:"discord.js".MessageEmbed} [options]
+     * @param {MessageEmbed} [embeds]
      * @returns {Promise<null|*>}
      * @private
      */
-    static async _send(channel, message, options) {
+    static async _send(channel, message, ...embeds) {
         try {
-            return channel.send(message.substring(0,2000),options);
+            return channel.send({
+                content: message || undefined,
+                embeds: embeds
+            });
         }
         catch (e) {
             if ([APIErrors.MISSING_ACCESS, APIErrors.MISSING_PERMISSIONS].includes(e.code)) {

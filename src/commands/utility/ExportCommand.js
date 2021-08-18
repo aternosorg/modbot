@@ -17,7 +17,7 @@ class ExportCommand extends Command {
     async execute() {
         const exporter = new Exporter(this.message.guild.id);
         const data = await exporter.export();
-        await this.message.channel.send(new MessageAttachment(Buffer.from(data), `modbot-data-${this.message.guild.id}.json`));
+        await this.reply(new MessageAttachment(Buffer.from(data), `modbot-data-${this.message.guild.id}.json`));
     }
 }
 

@@ -22,7 +22,7 @@ class UnmuteCommand extends ModerationCommand {
         const member = new Member(target, this.message.guild);
 
         if (!await member.isMuted(this.database)) {
-            await this.message.channel.send(new MessageEmbed()
+            await this.reply(new MessageEmbed()
                 .setDescription(`**${util.escapeFormatting(target.tag)}** isn't muted here!`)
                 .setColor(util.color.red)
             );

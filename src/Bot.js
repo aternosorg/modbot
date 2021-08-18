@@ -1,4 +1,4 @@
-const Discord = require('discord.js');
+const {Client} = require('discord.js');
 const Database = require('./Database');
 const util = require('./util');
 const fs = require('fs').promises;
@@ -13,7 +13,7 @@ class Bot {
     }
 
     /**
-     * @type {module:"discord.js".Client}
+     * @type {Client}
      */
     #client;
 
@@ -28,10 +28,19 @@ class Bot {
     #monitor = Monitor.getInstance();
 
     constructor() {
-        this.#client = new Discord.Client({
-            disableMentions: 'everyone',
-            presence: { status: 'dnd', activity: { type: 'WATCHING', name: 'you' } },
-            partials: ['GUILD_MEMBER']
+        this.#client = new Client({
+            intents: [
+                'GUILDS',
+                'GUILD_MEMBERS',
+                'GUILD_BANS',
+                'GUILD_MESSAGES',
+                'GUILD_MESSAGE_REACTIONS'
+            ],
+            allowedMentions: {
+                parse: ['roles', 'users']
+            },
+            presence: { status: 'dnd', activities: [{ type: 'WATCHING', name: 'you' }] },
+            partials: ['GUILD_MEMBER'],
         });
 
         this.#database = new Database(config.db);

@@ -1,4 +1,11 @@
-const {APIErrors} = require('discord.js').Constants;
+const Discord = require('discord.js');
+const {
+    Constants,
+    Snowflake,
+    Client,
+
+} = Discord;
+const {APIErrors} = Constants;
 
 class User {
 
@@ -8,19 +15,19 @@ class User {
     id;
 
     /**
-     * @type {module:"discord.js".User}
+     * @type {Discord.User}
      */
     user;
 
     /**
-     * @type {module:"discord.js".Client}
+     * @type {Client}
      */
     client;
 
     /**
      *
      * @param {Snowflake} id
-     * @param {module:"discord.js".Client} client
+     * @param {Client} client
      */
     constructor(id, client) {
         this.id = id;
@@ -30,7 +37,7 @@ class User {
     /**
      * fetch this user
      * @return {Promise<User>}
-     * @deprecated
+     * @deprecated use this.fetchUser() instead
      */
     async fetch() {
         await this.fetchUser();
@@ -39,7 +46,7 @@ class User {
 
     /**
      * fetch this user
-     * @return {Promise<module:"discord.js".User>}
+     * @return {Promise<Discord.User>}
      */
     async fetchUser() {
         try {
@@ -62,11 +69,11 @@ class User {
      * - <@790967448111153153>
      * - <@!790967448111153153>
      * @param {String} string
-     * @return {module:"discord.js".Snowflake|null|*}
+     * @return {Snowflake|null|*}
      */
     static getID(string) {
         if (/^<@!?\d+>$/.test(string)) {
-            return /** @type {module:"discord.js".Snowflake|null} */ string.match(/^<@!?(\d+)>$/)[1];
+            return /** @type {Snowflake|null} */ string.match(/^<@!?(\d+)>$/)[1];
         }
         else if(/^\d+$/.test(string)) {
             return string;
@@ -79,7 +86,7 @@ class User {
     /**
      *
      * @param {String} string
-     * @param {module:"discord.js".Client} client
+     * @param {Client} client
      * @return {Promise<null|User>}
      */
     static async getMentionedUser(string, client) {

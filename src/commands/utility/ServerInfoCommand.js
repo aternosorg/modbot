@@ -1,4 +1,4 @@
-const Command = require('../../Command')
+const Command = require('../../Command');
 const Discord = require('discord.js');
 const util = require('../../util');
 
@@ -13,11 +13,11 @@ class ServerInfoCommand extends Command{
     async execute() {
         const guild = this.message.guild;
         
-        let owner = await this.bot.users.fetch(guild.ownerID);
+        let owner = await guild.fetchOwner();
       
         let generic = '';
-        generic += `**Owner:** <@!${guild.ownerID}> (${owner.tag}) \n`;
-        generic += `**Owner ID:** ${guild.ownerID} \n`;
+        generic += `**Owner:** <@!${owner.id}> (${owner.user.tag}) \n`;
+        generic += `**Owner ID:** ${owner.id} \n`;
         generic += `**Created:** ${guild.createdAt.toUTCString()} \n`;
         generic += `**Guild ID:** ${guild.id} \n`;
         
@@ -41,7 +41,7 @@ class ServerInfoCommand extends Command{
                 /** @type {any} */ {name: '__**Features**__', value: features.join(', ') || 'None', inline: false }
             );
               
-        await this.message.channel.send(embed);
+        await this.reply(embed);
     }
 }
         

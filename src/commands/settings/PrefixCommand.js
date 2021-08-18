@@ -22,7 +22,7 @@ class LogChannelCommand extends Command {
 
         switch (this.args.shift().toLowerCase()) {
             case 'status':
-                await this.message.channel.send(new Discord.MessageEmbed()
+                await this.reply(new Discord.MessageEmbed()
                     .setDescription(`The current guild prefix is \`${this.guildConfig.prefix}\`.`)
                 );
                 break;
@@ -31,12 +31,12 @@ class LogChannelCommand extends Command {
                 const prefix = this.args.shift()?.replace(/^ +/, '');
 
                 if (!prefix) return this.sendUsage();
-                if (prefix.length > 15) return this.message.channel.send('The prefix may not be longer than 15 characters');
+                if (prefix.length > 15) return this.reply('The prefix may not be longer than 15 characters');
 
                 this.guildConfig.prefix = prefix;
                 await this.guildConfig.save();
 
-                await this.message.channel.send(new Discord.MessageEmbed()
+                await this.reply(new Discord.MessageEmbed()
                     .setDescription(`The guild prefix is now \`${prefix}\``)
                 );
                 break;

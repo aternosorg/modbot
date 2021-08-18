@@ -1,7 +1,8 @@
 const AutoResponse = require('../../AutoResponse');
 const CommandManager = require('./CommandManager');
+const {Message} = require('discord.js');
 
-exports.event = async (options, message) => {
+exports.event = async (options, /** @type {Message} */ message) => {
     if (!message.guild || message.author.bot  || await CommandManager.isCommand(message)) return;
     const triggered = [];
 
@@ -13,6 +14,6 @@ exports.event = async (options, message) => {
     }
 
     if (triggered.length) {
-        await message.channel.send(triggered[Math.floor(Math.random() * triggered.length)]);
+        await message.reply(triggered[Math.floor(Math.random() * triggered.length)]);
     }
 };

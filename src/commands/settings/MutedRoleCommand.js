@@ -1,6 +1,6 @@
 const Command = require('../../Command');
 const util = require('../../util.js');
-const Discord = require('discord.js');
+const {Snowflake, MessageEmbed} = require('discord.js');
 const Member = require('../../Member');
 const User = require('../../User');
 
@@ -26,21 +26,21 @@ class LogChannelCommand extends Command {
             case 'off':
                 this.guildConfig.mutedRole = null;
                 await this.guildConfig.save();
-                await this.message.channel.send(new Discord.MessageEmbed()
+                await this.reply(new MessageEmbed()
                     .setDescription('Disabled the muted role')
                     .setFooter('You will not be able to mute or unmute users. Currently muted users will stay muted!')
                     .setColor(util.color.red)
                 );
                 break;
             case 'status':
-                await this.message.channel.send(new Discord.MessageEmbed()
+                await this.reply(new MessageEmbed()
                     .setDescription(`The muted role is ${this.guildConfig.mutedRole ? `<@&${this.guildConfig.mutedRole}>` : 'currently disabled'}.`)
                     .setColor(this.guildConfig.mutedRole ? util.color.green : util.color.red)
                 );
                 break;
 
             case 'create': {
-                const role = await this.message.guild.roles.create({ data: { name: 'muted', hoist:false }});
+                const role = await this.message.guild.roles.create({ name: 'muted', hoist:false });
                 await this.setRole(role.id);
                 break;
             }
@@ -50,7 +50,7 @@ class LogChannelCommand extends Command {
                 if (role === null || !await util.isRole(this.message.guild, role)) return this.sendUsage();
 
                 if (!this.message.guild.roles.resolve(role).editable) {
-                    return this.message.channel.send('I am missing the required permissions to manage that role!');
+                    return this.reply('I am missing the required permissions to manage that role!');
                 }
 
                 await this.setRole(role);
@@ -64,14 +64,14 @@ class LogChannelCommand extends Command {
      * @return {Promise<void>}
      */
     async setRole(id) {
-        const response = await this.message.channel.send('Updating permission overrides...');
+        await this.reply('Updating permission overrides...');
 
         //channel perms
-        const channels = this.message.guild.channels.cache.array();
+        const channels = Array.from(this.message.guild.channels.cache.values());
         for (const channel of channels) {
             if (!channel.manageable) continue;
             if (!channel.permissionsFor(id).any(['SEND_MESSAGES', 'ADD_REACTIONS', 'SPEAK'])) continue;
-            await channel.updateOverwrite(id, {
+            await channel.permissionOverwrites.edit(id, {
                 'SEND_MESSAGES': false,
                 'ADD_REACTIONS': false,
                 'SPEAK': false
@@ -80,11 +80,11 @@ class LogChannelCommand extends Command {
 
         if (this.guildConfig.mutedRole && this.guildConfig.mutedRole !== id) {
             //transfer members
-            await response.edit('Updating currently muted members...');
+            await this.response.edit('Updating currently muted members...');
 
             const oldRole = this.guildConfig.mutedRole;
             if (!((await this.message.guild.roles.fetch(oldRole)).editable)) {
-                await this.message.channel.send('Can\'t update existing members (old role too high)');
+                await this.reply('Can\'t update existing members (old role too high)');
             }
             else {
                 const memberIDs = await this.database.queryAll('SELECT userid FROM moderations WHERE active = TRUE AND action = \'mute\' AND guildid = ?', [this.message.guild.id]);
@@ -104,9 +104,11 @@ class LogChannelCommand extends Command {
 
         this.guildConfig.mutedRole = id;
         await this.guildConfig.save();
-        await response.edit('', new Discord.MessageEmbed()
-            .setDescription(`Set muted role to <@&${id}>.`)
-            .setColor(util.color.green)
+        await this.response.edit({embeds: [
+            new MessageEmbed()
+                .setDescription(`Set muted role to <@&${id}>.`)
+                .setColor(util.color.green)
+        ]}
         );
     }
 }

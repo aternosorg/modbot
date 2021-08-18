@@ -1,5 +1,5 @@
 const Command = require('../../Command');
-const {Collection} = require('discord.js');
+const {Collection, MessageOptions} = require('discord.js');
 const youtube = require('@googleapis/youtube').youtube('v3');
 const {googleapikey} = require('../../../config.json');
 const Fuse = require('fuse.js');
@@ -16,7 +16,7 @@ class VideoCommand extends Command {
 
     /**
      * playlist cache
-     * @type {module:"discord.js".Collection<String, {data: Object, expires: Number}[]>}
+     * @type {Collection<String, {data: Object, expires: Number}[]>}
      */
     static #cache = new Collection();
 
@@ -33,7 +33,7 @@ class VideoCommand extends Command {
     }, 60*1000);
 
     async execute() {
-        if (!this.guildConfig.playlist) return this.message.channel.send('No playlist specified!');
+        if (!this.guildConfig.playlist) return this.reply('No playlist specified!');
 
         const query = this.args.join(' ');
         if (!query) return this.sendUsage();
@@ -44,15 +44,25 @@ class VideoCommand extends Command {
         }
         catch (e) {
             if (e.response.data.error.code === 404) {
-                return this.message.channel.send('The playlist couln\'t be found. It was most likely deleted or set to private!');
+                return this.reply('The playlist couln\'t be found. It was most likely deleted or set to private!');
             }
             throw e;
         }
         const video = new Fuse(videos, {keys:['snippet.title']}).search(query)[0];
 
-        if (!video) return this.message.channel.send('No video found!');
+        if (!video) return this.reply('No video found!');
 
-        await this.message.channel.send(`https://youtu.be/${video.item.snippet.resourceId.videoId}`);
+        /** @type {MessageOptions} */
+        const options = {content: `https://youtu.be/${video.item.snippet.resourceId.videoId}`};
+
+        if (this.userConfig.deleteCommands && this.message.reference) {
+            options.reply = {
+                messageReference: this.message.reference.messageId,
+                failIfNotExists: false
+            };
+        }
+
+        await this.reply(options);
     }
 
     /**

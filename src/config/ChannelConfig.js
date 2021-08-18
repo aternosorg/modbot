@@ -1,5 +1,5 @@
 const Config = require('./Config');
-const {Constants} = require('discord.js');
+const {Constants, Snowflake, GuildChannel, Client} = require('discord.js');
 const {APIErrors} = Constants;
 const TypeChecker = require('./TypeChecker');
 
@@ -17,7 +17,7 @@ class ChannelConfig extends Config {
     /**
      * Constructor - create a channel config
      *
-     * @param  {module:"discord.js".Snowflake}  id             channel id
+     * @param  {Snowflake}  id             channel id
      * @param  {Object}                         [json]          options
      * @param  {Boolean}                        [json.invites]  allow invites
      * @param  {Object}                         [json.lock]     permissions before locking (only affected perms)
@@ -61,7 +61,7 @@ class ChannelConfig extends Config {
      */
     async getGuildID() {
         try {
-            /** @type {module:"discord.js".GuildChannel} */
+            /** @type {GuildChannel} */
             const channel = await this.constructor.client.channels.fetch(this.id);
             return channel.guild.id;
         }
@@ -78,7 +78,7 @@ class ChannelConfig extends Config {
     }
 
     /**
-     * @param {module:"discord.js".Client} bot
+     * @param {Client} bot
      * @param {Snowflake} guildID
      * @param {Config} data
      * @return {Promise<void>}

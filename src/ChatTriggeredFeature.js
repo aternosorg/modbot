@@ -1,6 +1,11 @@
-const Discord = require('discord.js');
+const {
+    Collection,
+    Message,
+    Snowflake,
+} = require('discord.js');
 const Trigger = require('./Trigger');
 const stringSimilarity = require('string-similarity');
+const Database = require('./Database');
 
 /**
  * Database
@@ -49,6 +54,21 @@ class ChatTriggeredFeature {
     trigger;
 
     /**
+     * @type {boolean}
+     */
+    global;
+
+    /**
+     * @type {Snowflake}
+     */
+    gid;
+
+    /**
+     * @type {Snowflake[]}
+     */
+    channels = [];
+
+    /**
      * @param {Number} id ID in the database
      * @param {Trigger} trigger
      */
@@ -71,15 +91,15 @@ class ChatTriggeredFeature {
             cache = {
                 /**
                  * channel specific features
-                 * @type {module:"discord.js".Collection}
+                 * @type {Collection}
                  */
-                channels: new Discord.Collection(),
+                channels: new Collection(),
 
                 /**
                  * guild wide features
-                 * @type {module:"discord.js".Collection}
+                 * @type {Collection}
                  */
-                guilds: new Discord.Collection()
+                guilds: new Collection()
             };
             this.cache[this.tableName] = cache;
         }
@@ -96,7 +116,7 @@ class ChatTriggeredFeature {
 
     /**
      * matches - does this message match this item
-     * @param   {module:"discord.js".Message} message
+     * @param   {Message} message
      * @returns {boolean}
      */
     matches(message) {
@@ -190,7 +210,8 @@ class ChatTriggeredFeature {
             await database.queryAll(`UPDATE ${database.escapeId(this.constructor.tableName)} SET ${assignments.join(', ')} WHERE id = ?`, data);
         }
         else {
-            let dbentry = await database.queryAll(`INSERT INTO ${database.escapeId(this.constructor.tableName)} (${database.escapeIdArray(this.constructor.columns).join(', ')}) VALUES (${',?'.repeat(this.constructor.columns.length).slice(1)})`,this.serialize());
+            /** @property {Number} insertId*/
+            const dbentry = await database.queryAll(`INSERT INTO ${database.escapeId(this.constructor.tableName)} (${database.escapeIdArray(this.constructor.columns).join(', ')}) VALUES (${',?'.repeat(this.constructor.columns.length).slice(1)})`,this.serialize());
             this.id = dbentry.insertId;
         }
 
@@ -286,9 +307,9 @@ class ChatTriggeredFeature {
     /**
      * Get items for a channel
      * @async
-     * @param {module:"discord.js".Snowflake} channelId
-     * @param {module:"discord.js".Snowflake} guildId
-     * @return {module:"discord.js".Collection<Number,ChatTriggeredFeature>}
+     * @param {Snowflake} channelId
+     * @param {Snowflake} guildId
+     * @return {Collection<Number,ChatTriggeredFeature>}
      */
     static async get(channelId, guildId) {
 
@@ -306,13 +327,13 @@ class ChatTriggeredFeature {
     /**
      * Get all items for a guild
      * @async
-     * @param {module:"discord.js".Snowflake} guildId
-     * @return {module:"discord.js".Collection<Number,ChatTriggeredFeature>}
+     * @param {Snowflake} guildId
+     * @return {Collection<Number,ChatTriggeredFeature>}
      */
     static async getAll(guildId) {
         const result = await database.queryAll(`SELECT * FROM ${database.escapeId(this.tableName)} WHERE guildid = ?`, [guildId]);
 
-        const collection = new Discord.Collection();
+        const collection = new Collection();
         for (const res of result) {
             collection.set(res.id, this.fromData(res));
         }
@@ -323,12 +344,12 @@ class ChatTriggeredFeature {
     /**
      * Reload cache for a guild
      * @async
-     * @param {module:"discord.js".Snowflake} guildId
+     * @param {Snowflake} guildId
      */
     static async refreshGuild(guildId) {
         const result = await database.queryAll(`SELECT * FROM ${database.escapeId(this.tableName)} WHERE guildid = ? AND global = TRUE`, [guildId]);
 
-        const newItems = new Discord.Collection();
+        const newItems = new Collection();
         for (const res of result) {
             newItems.set(res.id, this.fromData(res));
         }
@@ -341,12 +362,12 @@ class ChatTriggeredFeature {
     /**
      * Reload cache for a channel
      * @async
-     * @param {module:"discord.js".Snowflake} channelId
+     * @param {Snowflake} channelId
      */
     static async refreshChannel(channelId) {
         const result = await database.queryAll(`SELECT * FROM ${database.escapeId(this.tableName)} WHERE channels LIKE ?`, [`%${channelId}%`]);
 
-        const newItems = new Discord.Collection();
+        const newItems = new Collection();
         for (const res of result) {
             newItems.set(res.id, this.fromData(res));
         }

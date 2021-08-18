@@ -1,24 +1,26 @@
 const fs = require('fs');
 const defaultPrefix = require('../../../config.json').prefix;
-const Discord = require('discord.js');
 const util = require('../../util');
 const GuildConfig = require('../../config/GuildConfig');
 const UserConfig = require('../../config/UserConfig');
-const {Collection} = Discord;
-const {APIErrors} = Discord.Constants;
+const {Collection, Constants, Client, Message} = require('discord.js');
+const {APIErrors} = Constants;
 const monitor = require('../../Monitor').getInstance();
+const Command = require('../../Command');
+const Database = require('../../Database');
+const {CommandInfo} = require('../../Typedefs');
 
 class CommandManager {
 
     /**
      * command categories
-     * @type {module:"discord.js".Collection<String, Class<Command>[]>}
+     * @type {Collection<String, Command[]>}
      */
     static #categories = new Collection();
 
     /**
      * loaded commands (name => class)
-     * @type {module:"discord.js".Collection<String, Class<Command>>}
+     * @type {Collection<String, Command>}
      * @private
      */
     static #commands = this._loadCommands();
@@ -66,7 +68,7 @@ class CommandManager {
 
     /**
      * get command categories
-     * @return {module:"discord.js".Collection<String, Class<Command>[]>}
+     * @return {Collection<String, Command[]>}
      */
     static getCategories() {
         return this.#categories;
@@ -74,7 +76,7 @@ class CommandManager {
 
     /**
      * get all commands (name => class)
-     * @return {module:"discord.js".Collection<String, Class<Command>>}
+     * @return {Collection<String, Command>}
      */
     static getCommands() {
         return this.#commands;
@@ -84,8 +86,8 @@ class CommandManager {
      *
      * @param {Object} options
      * @param {Database} options.database
-     * @param {module:"discord.js".Client} options.bot
-     * @param {module:"discord.js".Message} message
+     * @param {Client} options.bot
+     * @param {Message} message
      * @return {Promise<void>}
      */
     static async event(options, message) {
@@ -99,11 +101,11 @@ class CommandManager {
             await cmd._loadConfigs();
             const userPerms = cmd.userHasPerms(), botPerms = cmd.botHasPerms();
             if (userPerms !== true) {
-                await message.channel.send(`You are missing the following permissions to execute this command: ${userPerms.join(', ')}`);
+                await message.reply(`You are missing the following permissions to execute this command: ${userPerms.join(', ')}`);
                 return;
             }
             if (botPerms !== true) {
-                await message.channel.send(`I am missing the following permissions to execute this command: ${botPerms.join(', ')}`);
+                await message.reply(`I am missing the following permissions to execute this command: ${botPerms.join(', ')}`);
                 return;
             }
             await cmd.execute();
@@ -121,10 +123,10 @@ class CommandManager {
         } catch (e) {
             try {
                 if  (e.code === APIErrors.MISSING_PERMISSIONS) {
-                    await message.channel.send('I am missing permissions to execute that command!');
+                    await message.reply('I am missing permissions to execute that command!');
                 }
                 else {
-                    await message.channel.send('An error occurred while executing that command!');
+                    await message.reply('An error occurred while executing that command!');
                 }
             }
             catch (e2) {
@@ -139,13 +141,13 @@ class CommandManager {
 
     /**
      * get the command in this message
-     * @param {module:"discord.js".Message} message
+     * @param {Message} message
      * @return {Promise<CommandInfo|null>}
      */
     static async getCommandName(message) {
         if (!message.guild || message.author.bot) return {isCommand: false};
         /** @type {GuildConfig} */
-        const guild = await GuildConfig.get(/** @type {module:"discord.js".Snowflake} */ message.guild.id);
+        const guild = await GuildConfig.get(/** @type {String} */ message.guild.id);
         const prefix = util.startsWithMultiple(message.content.toLowerCase(), guild.prefix.toLowerCase(), defaultPrefix.toLowerCase());
         const args = util.split(message.content.substring(prefix.length),' ');
         if (!prefix) return {isCommand: false};
@@ -160,7 +162,7 @@ class CommandManager {
 
     /**
      * is this message a bot command
-     * @param {module:"discord.js".Message} message
+     * @param {Message} message
      * @return {Promise<boolean>}
      */
     static async isCommand(message) {

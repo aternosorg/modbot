@@ -12,7 +12,7 @@ class HelpCommand extends Command {
 
     async execute() {
 
-        const commandManager = require('../../features/message/CommandManager');
+        const commandManager = require('../../features/messageCreate/CommandManager');
 
         const categories = commandManager.getCategories();
         const commands = commandManager.getCommands();
@@ -25,7 +25,7 @@ class HelpCommand extends Command {
                 if (commands.length === 0) continue;
                 embed.addField(util.toTitleCase(key), commands.map(c => c.names).flat().sort().join(', '));
             }
-            return this.message.channel.send(embed);
+            return this.reply(embed);
         }
 
         const name = this.args.shift().toLowerCase();
@@ -40,7 +40,7 @@ class HelpCommand extends Command {
                 description += command.getOverview() + '\n';
             }
 
-            return this.message.channel.send(new MessageEmbed()
+            return this.reply(new MessageEmbed()
                 .setTitle(`ModBot ${util.toTitleCase(name)} Commands:`)
                 .setColor(util.color.red)
                 .setDescription(description)
@@ -48,7 +48,7 @@ class HelpCommand extends Command {
             );
         }
 
-        if (command) return this.message.channel.send(await command.getUsage(this.message, name, this.guildConfig));
+        if (command) return this.reply(await command.getUsage(this.message, name, this.guildConfig));
     }
 }
 

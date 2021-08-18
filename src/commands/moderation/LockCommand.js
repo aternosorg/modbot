@@ -1,8 +1,15 @@
 const Command = require('../../Command');
-const Discord = require('discord.js');
+const {
+    Constants,
+    GuildChannel,
+    MessageEmbed,
+    PermissionResolvable,
+    TextChannel,
+} = require('discord.js');
 const util = require('../../util');
 const ChannelConfig = require('../../config/ChannelConfig');
-const {APIErrors} = Discord.Constants;
+const {APIErrors} = Constants;
+
 
 const PERMS = ['SEND_MESSAGES', 'ADD_REACTIONS'];
 
@@ -23,7 +30,7 @@ class LockCommand extends Command {
     async execute() {
         if (this.args.length === 0) return this.sendUsage();
 
-        const embed = new Discord.MessageEmbed()
+        const embed = new MessageEmbed()
             .setTitle('This channel is locked.')
             .setColor(util.color.red)
             .setFooter('You are not muted, this channel is locked for everyone. Don\'t send direct messages to team members or moderators.');
@@ -33,8 +40,8 @@ class LockCommand extends Command {
                 const start = this.prefix.length + this.name.length + ' global '.length;
                 embed.setDescription(this.message.content.substring(start));
             }
-            /** @type {module:"discord.js".GuildChannel[]} */
-            const channels = this.message.guild.channels.cache.filter(this.lockable, this).array();
+            /** @type {GuildChannel[]} */
+            const channels = Array.from(this.message.guild.channels.cache.filter(this.lockable, this).values());
             if (channels.length === 0) return this.sendUsage();
             return this.lock(channels, embed);
         }
@@ -53,7 +60,7 @@ class LockCommand extends Command {
 
         if (notLockable.length > 0) {
             const mentions = notLockable.map(id => `<#${id}>`).join(', ');
-            await this.message.channel.send(`The following channels don't need to be locked ${mentions}`);
+            await this.reply(`The following channels don't need to be locked ${mentions}`);
         }
 
         if (channels.length === 0) return;
@@ -65,15 +72,15 @@ class LockCommand extends Command {
 
     /**
      * lock the specified channels, send the embed to them and send a confirmation
-     * @param {module:"discord.js".GuildChannel[]} channels
-     * @param {module:"discord.js".MessageEmbed} embed
+     * @param {GuildChannel[]} channels
+     * @param {MessageEmbed} embed
      * @return {Promise<void>}
      */
     async lock(channels, embed) {
         const everyone = this.message.guild.roles.everyone.id;
         for (const channel of channels) {
             try {
-                await channel.send(embed);
+                await channel.send({embeds: [embed]});
             }
             catch (e) {
                 if (e.code !== APIErrors.MISSING_PERMISSIONS) {
@@ -81,35 +88,37 @@ class LockCommand extends Command {
                 }
             }
             /** @type {ChannelConfig} */
-            const channelConfig = await ChannelConfig.get(/** @type {module:"discord.js".Snowflake} */ channel.id);
+            const channelConfig = await ChannelConfig.get(channel.id);
             const options = {};
-            for (const perm of PERMS) {
+            for (const /** @type {PermissionResolvable} */perm of PERMS) {
                 if (!channel.permissionsFor(everyone).has(perm)) continue;
-                const overwrite = channel.permissionOverwrites.get(everyone);
+                const overwrite = channel.permissionOverwrites.cache.get(everyone);
                 channelConfig.lock[perm] = !overwrite ? null : overwrite.allow.has(perm) ? true : null;
                 options[perm] = false;
             }
-            await util.retry(channel.updateOverwrite, channel, [everyone, options], 3, (/** @type module:"discord.js".GuildChannel*/ result) => {
-                for (const key of Object.keys(options)) {
-                    if (result.permissionsFor(everyone).has(/** @type {PermissionResolvable} */key)) return false;
-                }
-                return true;
-            });
+            await util.retry(channel.permissionOverwrites.edit, channel.permissionOverwrites, [everyone, options], 3,
+                (/** @type GuildChannel*/ result) => {
+                    for (const /** @type {PermissionResolvable} */ key of Object.keys(options)) {
+                        if (result.permissionsFor(everyone).has(key))
+                            return false;
+                    }
+                    return true;
+                });
             await channelConfig.save();
         }
-        await this.message.channel.send(`Locked ${channels.map(c => `<#${c.id}>`).join(', ')}`);
+        await this.reply(`Locked ${channels.map(c => `<#${c.id}>`).join(', ')}`);
     }
 
     /**
      * is this channel lockable
-     * @param {module:"discord.js".GuildChannel} channel
+     * @param {GuildChannel} channel
      * @return {boolean}
      */
     lockable(channel) {
-        if (!(channel instanceof Discord.TextChannel)) return false;
+        if (!(channel instanceof TextChannel)) return false;
         const everyonePermissions = channel.permissionsFor(this.message.guild.roles.everyone);
         if (!everyonePermissions.has('VIEW_CHANNEL')) return false;
-        for (const perm of PERMS) {
+        for (const /** @type {PermissionResolvable} */ perm of PERMS) {
             if (everyonePermissions.has(perm)) return true;
         }
         return false;

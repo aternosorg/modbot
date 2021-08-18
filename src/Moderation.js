@@ -1,5 +1,6 @@
 const Database = require('./Database');
 const database = Database.getInstance();
+const {Snowflake} = require('discord.js');
 const TypeChecker = require('./config/TypeChecker');
 
 class Moderation {

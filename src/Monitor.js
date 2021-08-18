@@ -43,7 +43,7 @@ class Monitor {
             credentials: config.monitoring.credentials
         });
 
-        this.#log = this.#logging.log(config.monitoring.log_name)
+        this.#log = this.#logging.log(config.monitoring.log_name);
     }
 
     /**
@@ -60,7 +60,7 @@ class Monitor {
     info(...messages){
         return this._log({
             severity: 'INFO'
-        }, ...messages)
+        }, ...messages);
     }
 
     /**
@@ -70,7 +70,7 @@ class Monitor {
     notice(...messages){
         return this._log({
             severity: 'NOTICE'
-        }, ...messages)
+        }, ...messages);
     }
 
     /**
@@ -80,7 +80,7 @@ class Monitor {
     warn(...messages){
         return this._log({
             severity: 'WARNING'
-        }, ...messages)
+        }, ...messages);
     }
 
     /**
@@ -90,7 +90,7 @@ class Monitor {
     error(...messages){
         return this._log({
             severity: 'ERROR'
-        }, ...messages)
+        }, ...messages);
     }
 
     /**
@@ -100,7 +100,7 @@ class Monitor {
     critical(...messages){
         return this._log({
             severity: 'CRITICAL'
-        }, ...messages)
+        }, ...messages);
     }
 
     /**
@@ -110,7 +110,7 @@ class Monitor {
     emergency(...messages){
         return this._log({
             severity: 'EMERGENCY'
-        }, ...messages)
+        }, ...messages);
     }
 
     /**
@@ -128,7 +128,7 @@ class Monitor {
             if (msg instanceof Error) {
                 msg = msg.stack;
             }
-            else if (typeof(msg) === "object") {
+            else if (typeof(msg) === 'object') {
                 msg = JSON.stringify(msg);
             }
             entries.push(this.#log.entry(metadata,msg));

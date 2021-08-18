@@ -1,7 +1,13 @@
 const Command = require('../../Command');
-const Discord = require('discord.js');
+const {
+    Collection,
+    Snowflake,
+    Message,
+    MessageEmbed,
+} = require('discord.js');
 const util = require('../../util');
 const AutoResponse = require('../../AutoResponse');
+const ChatTriggeredFeature = require('../../ChatTriggeredFeature');
 
 class AutoResponseCommand extends Command {
 
@@ -42,12 +48,12 @@ class AutoResponseCommand extends Command {
             return;
         }
 
-        /** @type {module:"discord.js".Collection<Number,ChatTriggeredFeature>} */
+        /** @type {Collection<Number,ChatTriggeredFeature>} */
         const responses = await AutoResponse.getAll(/** @type {Snowflake} */ this.message.guild.id);
 
         switch (this.args.shift().toLowerCase()) {
             case 'list': {
-                if (!responses.size) return this.message.channel.send('No auto-responses!');
+                if (!responses.size) return this.reply('No auto-responses!');
 
                 let text = '';
                 for (const [id, response] of responses) {
@@ -57,11 +63,11 @@ class AutoResponseCommand extends Command {
                     if (text.length + info.length < 2000) {
                         text += info;
                     } else {
-                        await this.message.channel.send(text);
+                        await this.reply(text);
                         text = info;
                     }
                 }
-                if (text.length) await this.message.channel.send(text);
+                if (text.length) await this.reply(text);
                 break;
             }
 
@@ -79,14 +85,14 @@ class AutoResponseCommand extends Command {
                 const type = this.args.shift().toLowerCase();
                 const content = this.args.join(' ');
 
-                await this.message.channel.send('Please enter your response:');
+                await this.reply('Please enter your response:');
                 const responseText = await util.getResponse(this.message.channel, this.message.author.id);
                 if (!responseText) return;
 
                 let response = await AutoResponse.new(this.message.guild.id, global, channels, type, content, responseText);
-                if (!response.success) return this.message.channel.send(response.message);
+                if (!response.success) return this.reply(response.message);
 
-                await this.message.channel.send(response.response.embed('Added new auto-response', util.color.green));
+                await this.reply(response.response.embed('Added new auto-response', util.color.green));
                 break;
             }
 
@@ -94,14 +100,14 @@ class AutoResponseCommand extends Command {
                 const response = await this.getAutoResponse(this.args.shift(), 'remove');
                 if (!response) return;
                 await response.remove();
-                await this.message.channel.send(response.embed(`Removed auto-response ${response.id}`, util.color.red));
+                await this.reply(response.embed(`Removed auto-response ${response.id}`, util.color.red));
                 break;
             }
 
             case 'show': {
                 const response = await this.getAutoResponse(this.args.shift(), 'remove');
                 if (!response) return;
-                await this.message.channel.send(response.embed(`Auto-response ${response.id}`, util.color.green));
+                await this.reply(response.embed(`Auto-response ${response.id}`, util.color.green));
                 break;
             }
 
@@ -116,7 +122,7 @@ class AutoResponseCommand extends Command {
                     return this.sendError(edit.message);
                 }
 
-                await this.message.channel.send(response.embed(edit.message, util.color.green));
+                await this.reply(response.embed(edit.message, util.color.green));
                 break;
             }
 
@@ -155,7 +161,7 @@ class AutoResponseCommand extends Command {
         let subCommand = this.constructor.subCommands[commandName];
         if (!subCommand) throw 'Unknown subcommand';
 
-        return this.message.channel.send(new Discord.MessageEmbed()
+        return this.reply(new MessageEmbed()
             .setAuthor(`Help for ${this.name} ${commandName} | Prefix: ${this.prefix}`)
             .setFooter(`Command executed by ${util.escapeFormatting(this.message.author.tag)}`)
             .addFields(

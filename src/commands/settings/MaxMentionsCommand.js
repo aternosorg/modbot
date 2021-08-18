@@ -15,10 +15,10 @@ class MaxMentionsCommand extends Command {
     async execute() {
         if (this.args.length === 0) {
             if (this.guildConfig.maxMentions === -1) {
-                await this.message.channel.send('The mention limit is currently disabled.')
+                await this.reply('The mention limit is currently disabled.');
             }
             else {
-                await this.message.channel.send(`Users can currently mention up to ${this.guildConfig.maxMentions} users in one message.`);
+                await this.reply(`Users can currently mention up to ${this.guildConfig.maxMentions} users in one message.`);
             }
             return;
         }
@@ -31,7 +31,7 @@ class MaxMentionsCommand extends Command {
         if (this.args[0].toLowerCase() === 'off') {
             this.guildConfig.maxMentions = -1;
             await this.guildConfig.save();
-            await this.message.channel.send('Maximum mentions have been disabled.');
+            await this.reply('Maximum mentions have been disabled.');
             return;
         }
 
@@ -42,7 +42,7 @@ class MaxMentionsCommand extends Command {
         }
         this.guildConfig.maxMentions = limit;
         await this.guildConfig.save();
-        await this.message.channel.send(`Users mentioning more than ${limit} users in one message will now receive a strike.`);
+        await this.reply(`Users mentioning more than ${limit} users in one message will now receive a strike.`);
     }
 }
 

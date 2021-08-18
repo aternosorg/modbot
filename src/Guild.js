@@ -1,24 +1,33 @@
 const RateLimiter = require('./RateLimiter');
 const Discord = require('discord.js');
+const DiscordGuild = Discord.Guild;
+const {
+    Collection,
+    Snowflake,
+    GuildMember,
+    Role,
+    User,
+    GuildBan,
+} = Discord;
 const {APIErrors} = require('discord.js').Constants;
 
 class Guild {
 
     /**
      * Guild Cache
-     * @type {module:"discord.js".Collection<module:"discord.js".Snowflake, Guild>}
+     * @type {Collection<Snowflake, Guild>}
      */
-    static #cache = new Discord.Collection();
+    static #cache = new Collection();
 
     /**
      * Discord guild
-     * @type {module:"discord.js".Guild}
+     * @type {Guild}
      */
     guild;
 
     /**
      *
-     * @param {module:"discord.js".Guild} guild
+     * @param {DiscordGuild} guild
      */
     constructor(guild) {
         this.guild = guild;
@@ -26,13 +35,13 @@ class Guild {
 
     /**
      * fetch a guild member
-     * @param {module:"discord.js".Snowflake}   id  user id
+     * @param {Snowflake}   id  user id
      * @param {boolean} [force] bypass cache
-     * @return {Promise<null|module:"discord.js".GuildMember>}
+     * @return {Promise<null|GuildMember>}
      */
     async fetchMember(id, force = false) {
         try {
-            return await this.guild.members.fetch(id, {force});
+            return await this.guild.members.fetch({user: id, force});
         }
         catch (e) {
             if (e.code === APIErrors.UNKNOWN_MEMBER) {
@@ -47,7 +56,7 @@ class Guild {
     /**
      * fetch a role
      * @param {Snowflake} id role id
-     * @return {Promise<null|module:"discord.js".Role>}
+     * @return {Promise<null|Role>}
      */
     async fetchRole(id) {
         try {
@@ -66,11 +75,11 @@ class Guild {
     /**
      * fetch a ban
      * @param {Snowflake} id user id
-     * @return {Promise<null|{reason: String|null}>}
+     * @return {Promise<null|GuildBan>}
      */
     async fetchBan(id) {
         try {
-            return await this.guild.fetchBan(id);
+            return await this.guild.bans.fetch(id);
         }
         catch (e) {
             if (e.code === APIErrors.UNKNOWN_BAN) {
@@ -84,7 +93,7 @@ class Guild {
 
     /**
      * try to send a dm
-     * @param {module:"discord.js".User}    user
+     * @param {User}    user
      * @param {String} message
      * @return {Promise<boolean>} was this successful
      */
@@ -105,7 +114,7 @@ class Guild {
 
     /**
      * get a guild from cache or create a new one
-     * @param {module:"discord.js".Guild}   guild
+     * @param {Guild}   guild
      * @return {Guild}
      */
     static get(guild) {

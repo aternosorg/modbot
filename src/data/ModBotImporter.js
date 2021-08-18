@@ -3,13 +3,14 @@ const ChannelConfig = require('../config/ChannelConfig');
 const Moderation = require('../Moderation');
 const AutoResponse = require('../AutoResponse');
 const BadWord = require('../BadWord');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Client, Snowflake} = require('discord.js');
+const Exporter = require('./Exporter');
 const Importer = require('./Importer');
 
 class ModBotImporter extends Importer {
 
     /**
-     * @type {module:"discord.js".Client}
+     * @type {Client}
      */
     bot;
 
@@ -24,7 +25,7 @@ class ModBotImporter extends Importer {
     data;
     
     /**
-     * @param {module:"discord.js".Client} bot
+     * @param {Client} bot
      * @param {Snowflake} guildID
      * @param {Exporter} data JSON exported data (modbot-1.0.0)
      */
@@ -111,10 +112,10 @@ class ModBotImporter extends Importer {
     generateEmbed() {
         return new MessageEmbed()
             .setTitle('Imported Data')
-            .addField('Channel Configs', this.data.channels.filter(c => c === true).length, true)
-            .addField('Moderations', this.data.moderations.length, true)
-            .addField('Responses', this.data.responses.length, true)
-            .addField('BadWords', this.data.badWords.length, true);
+            .addField('Channel Configs', this.data.channels.filter(c => c === true).length.toString(), true)
+            .addField('Moderations', this.data.moderations.length.toString(), true)
+            .addField('Responses', this.data.responses.length.toString(), true)
+            .addField('BadWords', this.data.badWords.length.toString(), true);
     }
 }
 

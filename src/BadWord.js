@@ -1,5 +1,11 @@
 const ChatTriggeredFeature = require('./ChatTriggeredFeature');
-const Discord = require('discord.js');
+const {
+    Snowflake,
+    MessageEmbed,
+    Guild,
+} = require('discord.js');
+const {Punishment} = require('./Typedefs');
+const Trigger = require('./Trigger');
 const util = require('./util');
 const TypeChecker = require('./config/TypeChecker');
 
@@ -18,15 +24,15 @@ class BadWord extends ChatTriggeredFeature {
 
     /**
      * constructor - create a bad word
-     * @param {module:"discord.js".Snowflake}     gid               guild ID
-     * @param {Object}                            json              options
-     * @param {Trigger}                           json.trigger      filter that triggers the bad word
-     * @param {String|Punishment}                 json.punishment   punishment for the members which trigger this
-     * @param {String}                            [json.response]   a message that is send by this filter. It's automatically deleted after 5 seconds
-     * @param {Boolean}                           json.global       does this apply to all channels in this guild
-     * @param {module:"discord.js".Snowflake[]}   [json.channels]   channels that this applies to
-     * @param {Number}                            [json.priority]   badword priority (higher -> more important)
-     * @param {Number}                            [id]              id in DB
+     * @param {Snowflake} gid guild ID
+     * @param {Object} json options
+     * @param {Trigger} json.trigger filter that triggers the bad word
+     * @param {String|Punishment} json.punishment punishment for the members which trigger this
+     * @param {String} [json.response] a message that is send by this filter. It's automatically deleted after 5 seconds
+     * @param {Boolean} json.global does this apply to all channels in this guild
+     * @param {Snowflake[]} [json.channels] channels that this applies to
+     * @param {Number} [json.priority] badword priority (higher -> more important)
+     * @param {Number} [id] id in DB
      * @return {BadWord}
      */
     constructor(gid, json, id) {
@@ -89,11 +95,11 @@ class BadWord extends ChatTriggeredFeature {
      * generate an Embed displaying the info of this bad word
      * @param {String}        title
      * @param {Number}        color
-     * @returns {module:"discord.js".MessageEmbed}
+     * @returns {MessageEmbed}
      */
     embed(title, color) {
         const duration = this.punishment.duration, trigger = this.trigger;
-        return new Discord.MessageEmbed()
+        return new MessageEmbed()
             .setTitle(title + ` [${this.id}]`)
             .setColor(color)
             .addFields(
@@ -155,7 +161,7 @@ class BadWord extends ChatTriggeredFeature {
      * edit this badword
      * @param {String} option option to change
      * @param {String[]} args
-     * @param {module:"discord.js".Guild} guild
+     * @param {Guild} guild
      * @returns {Promise<{success: boolean, message: String}>} response message
      */
     async edit(option, args, guild) {

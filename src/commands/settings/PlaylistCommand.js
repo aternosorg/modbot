@@ -24,13 +24,13 @@ class PlaylistCommand extends Command {
             case 'off':
                 this.guildConfig.playlist = null;
                 await this.guildConfig.save();
-                await this.message.channel.send(new Discord.MessageEmbed()
+                await this.reply(new Discord.MessageEmbed()
                     .setDescription('Disabled YouTube playlist')
                     .setColor(util.color.red)
                 );
                 break;
             case 'status':
-                await this.message.channel.send(new Discord.MessageEmbed()
+                await this.reply(new Discord.MessageEmbed()
                     .setDescription(`Playlist: ${this.guildConfig.playlist ? `https://www.youtube.com/playlist?list=${this.guildConfig.playlist}` : 'disabled'}`)
                 );
                 break;
@@ -49,7 +49,7 @@ class PlaylistCommand extends Command {
 
                 this.guildConfig.playlist = playlistID;
                 await this.guildConfig.save();
-                await this.message.channel.send(new Discord.MessageEmbed()
+                await this.reply(new Discord.MessageEmbed()
                     .setDescription(`Set playlist to https://www.youtube.com/playlist?list=${playlistID}`)
                 );
             }

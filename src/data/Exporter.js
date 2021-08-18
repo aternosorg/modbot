@@ -3,6 +3,7 @@ const ChannelConfig = require('../config/ChannelConfig');
 const Moderation = require('../Moderation');
 const AutoResponse = require('../AutoResponse');
 const BadWord = require('../BadWord');
+const {Snowflake} = require('discord.js');
 
 class Exporter {
 
@@ -77,11 +78,11 @@ class Exporter {
     }
 
     async _getResponses() {
-        this.responses = (await AutoResponse.getAll(this.guildID)).array();
+        this.responses = Array.from((await AutoResponse.getAll(this.guildID)).values());
     }
 
     async _getBadWords() {
-        this.badWords = (await BadWord.getAll(this.guildID)).array();
+        this.badWords = Array.from((await BadWord.getAll(this.guildID)).values());
     }
 }
 
