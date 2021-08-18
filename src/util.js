@@ -483,7 +483,7 @@ async function messagesAfter(channel, message, limit) {
  * Is this message ignored by auto-moderation
  * @async
  * @param {Message} message
- * @return {Boolean}
+ * @return {Promise<boolean>}
  */
 util.ignoresAutomod = async (message) => {
     if (!message.guild) return false;
