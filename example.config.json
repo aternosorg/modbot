@@ -19,5 +19,9 @@
       "client_email": "modbot@example.com",
       "private_key": "google service account private key"
     }
+  },
+  "debug": {
+    "enabled": false,
+    "guild": ""
   }
 }

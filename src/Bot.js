@@ -134,6 +134,10 @@ class Bot {
 
         }
 
+        if (config.debug?.enabled) {
+            const guild = await this.#client.guilds.fetch(config.debug.guild);
+            await guild.commands.set(data);
+        }
         await this.#client.application.commands.set(data);
     }
 }
