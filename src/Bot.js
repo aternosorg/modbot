@@ -4,6 +4,8 @@ const util = require('./util');
 const fs = require('fs').promises;
 const config = require('../config.json');
 const Monitor = require('./Monitor');
+const CommandManager = require('./CommandManager');
+const Command = require('./Command');
 
 class Bot {
     static instance = new Bot();
@@ -58,8 +60,11 @@ class Bot {
         await this.#client.login(config.auth_token);
         await this.#monitor.info('Logged into Discord');
 
-        await this._loadChecks();
-        await this._loadFeatures();
+        await Promise.all([
+            this._loadChecks(),
+            this._loadFeatures(),
+            this.loadSlashCommands()
+        ]);
     }
 
     async _loadChecks(){
@@ -114,6 +119,22 @@ class Bot {
                 }
             });
         }
+    }
+
+    async loadSlashCommands() {
+        const data = [];
+        for (const [/** @type {String} */name, /** @type {Command} */ command] of CommandManager.getCommands()) {
+            if (!command.supportsSlashCommands)
+                continue;
+            data.push({
+                name,
+                description: command.description,
+                options: command.getOptions()
+            });
+
+        }
+
+        await this.#client.application.commands.set(data);
     }
 }
 

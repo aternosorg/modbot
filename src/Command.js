@@ -14,6 +14,7 @@ const {
     MessageActionRow,
     MessageButton,
     MessageAttachment,
+    ApplicationCommandOptionData,
 } = require('discord.js');
 const Database = require('./Database');
 const defaultPrefix = require('../config.json').prefix;
@@ -61,6 +62,12 @@ class Command {
      * @type {PermissionResolvable[]}
      */
     static botPerms = [];
+
+    /**
+     * does this command support slash commands
+     * @type {boolean}
+     */
+    static supportsSlashCommands = false;
 
     /**
      * @type {Message}
@@ -132,6 +139,14 @@ class Command {
         this.args = util.split(message.content.substring(prefix.length + name.length),' ');
         this.name = name;
         this.prefix = prefix;
+    }
+
+    /**
+     * get slash command definition
+     * @return {ApplicationCommandOptionData[]}
+     */
+    static getOptions() {
+        return [];
     }
 
     async _loadConfigs() {

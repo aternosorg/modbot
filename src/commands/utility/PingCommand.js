@@ -7,6 +7,8 @@ class PingCommand extends Command {
 
     static names = ['ping'];
 
+    static supportsSlashCommands = true;
+
     async execute() {
         /** @type {Message} */
         await this.reply('Pinging...');
