@@ -306,7 +306,7 @@ class Command {
             }
         }
 
-        if (this.userConfig.deleteCommands) {
+        if (!this.source.isInteraction && this.userConfig.deleteCommands) {
             this.response = await this.source.getChannel().send(options);
         }
         else {
