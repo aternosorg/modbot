@@ -29,11 +29,11 @@ class CommandManager {
      */
     static _loadCommands() {
         const commands = new Collection();
-        for (const folder of fs.readdirSync(`${__dirname}/../../commands`)) {
+        for (const folder of fs.readdirSync(`${__dirname}/commands`)) {
 
             const category = [];
 
-            const dirPath = `${__dirname}/../../commands/${folder}`;
+            const dirPath = `${__dirname}/commands/${folder}`;
             if (!fs.lstatSync(dirPath).isDirectory()) continue;
             for (const file of fs.readdirSync(dirPath)) {
                 const path = `${dirPath}/${file}`;
