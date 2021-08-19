@@ -16,9 +16,18 @@ class StrikeCommand extends ModerationCommand {
         done: 'striked',
     };
 
+    static getOptions() {
+        return super.getOptions().concat([{
+            name: 'count',
+            type: 'NUMBER',
+            description: 'Number of strikes',
+            required: false,
+        }]);
+    }
+
     async executePunishment(target) {
-        const member = new Member(target, this.message.guild);
-        await member.strike(this.database, this.reason, this.message.author, this.count);
+        const member = new Member(target, this.source.getGuild());
+        await member.strike(this.database, this.reason, this.source.getUser(), this.count);
         return true;
     }
 
@@ -28,6 +37,8 @@ class StrikeCommand extends ModerationCommand {
     }
 
     getCount() {
+        if (this.source.isInteraction)
+            return this.options.getNumber('count', false) || 1;
         if (!this.args.length || !this.args[0].match(/^\d{1,5}$/)) return 1;
         return parseInt(this.args.shift());
     }

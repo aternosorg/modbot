@@ -6,6 +6,8 @@ class TimedModerationCommand extends ModerationCommand {
 
     static usage = '<@user|id> [<@user|id…>] [<duration>] [<reason>]';
 
+    static supportsSlashCommands = false;
+
     async sendSuccess(targets){
         const type = this.constructor.type.done;
         let description = `${targets.map(user => `\`${util.escapeFormatting(user.tag)}\``).join(', ')} ${targets.length === 1 ? 'has' : 'have'} been **${type}** `;
