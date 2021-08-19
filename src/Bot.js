@@ -5,7 +5,6 @@ const fs = require('fs').promises;
 const config = require('../config.json');
 const Monitor = require('./Monitor');
 const CommandManager = require('./CommandManager');
-const Command = require('./Command');
 
 class Bot {
     static instance = new Bot();
@@ -63,7 +62,7 @@ class Bot {
         await Promise.all([
             this._loadChecks(),
             this._loadFeatures(),
-            this.loadSlashCommands()
+            this._loadSlashCommands()
         ]);
     }
 
@@ -121,24 +120,38 @@ class Bot {
         }
     }
 
-    async loadSlashCommands() {
-        const data = [];
-        for (const [/** @type {String} */name, /** @type {Command} */ command] of CommandManager.getCommands()) {
-            if (!command.supportsSlashCommands)
-                continue;
-            data.push({
-                name,
-                description: command.description,
-                options: command.getOptions()
+    async _loadSlashCommands() {
+        const commands = CommandManager.getCommands()
+            .filter(command => command.supportsSlashCommands)
+            .mapValues((command, name) => {
+                return {
+                    name: name,
+                    description: command.description,
+                    options: command.getOptions()
+                };
             });
-
-        }
 
         if (config.debug?.enabled) {
             const guild = await this.#client.guilds.fetch(config.debug.guild);
-            await guild.commands.set(data);
+            await guild.commands.set(Array.from(commands.values()));
         }
-        await this.#client.application.commands.set(data);
+
+        const commandManager = this.#client.application.commands;
+        await commandManager.fetch();
+
+        for (const command of commandManager.cache.values()) {
+            if (commands.has(command.name)) {
+                await command.edit(commands.get(command.name));
+                commands.delete(command.name);
+            }
+            else {
+                await command.delete();
+            }
+        }
+
+        for (const command of commands) {
+            await commandManager.create(command);
+        }
     }
 }
 
