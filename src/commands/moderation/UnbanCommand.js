@@ -19,7 +19,7 @@ class UnbanCommand extends ModerationCommand {
     };
 
     async executePunishment(target) {
-        const member = new Member(target, this.message.guild);
+        const member = new Member(target, this.source.getGuild());
 
         if (!await member.isBanned(this.database)) {
             await this.reply(new MessageEmbed()
@@ -29,7 +29,7 @@ class UnbanCommand extends ModerationCommand {
             return false;
         }
 
-        await member.unban(this.database, this.reason, this.message.author);
+        await member.unban(this.database, this.reason, this.source.getUser());
         return true;
     }
 }
