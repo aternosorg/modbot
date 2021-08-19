@@ -6,8 +6,6 @@ class TimedModerationCommand extends ModerationCommand {
 
     static usage = '<@user|id> [<@user|id…>] [<duration>] [<reason>]';
 
-    static supportsSlashCommands = false;
-
     static getOptions() {
         return super.getOptions().concat([{
             name: 'duration',
