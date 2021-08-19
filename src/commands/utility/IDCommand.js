@@ -24,7 +24,7 @@ class IDCommand extends Command {
         const [,name, discrim] = fullName.match(/([^#]*)#?(\d{4})?$/);
 
         const members = await this.message.guild.members.fetch();
-        const bans = await this.message.guild.fetch();
+        const bans = await this.message.guild.bans.fetch();
 
         users = users.concat(members.filter(member => this._matches(member.user, name, discrim)));
         users = users.concat(bans.filter(banInfo => this._matches(banInfo.user, name, discrim)));
