@@ -97,8 +97,17 @@ class CommandSource {
      * @return {Promise<Message>}
      */
     reply(options) {
-        if (this.isInteraction && !options.ephemeral) options.fetchReply = true;
-        return this.getRaw().reply(options);
+        if (this.isInteraction) {
+            if (!options.ephemeral)
+                options.fetchReply = true;
+            if (this.#interaction.replied)
+                return this.#interaction.followUp(options);
+            else
+                return this.#interaction.reply(options);
+        }
+        else {
+            return this.#message.reply(options);
+        }
     }
 }
 
