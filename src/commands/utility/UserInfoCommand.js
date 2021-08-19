@@ -60,10 +60,7 @@ class UserInfoCommand extends Command {
 
 function getRemainingDuration(info) {
     if (!info?.expireTime) return null;
-    /** @type {Number|null} */
-    let remaining = info.expireTime - Math.floor(Date.now()/1000);
-    if (remaining <= 0) return '1s';
-    return `<t:${remaining}:R>`;
+    return `<t:${info.expireTime}:R>`;
 }
 
 function getColor(ban, mute) {
