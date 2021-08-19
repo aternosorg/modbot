@@ -96,6 +96,7 @@ class Command {
 
     /**
      * arguments passed to the command
+     * @deprecated only use in parseOptions
      * @type {String[]}
      */
     args;
@@ -169,7 +170,7 @@ class Command {
      * @return {ApplicationCommandOptionData[]}
      */
     static getOptions() {
-        return null;
+        return [];
     }
 
     async _loadConfigs() {
