@@ -149,7 +149,7 @@ class Bot {
             }
         }
 
-        for (const command of commands) {
+        for (const command of commands.values()) {
             await commandManager.create(command);
         }
     }
