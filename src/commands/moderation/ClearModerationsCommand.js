@@ -29,20 +29,20 @@ class ClearModerationsCommand extends Command {
             return;
         }
 
-        const {confirmed, interaction} = await this.getConfirmation(`Are you sure you want to delete ${count} ${count === 1 ? 'moderations' : 'moderation'} for <@${user.id}>?`);
+        const {confirmed, component} = await this.getConfirmation(`Are you sure you want to delete ${count} ${count === 1 ? 'moderations' : 'moderation'} for <@${user.id}>?`);
 
-        if (!interaction) {
+        if (!component) {
             return;
         }
 
         if (!confirmed) {
-            await interaction.reply('The moderation was not deleted!');
+            await component.reply('The moderation was not deleted!');
             return;
         }
 
         /** @property {Number} affectedRows */
         const deletion = await this.database.queryAll('DELETE FROM moderations WHERE guildid = ? AND userid = ?',[this.message.guild.id, user.id]);
-        await interaction.reply(`Deleted ${deletion.affectedRows} ${deletion.affectedRows === 1 ? 'moderation' : 'moderations'}!`);
+        await component.reply(`Deleted ${deletion.affectedRows} ${deletion.affectedRows === 1 ? 'moderation' : 'moderations'}!`);
     }
 
 }

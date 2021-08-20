@@ -28,19 +28,18 @@ class ClearModerationsCommand extends Command {
             return;
         }
 
-        const {interaction, confirmed} = await this.getConfirmation(`Are you sure you want to delete the moderation #${id}?`);
-
-        if (!interaction) {
+        const {component, confirmed} = await this.getConfirmation(`Are you sure you want to delete the moderation #${id}?`);
+        if (!component) {
             return;
         }
 
         if (!confirmed) {
-            await interaction.reply('The moderation was not deleted!');
+            await component.reply('The moderation was not deleted!');
             return;
         }
 
         await this.database.queryAll('DELETE FROM moderations WHERE id = ? AND guildid = ?', [id, this.message.guild.id]);
-        await interaction.reply(`Deleted the moderation #${id}!`);
+        await component.reply(`Deleted the moderation #${id}!`);
     }
 }
 
