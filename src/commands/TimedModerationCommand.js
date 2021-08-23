@@ -39,7 +39,9 @@ class TimedModerationCommand extends ModerationCommand {
      */
     getDuration() {
         if (this.source.isInteraction) {
-            return util.timeToSec(this.options.getString('duration', false));
+            const duration = this.options.getString('duration', false);
+            if (!duration) return 0;
+            return util.timeToSec(duration);
         }
         else {
             const duration = util.timeToSec(this.args.join(' '));
