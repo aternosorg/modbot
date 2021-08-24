@@ -137,7 +137,7 @@ class Log{
         const embedColor = util.color.resolve(type);
         const logEmbed = new MessageEmbed()
             .setColor(embedColor)
-            .setAuthor(`Case ${insertId} | ${util.toTitleCase(type)} | ${util.escapeFormatting(user.tag)}`, user.avatarURL())
+            .setAuthor(`Case ${insertId} | ${util.toTitleCase(type)} | ${user.tag}`, user.avatarURL())
             .setFooter(`ID: ${user.id}`)
             .setTimestamp()
             .addFields(
@@ -168,7 +168,7 @@ class Log{
     static async logCheck(guildInfo, user, reason, insertId, type) {
         const logEmbed = new MessageEmbed()
             .setColor(util.color.green)
-            .setAuthor(`Case ${insertId} | ${type} | ${util.escapeFormatting(user.tag)}`, user.avatarURL())
+            .setAuthor(`Case ${insertId} | ${type} | ${user.tag}`, user.avatarURL())
             .setFooter(`ID: ${user.id}`)
             .setTimestamp()
             .addFields(
