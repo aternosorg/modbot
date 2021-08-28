@@ -74,7 +74,7 @@ class ModInfoCommand extends Command {
                 embed.addField(`${data.action.toUpperCase()} [#${data.id}] - ${(new Date(data.created*1000)).toUTCString()}`, text);
             }
             return embed
-                .setAuthor(`Moderation ${start + 1} until ${end} for ${user.tag} | total ${moderations.length}`, user.avatarURL());
+                .setAuthor(`Moderation ${start + 1} to ${end} for ${user.tag} | total ${moderations.length}`, user.avatarURL());
         }, Math.ceil(moderations.length / moderationsPerPage));
 
     }
