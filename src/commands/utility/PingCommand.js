@@ -11,7 +11,7 @@ class PingCommand extends Command {
         /** @type {Message} */
         await this.reply('Pinging...');
         await this.response.edit(`Latency: ${this.response.createdTimestamp-this.message.createdTimestamp}ms \n`+
-            `Websocket: ${this.bot.ws.ping}ms\n`+
+            `Websocket: ${this.bot.ws.ping}ms`
         );
     }
 }
