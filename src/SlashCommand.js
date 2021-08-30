@@ -3,12 +3,11 @@ const {ApplicationCommand, ApplicationCommandData, ApplicationCommandOption, App
 class SlashCommand {
 
     /**
-     * @param {String} name
      * @param command
      * @return {ApplicationCommandData}
      */
-    constructor(name, command) {
-        this.name = name;
+    constructor(command) {
+        this.name = command.names[0];
         this.description = command.description;
         this.options = command.getOptions();
     }

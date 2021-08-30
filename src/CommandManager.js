@@ -16,6 +16,12 @@ class CommandManager {
     static #categories = new Collection();
 
     /**
+     * array of all available command classes
+     * @type {[]}
+     */
+    static commandClasses = [];
+
+    /**
      * loaded commands (name => class)
      * @type {Collection<String, Command>}
      * @private
@@ -51,6 +57,7 @@ class CommandManager {
                         }
                         command.path = `${folder}/${file}`;
                         commands.set(name, command);
+                        this.commandClasses.push(command);
                     }
                 } catch (e) {
                     monitor.error(`Failed to load command '${folder}/${file}'`, e);
@@ -77,6 +84,14 @@ class CommandManager {
      */
     static getCommands() {
         return this.#commands;
+    }
+
+    /**
+     * get all command classes
+     * @return {[]}
+     */
+    static getCommandClasses() {
+        return this.commandClasses;
     }
 
     /**

@@ -126,9 +126,11 @@ class Bot {
         /**
          * @type {Collection<String, SlashCommand>}
          */
-        const commands = CommandManager.getCommands()
-            .filter(command => command.supportsSlashCommands)
-            .mapValues((command, name) => new SlashCommand(name, command));
+        const commands = new Collection();
+        for (const command of CommandManager.getCommandClasses()
+            .filter(command => command.supportsSlashCommands)) {
+            commands.set(command.names[0], new SlashCommand(command));
+        }
 
         if (config.debug?.enabled) {
             const guild = await this.#client.guilds.fetch(config.debug.guild);
