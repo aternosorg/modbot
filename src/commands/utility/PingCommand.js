@@ -12,9 +12,8 @@ class PingCommand extends Command {
     async execute() {
         /** @type {Message} */
         await this.reply('Pinging...');
-        await this.response.edit(`Ping: ${this.response.createdTimestamp-this.source.getRaw().createdTimestamp}ms \n`+
-            `Websocket: ${this.bot.ws.ping}ms\n`+
-            '*This is the bot\'s ping*'
+        await this.response.edit(`Latency: ${this.response.createdTimestamp-this.source.getRaw().createdTimestamp}ms \n`+
+            `Websocket: ${this.bot.ws.ping}ms`
         );
     }
 }

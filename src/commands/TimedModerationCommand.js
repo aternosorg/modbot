@@ -17,7 +17,7 @@ class TimedModerationCommand extends ModerationCommand {
 
     async sendSuccess(targets){
         const type = this.constructor.type.done;
-        let description = `${targets.map(user => `\`${util.escapeFormatting(user.tag)}\``).join(', ')} ${targets.length === 1 ? 'has' : 'have'} been **${type}** `;
+        let description = `${targets.map(user => `\`${user.tag.replace(/`/g, '')}\``).join(', ')} ${targets.length === 1 ? 'has' : 'have'} been **${type}** `;
 
         if (this.duration) {
             description += `for ${util.secToTime(this.duration)} `;

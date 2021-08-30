@@ -401,7 +401,7 @@ class Command {
                 button.setDisabled(true);
             }
             await this.response.edit({components: [buttons]});
-            return {component, confirmed: component.customId === 'confirmed'};
+            return {component, confirmed: component.customId === 'confirm'};
         }
         catch (e) {
             for (const button of buttons.components) {

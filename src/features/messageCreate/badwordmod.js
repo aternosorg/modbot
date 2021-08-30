@@ -12,7 +12,7 @@ exports.event = async (options, message) => {
             const reason = 'Using forbidden words or phrases';
             await util.delete(message);
             if (word.response !== 'disabled') {
-                const response = await message.reply(word.response === 'default' ? BadWord.defaultResponse : word.response);
+                const response = await message.channel.send(`<@!${message.author.id}>` + (word.response === 'default' ? BadWord.defaultResponse : word.response));
                 await util.delete(response, { timeout: 5000 });
             }
             await Log.logMessageDeletion(message, reason);

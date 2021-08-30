@@ -4,7 +4,7 @@ const GuildConfig = require('../../config/GuildConfig');
 const ChannelConfig = require('../../config/ChannelConfig');
 
 exports.event = async (options, message) => {
-    if (util.ignoresAutomod(message)) {
+    if (await util.ignoresAutomod(message)) {
         return;
     }
 
