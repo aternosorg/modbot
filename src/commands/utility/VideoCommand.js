@@ -14,6 +14,8 @@ class VideoCommand extends Command {
 
     static comment = 'The playlist can be configured with the `playlist` command';
 
+    static supportsSlashCommands = true;
+
     /**
      * playlist cache
      * @type {Collection<String, {data: Object, expires: Number}[]>}
@@ -22,7 +24,6 @@ class VideoCommand extends Command {
 
     /**
      * remove expired cache
-     * @type {NodeJS.Timeout}
      */
     static #clearCache = setInterval(() => {
         for (const [key, value] of this.#cache) {
@@ -35,8 +36,11 @@ class VideoCommand extends Command {
     async execute() {
         if (!this.guildConfig.playlist) return this.reply('No playlist specified!');
 
-        const query = this.args.join(' ');
-        if (!query) return this.sendUsage();
+        const query = this.options.getString('query');
+        if (!query) {
+            await this.sendUsage();
+            return;
+        }
 
         let videos;
         try {
@@ -55,9 +59,9 @@ class VideoCommand extends Command {
         /** @type {MessageOptions} */
         const options = {content: `https://youtu.be/${video.item.snippet.resourceId.videoId}`};
 
-        if (this.userConfig.deleteCommands && this.message.reference) {
+        if (!this.source.isInteraction && this.userConfig.deleteCommands && this.source.getRaw().reference) {
             options.reply = {
-                messageReference: this.message.reference.messageId,
+                messageReference: this.source.getRaw().reference.messageId,
                 failIfNotExists: false
             };
         }
@@ -83,6 +87,25 @@ class VideoCommand extends Command {
         }
 
         return this.#cache.get(playlist).data;
+    }
+
+    static getOptions() {
+        return [{
+            name: 'query',
+            type: 'STRING',
+            description: 'Search query',
+            required: true,
+        }];
+    }
+
+    parseOptions(args) {
+        return [
+            {
+                name: 'query',
+                type: 'STRING',
+                value: args.join(' '),
+            }
+        ];
     }
 }
 
