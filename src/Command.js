@@ -96,7 +96,7 @@ class Command {
 
     /**
      * arguments passed to the command
-     * @deprecated only use in parseOptions
+     * @deprecated get options from the {@link options OptionResolver}
      * @type {String[]}
      */
     args;
@@ -160,8 +160,9 @@ class Command {
         }
         else {
             this.message = source.getRaw();
-            this.args = util.split(source.getRaw().content.substring(prefix.length + name.length), ' ');
-            this.options = new CommandInteractionOptionResolver(bot, this.parseOptions());
+            const args = util.split(source.getRaw().content.substring(prefix.length + name.length), ' ');
+            this.args = args;
+            this.options = new CommandInteractionOptionResolver(bot, this.parseOptions(args));
         }
     }
 
@@ -208,9 +209,11 @@ class Command {
 
     /**
      * parse options from a message
+     * @param {String[]} args arguments
      * @return {CommandInteractionOption[]}
      */
-    parseOptions() {
+    // eslint-disable-next-line no-unused-vars
+    parseOptions(args) {
         return [];
     }
 

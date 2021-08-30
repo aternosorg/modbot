@@ -29,12 +29,12 @@ class ExampleCommand extends Command {
         }];
     }
 
-    parseOptions() {
+    parseOptions(args) {
         return [
             {
                 name: 'input',
                 type: 'STRING',
-                value: this.args.join(' '),
+                value: args.join(' '),
             }
         ];
     }
