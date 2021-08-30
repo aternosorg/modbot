@@ -126,7 +126,7 @@ class BadWord extends ChatTriggeredFeature {
                     },
                     {
                         name: 'Priority',
-                        value: this.priority,
+                        value: this.priority.toString(),
                         inline: true
                     },
                 ]);
