@@ -41,7 +41,7 @@ exports.event = async (options, old, newMsg) => {
     .setDescription(
       formatted
     )
-    .setFooter(`ID: ${old.author.id}`);
+    .setFooter(old.author.id,old.author.avatarURL());
 
   await Log.messageLogEmbed(old, embed);
 };
