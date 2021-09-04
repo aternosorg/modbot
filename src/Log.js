@@ -188,6 +188,7 @@ class Log{
      * @private
      */
     static async _send(channel, message, ...embeds) {
+        if (!channel) return null;
         try {
             return channel.send({
                 content: message || undefined,
