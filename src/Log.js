@@ -138,7 +138,7 @@ class Log{
         const logEmbed = new MessageEmbed()
             .setColor(embedColor)
             .setAuthor(`Case ${insertId} | ${util.toTitleCase(type)} | ${user.tag}`, user.avatarURL())
-            .setFooter(`ID: ${user.id}`)
+            .setFooter(user.id)
             .setTimestamp()
             .addFields(
                 /** @type {any} */ { name: 'User', value: `<@${user.id}>`, inline: true},
@@ -169,7 +169,7 @@ class Log{
         const logEmbed = new MessageEmbed()
             .setColor(util.color.green)
             .setAuthor(`Case ${insertId} | ${type} | ${user.tag}`, user.avatarURL())
-            .setFooter(`ID: ${user.id}`)
+            .setFooter(user.id)
             .setTimestamp()
             .addFields(
                 /** @type {any}*/ { name: 'User', value: `<@!${user.id}>`, inline: true},
@@ -188,6 +188,7 @@ class Log{
      * @private
      */
     static async _send(channel, message, ...embeds) {
+        if (!channel) return null;
         try {
             return channel.send({
                 content: message || undefined,

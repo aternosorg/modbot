@@ -24,14 +24,14 @@ exports.event = async (options, message) => {
         embed = new Discord.MessageEmbed()
             .setColor(util.color.red)
             .setAuthor(`Empty message by ${util.escapeFormatting(message.author.tag)} in #${message.channel.name} was deleted`,message.author.avatarURL())
-            .setFooter(`ID: ${message.author.id}`);
+            .setFooter(message.author.id);
     }
     else{
         embed = new Discord.MessageEmbed()
             .setColor(util.color.red)
             .setAuthor(`Message by ${util.escapeFormatting(message.author.tag)} in #${message.channel.name} was deleted`,message.author.avatarURL())
             .setDescription(content)
-            .setFooter(`ID: ${message.author.id}`);
+            .setFooter(message.author.id);
     }
 
     await Log.messageLogEmbed(message, embed);
