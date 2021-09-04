@@ -277,19 +277,21 @@ class Command {
      * @param {Number} [duration] inactivity timeout in ms (default: 60s)
      */
     async multiPageResponse(generatePage, pages, duration = 60000) {
-        /** @type {Message} */
-        const message = await this.reply(await generatePage(0));
+        await this.reply(await generatePage(0));
+        const message = this.response;
 
         if (pages === 1) return;
         await message.react(icons.right);
 
-        const reactions = message.createReactionCollector( async (reaction, user) => {
-            if (user.id === this.message.author.id && [icons.left,icons.right].includes(reaction.emoji.name)) {
-                return true;
-            }
-            else {
-                if (user.id !== this.bot.user.id) await reaction.users.remove(user);
-                return false;
+        const reactions = message.createReactionCollector( {
+            filter: async (reaction, user) => {
+                if (user.id === this.message.author.id && [icons.left,icons.right].includes(reaction.emoji.name)) {
+                    return true;
+                }
+                else {
+                    if (user.id !== this.bot.user.id) await reaction.users.remove(user);
+                    return false;
+                }
             }
         });
 
@@ -305,8 +307,8 @@ class Command {
             }
             await message.edit(await generatePage(index));
             await message.reactions.removeAll();
-            if (index !== pages -1) await message.react(icons.right);
             if (index !== 0) await message.react(icons.left);
+            if (index !== pages -1) await message.react(icons.right);
             clearTimeout(timeout);
             setTimeout(end, duration);
         });
