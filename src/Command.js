@@ -397,12 +397,12 @@ class Command {
                     .setStyle('SUCCESS')
             );
         /** @type {Message} */
-        this.response = await this.source.getChannel().channel.send({content: text, components: [buttons]});
+        this.response = await this.source.getChannel().send({content: text, components: [buttons]});
         try {
             const component = await this.response.awaitMessageComponent({
                 max: 1, time: options.time, errors: ['time'],
                 filter: async (interaction) => {
-                    if (interaction.user.id !== this.message.author.id) {
+                    if (interaction.user.id !== this.source.getUser().id) {
                         await interaction.reply({
                             ephemeral: true,
                             content: 'Only the message author can do this.'
