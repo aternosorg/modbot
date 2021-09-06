@@ -400,7 +400,17 @@ class Command {
         this.response = await this.source.getChannel().channel.send({content: text, components: [buttons]});
         try {
             const component = await this.response.awaitMessageComponent({
-                max: 1, time: options.time, errors: ['time']
+                max: 1, time: options.time, errors: ['time'],
+                filter: async (interaction) => {
+                    if (interaction.user.id !== this.message.author.id) {
+                        await interaction.reply({
+                            ephemeral: true,
+                            content: 'Only the message author can do this.'
+                        });
+                        return false;
+                    }
+                    return true;
+                }
             });
             for (const button of buttons.components) {
                 button.setDisabled(true);
