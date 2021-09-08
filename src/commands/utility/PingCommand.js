@@ -7,10 +7,12 @@ class PingCommand extends Command {
 
     static names = ['ping'];
 
+    static supportsSlashCommands = true;
+
     async execute() {
         /** @type {Message} */
         await this.reply('Pinging...');
-        await this.response.edit(`Latency: ${this.response.createdTimestamp-this.message.createdTimestamp}ms \n`+
+        await this.response.edit(`Latency: ${this.response.createdTimestamp-this.source.getRaw().createdTimestamp}ms \n`+
             `Websocket: ${this.bot.ws.ping}ms`
         );
     }

@@ -1,15 +1,11 @@
-const ModerationCommand = require('../ModerationCommand');
+const StrikeCommand = require('./StrikeCommand');
 const Member = require('../../Member');
 
-class PardonCommand extends ModerationCommand {
+class PardonCommand extends StrikeCommand {
 
     static description = 'Remove a strike from a user';
 
-    static usage = '<@user|id> [<@user|id…>] [<count>] [<reason>]';
-
     static names = ['pardon'];
-
-    static userPerms = ['BAN_MEMBERS'];
 
     static type = {
         execute: 'pardon',
@@ -17,19 +13,9 @@ class PardonCommand extends ModerationCommand {
     };
 
     async executePunishment(target) {
-        const member = new Member(target, this.message.guild);
-        await member.pardon(this.database, this.reason, this.message.author, this.count);
+        const member = new Member(target, this.source.getGuild());
+        await member.pardon(this.database, this.reason, this.source.getUser(), this.count);
         return true;
-    }
-
-    loadInfo() {
-        this.count = this.getCount();
-        super.loadInfo();
-    }
-
-    getCount() {
-        if (!this.args.length || !this.args[0].match(/^\d{1,5}$/)) return 1;
-        return parseInt(this.args.shift());
     }
 }
 

@@ -18,8 +18,8 @@ class MuteCommand extends TimedModerationCommand {
     };
 
     async executePunishment(target) {
-        const member = new Member(target, this.message.guild);
-        await member.mute(this.database, this.reason, this.message.author, this.duration);
+        const member = new Member(target, this.source.getGuild());
+        await member.mute(this.database, this.reason, this.source.getUser(), this.duration);
         return true;
     }
 

@@ -51,10 +51,9 @@ class Log{
      */
     static async logMessageDeletion(message, reason) {
         if (message.content.length === 0) return;
-        return this.log(message, `Message in <#${message.channel.id}> deleted`, new MessageEmbed({
+        return this.messageLog(message, `Message in <#${message.channel.id}> deleted`, new MessageEmbed({
             footer: {
                 text: message.author.id,
-                iconURL: message.author.avatarURL()
             },
             author: {
                 name: `${util.escapeFormatting(message.author.tag)}`,
