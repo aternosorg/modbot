@@ -1,9 +1,11 @@
-const {Client} = require('discord.js');
+const {Client, Collection} = require('discord.js');
 const Database = require('./Database');
 const util = require('./util');
 const fs = require('fs').promises;
 const config = require('../config.json');
 const Monitor = require('./Monitor');
+const CommandManager = require('./CommandManager');
+const SlashCommand = require('./SlashCommand');
 
 class Bot {
     static instance = new Bot();
@@ -58,8 +60,11 @@ class Bot {
         await this.#client.login(config.auth_token);
         await this.#monitor.info('Logged into Discord');
 
-        await this._loadChecks();
-        await this._loadFeatures();
+        await Promise.all([
+            this._loadChecks(),
+            this._loadFeatures(),
+            this._loadSlashCommands()
+        ]);
     }
 
     async _loadChecks(){
@@ -114,6 +119,44 @@ class Bot {
                 }
             });
         }
+    }
+
+    async _loadSlashCommands() {
+        console.log('Loading slash commands!');
+        /**
+         * @type {Collection<String, SlashCommand>}
+         */
+        const commands = new Collection();
+        for (const command of CommandManager.getCommandClasses()
+            .filter(command => command.supportsSlashCommands)) {
+            commands.set(command.names[0], new SlashCommand(command));
+        }
+
+        if (config.debug?.enabled) {
+            const guild = await this.#client.guilds.fetch(config.debug.guild);
+            await guild.commands.set(Array.from(commands.values()));
+        }
+
+        const commandManager = this.#client.application.commands;
+        await commandManager.fetch();
+
+        for (const registeredCommand of commandManager.cache.values()) {
+            if (commands.has(registeredCommand.name)) {
+                const newCommand = commands.get(registeredCommand.name);
+                commands.delete(registeredCommand.name);
+                if (newCommand.matchesDefinition(registeredCommand))
+                    continue;
+                await registeredCommand.edit(newCommand);
+            }
+            else {
+                await registeredCommand.delete();
+            }
+        }
+
+        for (const command of commands.values()) {
+            await commandManager.create(command);
+        }
+        console.log('Slash commands loaded!');
     }
 }
 

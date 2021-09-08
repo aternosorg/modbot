@@ -16,21 +16,29 @@ class UserInfoCommand extends Command {
 
     static modCommand = true;
 
+    static supportsSlashCommands = true;
+
     async execute() {
-        if (this.args.length !== 1) return this.sendUsage();
+        let user;
+        if (this.source.isInteraction) {
+            user = this.options.getUser('user');
+        }
+        else {
+            const userID = this.options.getString('user');
+            if (!userID || !await util.isUser(userID)) {
+                return this.sendUsage();
+            }
+            user = await this.bot.users.fetch(userID);
+        }
 
-        const userID = util.userMentionToId(this.args.shift());
-        if (!userID || !await util.isUser(userID)) return this.sendUsage();
-
-        const user = await this.bot.users.fetch(userID),
-            member = new Member(user, this.message.guild),
+        const member = new Member(user, this.source.getGuild()),
             guildMember = await member.fetchMember(),
-            guildID = this.message.guild.id;
+            guildID = this.source.getGuild().id;
         let [moderations, strikes, mute, ban] = await Promise.all([
-            this.database.query('SELECT COUNT(*) AS count FROM moderations WHERE userid = ? AND guildid = ?',[userID,guildID]),
+            this.database.query('SELECT COUNT(*) AS count FROM moderations WHERE userid = ? AND guildid = ?',[user.id, guildID]),
             member.getStrikeSum(this.database),
-            this.database.query('SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = \'mute\'',[userID,guildID]),
-            this.database.query('SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = \'ban\'', [userID,guildID]),
+            this.database.query('SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = \'mute\'',[user.id, guildID]),
+            this.database.query('SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = \'ban\'', [user.id, guildID]),
         ]);
         if (!mute && guildMember && guildMember.roles.cache.has(this.guildConfig.mutedRole)) mute = {reason: 'Unknown reason and timer'};
         let muteTime = getRemainingDuration(mute);
@@ -41,7 +49,7 @@ class UserInfoCommand extends Command {
         const embed = new MessageEmbed()
             .setAuthor(user.tag, user.avatarURL())
             .setDescription(
-                `**ID:** ${userID}\n` +
+                `**ID:** ${user.id}\n` +
                 `**Account Created:** <t:${Math.floor(user.createdTimestamp/1000)}:D>\n` +
                 (guildMember?.joinedAt ? `**Joined Guild:** <t:${Math.floor(guildMember.joinedTimestamp/1000)}:D>\n` : '') +
                 `**Moderations:** ${moderations.count}\n` +
@@ -55,6 +63,25 @@ class UserInfoCommand extends Command {
 
         await this.reply(embed);
 
+    }
+
+    static getOptions() {
+        return [{
+            name: 'user',
+            type: 'USER',
+            description: 'The user in question',
+            required: true,
+        }];
+    }
+
+    parseOptions(args) {
+        return [
+            {
+                name: 'user',
+                type: 'STRING',
+                value: util.userMentionToId(args.shift()),
+            }
+        ];
     }
 }
 

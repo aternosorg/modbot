@@ -1,13 +1,20 @@
 const Command = require('../Command');
 const util = require('../util');
 const Guild = require('../Guild');
-const {MessageEmbed, User, Message} = require('discord.js');
+const {
+    MessageEmbed,
+    User,
+    Message,
+    ApplicationCommandOptionData
+} = require('discord.js');
 
 class ModerationCommand extends Command {
 
     static modCommand = true;
 
     static usage = '<@user|id> [<@user|id…>] [<reason>]';
+
+    static supportsSlashCommands = true;
 
     /**
      * @type {Object}
@@ -25,6 +32,20 @@ class ModerationCommand extends Command {
         done: 'moderated',
     };
 
+    static getOptions() {
+        return /** @type {ApplicationCommandOptionData[]} */ [{
+            name: 'user',
+            type: 'USER',
+            description: 'Targeted user',
+            required: true,
+        }, {
+            name: 'reason',
+            type: 'STRING',
+            description: `${this.type.execute.replace(/^./, a => a.toUpperCase())} reason`,
+            required: false,
+        }];
+    }
+
     async execute() {
         if (!await this.checkRequirements()) return;
         this.targetedUsers = await this.getTargetedUsers();
@@ -38,9 +59,9 @@ class ModerationCommand extends Command {
                 successes.push(target);
             }
         }
-        await this.postPunishment(successes);
         if (successes.length) {
             await this.sendSuccess(successes);
+            await this.postPunishment(successes);
         }
     }
 
@@ -79,7 +100,10 @@ class ModerationCommand extends Command {
      * @return {string|string}
      */
     getReason() {
-        return this.args.join(' ') || 'No reason provided';
+        if (this.source.isInteraction)
+            return this.options.getString('reason', false) || 'No reason provided';
+        else
+            return this.args.join(' ') || 'No reason provided';
     }
 
     /**
@@ -92,11 +116,11 @@ class ModerationCommand extends Command {
             await this.sendError('I can\'t interact with bots!');
             return true;
         }
-        const guild = Guild.get(this.message.guild);
+        const guild = Guild.get(this.source.getGuild());
         const member = await guild.fetchMember(target.id);
         if (member === null) return false;
 
-        if (this.message.member.roles.highest.comparePositionTo(member.roles.highest) <= 0 || this.guildConfig.isProtected(member)) {
+        if (this.source.getMember().roles.highest.comparePositionTo(member.roles.highest) <= 0 || this.guildConfig.isProtected(member)) {
             await this.sendError(`You don't have the permission to ${this.constructor.type.execute} <@!${target.id}>!`);
             return true;
         }
@@ -108,6 +132,7 @@ class ModerationCommand extends Command {
      * @return {Promise<null|User[]>}
      */
     async getTargetedUsers() {
+        if (this.source.isInteraction) return [this.options.getUser('user', true)];
         const targetedIDs = await util.userMentions(this.args);
 
         if (!targetedIDs.length) {

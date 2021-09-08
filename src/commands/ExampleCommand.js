@@ -14,8 +14,29 @@ class ExampleCommand extends Command {
 
     static botPerms = [];
 
+    static supportsSlashCommands = true;
+
     async execute() {
-        await this.reply('This is an example');
+        await this.reply('This is an example: ' + this.options.getString('input', true));
+    }
+
+    static getOptions() {
+        return [{
+            name: 'input',
+            type: 'STRING',
+            description: 'An input string',
+            required: true,
+        }];
+    }
+
+    parseOptions(args) {
+        return [
+            {
+                name: 'input',
+                type: 'STRING',
+                value: args.join(' '),
+            }
+        ];
     }
 }
 

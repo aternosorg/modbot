@@ -10,18 +10,19 @@ class ArticleCommand extends Command {
 
     static names = ['article', 'a'];
 
+    static supportsSlashCommands = true;
+
     async execute() {
         if (!this.guildConfig.helpcenter) {
             await this.reply('No help center configured!');
             return;
         }
 
-        const query = this.args.join(' ').toLowerCase();
+        const query = this.options.getString('query');
         if(!query){
             await this.sendUsage();
             return;
         }
-
 
         const request = new Request(`https://${this.guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles/search.json?query=`+encodeURIComponent(query));
         await request.getJSON();
@@ -30,9 +31,9 @@ class ArticleCommand extends Command {
             /** @type {MessageOptions} */
             const options = {content: request.JSON.results[0].html_url};
 
-            if (this.userConfig.deleteCommands && this.message.reference) {
+            if (!this.source.isInteraction && this.userConfig.deleteCommands && this.source.getRaw().reference) {
                 options.reply = {
-                    messageReference: this.message.reference.messageId,
+                    messageReference: this.source.getRaw().reference.messageId,
                     failIfNotExists: false
                 };
             }
@@ -42,6 +43,25 @@ class ArticleCommand extends Command {
         else {
             await this.reply('No article found!');
         }
+    }
+
+    static getOptions() {
+        return [{
+            name: 'query',
+            type: 'STRING',
+            description: 'Search query',
+            required: true,
+        }];
+    }
+
+    parseOptions(args) {
+        return [
+            {
+                name: 'query',
+                type: 'STRING',
+                value: args.join(' '),
+            }
+        ];
     }
 }
 

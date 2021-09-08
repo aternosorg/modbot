@@ -19,12 +19,12 @@ class SoftBanCommand extends ModerationCommand {
     };
 
     async executePunishment(target) {
-        const member = new Member(target, this.message.guild);
+        const member = new Member(target, this.source.getGuild());
         if (await member.fetchMember() === null) {
             await this.sendError(`**${target.tag}** is not in this guild!`);
             return false;
         }
-        await member.softban(this.database, this.reason, this.message.author);
+        await member.softban(this.database, this.reason, this.source.getUser());
         return true;
     }
 }
