@@ -48,7 +48,7 @@ class HelpCommand extends Command {
             );
         }
 
-        if (command) return this.reply(await command.getUsage(this.message, name, this.guildConfig));
+        if (command) return this.reply(await command.getUsage(this.source, name, this.guildConfig));
     }
 }
 
