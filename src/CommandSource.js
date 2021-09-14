@@ -1,6 +1,7 @@
 const {
     Message,
     CommandInteraction,
+    ContextMenuInteraction,
     CommandInteractionOptionResolver,
     Guild,
     TextChannel,
@@ -27,19 +28,19 @@ class CommandSource {
 
     /**
      * interaction (if exists)
-     * @type {CommandInteraction}
+     * @type {CommandInteraction|ContextMenuInteraction}
      */
     #interaction;
 
     /**
-     * @param {Message|CommandInteraction} input
+     * @param {Message|CommandInteraction|ContextMenuInteraction} input
      */
     constructor(input) {
         if (input instanceof Message) {
             this.isInteraction = false;
             this.#message = input;
         }
-        else if (input instanceof CommandInteraction) {
+        else if (input instanceof CommandInteraction || input instanceof ContextMenuInteraction) {
             this.isInteraction = true;
             this.#interaction = input;
         }
@@ -50,7 +51,7 @@ class CommandSource {
 
     /**
      * get the raw interaction or message
-     * @return {Message|CommandInteraction}
+     * @return {Message|CommandInteraction|ContextMenuInteraction}
      */
     getRaw() {
         return this.isInteraction ? this.#interaction : this.#message;

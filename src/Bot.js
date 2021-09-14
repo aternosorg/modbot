@@ -126,11 +126,7 @@ class Bot {
         /**
          * @type {Collection<String, SlashCommand>}
          */
-        const commands = new Collection();
-        for (const command of CommandManager.getCommandClasses()
-            .filter(command => command.supportsSlashCommands)) {
-            commands.set(command.names[0], new SlashCommand(command));
-        }
+        const commands = SlashCommand.getFromClasses(CommandManager.getCommandClasses());
 
         if (config.debug?.enabled) {
             const guild = await this.#client.guilds.fetch(config.debug.guild);
@@ -141,9 +137,10 @@ class Bot {
         await commandManager.fetch();
 
         for (const registeredCommand of commandManager.cache.values()) {
-            if (commands.has(registeredCommand.name)) {
-                const newCommand = commands.get(registeredCommand.name);
-                commands.delete(registeredCommand.name);
+            const key = registeredCommand.type + ':' + registeredCommand.name;
+            if (commands.has(key)) {
+                const newCommand = commands.get(key);
+                commands.delete(key);
                 if (newCommand.matchesDefinition(registeredCommand))
                     continue;
                 await registeredCommand.edit(newCommand);
