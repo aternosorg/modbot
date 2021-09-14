@@ -24,6 +24,10 @@ class ModInfoCommand extends Command {
 
     static supportsSlashCommands = true;
 
+    static supportedContextMenus = {
+        USER: true
+    }
+
     async execute() {
         let user = this.options.getUser('user', false),
             userID;

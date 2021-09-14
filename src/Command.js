@@ -73,6 +73,15 @@ class Command {
     static supportsSlashCommands = false;
 
     /**
+     * supported context menus
+     * @type {{MESSAGE: boolean, USER: boolean}}
+     */
+    static supportedContextMenus = {
+        USER: false,
+        MESSAGE: false,
+    };
+
+    /**
      * @type {Message}
      * @deprecated
      */

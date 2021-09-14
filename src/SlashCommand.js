@@ -1,15 +1,25 @@
-const {ApplicationCommand, ApplicationCommandData, ApplicationCommandOption, ApplicationCommandOptionChoice} = require('discord.js');
+const {
+    ApplicationCommand,
+    ApplicationCommandData,
+    ApplicationCommandOption,
+    ApplicationCommandOptionChoice,
+    Collection,
+} = require('discord.js');
 
 class SlashCommand {
 
     /**
      * @param command
+     * @param {"USER"|"CHAT_INPUT"|"MESSAGE"} type
      * @return {ApplicationCommandData}
      */
-    constructor(command) {
+    constructor(command, type) {
+        this.type = type;
         this.name = command.names[0];
-        this.description = command.description;
-        this.options = command.getOptions();
+        if (type === 'CHAT_INPUT') {
+            this.description = command.description;
+            this.options = command.getOptions();
+        }
     }
 
     /**
@@ -17,9 +27,31 @@ class SlashCommand {
      * @param {ApplicationCommand} command
      */
     matchesDefinition(command) {
-        return this.name === command.name
-            && this.description === command.description
-            && matchingOptions(this.options, command.options);
+        if (this.name !== command.name || this.type !== this.type) {
+            return false;
+        }
+        return this.type !== 'CHAT_INPUT' || (this.description === command.description
+            && matchingOptions(this.options, command.options));
+    }
+
+    /**
+     * @param {[]} commands
+     * @return {Collection<String, SlashCommand>}
+     */
+    static getFromClasses(commands) {
+        const result = new Collection();
+        for (const command of commands) {
+            if (command.supportsSlashCommands) {
+                result.set(`CHAT_INPUT:${command.names[0]}`, new SlashCommand(command, 'CHAT_INPUT'));
+            }
+            if (command.supportedContextMenus.USER) {
+                result.set(`USER:${command.names[0]}`, new SlashCommand(command, 'USER'));
+            }
+            if (command.supportedContextMenus.MESSAGE) {
+                result.set(`MESSAGE:${command.names[0]}`, new SlashCommand(command, 'MESSAGE'));
+            }
+        }
+        return result;
     }
 }
 

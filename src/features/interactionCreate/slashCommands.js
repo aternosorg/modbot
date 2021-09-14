@@ -14,7 +14,7 @@ module.exports = {
      * @return {Promise<void>}
      */
     async event(options, interaction) {
-        if (!interaction.isCommand())
+        if (!interaction.isCommand() && !interaction.isContextMenu())
             return;
 
         const name = interaction.commandName;
