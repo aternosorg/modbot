@@ -1,5 +1,4 @@
 const Database = require('./Database');
-const database = Database.getInstance();
 const {Snowflake} = require('discord.js');
 const TypeChecker = require('./config/TypeChecker');
 
@@ -119,7 +118,7 @@ class Moderation {
      */
     static async getAll(guildID) {
         const result = [];
-        for (const moderation of await database.queryAll('SELECT id, userid, action, created, value, expireTime, reason, moderator, active ' +
+        for (const moderation of await Database.getInstance().queryAll('SELECT id, userid, action, created, value, expireTime, reason, moderator, active ' +
             'FROM moderations WHERE guildid = ?', [guildID])) {
             result.push(new Moderation(moderation));
         }
@@ -140,7 +139,7 @@ class Moderation {
      * @return {Promise}
      */
     async save() {
-        return database.query('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
+        return Database.getInstance().query('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
             'VALUES (?,?,?,?,?,?,?,?,?)', this.getParameters());
     }
 
@@ -159,7 +158,7 @@ class Moderation {
      */
     static async bulkSave(moderations) {
         moderations = moderations.map(m => m.getParameters());
-        return database.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
+        return Database.getInstance().queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
             `VALUES ${moderations.map(() => '(?,?,?,?,?,?,?,?,?)').join(', ')}`, moderations.flat());
     }
 }
