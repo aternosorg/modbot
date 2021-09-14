@@ -22,15 +22,26 @@ class ModInfoCommand extends Command {
 
     static modCommand = true;
 
+    static supportsSlashCommands = true;
+
     async execute() {
-        if (!await util.isUserMention(this.args[0])) {
-            return this.sendUsage();
+        let user = this.options.getUser('user', false),
+            userID;
+        if (!user) {
+            userID = this.options.getString('user', false);
+            if (!userID) {
+                return this.sendUsage();
+            }
+            user = await (new User(userID, this.bot)).fetchUser();
+            if (!user) {
+                return this.sendUsage();
+            }
+        }
+        else {
+            userID = user.id;
         }
 
-        const userID = util.userMentionToId(this.args[0]);
-        const user = await (new User(userID, this.bot)).fetchUser();
-
-        const moderations = await this.database.queryAll('SELECT * FROM moderations WHERE userid = ? AND guildid = ?', [userID, this.message.guild.id]);
+        const moderations = await this.database.queryAll('SELECT * FROM moderations WHERE userid = ? AND guildid = ?', [userID, this.source.getGuild().id]);
 
         if (moderations.length === 0) {
             return this.reply(
@@ -77,6 +88,25 @@ class ModInfoCommand extends Command {
                 .setAuthor(`Moderation ${start + 1} to ${end} for ${user.tag} | total ${moderations.length}`, user.avatarURL());
         }, Math.ceil(moderations.length / moderationsPerPage));
 
+    }
+
+    static getOptions() {
+        return [{
+            name: 'user',
+            type: 'USER',
+            description: 'User',
+            required: true,
+        }];
+    }
+
+    parseOptions(args) {
+        return [
+            {
+                name: 'user',
+                type: 'USER',
+                value: util.userMentionToId(args[0]),
+            }
+        ];
     }
 }
 
