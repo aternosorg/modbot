@@ -29,10 +29,12 @@ class ModInfoCommand extends Command {
     }
 
     async execute() {
-        let user = this.options.getUser('user', false),
-            userID;
-        if (!user) {
-            userID = this.options.getString('user', false);
+        let user, userID;
+        if (this.source.isInteraction) {
+            user = this.options.getUser('user', false);
+            userID = user.id;
+        } else {
+            userID = this.options.getString('userID', false);
             if (!userID) {
                 return this.sendUsage();
             }
@@ -40,9 +42,6 @@ class ModInfoCommand extends Command {
             if (!user) {
                 return this.sendUsage();
             }
-        }
-        else {
-            userID = user.id;
         }
 
         const moderations = await this.database.queryAll('SELECT * FROM moderations WHERE userid = ? AND guildid = ?', [userID, this.source.getGuild().id]);
@@ -106,8 +105,8 @@ class ModInfoCommand extends Command {
     parseOptions(args) {
         return [
             {
-                name: 'user',
-                type: 'USER',
+                name: 'userID',
+                type: 'STRING',
                 value: util.userMentionToId(args[0]),
             }
         ];
