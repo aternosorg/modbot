@@ -24,7 +24,7 @@ class ClearModerationsCommand extends Command {
         const moderation = await this.database.query('SELECT id FROM moderations WHERE id = ? AND guildid = ?', [id, this.message.guild.id]);
 
         if (moderation === null) {
-            await this.reply('Moderation not found!');
+            await this.sendError('Moderation not found!');
             return;
         }
 
