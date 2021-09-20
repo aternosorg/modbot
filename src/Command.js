@@ -329,7 +329,7 @@ class Command {
 
     /**
      * generate a multi page response
-     * @param {function} generatePage generate a new page (index)
+     * @param {(index: Number) => MessageEmbed|Promise<MessageEmbed>} generatePage generate a new page (index)
      * @param {Number} [pages] number of possible pages
      * @param {Number} [duration] inactivity timeout in ms (default: 60s)
      */
@@ -362,7 +362,8 @@ class Command {
             if (reaction.emoji.name === icons.left && index !== 0) {
                 index--;
             }
-            await message.edit(await generatePage(index));
+
+            await message.edit({embeds: [await generatePage(index)]});
             await message.reactions.removeAll();
             if (index !== 0) await message.react(icons.left);
             if (index !== pages -1) await message.react(icons.right);

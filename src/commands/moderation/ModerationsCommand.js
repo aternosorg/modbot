@@ -55,7 +55,7 @@ class ModerationsCommand extends Command {
             );
         }
 
-        await this.multiPageResponse((index) => {
+        await this.multiPageResponse(async ( index) => {
             const start = index * moderationsPerPage;
             let end = (index + 1) * moderationsPerPage;
             if (end > moderations.length) end = moderations.length;
@@ -90,7 +90,6 @@ class ModerationsCommand extends Command {
             return embed
                 .setAuthor(`Moderation ${start + 1} to ${end} for ${user.tag} | total ${moderations.length}`, user.avatarURL());
         }, Math.ceil(moderations.length / moderationsPerPage));
-
     }
 
     static getOptions() {
