@@ -10,7 +10,7 @@ const Moderation = require('../../Moderation');
  */
 const moderationsPerPage = 20;
 
-class ModInfoCommand extends Command {
+class ModerationsCommand extends Command {
 
     static description = 'List all moderations for a user';
 
@@ -113,4 +113,4 @@ class ModInfoCommand extends Command {
     }
 }
 
-module.exports = ModInfoCommand;
+module.exports = ModerationsCommand;
