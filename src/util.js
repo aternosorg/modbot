@@ -228,10 +228,10 @@ util.isChannel = (guild, id) => {
  * @async
  * @param {Guild}     guild the guild that should have this role
  * @param {Snowflake} id role id
- * @return {Boolean}
+ * @return {Promise<Boolean>}
  */
-util.isRole = (guild, id) => {
-    return !!guild.roles.fetch(id);
+util.isRole = async (guild, id) => {
+    return !!await guild.roles.fetch(id);
 };
 
 /**

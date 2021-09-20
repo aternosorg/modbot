@@ -40,16 +40,16 @@ class LogChannelCommand extends Command {
                 break;
 
             case 'create': {
-                const role = await this.message.guild.roles.create({ name: 'muted', hoist:false });
+                const role = await this.source.getGuild().roles.create({ name: 'muted', hoist:false });
                 await this.setRole(role.id);
                 break;
             }
             default: {
                 /** @type {Snowflake} */
                 const role = util.roleMentionToId(this.args[0]);
-                if (role === null || !await util.isRole(this.message.guild, role)) return this.sendUsage();
+                if (role === null || !await util.isRole(this.source.getGuild(), role)) return this.sendUsage();
 
-                if (!this.message.guild.roles.resolve(role).editable) {
+                if (!this.source.getGuild().roles.resolve(role).editable) {
                     return this.reply('I am missing the required permissions to manage that role!');
                 }
 
@@ -67,7 +67,7 @@ class LogChannelCommand extends Command {
         await this.reply('Updating permission overrides...');
 
         //channel perms
-        const channels = Array.from(this.message.guild.channels.cache.values());
+        const channels = Array.from(this.source.getGuild().channels.cache.values());
         for (const channel of channels) {
             if (!channel.manageable) continue;
             if (!channel.permissionsFor(id).any(['SEND_MESSAGES', 'ADD_REACTIONS', 'SPEAK'])) continue;
@@ -78,19 +78,19 @@ class LogChannelCommand extends Command {
             });
         }
 
-        if (this.guildConfig.mutedRole && this.guildConfig.mutedRole !== id) {
+        if (this.guildConfig.mutedRole && this.guildConfig.mutedRole !== id && await util.isRole(this.source.getGuild(), this.guildConfig.mutedRole)) {
             //transfer members
             await this.response.edit('Updating currently muted members...');
 
             const oldRole = this.guildConfig.mutedRole;
-            if (!((await this.message.guild.roles.fetch(oldRole)).editable)) {
+            if (!((await this.source.getGuild().roles.fetch(oldRole)).editable)) {
                 await this.reply('Can\'t update existing members (old role too high)');
             }
             else {
-                const memberIDs = await this.database.queryAll('SELECT userid FROM moderations WHERE active = TRUE AND action = \'mute\' AND guildid = ?', [this.message.guild.id]);
+                const memberIDs = await this.database.queryAll('SELECT userid FROM moderations WHERE active = TRUE AND action = \'mute\' AND guildid = ?', [this.source.getGuild().id]);
                 for (const memberID of memberIDs) {
                     const user = await new User(memberID.userid, this.bot).fetchUser();
-                    const member = await new Member(user, this.message.guild).fetchMember();
+                    const member = await new Member(user, this.source.getGuild()).fetchMember();
 
                     if (member.roles.cache.get(oldRole)) {
                         await Promise.all([
