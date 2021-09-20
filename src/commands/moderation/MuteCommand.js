@@ -1,6 +1,5 @@
 const TimedModerationCommand = require('../TimedModerationCommand');
 const Member = require('../../Member');
-const Discord = require('discord.js');
 
 class MuteCommand extends TimedModerationCommand {
 
@@ -25,9 +24,7 @@ class MuteCommand extends TimedModerationCommand {
 
     async checkRequirements() {
         if(!this.guildConfig.mutedRole) {
-            await this.reply(new Discord.MessageEmbed()
-                .setDescription(`There is no muted role set for this server. Please use \`${this.prefix}mutedrole\` to specify it.`)
-            );
+            await this.sendError(`There is no muted role set for this server. Please use \`${this.prefix}mutedrole\` to specify it.`);
             return false;
         }
         return super.checkRequirements();

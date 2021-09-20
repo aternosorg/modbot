@@ -1,6 +1,5 @@
 const ModerationCommand = require('../ModerationCommand');
 const Member = require('../../Member');
-const {MessageEmbed} = require('discord.js');
 const util = require('../../util');
 
 class UnbanCommand extends ModerationCommand {
@@ -22,10 +21,7 @@ class UnbanCommand extends ModerationCommand {
         const member = new Member(target, this.source.getGuild());
 
         if (!await member.isBanned(this.database)) {
-            await this.reply(new MessageEmbed()
-                .setDescription(`**${util.escapeFormatting(target.tag)}** isn't banned here!`)
-                .setColor(util.color.red)
-            );
+            await this.sendError(`**${util.escapeFormatting(target.tag)}** isn't banned here!`);
             return false;
         }
 

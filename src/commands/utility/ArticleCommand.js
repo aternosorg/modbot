@@ -14,7 +14,7 @@ class ArticleCommand extends Command {
 
     async execute() {
         if (!this.guildConfig.helpcenter) {
-            await this.reply('No help center configured!');
+            await this.sendError('No help center configured!');
             return;
         }
 
@@ -41,7 +41,7 @@ class ArticleCommand extends Command {
             await this.reply(options);
         }
         else {
-            await this.reply('No article found!');
+            await this.sendError('No article found!');
         }
     }
 

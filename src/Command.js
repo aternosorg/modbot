@@ -17,6 +17,7 @@ const {
     ApplicationCommandOptionData,
     CommandInteractionOptionResolver,
     CommandInteractionOption,
+    InteractionReplyOptions,
 } = require('discord.js');
 const Database = require('./Database');
 const defaultPrefix = require('../config.json').prefix;
@@ -274,7 +275,7 @@ class Command {
      * @return {Promise<void>}
      */
     async sendUsage() {
-        await this.reply(await this.constructor.getUsage(this.source,this.name , this.guildConfig));
+        await this.reply({ephemeral: true}, await this.constructor.getUsage(this.source, this.name, this.guildConfig));
     }
 
     /**
@@ -282,7 +283,7 @@ class Command {
      * @return {Promise<void>}
      */
     async sendError(message) {
-        await this.reply(new MessageEmbed({
+        await this.reply({ephemeral: true}, new MessageEmbed({
             color: util.color.red,
             description: message,
         }));
@@ -290,43 +291,40 @@ class Command {
 
     /**
      *
-     * @param {String|MessageOptions|ReplyMessageOptions|MessageEmbed|MessageAttachment} message
+     * @param {String|MessageOptions|ReplyMessageOptions|InteractionReplyOptions|MessageEmbed|MessageAttachment} message
      * @param {MessageEmbed|MessageAttachment} additions
      * @return {Promise<void>}
      */
     async reply(message, ...additions) {
-        /** @type {MessageOptions|ReplyMessageOptions}*/
-        let options = {
-            embeds: additions.filter(a => a instanceof MessageEmbed),
-            files: additions.filter(a => a instanceof MessageAttachment),
-        };
+        /** @type {MessageOptions|ReplyMessageOptions|InteractionReplyOptions}*/
+        let options = {};
+
         if (typeof message === 'string') {
             options.content = message;
         }
-        else if (message instanceof MessageEmbed) {
-            options.embeds.unshift(message);
-        }
-        else if (message instanceof MessageAttachment) {
-            options.files.unshift(message);
+        else if (message instanceof MessageEmbed || message instanceof MessageAttachment) {
+            additions.unshift(message);
         }
         else if (message instanceof Object) {
             options = message;
-            if (options.embeds instanceof Array) {
-                options.embeds.concat(additions);
-            }
-            else {
-                options.embeds = additions;
-            }
         }
 
-        if (!this.source.isInteraction && this.userConfig.deleteCommands) {
-            this.response = await this.source.getChannel().send(options);
+        options.embeds ??= [];
+        options.embeds = options.embeds.concat(additions.filter(a => a instanceof MessageEmbed));
+        options.files ??= [];
+        options.files = options.files.concat(additions.filter(a => a instanceof MessageAttachment));
+
+        if (!this.source.isInteraction) {
+            options.ephemeral = undefined;
+            if (this.userConfig.deleteCommands) {
+                this.response = await this.source.getChannel().send(options);
+                return;
+            } else {
+                options.failIfNotExists ??= false;
+                options.allowedMentions ??= {repliedUser: false};
+            }
         }
-        else {
-            options.failIfNotExists ??= false;
-            options.allowedMentions ??= {repliedUser: false};
-            this.response = await this.source.reply(options);
-        }
+        this.response = await this.source.reply(options);
     }
 
     /**

@@ -25,7 +25,7 @@ class ClearModerationsCommand extends Command {
         const count = moderations[0]['modCount'];
 
         if (parseInt(count) === 0) {
-            await this.reply('This user doesn\'t have any moderations!');
+            await this.sendError('This user doesn\'t have any moderations!');
             return;
         }
 

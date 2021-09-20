@@ -1,6 +1,5 @@
 const ModerationCommand = require('../ModerationCommand');
 const Member = require('../../Member');
-const {MessageEmbed} = require('discord.js');
 const util = require('../../util');
 
 class UnmuteCommand extends ModerationCommand {
@@ -22,10 +21,7 @@ class UnmuteCommand extends ModerationCommand {
         const member = new Member(target, this.source.getGuild());
 
         if (!await member.isMuted(this.database)) {
-            await this.reply(new MessageEmbed()
-                .setDescription(`**${util.escapeFormatting(target.tag)}** isn't muted here!`)
-                .setColor(util.color.red)
-            );
+            await this.sendError(`**${util.escapeFormatting(target.tag)}** isn't muted here!`);
             return false;
         }
 

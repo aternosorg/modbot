@@ -27,27 +27,32 @@ module.exports = {
             await cmd._loadConfigs();
             const userPerms = cmd.userHasPerms(), botPerms = cmd.botHasPerms();
             if (userPerms !== true) {
-                await interaction.reply(`You are missing the following permissions to execute this command: ${userPerms.join(', ')}`);
+                await interaction.reply({
+                    content: `You are missing the following permissions to execute this command: ${userPerms.join(', ')}`,
+                    ephemeral: true,
+                });
                 return;
             }
             if (botPerms !== true) {
-                await interaction.reply(`I am missing the following permissions to execute this command: ${botPerms.join(', ')}`);
+                await interaction.reply({
+                    content: `I am missing the following permissions to execute this command: ${botPerms.join(', ')}`,
+                    ephemeral: true,
+                });
                 return;
             }
             await cmd.execute();
         } catch (e) {
-            try {
-                if  (e.code === APIErrors.MISSING_PERMISSIONS) {
-                    await interaction.reply('I am missing permissions to execute that command!');
-                }
-                else {
-                    await interaction.reply('An error occurred while executing that command!');
-                }
+            if  (e.code === APIErrors.MISSING_PERMISSIONS) {
+                await interaction.reply({
+                    content: 'I am missing permissions to execute that command!',
+                    ephemeral: true,
+                });
             }
-            catch (e2) {
-                if (e2.code === APIErrors.MISSING_PERMISSIONS) {
-                    return;
-                }
+            else {
+                await interaction.reply({
+                    content: 'An error occurred while executing that command!',
+                    ephemeral: true,
+                });
             }
             await monitor.error(`Failed to execute command ${name}`, e);
             console.error(`An error occurred while executing command ${name}:`,e);

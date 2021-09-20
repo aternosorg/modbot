@@ -57,6 +57,7 @@ module.exports = {
                 if (e2.code === APIErrors.MISSING_PERMISSIONS) {
                     return;
                 }
+                throw e2;
             }
             await monitor.error(`Failed to execute command ${name}`, e);
             console.error(`An error occurred while executing command ${name}:`,e);
