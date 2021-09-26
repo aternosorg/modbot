@@ -11,7 +11,7 @@ exports.event = async (options, member) => {
     let description = `**ID:** ${member.id}\n` +
         `**Created Account:** <t:${Math.floor(member.user.createdTimestamp / 1000)}:R>\n`;
     
-    const guild = this.message.guild;
+    const guild = member.guild;
 
     await Log.joinLog(member.guild.id, '', new MessageEmbed()
         .setTitle(`${member.user.tag} joined this server`)
