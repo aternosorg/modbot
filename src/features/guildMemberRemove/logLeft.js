@@ -15,14 +15,12 @@ exports.event = async (options, member) => {
         description += `**Joined:** <t:${Math.floor(member.joinedTimestamp / 1000)}:R>`;
     }
     
-    const guild = this.message.guild;
-
     await Log.joinLog(member.guild.id, '', new MessageEmbed()
         .setTitle(`${member.user.tag} left this server`)
         .setColor(util.color.red)
         .setThumbnail(member.user.avatarURL())
         .setDescription(description)
         .setTimestamp()
-        .setFooter(`Now at ${guild.memberCount} members`)
+        .setFooter(`Now at ${member.guild.memberCount} members`)
     );
 };
