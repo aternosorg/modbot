@@ -14,6 +14,8 @@ exports.event = async (options, member) => {
     if (member.joinedTimestamp) {
         description += `**Joined:** <t:${Math.floor(member.joinedTimestamp / 1000)}:R>`;
     }
+    
+    const guild = this.message.guild;
 
     await Log.joinLog(member.guild.id, '', new MessageEmbed()
         .setTitle(`${member.user.tag} left this server`)
@@ -21,5 +23,7 @@ exports.event = async (options, member) => {
         .setThumbnail(member.user.avatarURL())
         .setDescription(description)
         .setTimestamp()
+        .setFooter(`Now at ${guild.memberCount} members`)
+
     );
 };
