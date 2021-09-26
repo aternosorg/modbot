@@ -10,6 +10,8 @@ const util = require('../../util');
 exports.event = async (options, member) => {
     let description = `**ID:** ${member.id}\n` +
         `**Created Account:** <t:${Math.floor(member.user.createdTimestamp / 1000)}:R>\n`;
+    
+    const guild = this.message.guild;
 
     await Log.joinLog(member.guild.id, '', new MessageEmbed()
         .setTitle(`${member.user.tag} joined this server`)
@@ -17,5 +19,6 @@ exports.event = async (options, member) => {
         .setThumbnail(member.user.avatarURL())
         .setDescription(description)
         .setTimestamp()
+        .setFooter(`Now at ${guild.memberCount} members`)
     );
 };
