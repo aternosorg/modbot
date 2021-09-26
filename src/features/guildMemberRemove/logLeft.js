@@ -14,7 +14,6 @@ exports.event = async (options, member) => {
     if (member.joinedTimestamp) {
         description += `**Joined:** <t:${Math.floor(member.joinedTimestamp / 1000)}:R>`;
     }
-    
     await Log.joinLog(member.guild.id, '', new MessageEmbed()
         .setTitle(`${member.user.tag} left this server`)
         .setColor(util.color.red)
