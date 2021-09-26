@@ -10,7 +10,6 @@ const util = require('../../util');
 exports.event = async (options, member) => {
     let description = `**ID:** ${member.id}\n` +
         `**Created Account:** <t:${Math.floor(member.user.createdTimestamp / 1000)}:R>\n`;
-    
     await Log.joinLog(member.guild.id, '', new MessageEmbed()
         .setTitle(`${member.user.tag} joined this server`)
         .setColor(util.color.green)
