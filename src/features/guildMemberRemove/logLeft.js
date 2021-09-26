@@ -24,6 +24,5 @@ exports.event = async (options, member) => {
         .setDescription(description)
         .setTimestamp()
         .setFooter(`Now at ${guild.memberCount} members`)
-
     );
 };
