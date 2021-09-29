@@ -29,7 +29,7 @@ class ClearModerationsCommand extends Command {
             return;
         }
 
-        const {confirmed, component} = await this.getConfirmation(`Are you sure you want to delete ${count} ${count === 1 ? 'moderations' : 'moderation'} for <@${user.id}>?`);
+        const {confirmed, component} = await this.getConfirmation(`Are you sure you want to delete ${count} ${count === 1 ? 'moderation' : 'moderations'} for <@${user.id}>?`);
 
         if (!component) {
             return;
