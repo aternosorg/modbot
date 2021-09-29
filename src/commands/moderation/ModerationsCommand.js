@@ -10,7 +10,7 @@ const Moderation = require('../../Moderation');
  */
 const moderationsPerPage = 20;
 
-class ModInfoCommand extends Command {
+class ModerationsCommand extends Command {
 
     static description = 'List all moderations for a user';
 
@@ -55,7 +55,7 @@ class ModInfoCommand extends Command {
             );
         }
 
-        await this.multiPageResponse((index) => {
+        await this.multiPageResponse(async ( index) => {
             const start = index * moderationsPerPage;
             let end = (index + 1) * moderationsPerPage;
             if (end > moderations.length) end = moderations.length;
@@ -90,7 +90,6 @@ class ModInfoCommand extends Command {
             return embed
                 .setAuthor(`Moderation ${start + 1} to ${end} for ${user.tag} | total ${moderations.length}`, user.avatarURL());
         }, Math.ceil(moderations.length / moderationsPerPage));
-
     }
 
     static getOptions() {
@@ -113,4 +112,4 @@ class ModInfoCommand extends Command {
     }
 }
 
-module.exports = ModInfoCommand;
+module.exports = ModerationsCommand;

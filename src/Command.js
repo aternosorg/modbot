@@ -18,6 +18,7 @@ const {
     CommandInteractionOptionResolver,
     CommandInteractionOption,
     InteractionReplyOptions,
+    InteractionCollector,
 } = require('discord.js');
 const Database = require('./Database');
 const defaultPrefix = require('../config.json').prefix;
@@ -329,24 +330,49 @@ class Command {
 
     /**
      * generate a multi page response
-     * @param {function} generatePage generate a new page (index)
+     * @param {(index: Number) => MessageEmbed|Promise<MessageEmbed>} generatePage generate a new page (index)
      * @param {Number} [pages] number of possible pages
      * @param {Number} [duration] inactivity timeout in ms (default: 60s)
      */
     async multiPageResponse(generatePage, pages, duration = 60000) {
-        await this.reply(await generatePage(0));
+        const nextButton = new MessageButton({
+                customId: 'previous',
+                style: 'SECONDARY',
+                emoji: icons.left,
+                disabled: true,
+            }),
+            previousButton = new MessageButton({
+                customId: 'next',
+                style: 'SECONDARY',
+                emoji: icons.right,
+                disabled: pages === 1
+            });
+        await this.reply({
+            components: [new MessageActionRow({
+                components: [nextButton, previousButton]
+            })]
+        }, await generatePage(0));
         const message = this.response;
 
-        if (pages === 1) return;
-        await message.react(icons.right);
-
-        const reactions = message.createReactionCollector( {
-            filter: async (reaction, user) => {
-                if (user.id === this.source.getUser().id && [icons.left,icons.right].includes(reaction.emoji.name)) {
+        /**
+         * @type {Message}
+         */
+        let updating;
+        /**
+         * @type {InteractionCollector<ButtonInteraction>}
+         */
+        const components = message.createMessageComponentCollector( {
+            /**
+             * @param {ButtonInteraction} interaction
+             * @return {Promise<boolean>}
+             */
+            filter: async (interaction) => {
+                if (interaction.user.id === this.source.getUser().id) {
+                    updating = await interaction.reply({fetchReply: true, content: 'Updating embed...'});
                     return true;
                 }
                 else {
-                    if (user.id !== this.bot.user.id) await reaction.users.remove(user);
+                    await interaction.reply({ephemeral: true, content: 'Only the message author can do that!'});
                     return false;
                 }
             }
@@ -355,24 +381,35 @@ class Command {
         let index = 0,
             timeout = setTimeout(end, duration);
 
-        reactions.on('collect', async (reaction) => {
-            if (reaction.emoji.name === icons.right && index !== pages - 1) {
+        components.on('collect', /** @param {ButtonInteraction} interaction */async (interaction) => {
+            if (interaction.customId === 'next') {
                 index++;
             }
-            if (reaction.emoji.name === icons.left && index !== 0) {
+            if (interaction.customId === 'previous') {
                 index--;
             }
-            await message.edit(await generatePage(index));
-            await message.reactions.removeAll();
-            if (index !== 0) await message.react(icons.left);
-            if (index !== pages -1) await message.react(icons.right);
+
+            await message.edit({
+                embeds: [await generatePage(index)],
+                components: [new MessageActionRow({
+                    components: [
+                        nextButton.setDisabled(index === pages -1),
+                        previousButton.setDisabled(index === 0)
+                    ]
+                })]
+            });
+            await updating.delete();
             clearTimeout(timeout);
             setTimeout(end, duration);
         });
 
         async function end() {
-            reactions.stop('TIME');
-            await message.reactions.removeAll();
+            components.stop('TIME');
+            await message.edit({
+                components: [
+                    nextButton.setDisabled(true),
+                    previousButton.setDisabled(true)
+                ]});
         }
     }
 
