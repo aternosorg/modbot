@@ -335,13 +335,13 @@ class Command {
      * @param {Number} [duration] inactivity timeout in ms (default: 60s)
      */
     async multiPageResponse(generatePage, pages, duration = 60000) {
-        const nextButton = new MessageButton({
+        const previousButton = new MessageButton({
                 customId: 'previous',
                 style: 'SECONDARY',
                 emoji: icons.left,
                 disabled: true,
             }),
-            previousButton = new MessageButton({
+            nextButton = new MessageButton({
                 customId: 'next',
                 style: 'SECONDARY',
                 emoji: icons.right,
@@ -349,7 +349,7 @@ class Command {
             });
         await this.reply({
             components: [new MessageActionRow({
-                components: [nextButton, previousButton]
+                components: [previousButton, nextButton]
             })]
         }, await generatePage(0));
         const message = this.response;
@@ -393,8 +393,8 @@ class Command {
                 embeds: [await generatePage(index)],
                 components: [new MessageActionRow({
                     components: [
-                        nextButton.setDisabled(index === pages -1),
-                        previousButton.setDisabled(index === 0)
+                        previousButton.setDisabled(index === 0),
+                        nextButton.setDisabled(index === pages -1)
                     ]
                 })]
             });
@@ -407,8 +407,8 @@ class Command {
             components.stop('TIME');
             await message.edit({
                 components: [
-                    nextButton.setDisabled(true),
-                    previousButton.setDisabled(true)
+                    previousButton.setDisabled(true),
+                    nextButton.setDisabled(true)
                 ]});
         }
     }

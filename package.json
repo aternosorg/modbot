@@ -24,7 +24,7 @@
     "@google-cloud/logging": "^9.1.1",
     "@googleapis/youtube": "^2.0.0",
     "diff": "^4.0.2",
-    "discord.js": "^13.2.0-dev.1631620977.be8912a",
+    "discord.js": "^13.2.0-dev.1632916991.fe95005",
     "fuse.js": "^6.4.6",
     "got": "^11.8.2",
     "mysql": "^2.18.1",
