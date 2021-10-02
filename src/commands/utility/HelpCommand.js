@@ -23,7 +23,7 @@ class HelpCommand extends Command {
                 .setFooter(`View a command or category using ${this.prefix}help <category|command>`);
             for (const [key, commands] of categories.entries()) {
                 if (commands.length === 0) continue;
-                embed.addField(util.toTitleCase(key), commands.map(c => c.names).flat().sort().join(', '));
+                embed.addField(util.toTitleCase(key), commands.map(c => c.names[0]).flat().sort().join(', '));
             }
             return this.reply(embed);
         }

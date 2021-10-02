@@ -39,7 +39,8 @@ class Command {
     static usage = '';
 
     /**
-     * commands
+     * The primary command name followed by possible aliases.
+     * Only the primary name is used in slash commands and the help command.
      * @type {String[]}
      */
     static names = [];
