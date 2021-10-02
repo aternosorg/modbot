@@ -39,7 +39,10 @@ class Command {
     static usage = '';
 
     /**
-     * commands
+     * Commands
+     * It's advised to set the main name first on
+     * the array as this is the one that will
+     * appear when using the Help command.
      * @type {String[]}
      */
     static names = [];
