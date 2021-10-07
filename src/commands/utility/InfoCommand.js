@@ -6,7 +6,7 @@ class InfoCommand extends Command {
 
     static description = 'Show information about ModBot';
 
-    static names = ['info', 'invite'];
+    static names = ['info', 'invite', 'support'];
 
     static userPerms = [];
 
