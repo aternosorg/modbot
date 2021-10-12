@@ -172,7 +172,10 @@ class Member {
      */
     async ban(database, reason, moderator, duration){
         await this.dmPunishedUser('banned', reason, duration, 'from');
-        await this.guild.guild.members.ban(this.user.id, {days: 1, reason: `${moderator.username}#${moderator.discriminator} ${duration ? `(${util.secToTime(duration)}) ` : ''}| ${reason}`});
+        await this.guild.guild.members.ban(this.user.id, {
+            days: 1,
+            reason: `${moderator.username}#${moderator.discriminator} ${duration ? `(${util.secToTime(duration)}) ` : ''}| ${reason}`.substring(0, 500) + '...'
+        });
         const id = await database.addModeration(/** @type {Snowflake} */ this.guild.guild.id, this.user.id, 'ban', reason, duration, moderator.id);
         await Log.logModeration(/** @type {GuildInfo} */ this.guild.guild.id, moderator, this.user, reason, id, 'ban', { time: util.secToTime(duration) });
     }
@@ -219,7 +222,7 @@ class Member {
      */
     async softban(database, reason, moderator){
         await this.dmPunishedUser('softbanned', reason, null, 'from');
-        await this.guild.guild.members.ban(this.user.id, {days: 1, reason: `${moderator.username}#${moderator.discriminator} | ${reason}`});
+        await this.guild.guild.members.ban(this.user.id, {days: 1, reason: `${moderator.username}#${moderator.discriminator} | ${reason}`.substring(0, 500) + '...'});
         await this.guild.guild.members.unban(this.user.id, 'softban');
         const id = await database.addModeration(/** @type {Snowflake} */ this.guild.guild.id, this.user.id, 'softban', reason, null, moderator.id);
         await Log.logModeration(/** @type {GuildInfo} */ this.guild.guild.id, moderator, this.user, reason, id, 'softban');
@@ -235,7 +238,7 @@ class Member {
     async kick(database, reason, moderator){
         await this.dmPunishedUser('kicked', reason, null, 'from');
         if (!this.member && await this.fetchMember() === null) return;
-        await this.member.kick(`${moderator.username}#${moderator.discriminator} | ${reason}`);
+        await this.member.kick(`${moderator.username}#${moderator.discriminator} | ${reason}`.substring(0, 500) + '...');
         const id = await database.addModeration(/** @type {Snowflake} */ this.guild.guild.id, this.user.id, 'kick', reason, null, moderator.id);
         await Log.logModeration(/** @type {GuildInfo} */ this.guild.guild.id, moderator, this.user, reason, id, 'kick');
     }
@@ -254,7 +257,7 @@ class Member {
         await this.dmPunishedUser('muted', reason, duration, 'in');
         if (!this.member) await this.fetchMember();
         if (this.member) {
-            await this.member.roles.add(mutedRole, `${moderator.username}#${moderator.discriminator} ${duration ? `(${util.secToTime(duration)}) ` : ''}| ${reason}`);
+            await this.member.roles.add(mutedRole, `${moderator.username}#${moderator.discriminator} ${duration ? `(${util.secToTime(duration)}) ` : ''}| ${reason}`.substring(0, 500) + '...');
         }
         const id = await database.addModeration(/** @type {Snowflake} */ this.guild.guild.id, this.user.id, 'mute', reason, duration, moderator.id);
         await Log.logModeration(/** @type {GuildInfo} */ this.guild.guild.id, moderator, this.user, reason, id, 'mute', { time: util.secToTime(duration) });
