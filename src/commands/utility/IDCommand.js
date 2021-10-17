@@ -1,12 +1,12 @@
 const Command = require('../../Command');
-const {User, Collection, MessageEmbed} = require('discord.js');
+const {User, MessageEmbed} = require('discord.js');
 const util = require('../../util');
 
 const resultLimit = 150;
 
 class IDCommand extends Command {
 
-    static description = 'Find a user\'s ID';
+    static description = 'Search for a user\'s ID in the member and ban list.';
 
     static usage = '<username|username#1234>';
 
@@ -16,28 +16,29 @@ class IDCommand extends Command {
 
     static modCommand = true;
 
+    static supportsSlashCommands = true;
+
     async execute() {
-        if (!this.args.length) return this.sendUsage();
+        const query = this.options.getString('username');
+        if (!query) return this.sendUsage();
 
-        const fullName = this.args.join(' ');
-        let users = new Collection();
-        const [,name, discrim] = fullName.match(/([^#]*)#?(\d{4})?$/);
+        const [,user, discrim] = query.match(/([^#]*)#?(\d{4})?$/);
 
-        const members = await this.message.guild.members.fetch();
-        const bans = await this.message.guild.bans.fetch();
+        let [users, bans] = await Promise.all([
+            this.source.getGuild().members.fetch({query}),
+            this.source.getGuild().bans.fetch(),
+        ]);
 
-        users = users.concat(members.filter(member => this._matches(member.user, name, discrim)));
-        users = users.concat(bans.filter(banInfo => this._matches(banInfo.user, name, discrim)));
+        users = users.concat(bans.filter(banInfo => this._matches(banInfo.user, user, discrim)));
 
         const embed = new MessageEmbed()
-            .setTitle(`User search for ${fullName}`);
+            .setTitle(`User search for ${query}`);
         if (users.size === 0) {
-            embed.setDescription('No users found')
-                .setColor(util.color.red);
-            return await this.reply(embed);
+            return this.sendError('No users found');
         }
+
         if (users.size > resultLimit) {
-            embed.setTitle(`First ${resultLimit} results of user search for ${fullName}`);
+            embed.setTitle(`First ${resultLimit} results of user search for ${query}`);
             users = Array.from(users.values()).slice(0, resultLimit);
         }
 
@@ -64,6 +65,25 @@ class IDCommand extends Command {
      */
     _matches(user, name, discriminator) {
         return user.username.toLowerCase().includes(name.toLowerCase()) && (!discriminator || user.discriminator === discriminator);
+    }
+
+    static getOptions() {
+        return [{
+            name: 'username',
+            type: 'STRING',
+            description: 'Discord username or tag',
+            required: true,
+        }];
+    }
+
+    parseOptions(args) {
+        return [
+            {
+                name: 'username',
+                type: 'STRING',
+                value: args.join(' '),
+            }
+        ];
     }
 }
 
