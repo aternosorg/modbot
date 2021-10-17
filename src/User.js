@@ -96,9 +96,7 @@ class User {
         }
 
         let user = new User(userID, client);
-        await user.fetch();
-        user = user.user;
-        return user;
+        return user.fetchUser();
     }
 }
 

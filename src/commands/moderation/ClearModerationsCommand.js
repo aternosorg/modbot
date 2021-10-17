@@ -14,14 +14,23 @@ class ClearModerationsCommand extends Command {
 
     static modCommand = true;
 
+    static supportsSlashCommands = true;
+
     async execute() {
-        const user = await User.getMentionedUser(this.args.shift(), this.bot);
-        if (user === null) {
-            return await this.sendUsage();
+
+        let user;
+        if (this.source.isInteraction) {
+            user = this.options.getUser('user');
+        }
+        else {
+            user = await User.getMentionedUser(this.options.getString('userid'), this.bot);
+            if (!user) {
+                return this.sendUsage();
+            }
         }
 
         /** @type {Moderation[]} */
-        const moderations = await this.database.queryAll('SELECT COUNT(id) AS modCount FROM moderations WHERE userid = ? AND guildid = ?',[user.id,this.message.guild.id]);
+        const moderations = await this.database.queryAll('SELECT COUNT(id) AS modCount FROM moderations WHERE userid = ? AND guildid = ?',[user.id,this.source.getGuild().id]);
         const count = moderations[0]['modCount'];
 
         if (parseInt(count) === 0) {
@@ -36,15 +45,33 @@ class ClearModerationsCommand extends Command {
         }
 
         if (!confirmed) {
-            await component.reply('The moderation was not deleted!');
+            await component.reply('Aborted!');
             return;
         }
 
         /** @property {Number} affectedRows */
-        const deletion = await this.database.queryAll('DELETE FROM moderations WHERE guildid = ? AND userid = ?',[this.message.guild.id, user.id]);
+        const deletion = await this.database.queryAll('DELETE FROM moderations WHERE guildid = ? AND userid = ?',[this.source.getGuild().id, user.id]);
         await component.reply(`Deleted ${deletion.affectedRows} ${deletion.affectedRows === 1 ? 'moderation' : 'moderations'}!`);
     }
 
+    static getOptions() {
+        return [{
+            name: 'user',
+            type: 'USER',
+            description: 'user',
+            required: true,
+        }];
+    }
+
+    parseOptions(args) {
+        return [
+            {
+                name: 'userid',
+                type: 'STRING',
+                value: args.join(' '),
+            }
+        ];
+    }
 }
 
 module.exports = ClearModerationsCommand;

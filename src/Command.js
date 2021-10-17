@@ -249,7 +249,7 @@ class Command {
             .setAuthor(`Help for ${cmd} | Prefix: ${prefix}`)
             .setFooter(`Command executed by ${util.escapeFormatting(source.getUser().tag)}`)
             .addFields(
-                /** @type {any} */ { name: 'Usage', value: `\`${prefix}${cmd}${this.usage ? ` ${this.usage}` : ""}\``, inline: true},
+                /** @type {any} */ { name: 'Usage', value: `\`${prefix}${cmd}${this.usage ? ` ${this.usage}` : ''}\``, inline: true},
                 /** @type {any} */ { name: 'Description', value: this.description, inline: true},
                 /** @type {any} */ { name: 'Required Permissions', value: this.userPerms.length !== 0 ? `\`${this.userPerms.join('`, `')}\`` : 'none', inline: true }
             )
@@ -441,8 +441,7 @@ class Command {
                     .setLabel('Cancel')
                     .setStyle('SUCCESS')
             );
-        /** @type {Message} */
-        this.response = await this.source.getChannel().send({content: text, components: [buttons]});
+        await this.reply({content: text, components: [buttons]});
         try {
             const component = await this.response.awaitMessageComponent({
                 max: 1, time: options.time, errors: ['time'],
