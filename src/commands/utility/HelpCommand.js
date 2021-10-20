@@ -1,5 +1,5 @@
 const Command = require('../../Command');
-const {MessageEmbed} = require('discord.js');
+const {MessageEmbed, Collection} = require('discord.js');
 const util = require('../../util');
 
 class HelpCommand extends Command {
@@ -10,45 +10,106 @@ class HelpCommand extends Command {
 
     static names = ['help'];
 
+    static supportsSlashCommands = true;
+
     async execute() {
+        const categories = this._getCategories(), commands = this._getCommands();
 
-        const commandManager = require('../../CommandManager');
+        const name = this.options.getString('command');
+        const embed = new MessageEmbed().setColor(util.color.red);
+        const data = {
+            ephemeral: true,
+            embeds: [embed]
+        };
 
-        const categories = commandManager.getCategories();
-        const commands = commandManager.getCommands();
-
-        if (!this.args.length) {
-            const embed = new MessageEmbed()
-                .setColor(util.color.red)
-                .setFooter(`View a command or category using ${this.prefix}help <category|command>`);
+        if (!name) {
+            //list all commands
+            embed.setFooter(`View a command or category using ${this.prefix}help <category|command>`);
             for (const [key, commands] of categories.entries()) {
-                if (commands.length === 0) continue;
-                embed.addField(util.toTitleCase(key), commands.map(c => c.names[0]).flat().sort().join(', '));
+                embed.addField(util.toTitleCase(key), this._getNameList(commands));
             }
-            return this.reply(embed);
+            return this.reply(data);
         }
-
-        const name = this.args.shift().toLowerCase();
-        const category = categories.get(name);
-        const command = commands.get(name);
-        if (!category && !command) return this.sendUsage();
-
-        if (category) {
+        else if (categories.has(name)) {
+            //show category overview
             let description = '';
 
-            for (const command of category) {
+            for (const command of categories.get(name)) {
                 description += command.getOverview() + '\n';
             }
 
-            return this.reply(new MessageEmbed()
+            embed
                 .setTitle(`ModBot ${util.toTitleCase(name)} Commands:`)
-                .setColor(util.color.red)
                 .setDescription(description)
-                .setFooter(`View a command using ${this.prefix}help <command>`)
-            );
-        }
+                .setFooter(`View a command using ${this.prefix}help <command>`);
 
-        if (command) return this.reply(await command.getUsage(this.source, name, this.guildConfig));
+            return this.reply(data);
+        }
+        else if (commands.has(name)) {
+            //send command usage
+            data.embeds = [await commands.get(name).getUsage(this.source, name, this.guildConfig)];
+            return this.reply(data);
+        }
+        else {
+            //command not found -> send help usage
+            return this.sendUsage();
+        }
+    }
+
+    /**
+     * get all categories and their commands
+     * @return {Collection<String, Command[]>}
+     * @private
+     */
+    _getCategories() {
+        const commandManager = require('../../CommandManager');
+        return commandManager.getCategories();
+    }
+
+    /**
+     * get all commands
+     * @return {String[]}
+     * @private
+     */
+    _getCommands() {
+        const commandManager = require('../../CommandManager');
+        return commandManager.getCommands();
+    }
+
+    /**
+     * list primary command names in alphabetical order
+     * @param {[]} commands
+     * @return {string}
+     * @private
+     */
+    _getNameList(commands) {
+        const names = [];
+        for (const command of commands) {
+            names.push(command.names[0]);
+        }
+        return names
+            //.flat()
+            .sort()
+            .join(', ');
+    }
+
+    static getOptions() {
+        return [{
+            name: 'command',
+            type: 'STRING',
+            description: 'Category or command name',
+            required: false,
+        }];
+    }
+
+    parseOptions(args) {
+        return [
+            {
+                name: 'command',
+                type: 'STRING',
+                value: args.shift()?.toLowerCase(),
+            }
+        ];
     }
 }
 
