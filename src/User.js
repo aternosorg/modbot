@@ -53,7 +53,7 @@ class User {
             this.user = await this.client.users.fetch(this.id);
         }
         catch (e) {
-            if (e.code === APIErrors.UNKNOWN_USER) {
+            if (e.code === APIErrors.UNKNOWN_USER || e.httpStatus === 404) {
                 this.user = null;
             }
             else {
