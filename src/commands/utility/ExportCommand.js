@@ -14,10 +14,15 @@ class ExportCommand extends Command {
 
     static botPerms = [];
 
+    static supportsSlashCommands = true;
+
     async execute() {
-        const exporter = new Exporter(this.message.guild.id);
+        if (this.source.isInteraction) {
+            await this.source.defer();
+        }
+        const exporter = new Exporter(this.source.getGuild().id);
         const data = await exporter.export();
-        await this.reply(new MessageAttachment(Buffer.from(data), `modbot-data-${this.message.guild.id}.json`));
+        await this.reply(new MessageAttachment(Buffer.from(data), `modbot-data-${this.source.getGuild().id}.json`));
     }
 }
 
