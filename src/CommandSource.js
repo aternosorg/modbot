@@ -123,11 +123,16 @@ class CommandSource {
      * @return {Promise}
      */
     defer() {
-        if (!this.isInteraction || this.#interaction.deferred) {
-            return null;
+        if (this.isInteraction) {
+            if (this.#interaction.deferred) {
+                return null;
+            }
+            else {
+                return this.#interaction.deferReply();
+            }
+        } else {
+            return this.#message.channel.sendTyping();
         }
-
-        return this.#interaction.deferReply();
     }
 }
 

@@ -17,9 +17,7 @@ class ExportCommand extends Command {
     static supportsSlashCommands = true;
 
     async execute() {
-        if (this.source.isInteraction) {
-            await this.source.defer();
-        }
+        await this.source.defer();
         const exporter = new Exporter(this.source.getGuild().id);
         const data = await exporter.export();
         await this.reply(new MessageAttachment(Buffer.from(data), `modbot-data-${this.source.getGuild().id}.json`));
