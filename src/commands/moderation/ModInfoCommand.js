@@ -15,17 +15,20 @@ class ModInfoCommand extends Command {
 
     static modCommand = true;
 
+    static supportsSlashCommands = true;
+
     async execute() {
-
-        if (this.args.length !== 1) return this.sendUsage();
-
-        const id = parseInt(this.args[0].startsWith('#') ? this.args[0].substring(1) : this.args[0]);
-        if (!id) return this.sendUsage();
+        const id = this.options.getNumber('id');
+        if (!id || id < 0) {
+            return this.sendUsage();
+        }
 
         /** @type {Moderation|null} */
-        const moderation = await this.database.query('SELECT * FROM moderations WHERE id = ? AND guildid = ?',[id, this.message.guild.id]);
+        const moderation = await this.database.query('SELECT * FROM moderations WHERE id = ? AND guildid = ?',[id, this.source.getGuild().id]);
 
-        if (!moderation) return this.sendError('Moderation not found');
+        if (!moderation) {
+            return this.sendError('Moderation not found');
+        }
 
         const user = await this.bot.users.fetch(moderation.userid);
 
@@ -53,6 +56,26 @@ class ModInfoCommand extends Command {
         embed.addField('Reason', moderation.reason.substring(0, 1024), false);
 
         await this.reply(embed);
+    }
+
+    static getOptions() {
+        return [{
+            name: 'id',
+            type: 'NUMBER',
+            description: 'Moderation ID',
+            required: true,
+        }];
+    }
+
+    parseOptions(args) {
+        const id = args.shift()?.match(/#?(\d+)/);
+        return [
+            {
+                name: 'id',
+                type: 'NUMBER',
+                value: id ? parseInt(id[1]) : id,
+            }
+        ];
     }
 }
 
