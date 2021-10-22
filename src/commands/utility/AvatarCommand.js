@@ -1,5 +1,6 @@
 const Command = require('../../Command');
-const {User, Snowflake, MessageEmbed} = require('discord.js');
+const {Snowflake, MessageEmbed} = require('discord.js');
+const User = require('../../User');
 const util = require('../../util');
 
 class AvatarCommand extends Command{
@@ -10,28 +11,56 @@ class AvatarCommand extends Command{
 
     static description = 'Show someones avatar';
 
+    static supportsSlashCommands = true;
+
     async execute() {
-        /** @type {User|Snowflake} */
-        let user = this.args.length ? util.userMentionToId(this.args[0]) : this.message.author;
-        if (!(user instanceof User)) {
-            try {
-                user = await this.bot.users.fetch(user);
-            }
-            catch (e) {
-                if (e.httpStatus === 404) {
-                    await this.sendUsage();
-                    return;
-                }
-                throw e;
-            }
+        const user = await this._getUser();
+
+        if (!user) {
+            return this.sendUsage();
         }
+
         const avatarEmbed = new MessageEmbed()
             .setTitle(`Avatar of ${util.escapeFormatting(user.tag)}`)
             .setImage(user.displayAvatarURL({dynamic: true, size: 2048}))
-            .setFooter(`Command executed by ${util.escapeFormatting(this.message.author.tag)}`)
+            .setFooter(`Command executed by ${util.escapeFormatting(this.source.getUser().tag)}`)
             .setTimestamp();
 
         await this.reply(avatarEmbed);
+    }
+
+    async _getUser() {
+        if (this.source.isInteraction) {
+            return this.options.getUser('user') ?? this.source.getUser();
+        }
+        else {
+            /** @type {Snowflake} */
+            const userID = this.options.getString('userID');
+            if (userID) {
+                const user = new User(userID, this.bot);
+                return await user.fetchUser();
+            }
+            else {
+                return this.source.getUser();
+            }
+        }
+    }
+
+    static getOptions() {
+        return [{
+            name: 'user',
+            type: 'USER',
+            description: 'The user who\'s avatar you want to view.',
+            required: false,
+        }];
+    }
+
+    parseOptions(args) {
+        return [{
+            name: 'userID',
+            type: 'STRING',
+            value: util.userMentionToId(args.join(' ')),
+        }];
     }
 }
 
