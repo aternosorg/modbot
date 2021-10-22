@@ -65,7 +65,9 @@ class CommandManager {
                 }
             }
 
-            this.#categories.set(folder, category);
+            if (category.length !== 0) {
+                this.#categories.set(folder, category);
+            }
         }
         return commands;
     }
