@@ -99,15 +99,39 @@ class CommandSource {
      */
     reply(options) {
         if (this.isInteraction) {
-            if (!options.ephemeral)
+            if (!options.ephemeral) {
                 options.fetchReply = true;
-            if (this.#interaction.replied)
+            }
+
+            if (this.#interaction.replied) {
                 return this.#interaction.followUp(options);
-            else
+            }
+            else if (this.#interaction.deferred) {
+                return this.#interaction.editReply(options);
+            }
+            else {
                 return this.#interaction.reply(options);
+            }
         }
         else {
             return this.#message.reply(options);
+        }
+    }
+
+    /**
+     * defer the reply to this message
+     * @return {Promise}
+     */
+    defer() {
+        if (this.isInteraction) {
+            if (this.#interaction.deferred) {
+                return null;
+            }
+            else {
+                return this.#interaction.deferReply();
+            }
+        } else {
+            return this.#message.channel.sendTyping();
         }
     }
 }
