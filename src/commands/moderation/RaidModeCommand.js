@@ -12,24 +12,26 @@ class RaidModeCommand extends Command {
 
     static modCommand = true;
 
+    static supportsSlashCommands = true;
+
     static userPerms = ['BAN_MEMBERS'];
 
     static botPerms = ['KICK_MEMBERS'];
 
     async execute() {
-
-        if (this.args.length !== 1) {
+        let command = this.options.getString('command');
+        if (!command) {
             await this.sendUsage();
             return;
         }
 
-        switch (this.args[0].toLowerCase()) {
+        switch (command) {
             case 'on':
                 this.guildConfig.raidMode = true;
                 await this.guildConfig.save();
                 await this.reply('Enabled anti-raid-mode! Nobody can join this server now.');
-                await Log.logEmbed(/** @type {GuildInfo} */ this.message.guild.id, {
-                    description: `<@!${this.message.author.id}> enabled anti-raid-mode!`
+                await Log.logEmbed(/** @type {GuildInfo} */ this.source.getGuild().id, {
+                    description: `<@!${this.source.getUser().id}> enabled anti-raid-mode!`
                 });
                 break;
 
@@ -37,8 +39,8 @@ class RaidModeCommand extends Command {
                 this.guildConfig.raidMode = false;
                 await this.guildConfig.save();
                 await this.reply('Disabled anti-raid-mode!');
-                await Log.logEmbed(/** @type {GuildInfo} */ this.message.guild.id, {
-                    description: `<@!${this.message.author.id}> disabled anti-raid-mode!`
+                await Log.logEmbed(/** @type {GuildInfo} */ this.source.getGuild().id, {
+                    description: `<@!${this.source.getUser().id}> disabled anti-raid-mode!`
                 });
                 break;
 
@@ -50,6 +52,40 @@ class RaidModeCommand extends Command {
                 await this.sendUsage();
                 break;
         }
+    }
+
+
+    static getOptions() {
+        return [{
+            name: 'command',
+            type: 'STRING',
+            description: 'Sub-command',
+            required: true,
+            choices: [
+                {
+                    name: 'on',
+                    value: 'on',
+                },
+                {
+                    name: 'off',
+                    value: 'off',
+                },
+                {
+                    name: 'status',
+                    value: 'status',
+                },
+            ]
+        }];
+    }
+
+    parseOptions(args) {
+        return [
+            {
+                name: 'command',
+                type: 'STRING',
+                value: args.join(' ').toLowerCase(),
+            }
+        ];
     }
 }
 
