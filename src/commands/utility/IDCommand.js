@@ -19,6 +19,7 @@ class IDCommand extends Command {
     static supportsSlashCommands = true;
 
     async execute() {
+        await this.source.defer();
         const query = this.options.getString('username');
         if (!query) return this.sendUsage();
 
