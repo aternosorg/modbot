@@ -13,15 +13,16 @@ class ClearModerationsCommand extends Command {
 
     static modCommand = true;
 
+    static supportsSlashCommands = true;
+
     async execute() {
-        const regex = this.args.shift()?.match(/#?(\d+)/);
-        if (regex == null) {
+        const id = this.options.getNumber('id');
+        if (!id || id < 0) {
             return await this.sendUsage();
         }
-        const id = parseInt(regex[1]);
 
         /** @type {Moderation|null} */
-        const moderation = await this.database.query('SELECT id FROM moderations WHERE id = ? AND guildid = ?', [id, this.message.guild.id]);
+        const moderation = await this.database.query('SELECT id FROM moderations WHERE id = ? AND guildid = ?', [id, this.source.getGuild().id]);
 
         if (moderation === null) {
             await this.sendError('Moderation not found!');
@@ -34,12 +35,32 @@ class ClearModerationsCommand extends Command {
         }
 
         if (!confirmed) {
-            await component.reply('The moderation was not deleted!');
+            await component.reply('Aborted!');
             return;
         }
 
-        await this.database.queryAll('DELETE FROM moderations WHERE id = ? AND guildid = ?', [id, this.message.guild.id]);
+        await this.database.queryAll('DELETE FROM moderations WHERE id = ? AND guildid = ?', [id, this.source.getGuild().id]);
         await component.reply(`Deleted the moderation #${id}!`);
+    }
+
+    static getOptions() {
+        return [{
+            name: 'id',
+            type: 'NUMBER',
+            description: 'Moderation ID',
+            required: true,
+        }];
+    }
+
+    parseOptions(args) {
+        const id = args.shift()?.match(/#?(\d+)/);
+        return [
+            {
+                name: 'id',
+                type: 'NUMBER',
+                value: id ? parseInt(id[1]) : id,
+            }
+        ];
     }
 }
 
