@@ -1,6 +1,7 @@
 const Command = require('../../Command');
 const Request = require('../../Request');
-const {MessageOptions} = require('discord.js');
+const {MessageOptions, MessageEmbed, MessageActionRow, MessageButton} = require('discord.js');
+const Turndown = require('turndown');
 
 class ArticleCommand extends Command {
 
@@ -28,8 +29,24 @@ class ArticleCommand extends Command {
         await request.getJSON();
 
         if(request.JSON.count !== 0){
+            /**
+             * @type {{html_url: String, title: String, label_names: String[], body: String}}
+             */
+            const result = request.JSON.results[0];
             /** @type {MessageOptions} */
-            const options = {content: request.JSON.results[0].html_url};
+            const options = {
+                embeds: [
+                    this.createEmbed(result)
+                ],
+                components: [
+                    new MessageActionRow()
+                        .addComponents(new MessageButton({
+                            style: 'LINK',
+                            url: result.html_url,
+                            label: 'View Article',
+                        }))
+                ]
+            };
 
             if (!this.source.isInteraction && this.userConfig.deleteCommands && this.source.getRaw().reference) {
                 options.reply = {
@@ -62,6 +79,46 @@ class ArticleCommand extends Command {
                 value: args.join(' '),
             }
         ];
+    }
+
+    /**
+     * get a description from the HTML body of an article
+     * @param result
+     * @return {MessageEmbed}
+     */
+    createEmbed(result) {
+        const embed = new MessageEmbed()
+            .setTitle(result.title);
+
+        //set up turndown
+        const turndown = new Turndown({
+            bulletListMarker: '-'
+        });
+        //convert headings to bold
+        turndown.addRule('headings', {
+            filter: ['h1','h2','h3','h4','h5','h6'],
+            replacement: function (content) {
+                return '**' + content + '**';
+            }
+        });
+        //remove img tags
+        turndown.addRule('images', {
+            filter: ['img'],
+            replacement: function () {
+                return '';
+            }
+        });
+
+        //convert string
+        let string = turndown.turndown(result.body);
+        if (string.length > 800) {
+            string = string.substr(0, 800);
+            string = string.replace(/\.?\n+.*$/, '');
+            embed.setFooter('To read more click \'View Article\' below.');
+        }
+
+        embed.setDescription(string);
+        return embed;
     }
 }
 

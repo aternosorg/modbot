@@ -28,7 +28,8 @@
     "fuse.js": "^6.4.6",
     "got": "^11.8.2",
     "mysql": "^2.18.1",
-    "string-similarity": "^4.0.4"
+    "string-similarity": "^4.0.4",
+    "turndown": "^7.1.1"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.14.3",
