@@ -98,7 +98,7 @@ class ArticleCommand extends Command {
         turndown.addRule('headings', {
             filter: ['h1','h2','h3','h4','h5','h6'],
             replacement: function (content) {
-                return '**' + content + '**';
+                return '**' + content + '**\n';
             }
         });
         //remove img tags
