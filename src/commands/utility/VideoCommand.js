@@ -33,6 +33,10 @@ class VideoCommand extends Command {
         }
     }, 60*1000);
 
+    static clearGuildCache(id) {
+        this.#cache.delete(id);
+    }
+
     async execute() {
         if (!this.guildConfig.playlist) {
             return this.sendError('No playlist specified!');
