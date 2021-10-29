@@ -98,6 +98,7 @@ class ArticleCommand extends Command {
         turndown.addRule('headings', {
             filter: ['h1','h2','h3','h4','h5','h6'],
             replacement: function (content) {
+                if (!content) return '';
                 return '**' + content.replaceAll('**', '') + '**\n';
             }
         });
@@ -109,8 +110,12 @@ class ArticleCommand extends Command {
             }
         });
 
+        //remove existing image rule
+        turndown.rules.array = turndown.rules.array.filter(r => !(r.filter === 'img' || (Array.isArray(r.filter) && r.filter.includes('img'))));
+        turndown.remove('img');
+
         //convert string
-        let string = turndown.turndown(result.body.replace(/<img[^>]+>/g, ''));
+        let string = turndown.turndown(result.body);
         if (string.length > 800) {
             string = string.substr(0, 800);
             string = string.replace(/\.?\n+.*$/, '');
