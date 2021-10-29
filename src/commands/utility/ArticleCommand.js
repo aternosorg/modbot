@@ -105,7 +105,7 @@ class ArticleCommand extends Command {
         turndown.addRule('codeblocks', {
             filter: ['pre'],
             replacement: function (content) {
-                return content;
+                return '```' + content.replace(/(?<!\\)[*_~`]+/g, '') + '```';
             }
         });
 
