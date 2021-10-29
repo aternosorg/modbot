@@ -20,15 +20,15 @@ class ArticleCommand extends Command {
         }
 
         const query = this.options.getString('query');
-        if(!query){
+        if (!query) {
             await this.sendUsage();
             return;
         }
 
-        const request = new Request(`https://${this.guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles/search.json?query=`+encodeURIComponent(query));
+        const request = new Request(`https://${this.guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles/search.json?query=` + encodeURIComponent(query));
         await request.getJSON();
 
-        if(request.JSON.count !== 0){
+        if (request.JSON.count !== 0) {
             /**
              * @type {{html_url: String, title: String, label_names: String[], body: String}}
              */
@@ -56,8 +56,7 @@ class ArticleCommand extends Command {
             }
 
             await this.reply(options);
-        }
-        else {
+        } else {
             await this.sendError('No article found!');
         }
     }
@@ -93,22 +92,30 @@ class ArticleCommand extends Command {
         //set up turndown
         const turndown = new Turndown({
             bulletListMarker: '-'
-        });
-        //convert headings to bold
-        turndown.addRule('headings', {
-            filter: ['h1','h2','h3','h4','h5','h6'],
-            replacement: function (content) {
-                return '**' + content + '**\n';
-            }
-        });
-        //remove img tags
-        turndown.addRule('images', {
-            filter: ['img'],
-            replacement: function () {
-                return '';
-            }
-        });
+        })
+            //convert headings to bold
+            .addRule('headings', {
+                filter: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+                replacement: function (content) {
+                    if (!content) return '';
+                    return '**' + content.replaceAll('**', '') + '**\n';
+                }
+            })
+            //ignore pre tags
+            .addRule('codeblocks', {
+                filter: ['pre'],
+                replacement: function (content) {
+                    return '```' + content.replace(/(?<!\\)[*_~`]+/g, '') + '```';
+                }
+            })
+            //remove img tags
+            .addRule('images', {
+                filter: ['img'],
+                replacement: function () {
+                    return '';
 
+                }
+            });
         //convert string
         let string = turndown.turndown(result.body);
         if (string.length > 800) {
