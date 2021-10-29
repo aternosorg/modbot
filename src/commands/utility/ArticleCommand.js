@@ -98,19 +98,19 @@ class ArticleCommand extends Command {
         turndown.addRule('headings', {
             filter: ['h1','h2','h3','h4','h5','h6'],
             replacement: function (content) {
-                return '**' + content + '**\n';
+                return '**' + content.replaceAll('**', '') + '**\n';
             }
         });
-        //remove img tags
-        turndown.addRule('images', {
-            filter: ['img'],
-            replacement: function () {
-                return '';
+        //ignore pre tags
+        turndown.addRule('codeblocks', {
+            filter: ['pre'],
+            replacement: function (content) {
+                return content;
             }
         });
 
         //convert string
-        let string = turndown.turndown(result.body);
+        let string = turndown.turndown(result.body.replace(/<img[^>]+>/g, ''));
         if (string.length > 800) {
             string = string.substr(0, 800);
             string = string.replace(/\.?\n+.*$/, '');
