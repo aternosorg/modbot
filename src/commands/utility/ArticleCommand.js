@@ -134,7 +134,7 @@ class ArticleCommand extends Command {
         if (string.length > 800) {
             string = string.substr(0, 800);
             string = string.replace(/\.?\n+.*$/, '');
-            embed.setFooter('To read more click \'View Article\' below.');
+            embed.setFooter('To read more, click \'View Article\' below.');
         }
 
         embed.setDescription(string);
