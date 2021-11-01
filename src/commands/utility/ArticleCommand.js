@@ -96,7 +96,7 @@ class ArticleCommand extends Command {
             //convert headings to bold
             .addRule('headings', {
                 filter: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-                replacement: function (content) {
+                replacement(content) {
                     if (!content) return '';
                     return '**' + content.replaceAll('**', '') + '**\n';
                 }
@@ -104,16 +104,29 @@ class ArticleCommand extends Command {
             //ignore pre tags
             .addRule('codeblocks', {
                 filter: ['pre'],
-                replacement: function (content) {
+                replacement(content) {
                     return '```' + content.replace(/(?<!\\)[*_~`]+/g, '') + '```';
                 }
             })
             //remove img tags
             .addRule('images', {
                 filter: ['img'],
-                replacement: function () {
+                replacement() {
                     return '';
 
+                }
+            })
+            .addRule('iframes', {
+                filter: ['iframe'],
+                replacement(content, node) {
+                    const url = node._attrsByQName.src.data;
+                    const result = url.match(/^\/\/(?:www\.)?youtube(?:-nocookie)?\.com\/embed\/(.*)/);
+                    if (result) {
+                        return 'https://youtu.be/' + result[1];
+                    }
+                    else {
+                        return '';
+                    }
                 }
             });
         //convert string
