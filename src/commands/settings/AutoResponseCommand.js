@@ -105,7 +105,7 @@ class AutoResponseCommand extends Command {
             }
 
             case 'show': {
-                const response = await this.getAutoResponse(this.args.shift(), 'remove');
+                const response = await this.getAutoResponse(this.args.shift(), 'show');
                 if (!response) return;
                 await this.reply(response.embed(`Auto-response ${response.id}`, util.color.green));
                 break;
