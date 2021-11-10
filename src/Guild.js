@@ -98,6 +98,7 @@ class Guild {
      * @return {Promise<boolean>} was this successful
      */
     async sendDM(user, message) {
+        if (!await this.fetchMember(user.id)) return;
         try {
             await RateLimiter.sendDM(this.guild, user, message);
         }
