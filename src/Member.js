@@ -313,7 +313,6 @@ class Member {
      * @return {Promise<Boolean>} success
      */
     async dmPunishedUser(verb, reason, duration, preposition = 'from') {
-        if (!this.guild.fetchMember(this.user.id)) return;
         return this.guild.sendDM(this.user,
             `You have been ${verb} ${preposition} \`${this.guild.guild.name}\` ${duration ? `for ${util.secToTime(duration)}` : ''} | ${reason}`
         );
