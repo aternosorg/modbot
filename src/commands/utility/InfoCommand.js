@@ -12,6 +12,8 @@ class InfoCommand extends Command {
 
     static botPerms = [];
 
+    static supportsSlashCommands = true;
+
     async execute() {
         const embed = new Discord.MessageEmbed()
             .setTitle('ModBot by Aternos')
@@ -23,7 +25,7 @@ class InfoCommand extends Command {
                 '[[Discord]](https://discord.gg/zYYhgPtmxw) '
             )
             .setTimestamp()
-            .setFooter(util.escapeFormatting(this.message.author.tag));
+            .setFooter(util.escapeFormatting(this.source.getUser().tag));
         await this.reply(embed);
     }
 }
