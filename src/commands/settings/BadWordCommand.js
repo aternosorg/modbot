@@ -100,7 +100,7 @@ class BadWordCommand extends Command {
             }
 
             case 'show': {
-                const badWord = await this.getBadWord(this.args.shift(), 'remove');
+                const badWord = await this.getBadWord(this.args.shift(), 'show');
                 if (!badWord) return;
                 await this.reply(badWord.embed(`Bad Word ${badWord.id}`, util.color.green));
                 break;
