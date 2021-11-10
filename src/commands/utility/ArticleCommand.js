@@ -105,7 +105,10 @@ class ArticleCommand extends Command {
             .addRule('codeblocks', {
                 filter: ['pre'],
                 replacement(content) {
-                    return '```' + content.replace(/(?<!\\)[*_~`]+/g, '') + '```';
+                    return '```' + content
+                        .replace(/(?<!\\)[*_~`]+/g, '')
+                        .replace(/\\([*_~`>[\]])/g, '$1')
+                        + '```';
                 }
             })
             //remove img tags
