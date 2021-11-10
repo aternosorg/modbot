@@ -19,8 +19,6 @@ class ImportDataCommand extends Command {
 
     static botPerms = [];
 
-    static supportsSlashCommands = true;
-
     async execute() {
         if (!this.message.attachments.size) {
             await this.reply('Please attach a file to your message.');
