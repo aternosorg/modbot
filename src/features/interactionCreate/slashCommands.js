@@ -21,25 +21,34 @@ module.exports = {
         const CommandClass = CommandManager.getCommands().get(name);
         if (CommandClass === undefined) return;
 
+        if (CommandClass.guildOnly && !interaction.inGuild()) {
+            await interaction.reply('This command can only be used in a guild!');
+            return;
+        }
+
         try {
             /** @type {Command} */
             const cmd = new CommandClass(new CommandSource(interaction), options.database, options.bot, name, '/');
-            await cmd._loadConfigs();
-            const userPerms = cmd.userHasPerms(), botPerms = cmd.botHasPerms();
-            if (userPerms !== true) {
-                await interaction.reply({
-                    content: `You are missing the following permissions to execute this command: ${userPerms.join(', ')}`,
-                    ephemeral: true,
-                });
-                return;
+
+            if (interaction.inGuild()) {
+                await cmd._loadConfigs();
+                const userPerms = cmd.userHasPerms(), botPerms = cmd.botHasPerms();
+                if (userPerms !== true) {
+                    await interaction.reply({
+                        content: `You are missing the following permissions to execute this command: ${userPerms.join(', ')}`,
+                        ephemeral: true,
+                    });
+                    return;
+                }
+                if (botPerms !== true) {
+                    await interaction.reply({
+                        content: `I am missing the following permissions to execute this command: ${botPerms.join(', ')}`,
+                        ephemeral: true,
+                    });
+                    return;
+                }
             }
-            if (botPerms !== true) {
-                await interaction.reply({
-                    content: `I am missing the following permissions to execute this command: ${botPerms.join(', ')}`,
-                    ephemeral: true,
-                });
-                return;
-            }
+
             await cmd.execute();
         } catch (e) {
             if  (e.code === APIErrors.MISSING_PERMISSIONS) {
