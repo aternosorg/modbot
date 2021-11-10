@@ -16,6 +16,8 @@ class VideoCommand extends Command {
 
     static supportsSlashCommands = true;
 
+    static ephemeral = false;
+
     /**
      * playlist cache
      * @type {Collection<String, {data: Object, expires: Number}[]>}
