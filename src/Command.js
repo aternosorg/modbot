@@ -91,6 +91,7 @@ class Command {
      * * User configs
      * * Channel configs
      * * Guild configs (duh!)
+     * * The channel object (will be partial!)
      * @type {boolean}
      */
     static guildOnly = true;
