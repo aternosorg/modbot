@@ -47,11 +47,13 @@ class ModerationsCommand extends Command {
         const moderations = await this.database.queryAll('SELECT * FROM moderations WHERE userid = ? AND guildid = ?', [userID, this.source.getGuild().id]);
 
         if (moderations.length === 0) {
-            return this.reply(
-                new MessageEmbed()
-                    .setColor(util.color.green)
-                    .setAuthor(`Moderations for ${user.tag}`, user.avatarURL())
-                    .setDescription('No moderations')
+            return this.reply({
+                ephemeral: !(this.options.getBoolean('public-reply') ?? false)
+            },
+            new MessageEmbed()
+                .setColor(util.color.green)
+                .setAuthor(`Moderations for ${user.tag}`, user.avatarURL())
+                .setDescription('No moderations')
             );
         }
 
@@ -98,6 +100,11 @@ class ModerationsCommand extends Command {
             type: 'USER',
             description: 'User',
             required: true,
+        },{
+            name: 'public-reply',
+            type: 'BOOLEAN',
+            description: 'Show reply publicly to all other users in this channel',
+            required: false,
         }];
     }
 

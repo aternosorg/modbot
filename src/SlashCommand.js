@@ -70,6 +70,9 @@ function matchingOptions(a, b) {
 
     return a.every((aElement, index) => {
         const bElement = b[index];
+        if (!bElement) {
+            return false;
+        }
         return aElement.name === bElement.name
             && aElement.type === bElement.type
             && aElement.description === bElement.description
