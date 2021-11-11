@@ -97,6 +97,12 @@ class Command {
     static guildOnly = true;
 
     /**
+     * If true all responses sent to slash commands will default to be ephemeral unless specified otherwise.
+     * @type {boolean}
+     */
+    static ephemeral = true;
+
+    /**
      * @type {Message}
      * @deprecated
      */
@@ -327,6 +333,9 @@ class Command {
         options.embeds = options.embeds.concat(additions.filter(a => a instanceof MessageEmbed));
         options.files ??= [];
         options.files = options.files.concat(additions.filter(a => a instanceof MessageAttachment));
+        if (this.constructor.ephemeral) {
+            options.ephemeral ??= true;
+        }
 
         if (!this.source.isInteraction) {
             options.ephemeral = undefined;
@@ -453,7 +462,7 @@ class Command {
                     .setLabel('Cancel')
                     .setStyle('SUCCESS')
             );
-        await this.reply({content: text, components: [buttons]});
+        await this.reply({ephemeral: false, content: text, components: [buttons]});
         try {
             const component = await this.response.awaitMessageComponent({
                 max: 1, time: options.time, errors: ['time'],

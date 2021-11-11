@@ -13,6 +13,8 @@ class ArticleCommand extends Command {
 
     static supportsSlashCommands = true;
 
+    static ephemeral = false;
+
     async execute() {
         if (!this.guildConfig.helpcenter) {
             await this.sendError('No help center configured!');
