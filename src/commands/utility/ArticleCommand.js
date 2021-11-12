@@ -45,6 +45,11 @@ class ArticleCommand extends Command {
                             url: result.html_url,
                             label: 'View Article',
                         }))
+                        .addComponents(new MessageButton({
+                            label: 'Delete Embed',
+                            customId: 'delete',
+                            style: 'DANGER',
+                        }))
                 ]
             };
 
@@ -56,6 +61,32 @@ class ArticleCommand extends Command {
             }
 
             await this.reply(options);
+
+            try {
+                await this.response.awaitMessageComponent({
+                    filter: async interaction => {
+                        if (interaction.user.id === this.source.getUser().id || this.guildConfig.isMod(interaction.member) || interaction.member?.permissions?.has('MANAGE_MESSAGES')) {
+                            return true;
+                        } else {
+                            await interaction.reply({
+                                ephemeral: true,
+                                content: 'Only the person that created the embed can remove it!'
+                            });
+                            return false;
+                        }
+                    },
+                    time: 60000
+                });
+            }
+            catch (e) {
+                if (e.code !== 'INTERACTION_COLLECTOR_ERROR') {
+                    throw e;
+                }
+                options.components[0].components.find(c => c.customId === 'delete').setDisabled(true);
+                await this.response.edit(options);
+                return;
+            }
+            await this.response.delete();
         } else {
             await this.sendError('No article found!');
         }
@@ -87,7 +118,8 @@ class ArticleCommand extends Command {
      */
     createEmbed(result) {
         const embed = new MessageEmbed()
-            .setTitle(result.title);
+            .setTitle(result.title)
+            .setAuthor(this.source.getUser().tag, this.source.getUser().avatarURL());
 
         //set up turndown
         const turndown = new Turndown({

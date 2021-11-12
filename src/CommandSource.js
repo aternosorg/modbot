@@ -134,6 +134,10 @@ class CommandSource {
             return this.#message.channel.sendTyping();
         }
     }
+
+    async fetchOtherMember(user) {
+        return this.getGuild().members.fetch(user);
+    }
 }
 
 module.exports = CommandSource;

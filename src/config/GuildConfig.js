@@ -180,6 +180,7 @@ class GuildConfig extends Config {
      * @return {Boolean}
      */
     isMod(member) {
+        if (!member?.roles?.cache) return false;
         for (let [key] of member.roles.cache) {
             if (this.isModRole(/** @type {Snowflake} */ key))
                 return true;
@@ -232,6 +233,7 @@ class GuildConfig extends Config {
      * @return {Boolean}
      */
     isProtected(member) {
+        if (!member?.roles?.cache) return false;
         if (this.isMod(member)) return true;
         for (let [key] of member.roles.cache) {
             if (this.isProtectedRole(/** @type {Snowflake} */ key))
