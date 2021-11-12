@@ -99,9 +99,7 @@ class CommandSource {
      */
     reply(options) {
         if (this.isInteraction) {
-            if (!options.ephemeral) {
-                options.fetchReply = true;
-            }
+            options.fetchReply = true;
 
             if (this.#interaction.replied) {
                 return this.#interaction.followUp(options);

@@ -36,13 +36,14 @@ class Bot {
                 'GUILD_MEMBERS',
                 'GUILD_BANS',
                 'GUILD_MESSAGES',
-                'GUILD_MESSAGE_REACTIONS'
+                'GUILD_MESSAGE_REACTIONS',
+                'DIRECT_MESSAGES'
             ],
             allowedMentions: {
                 parse: ['roles', 'users']
             },
             presence: { status: 'dnd', activities: [{ type: 'WATCHING', name: 'you' }] },
-            partials: ['GUILD_MEMBER'],
+            partials: ['GUILD_MEMBER', 'CHANNEL'],
         });
 
         this.#database = new Database(config.db);
