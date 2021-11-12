@@ -85,6 +85,18 @@ class Command {
     };
 
     /**
+     * can this command only be used in guilds
+     * to allow commands in dms enable this. Note that the following things don't exist in DMs:
+     * * Permission checks
+     * * User configs
+     * * Channel configs
+     * * Guild configs (duh!)
+     * * The channel object (will be partial!)
+     * @type {boolean}
+     */
+    static guildOnly = true;
+
+    /**
      * If true all responses sent to slash commands will default to be ephemeral unless specified otherwise.
      * @type {boolean}
      */
@@ -327,7 +339,7 @@ class Command {
 
         if (!this.source.isInteraction) {
             options.ephemeral = undefined;
-            if (this.userConfig.deleteCommands) {
+            if (this.source.getGuild() && this.userConfig.deleteCommands) {
                 this.response = await this.source.getChannel().send(options);
                 return;
             } else {

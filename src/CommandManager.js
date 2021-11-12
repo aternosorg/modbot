@@ -102,10 +102,14 @@ class CommandManager {
      * @return {Promise<CommandInfo|null>}
      */
     static async getCommandName(message) {
-        if (!message.guild || message.author.bot || !message.content) return {isCommand: false};
-        /** @type {GuildConfig} */
-        const guild = await GuildConfig.get(/** @type {String} */ message.guild.id);
-        const prefix = util.startsWithMultiple(message.content.toLowerCase(), guild.prefix.toLowerCase(), defaultPrefix.toLowerCase());
+        if (message.author.bot || !message.content) return {isCommand: false};
+        const prefixes = [defaultPrefix.toLowerCase()];
+        if (message.guild) {
+            /** @type {GuildConfig} */
+            const guild = await GuildConfig.get(/** @type {String} */ message.guild.id);
+            prefixes.push(guild.prefix.toLowerCase());
+        }
+        const prefix = util.startsWithMultiple(message.content.toLowerCase(), ...prefixes);
         const args = util.split(message.content.substring(prefix.length),' ');
         if (!prefix || !args.length) return {isCommand: false};
 

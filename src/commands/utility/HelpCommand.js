@@ -12,6 +12,8 @@ class HelpCommand extends Command {
 
     static supportsSlashCommands = true;
 
+    static guildOnly = false;
+
     async execute() {
         const categories = this._getCategories(), commands = this._getCommands();
 

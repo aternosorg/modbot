@@ -19,22 +19,30 @@ module.exports = {
         const CommandClass = CommandManager.getCommands().get(name);
         if (!isCommand || CommandClass === undefined) return;
 
+        if (CommandClass.guildOnly && !message.guild) {
+            await message.reply('This command can only be used in a guild!');
+            return;
+        }
+
         try {
             /** @type {Command} */
             const cmd = new CommandClass(new CommandSource(message), options.database, options.bot, name, prefix);
-            await cmd._loadConfigs();
-            const userPerms = cmd.userHasPerms(), botPerms = cmd.botHasPerms();
-            if (userPerms !== true) {
-                await message.reply(`You are missing the following permissions to execute this command: ${userPerms.join(', ')}`);
-                return;
+            if (message.guild) {
+                await cmd._loadConfigs();
+                const userPerms = cmd.userHasPerms(), botPerms = cmd.botHasPerms();
+                if (userPerms !== true) {
+                    await message.reply(`You are missing the following permissions to execute this command: ${userPerms.join(', ')}`);
+                    return;
+                }
+                if (botPerms !== true) {
+                    await message.reply(`I am missing the following permissions to execute this command: ${botPerms.join(', ')}`);
+                    return;
+                }
             }
-            if (botPerms !== true) {
-                await message.reply(`I am missing the following permissions to execute this command: ${botPerms.join(', ')}`);
-                return;
-            }
+
             await cmd.execute();
             const memberConfig = await UserConfig.get(message.author.id);
-            if (memberConfig.deleteCommands) {
+            if (message.guild && memberConfig.deleteCommands) {
                 try {
                     await message.delete();
                 }

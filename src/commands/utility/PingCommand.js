@@ -9,6 +9,8 @@ class PingCommand extends Command {
 
     static supportsSlashCommands = true;
 
+    static guildOnly = false;
+
     async execute() {
         /** @type {Message} */
         await this.reply('Pinging...');
