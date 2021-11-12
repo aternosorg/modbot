@@ -19,7 +19,8 @@ class StrikeCommand extends ModerationCommand {
     static getOptions() {
         return super.getOptions().concat([{
             name: 'count',
-            type: 'NUMBER',
+            type: 'INTEGER',
+            min_value: 1,
             description: 'Number of strikes',
             required: false,
         }]);
@@ -38,7 +39,7 @@ class StrikeCommand extends ModerationCommand {
 
     getCount() {
         if (this.source.isInteraction)
-            return this.options.getNumber('count', false) || 1;
+            return this.options.getInteger('count', false) || 1;
         if (!this.args.length || !this.args[0].match(/^\d{1,5}$/)) return 1;
         return parseInt(this.args.shift());
     }

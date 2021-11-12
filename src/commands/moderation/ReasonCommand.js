@@ -15,9 +15,9 @@ class ReasonCommand extends Command {
     static supportsSlashCommands = true;
 
     async execute() {
-        const id = this.options.getNumber('id');
+        const id = this.options.getInteger('id');
         const reason = this.options.getString('reason').substring(0, 1000);
-        if (id == null || !reason) {
+        if (id == null || id < 1 || !reason) {
             return this.sendUsage();
         }
 
@@ -28,7 +28,8 @@ class ReasonCommand extends Command {
     static getOptions() {
         return [{
             name: 'id',
-            type: 'NUMBER',
+            type: 'INTEGER',
+            min_value: 1,
             description: 'Moderation ID',
             required: true,
         },{
@@ -44,7 +45,7 @@ class ReasonCommand extends Command {
         return [
             {
                 name: 'id',
-                type: 'NUMBER',
+                type: 'INTEGER',
                 value: id ? parseInt(id[1]) : id,
             },
             {
