@@ -14,7 +14,7 @@ class UnlockCommand extends Command {
 
     static description = 'Unlock channels';
 
-    static usage = 'global|<#channel>…|<id>… <reason>';
+    static usage = 'all|<#channel>…|<id>… <reason>';
 
     static names = ['unlock'];
 
@@ -24,46 +24,50 @@ class UnlockCommand extends Command {
 
     static botPerms = ['MANAGE_CHANNELS', 'MANAGE_ROLES'];
 
+    static supportsSlashCommands = true;
+
     async execute() {
-        if (this.args.length === 0) return this.sendUsage();
+        await this.source.defer();
 
         const embed = new MessageEmbed()
             .setTitle('This channel has been unlocked.')
+            .setDescription(this.options.getString('message') ?? '')
             .setColor(util.color.green);
 
-        if (this.args[0].toLowerCase() === 'global') {
-            {
-                const start = this.prefix.length + this.name.length + ' global '.length;
-                embed.setDescription(this.message.content.substring(start));
-            }
+        if (this.options.getBoolean('all')) {
             /** @type {GuildChannel[]} */
-            const channels = await util.asyncFilter(Array.from(this.message.guild.channels.cache.values()), this.locked, this);
+            const channels = await util.asyncFilter(Array.from(this.source.getGuild().channels.cache.values()), this.locked, this);
             if (channels.length === 0) return this.sendUsage();
             return this.unlock(channels, embed);
         }
 
-        const channels = [];
+        const channels = this.options.getChannel('channel') ? [this.options.getChannel('channel').id] : this.options.get('channels')?.value;
+        if (!channels?.length) {
+            await this.sendUsage();
+            return;
+        }
+
+        const unlockable = [];
         const notUnlockable = [];
-        for (const channel of await util.channelMentions(this.message.guild, this.args)) {
-            if (await this.locked(this.message.guild.channels.resolve(channel))) {
-                channels.push(this.message.guild.channels.resolve(channel));
+        for (const channel of channels) {
+            if (await this.locked(this.source.getGuild().channels.resolve(channel))) {
+                unlockable.push(this.source.getGuild().channels.resolve(channel));
                 continue;
             }
             notUnlockable.push(channel);
         }
 
-        if (channels.length === 0 && notUnlockable.length === 0) return this.sendUsage();
-
-        if (notUnlockable.length > 0) {
+        if (notUnlockable.length === 1) {
+            await this.reply(`<#${notUnlockable[0]}> isn't locked!`);
+        }
+        else if (notUnlockable.length > 0) {
             const mentions = notUnlockable.map(id => `<#${id}>`).join(', ');
-            await this.reply(`The following channels aren't locked ${mentions}`);
+            await this.reply(`The following channels aren't locked: ${mentions}`);
         }
 
-        if (channels.length === 0) return;
+        if (unlockable.length === 0) return;
 
-        embed.setDescription(this.args.join(' '));
-
-        return this.unlock(channels, embed);
+        return this.unlock(unlockable, embed);
     }
 
     /**
@@ -72,7 +76,7 @@ class UnlockCommand extends Command {
      * @param {MessageEmbed} embed
      */
     async unlock(channels, embed) {
-        const everyone = this.message.guild.roles.everyone.id;
+        const everyone = this.source.getGuild().roles.everyone.id;
         for (const channel of channels) {
             /** @type {ChannelConfig} */
             const channelConfig = await ChannelConfig.get(channel.id);
@@ -97,6 +101,7 @@ class UnlockCommand extends Command {
                 }
             }
         }
+
         await this.reply(`Unlocked ${channels.map(c => `<#${c.id}>`).join(', ')}`);
     }
 
@@ -108,6 +113,52 @@ class UnlockCommand extends Command {
     async locked(channel) {
         if (!(channel instanceof TextChannel)) return false;
         return Object.keys((await ChannelConfig.get(channel.id)).lock).length !== 0;
+    }
+
+    static getOptions() {
+        return [{
+            name: 'channel',
+            type: 'CHANNEL',
+            description: 'A channel to unlock',
+            required: false,
+        },{
+            name: 'all',
+            type: 'BOOLEAN',
+            required: false,
+            description: 'Should all locked channels be unlocked?'
+        },{
+            name: 'message',
+            type: 'STRING',
+            required: false,
+            description: 'Message that will be shown in the unlocked channel.',
+        }];
+    }
+
+    parseOptions(args) {
+        let channels = [];
+        let all = false;
+        if (['all','global'].includes(args[0]?.toLowerCase())) {
+            all = true;
+            args.shift();
+        }
+        else {
+            channels = util.channelMentions(this.source.getGuild(), args);
+        }
+
+
+        return [{
+            name: 'all',
+            type: 'BOOLEAN',
+            value: all,
+        },{
+            name: 'channels',
+            type: 'CHANNELS',
+            value: channels,
+        },{
+            name: 'message',
+            type: 'STRING',
+            value: args.join(' '),
+        }];
     }
 }
 

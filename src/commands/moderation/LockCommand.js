@@ -17,7 +17,7 @@ class LockCommand extends Command {
 
     static description = 'Lock channels (stop users from sending messages or add reactions)';
 
-    static usage = 'global|<#channel>…|<id>… <reason>';
+    static usage = 'all|<#channel>…|<id>… <reason>';
 
     static names = ['lock'];
 
@@ -27,47 +27,51 @@ class LockCommand extends Command {
 
     static botPerms = ['MANAGE_CHANNELS', 'MANAGE_ROLES'];
 
+    static supportsSlashCommands = true;
+
     async execute() {
-        if (this.args.length === 0) return this.sendUsage();
+        await this.source.defer();
 
         const embed = new MessageEmbed()
             .setTitle('This channel is locked.')
             .setColor(util.color.red)
+            .setDescription(this.options.getString('message') ?? '')
             .setFooter('You are not muted, this channel is locked for everyone. Don\'t send direct messages to team members or moderators.');
 
-        if (this.args[0].toLowerCase() === 'global') {
-            {
-                const start = this.prefix.length + this.name.length + ' global '.length;
-                embed.setDescription(this.message.content.substring(start));
-            }
+        if (this.options.getBoolean('all')) {
             /** @type {GuildChannel[]} */
-            const channels = Array.from(this.message.guild.channels.cache.filter(this.lockable, this).values());
+            const channels = Array.from(this.source.getGuild().channels.cache.filter(this.lockable, this).values());
             if (channels.length === 0) return this.sendUsage();
             return this.lock(channels, embed);
         }
 
-        const channels = [];
+        const channels = this.options.getChannel('channel') ? [this.options.getChannel('channel').id] : this.options.get('channels')?.value;
+        if (!channels?.length) {
+            await this.sendUsage();
+            return;
+        }
+
+        const lockable = [];
         const notLockable = [];
-        for (const channel of await util.channelMentions(this.message.guild, this.args)) {
-            if (this.lockable(this.message.guild.channels.resolve(channel))) {
-                channels.push(this.message.guild.channels.resolve(channel));
+        for (const channel of channels) {
+            if (this.lockable(this.source.getGuild().channels.resolve(channel))) {
+                lockable.push(this.source.getGuild().channels.resolve(channel));
                 continue;
             }
             notLockable.push(channel);
         }
 
-        if (channels.length === 0 && notLockable.length === 0) return this.sendUsage();
-
-        if (notLockable.length > 0) {
+        if (notLockable.length === 1) {
+            await this.reply(`<#${notLockable[0]}> doesn't need to be locked!`);
+        }
+        else if (notLockable.length > 1) {
             const mentions = notLockable.map(id => `<#${id}>`).join(', ');
-            await this.reply(`The following channels don't need to be locked ${mentions}`);
+            await this.reply(`The following channels don't need to be locked: ${mentions}`);
         }
 
-        if (channels.length === 0) return;
+        if (lockable.length === 0) return;
 
-        embed.setDescription(this.args.join(' '));
-
-        return this.lock(channels, embed);
+        return this.lock(lockable, embed);
     }
 
     /**
@@ -77,7 +81,7 @@ class LockCommand extends Command {
      * @return {Promise<void>}
      */
     async lock(channels, embed) {
-        const everyone = this.message.guild.roles.everyone.id;
+        const everyone = this.source.getGuild().roles.everyone.id;
         for (const channel of channels) {
             try {
                 await channel.send({embeds: [embed]});
@@ -106,6 +110,7 @@ class LockCommand extends Command {
                 });
             await channelConfig.save();
         }
+
         await this.reply(`Locked ${channels.map(c => `<#${c.id}>`).join(', ')}`);
     }
 
@@ -116,12 +121,58 @@ class LockCommand extends Command {
      */
     lockable(channel) {
         if (!(channel instanceof TextChannel)) return false;
-        const everyonePermissions = channel.permissionsFor(this.message.guild.roles.everyone);
+        const everyonePermissions = channel.permissionsFor(this.source.getGuild().roles.everyone);
         if (!everyonePermissions.has('VIEW_CHANNEL')) return false;
         for (const /** @type {PermissionResolvable} */ perm of PERMS) {
             if (everyonePermissions.has(perm)) return true;
         }
         return false;
+    }
+
+    static getOptions() {
+        return [{
+            name: 'channel',
+            type: 'CHANNEL',
+            description: 'A channel to lock',
+            required: false,
+        },{
+            name: 'all',
+            type: 'BOOLEAN',
+            required: false,
+            description: 'Should all public channels be locked?'
+        },{
+            name: 'message',
+            type: 'STRING',
+            required: false,
+            description: 'Message that will be shown in the locked channel.',
+        }];
+    }
+
+    parseOptions(args) {
+        let channels = [];
+        let all = false;
+        if (['all','global'].includes(args[0]?.toLowerCase())) {
+            all = true;
+            args.shift();
+        }
+        else {
+            channels = util.channelMentions(this.source.getGuild(), args);
+        }
+
+
+        return [{
+            name: 'all',
+            type: 'BOOLEAN',
+            value: all,
+        },{
+            name: 'channels',
+            type: 'CHANNELS',
+            value: channels,
+        },{
+            name: 'message',
+            type: 'STRING',
+            value: args.join(' '),
+        }];
     }
 }
 
