@@ -569,9 +569,9 @@ util.userMentions = async(mentions) => {
  * @param {String[]}                  mentions  array of strings with a channel mention or id
  * @return {Snowflake[]} channel ids
  */
-util.channelMentions = async(guild, mentions) => {
+util.channelMentions = (guild, mentions) => {
     let res = [];
-    while (mentions.length && await util.isChannelMention(guild, mentions[0])) {
+    while (mentions.length && util.isChannelMention(guild, mentions[0])) {
         res.push(util.channelMentionToId(mentions.shift()));
     }
     return res;
