@@ -23,9 +23,9 @@ class PurgeCommand extends Command {
     async execute() {
         const filter = {
             content: this.options.getString('content'),
-            users: this.source.isInteraction ? [this.options.getUser('user').id] : this.options.get('users'),
+            users: this.options.getUser('user') ? [this.options.getUser('user')?.id] : this.options.get('users')?.value ?? [],
             regex: this.options.getString('regex'),
-            limit: this.options.getInteger('limit') ?? 100,
+            limit: this.options.getInteger('limit'),
         };
 
         if (filter.regex) {
@@ -53,33 +53,34 @@ class PurgeCommand extends Command {
         }
 
         let messages = await util.getMessages(this.source.getChannel(), {
-            //before: this.message.id,
-            limit: filter.count || 100
+            limit: filter.limit ?? 100
         });
 
         messages = messages.filter(/** @type {Message} */message => {
-            if (this.message.createdAt - message.createdAt > 14*24*60*60*1000) return false;
             if (filter.users.length && !filter.users.includes(message.author.id)) return false;
             if (filter.regex && !this.matches(message, s => filter.regex.test(s))) return false;
-            return !filter.string || this.matches(message, s => s.toLowerCase().includes(filter.string));
+            return !filter.content || this.matches(message, s => s.toLowerCase().includes(filter.content));
         });
 
         if (messages.size === 0) return this.sendError('No matching messages found!');
 
         const embed = new MessageEmbed()
-            .setAuthor(`${this.message.author.tag} purged ${messages.size} messages`)
-            .addField('Channel', `<#${this.message.channel.id}>`, true)
-            .setFooter(this.message.author.id);
+            .setAuthor(`${this.source.getUser().tag} purged ${messages.size} messages`)
+            .addField('Channel', `<#${this.source.getChannel().id}>`, true)
+            .setFooter(this.source.getUser().id.toString());
 
         if (filter.users.length) embed.addField('Users', filter.users.map(u => `<@!${u}>`).join(', '), true);
         if (filter.regex) embed.addField('Regex', '`' + filter.regex + '`', true);
         if (filter.count) embed.addField('Tested messages', filter.count.toString(), true);
 
         await Promise.all([
-            util.delete(this.message),
-            util.bulkDelete(this.message.channel, messages),
-            Log.logEmbed(this.message.guild.id, embed)
+            util.bulkDelete(this.source.getChannel(), messages),
+            Log.logEmbed(this.source.getGuild().id, embed)
         ]);
+
+        if (!this.source.isInteraction) {
+            await util.delete(this.source.getRaw());
+        }
 
         await this.reply(new MessageEmbed()
             .setColor(util.color.green)
@@ -136,7 +137,7 @@ class PurgeCommand extends Command {
     parseOptions(args) {
         const users = [];
         let regex = null,
-            limit = 100,
+            limit = null,
             content = null;
         for (const arg of args) {
             if (regexRegex.test(arg)) {
