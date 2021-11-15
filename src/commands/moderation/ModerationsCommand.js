@@ -91,7 +91,7 @@ class ModerationsCommand extends Command {
             }
             return embed
                 .setAuthor(`Moderation ${start + 1} to ${end} for ${user.tag} | total ${moderations.length}`, user.avatarURL());
-        }, Math.ceil(moderations.length / moderationsPerPage));
+        }, Math.ceil(moderations.length / moderationsPerPage), 60000, !(this.options.getBoolean('public-reply') ?? false));
     }
 
     static getOptions() {

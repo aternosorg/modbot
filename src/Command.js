@@ -356,7 +356,7 @@ class Command {
      * @param {Number} [pages] number of possible pages
      * @param {Number} [duration] inactivity timeout in ms (default: 60s)
      */
-    async multiPageResponse(generatePage, pages, duration = 60000) {
+    async multiPageResponse(generatePage, pages, duration = 60000, ephemeral) {
         const previousButton = new MessageButton({
                 customId: 'previous',
                 style: 'SECONDARY',
@@ -370,6 +370,7 @@ class Command {
                 disabled: pages === 1
             });
         await this.reply({
+            ephemeral,
             components: [new MessageActionRow({
                 components: [previousButton, nextButton]
             })]
