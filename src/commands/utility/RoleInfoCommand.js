@@ -1,27 +1,35 @@
 const Command = require('../../Command');
 const Discord = require('discord.js');
 const util = require('../../util');
+const Guild = require('../../Guild');
+const DiscordGuild = Discord.Guild;
+const {Snowflake} = Discord;
 
 class RoleInfoCommand extends Command{
   
   static names = ['roleinfo', 'ri', 'role'];
   
-  static usage = '<RoleID>';
+  static usage = '<@role|id>';
   
   static description = 'Get information about a role';
+
+  static supportsSlashCommands = true;
   
   async execute() {
-      if (!this.args.length) {
-          return await this.reply(`You have to provide a role ID ${this.message.author}!`);
+      let role;
+      if (this.source.isInteraction) {
+          role = this.options.getRole('role');
+      } else {
+          /** @type {Snowflake}*/
+          const roleid = this.options.getString('roleID');
+          if (!roleid) {
+              return this.sendUsage();
+          }
+          const guild = new Guild(/** @type {DiscordGuild}*/this.source.getGuild());
+          role = await guild.fetchRole(roleid);
       }
 
-      let roleid = util.roleMentionToId(this.args[0]);
-    
-      if (!roleid) return this.sendUsage();
-    
-      let role = this.message.guild.roles.resolve(roleid);
-      if (!role) return await this.reply('This is not a valid role ID.');
-
+      if (!role) return this.sendUsage();
 
       let permissions;
       if (role.permissions.has('ADMINISTRATOR')) {
@@ -35,6 +43,7 @@ class RoleInfoCommand extends Command{
       const embed = new Discord.MessageEmbed()
           .setTitle(`About ${role.name}`)
           .setColor(role.color)
+          .setImage(role.iconURL())
           .setDescription(`**Role name:** ${role.name} (${role.id})\n` +
                               `**Created on** ${role.createdAt.toUTCString()}\n` +
                               `**Managed:** ${role.managed ? 'Yes' : 'No'}\n` +
@@ -44,6 +53,24 @@ class RoleInfoCommand extends Command{
                               `**Permissions:** ${permissions}`);
 
       await this.reply(embed);
+  }
+
+  static getOptions() {
+      return [{
+          name: 'role',
+          type: 'ROLE',
+          description: 'The role to view',
+          required: true,
+      }];
+  }
+
+  parseOptions(args) {
+      return [{
+          name: 'roleID',
+          type: 'STRING',
+          value: args[0] === '@everyone' ? this.source.getGuild().roles.everyone.id
+              : util.roleMentionToId(args.shift()),
+      }];
   }
 }
 
