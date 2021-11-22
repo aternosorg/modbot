@@ -10,8 +10,10 @@ class ServerInfoCommand extends Command{
 
     static description = 'Show the servers info';
 
+    static supportsSlashCommands = true;
+
     async execute() {
-        const guild = this.message.guild;
+        const guild = this.source.getGuild();
         
         let owner = await guild.fetchOwner();
       
@@ -33,7 +35,7 @@ class ServerInfoCommand extends Command{
             .setTitle(`Info of ${guild.name}`)
             .setColor(util.color.red)
             .setThumbnail(guild.iconURL({dynamic: true, size: 2048}))
-            .setFooter(`Command executed by ${util.escapeFormatting(this.message.author.tag)}`)
+            .setFooter(`Command executed by ${util.escapeFormatting(this.source.getUser().tag)}`)
             .setTimestamp()
             .addFields(
                 /** @type {any} */ {name: '__**Generic**__', value: generic, inline: true},
