@@ -8,7 +8,7 @@ class PurgeCommand extends Command {
 
     static description = 'Bulk delete messages';
 
-    static usage = '[</regex/>] [<@users>] [<userIDs>] [<text>] [<count>]';
+    static usage = '[</regex/>] [<@users|userIDs>] [<content>] [<limit>]';
 
     static names = ['purge', 'clean', 'clear'];
 
@@ -18,69 +18,69 @@ class PurgeCommand extends Command {
 
     static botPerms = ['MANAGE_MESSAGES'];
 
-    async execute() {
-        if (this.args.length === 0) return this.sendUsage();
+    static supportsSlashCommands = true;
 
+    async execute() {
         const filter = {
-            users: []
+            content: this.options.getString('content'),
+            users: this.options.getUser('user') ? [this.options.getUser('user')?.id] : this.options.get('users')?.value ?? [],
+            regex: this.options.getString('regex'),
+            limit: this.options.getInteger('limit'),
         };
 
-        for (const arg of this.args) {
-            if (await util.isUserMention(arg)) {
-                filter.users.push(util.userMentionToId(arg));
-                continue;
+        if (filter.regex) {
+            const match = filter.regex.match(regexRegex);
+            try {
+                filter.regex = new RegExp(match[1], match[2]);
+            } catch {
+                return this.sendError(`Invalid regex: \`${filter.regex}\``);
             }
-
-            if (regexRegex.test(arg)) {
-                if (filter.regex) return this.sendError('Only one regex is allowed.');
-                const match = arg.match(regexRegex);
-                try {
-                    filter.regex = new RegExp(match[1], match[2]);
-                } catch {
-                    return this.sendError(`Invalid regex: \`${arg}\``);
-                }
-                continue;
-            }
-
-            if (/^\d+$/.test(arg)) {
-                if (filter.count) return this.sendError('Only one count is allowed.');
-                filter.count = parseInt(arg);
-                if (filter.count > 1000) return this.sendError('You can\'t purge more than 1000 messages.');
-                continue;
-            }
-
-            if (filter.string) return this.sendError('Only one string match is allowed.');
-            filter.string = arg.toLowerCase();
         }
 
-        let messages = await util.getMessages(this.message.channel, {
-            before: this.message.id,
-            limit: filter.count || 100
+        if (filter.limit > 1000) {
+            return this.sendError('You can\'t purge more than 1000 messages.');
+        }
+
+        for (const user of filter.users) {
+            if (!await util.isUserMention(user)) {
+                return this.sendError(`Unknow user <@!${user}>!`);
+            }
+        }
+
+        //Verify that at least one filter exists
+        if (!filter.content && filter.users.length === 0 && !filter.regex && !filter.limit) {
+            return this.sendUsage();
+        }
+
+        let messages = await util.getMessages(this.source.getChannel(), {
+            limit: filter.limit ?? 100
         });
 
         messages = messages.filter(/** @type {Message} */message => {
-            if (this.message.createdAt - message.createdAt > 14*24*60*60*1000) return false;
             if (filter.users.length && !filter.users.includes(message.author.id)) return false;
             if (filter.regex && !this.matches(message, s => filter.regex.test(s))) return false;
-            return !filter.string || this.matches(message, s => s.toLowerCase().includes(filter.string));
+            return !filter.content || this.matches(message, s => s.toLowerCase().includes(filter.content));
         });
 
         if (messages.size === 0) return this.sendError('No matching messages found!');
 
         const embed = new MessageEmbed()
-            .setAuthor(`${this.message.author.tag} purged ${messages.size} messages`)
-            .addField('Channel', `<#${this.message.channel.id}>`, true)
-            .setFooter(this.message.author.id);
+            .setAuthor(`${this.source.getUser().tag} purged ${messages.size} messages`)
+            .addField('Channel', `<#${this.source.getChannel().id}>`, true)
+            .setFooter(this.source.getUser().id.toString());
 
         if (filter.users.length) embed.addField('Users', filter.users.map(u => `<@!${u}>`).join(', '), true);
         if (filter.regex) embed.addField('Regex', '`' + filter.regex + '`', true);
         if (filter.count) embed.addField('Tested messages', filter.count.toString(), true);
 
         await Promise.all([
-            util.delete(this.message),
-            util.bulkDelete(this.message.channel, messages),
-            Log.logEmbed(this.message.guild.id, embed)
+            util.bulkDelete(this.source.getChannel(), messages),
+            Log.logEmbed(this.source.getGuild().id, embed)
         ]);
+
+        if (!this.source.isInteraction) {
+            await util.delete(this.source.getRaw());
+        }
 
         await this.reply(new MessageEmbed()
             .setColor(util.color.green)
@@ -106,6 +106,74 @@ class PurgeCommand extends Command {
             }
         }
         return contents.filter(s => !!s).some(fn);
+    }
+
+    static getOptions() {
+        return [{
+            name: 'content',
+            type: 'STRING',
+            description: 'Only delete messages that include this string',
+            required: false,
+        },{
+            name: 'user',
+            type: 'USER',
+            description: 'Only delete messages from this user',
+            required: false,
+        },{
+            name: 'regex',
+            type: 'STRING',
+            description: 'Only delete messages that match this regex',
+            required: false,
+        },{
+            name: 'limit',
+            type: 'INTEGER',
+            description: 'Amount of messages to test against filters (default: 100)',
+            required: false,
+            min_value: 1,
+            max_value: 1000,
+        }];
+    }
+
+    parseOptions(args) {
+        const users = [];
+        let regex = null,
+            limit = null,
+            content = null;
+        for (const arg of args) {
+            if (regexRegex.test(arg)) {
+                regex = arg;
+                continue;
+            }
+
+            if (/^\d+$/.test(arg)) {
+                limit = parseInt(arg);
+                continue;
+            }
+
+            if (/^:(<@)?!?\d{15,}>?$/.test(arg) && util.userMentionToId(arg)) {
+                users.push(util.userMentionToId(arg));
+                continue;
+            }
+
+            content = arg.toLowerCase();
+        }
+        return [{
+            name: 'content',
+            type: 'STRING',
+            value: content,
+        }, {
+            name: 'users',
+            type: 'USERS',
+            value: users,
+        }, {
+            name: 'regex',
+            type: 'STRING',
+            value: regex,
+        },{
+            name: 'limit',
+            type: 'INTEGER',
+            value: limit,
+        }];
     }
 }
 
