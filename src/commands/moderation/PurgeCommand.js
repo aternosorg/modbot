@@ -21,6 +21,7 @@ class PurgeCommand extends Command {
     static supportsSlashCommands = true;
 
     async execute() {
+        await this.source.defer();
         const filter = {
             content: this.options.getString('content'),
             users: this.options.getUser('user') ? [this.options.getUser('user')?.id] : this.options.get('users')?.value ?? [],
@@ -150,7 +151,7 @@ class PurgeCommand extends Command {
                 continue;
             }
 
-            if (/^:(<@)?!?\d{15,}>?$/.test(arg) && util.userMentionToId(arg)) {
+            if (/^(<@)?!?\d{15,}>?$/.test(arg) && util.userMentionToId(arg)) {
                 users.push(util.userMentionToId(arg));
                 continue;
             }
