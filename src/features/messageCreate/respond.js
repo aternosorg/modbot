@@ -1,5 +1,5 @@
 const AutoResponse = require('../../AutoResponse');
-const CommandManager = require('../../CommandManager');
+const CommandManager = require('../../commands/CommandManager');
 const {Message} = require('discord.js');
 
 exports.event = async (options, /** @type {Message} */ message) => {

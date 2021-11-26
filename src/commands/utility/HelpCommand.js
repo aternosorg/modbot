@@ -1,4 +1,4 @@
-const Command = require('../../Command');
+const Command = require('../Command');
 const {MessageEmbed, Collection} = require('discord.js');
 const util = require('../../util');
 
@@ -49,7 +49,7 @@ class HelpCommand extends Command {
         }
         else if (commands.has(name)) {
             //send command usage
-            data.embeds = [await commands.get(name).getUsage(this.source, name, this.guildConfig)];
+            data.embeds = [await commands.get(name).getUsage(this.source)];
             return this.reply(data);
         }
         else {
@@ -64,7 +64,7 @@ class HelpCommand extends Command {
      * @private
      */
     _getCategories() {
-        const commandManager = require('../../CommandManager');
+        const commandManager = require('../CommandManager');
         return commandManager.getCategories();
     }
 
@@ -74,7 +74,7 @@ class HelpCommand extends Command {
      * @private
      */
     _getCommands() {
-        const commandManager = require('../../CommandManager');
+        const commandManager = require('../CommandManager');
         return commandManager.getCommands();
     }
 

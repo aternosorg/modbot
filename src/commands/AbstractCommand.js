@@ -1,11 +1,10 @@
-const GuildConfig = require('./config/GuildConfig');
-const ChannelConfig = require('./config/ChannelConfig');
-const UserConfig = require('./config/UserConfig');
-const util = require('./util');
+const Database = require('../Database');
 const {
     PermissionResolvable,
-    Message,
     Client,
+    Message,
+    CommandInteractionOptionResolver,
+    ApplicationCommandOptionData,
     PermissionFlags,
     MessageEmbed,
     MessageOptions,
@@ -14,18 +13,43 @@ const {
     MessageActionRow,
     MessageButton,
     MessageAttachment,
-    ApplicationCommandOptionData,
-    CommandInteractionOptionResolver,
     CommandInteractionOption,
     InteractionReplyOptions,
     InteractionCollector,
 } = require('discord.js');
-const Database = require('./Database');
-const defaultPrefix = require('../config.json').prefix;
-const icons = require('./icons');
 const CommandSource = require('./CommandSource');
+const GuildConfig = require('../config/GuildConfig');
+const ChannelConfig = require('../config/ChannelConfig');
+const UserConfig = require('../config/UserConfig');
+const util = require('../util');
+const icons = require('../icons');
 
-class Command {
+
+/**
+ * Type of Abstract Command
+ * @readonly
+ * @enum {String}
+ */
+const AbstractCommandType = {
+    COMMAND: 'COMMAND',
+    SUB_COMMAND_GROUP: 'SUB_COMMAND_GROUP',
+    SUB_COMMAND: 'SUB_COMMAND'
+};
+
+
+/**
+ * @class
+ * @classdesc A top-level-command, sub-command-group or sub-command
+ */
+class AbstractCommand {
+
+    /**
+     * Type of Abstract Command
+     * @type {AbstractCommandType}
+     * @abstract
+     */
+    static type;
+
     /**
      * Description of the command
      * @type {string}
@@ -41,15 +65,10 @@ class Command {
     /**
      * The primary command name followed by possible aliases.
      * Only the primary name is used in slash commands and the help command.
+     * Secondary names are only shortcuts for message commands.
      * @type {String[]}
      */
     static names = [];
-
-    /**
-     * Comment
-     * @type {String|null}
-     */
-    static comment = null;
 
     /**
      * permissions a user needs to execute this command
@@ -70,66 +89,33 @@ class Command {
     static botPerms = [];
 
     /**
-     * does this command support slash commands
-     * @type {boolean}
-     */
-    static supportsSlashCommands = false;
-
-    /**
-     * supported context menus
-     * @type {{MESSAGE: boolean, USER: boolean}}
-     */
-    static supportedContextMenus = {
-        USER: false,
-        MESSAGE: false,
-    };
-
-    /**
-     * can this command only be used in guilds
-     * to allow commands in dms enable this. Note that the following things don't exist in DMs:
-     * * Permission checks
-     * * User configs
-     * * Channel configs
-     * * Guild configs (duh!)
-     * * The channel object (will be partial!)
-     * @type {boolean}
-     */
-    static guildOnly = true;
-
-    /**
      * If true all responses sent to slash commands will default to be ephemeral unless specified otherwise.
      * @type {boolean}
      */
     static ephemeral = true;
 
     /**
-     * @type {Message}
-     * @deprecated
+     * Class of parent command
+     * @type {typeof Command}
      */
-    message;
+    static parentCommand;
 
     /**
-     * command source
+     * Source of the top-level-command
      * @type {CommandSource}
      */
     source;
 
     /**
-     * @type {Database}
-     */
-    database;
-
-    /**
+     * discord client
      * @type {Client}
      */
     bot;
 
     /**
-     * arguments passed to the command
-     * @deprecated get options from the {@link options OptionResolver}
-     * @type {String[]}
+     * @type {Database}
      */
-    args;
+    database;
 
     /**
      * @type {GuildConfig}
@@ -147,18 +133,6 @@ class Command {
     userConfig;
 
     /**
-     * the name of this command that was used to call it
-     * @type {String}
-     */
-    name;
-
-    /**
-     * the prefix used in this command call
-     * @type {String}
-     */
-    prefix;
-
-    /**
      * the bot's response to this message
      * sending multiple responses should be avoided
      * @type {Message}
@@ -166,42 +140,49 @@ class Command {
     response;
 
     /**
+     * Command options
      * @type {CommandInteractionOptionResolver}
      */
     options;
 
     /**
-     * call this command
      * @param {CommandSource} source
      * @param {Database} database
      * @param {Client} bot
-     * @param {String} name
-     * @param {String} prefix
+     * @param {AbstractCommand|null} parentCommand
      */
-    constructor(source, database, bot, name, prefix) {
+    constructor(source, database, bot, parentCommand) {
+        this.source = source;
         this.database = database;
         this.bot = bot;
-        this.name = name;
-        this.prefix = prefix;
-        this.source = source;
-
-        if (source.isInteraction) {
-            this.options = source.getOptions();
-        }
-        else {
-            this.message = source.getRaw();
-            const args = util.split(source.getRaw().content.substring(prefix.length + name.length), ' ');
-            this.args = args;
-            this.options = new CommandInteractionOptionResolver(bot, this.parseOptions(args));
-        }
+        this.parentCommand = parentCommand;
     }
 
     /**
-     * get slash command definition
+     * get slash command options
      * @return {ApplicationCommandOptionData[]}
      */
     static getOptions() {
         return [];
+    }
+
+    /**
+     * Generate a usage embed
+     * @param {CommandSource} source
+     * @return {MessageEmbed}
+     * @abstract
+     */
+    // eslint-disable-next-line no-unused-vars
+    static async getUsage(source) {
+
+    }
+
+    /**
+     * get the primary (first) command name
+     * @return {String|null}
+     */
+    static getPrimaryName() {
+        return this.names[0] ?? null;
     }
 
     async _loadConfigs() {
@@ -250,53 +231,9 @@ class Command {
     /**
      * execute the command
      * @return {Promise<void>}
+     * @abstract
      */
     async execute() {}
-
-    /**
-     * Generate a usage embed
-     * @param {CommandSource} source
-     * @param {String}                      cmd
-     * @param {GuildConfig}                 [guildConfig]
-     * @return {MessageEmbed}
-     */
-    static async getUsage(source, cmd, guildConfig) {
-        if (!guildConfig) guildConfig = await GuildConfig.get(source.getGuild().id);
-        const prefix = guildConfig.prefix || defaultPrefix;
-        const embed = new MessageEmbed()
-            .setAuthor(`Help for ${cmd} | Prefix: ${prefix}`)
-            .setFooter(`Command executed by ${util.escapeFormatting(source.getUser().tag)}`)
-            .addFields(
-                /** @type {any} */ { name: 'Usage', value: `\`${prefix}${cmd}${this.usage ? ` ${this.usage}` : ''}\``, inline: true},
-                /** @type {any} */ { name: 'Description', value: this.description, inline: true},
-                /** @type {any} */ { name: 'Required Permissions', value: this.userPerms.length !== 0 ? `\`${this.userPerms.join('`, `')}\`` : 'none', inline: true }
-            )
-            .setColor(util.color.red)
-            .setTimestamp();
-        if (this.comment) {
-            embed.addFields(
-                /** @type {any} */{ name: 'Comment', value: `${this.comment}`, inline: false});
-        }
-        if (this.names.length > 1) {
-            let aliases = '';
-            for (let name of this.names) {
-                if (name !== cmd) {
-                    aliases += `\`${name}\`, `;
-                }
-            }
-            embed.addFields(
-                /** @type {any} */{ name: 'Aliases', value: aliases.substring(0,aliases.length - 2), inline: true});
-        }
-        return embed;
-    }
-
-    /**
-     * send usage embed
-     * @return {Promise<void>}
-     */
-    async sendUsage() {
-        await this.reply({ephemeral: true}, await this.constructor.getUsage(this.source, this.name, this.guildConfig));
-    }
 
     /**
      * send a discord embed with an error message
@@ -310,44 +247,11 @@ class Command {
     }
 
     /**
-     *
-     * @param {String|MessageOptions|ReplyMessageOptions|InteractionReplyOptions|MessageEmbed|MessageAttachment} message
-     * @param {MessageEmbed|MessageAttachment} additions
+     * send usage embed
      * @return {Promise<void>}
      */
-    async reply(message, ...additions) {
-        /** @type {MessageOptions|ReplyMessageOptions|InteractionReplyOptions}*/
-        let options = {};
-
-        if (typeof message === 'string') {
-            options.content = message;
-        }
-        else if (message instanceof MessageEmbed || message instanceof MessageAttachment) {
-            additions.unshift(message);
-        }
-        else if (message instanceof Object) {
-            options = message;
-        }
-
-        options.embeds ??= [];
-        options.embeds = options.embeds.concat(additions.filter(a => a instanceof MessageEmbed));
-        options.files ??= [];
-        options.files = options.files.concat(additions.filter(a => a instanceof MessageAttachment));
-        if (this.constructor.ephemeral) {
-            options.ephemeral ??= true;
-        }
-
-        if (!this.source.isInteraction) {
-            options.ephemeral = undefined;
-            if (this.source.getGuild() && this.userConfig.deleteCommands) {
-                this.response = await this.source.getChannel().send(options);
-                return;
-            } else {
-                options.failIfNotExists ??= false;
-                options.allowedMentions ??= {repliedUser: false};
-            }
-        }
-        this.response = await this.source.reply(options);
+    async sendUsage() {
+        await this.reply({ephemeral: true}, await this.constructor.getUsage(this.source, this.guildConfig));
     }
 
     /**
@@ -355,6 +259,7 @@ class Command {
      * @param {(index: Number) => MessageEmbed|Promise<MessageEmbed>} generatePage generate a new page (index)
      * @param {Number} [pages] number of possible pages
      * @param {Number} [duration] inactivity timeout in ms (default: 60s)
+     * @param {boolean} ephemeral
      */
     async multiPageResponse(generatePage, pages, duration = 60000, ephemeral) {
         const previousButton = new MessageButton({
@@ -437,12 +342,44 @@ class Command {
     }
 
     /**
-     * get an overview of this command
-     * @return {string}
+     *
+     * @param {String|MessageOptions|ReplyMessageOptions|InteractionReplyOptions|MessageEmbed|MessageAttachment} message
+     * @param {MessageEmbed|MessageAttachment} additions
+     * @return {Promise<void>}
      */
-    static getOverview() {
-        return `**${this.names.join(', ')}**\n`+
-            `${this.description}\n`;
+    async reply(message, ...additions) {
+        /** @type {MessageOptions|ReplyMessageOptions|InteractionReplyOptions}*/
+        let options = {};
+
+        if (typeof message === 'string') {
+            options.content = message;
+        }
+        else if (message instanceof MessageEmbed || message instanceof MessageAttachment) {
+            additions.unshift(message);
+        }
+        else if (message instanceof Object) {
+            options = message;
+        }
+
+        options.embeds ??= [];
+        options.embeds = options.embeds.concat(additions.filter(a => a instanceof MessageEmbed));
+        options.files ??= [];
+        options.files = options.files.concat(additions.filter(a => a instanceof MessageAttachment));
+        if (this.constructor.ephemeral) {
+            options.ephemeral ??= true;
+        }
+
+        if (!this.source.isInteraction) {
+            options.ephemeral = undefined;
+            if (this.source.getGuild() && this.userConfig.deleteCommands) {
+                this.response = await this.source.getChannel().send(options);
+                return;
+            } else {
+                options.failIfNotExists ??= false;
+                options.allowedMentions ??= {repliedUser: false};
+            }
+        }
+        this.response = await this.source.reply(options);
     }
 
     /**
@@ -497,4 +434,4 @@ class Command {
     }
 }
 
-module.exports = Command;
+module.exports = {AbstractCommand, AbstractCommandType};

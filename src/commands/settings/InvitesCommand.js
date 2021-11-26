@@ -1,4 +1,4 @@
-const Command = require('../../Command');
+const Command = require('../Command');
 const util = require('../../util');
 const ChannelConfig = require('../../config/ChannelConfig');
 const Discord = require('discord.js');

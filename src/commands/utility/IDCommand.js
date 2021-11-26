@@ -1,4 +1,4 @@
-const Command = require('../../Command');
+const Command = require('../Command');
 const {User, MessageEmbed} = require('discord.js');
 const util = require('../../util');
 

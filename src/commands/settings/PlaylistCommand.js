@@ -1,4 +1,4 @@
-const Command = require('../../Command');
+const Command = require('../Command');
 const util = require('../../util.js');
 const Discord = require('discord.js');
 const youtube = require('@googleapis/youtube').youtube('v3');

@@ -1,4 +1,4 @@
-const Command = require('../../Command');
+const Command = require('../Command');
 
 class ExampleCommand extends Command {
 

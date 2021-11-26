@@ -4,8 +4,8 @@ const util = require('./util');
 const fs = require('fs').promises;
 const config = require('../config.json');
 const Monitor = require('./Monitor');
-const CommandManager = require('./CommandManager');
-const SlashCommand = require('./SlashCommand');
+const CommandManager = require('./commands/CommandManager');
+const SlashCommandManager = require('./commands/SlashCommandManager');
 
 class Bot {
     static instance = new Bot();
@@ -127,7 +127,7 @@ class Bot {
         /**
          * @type {Collection<String, SlashCommand>}
          */
-        const commands = SlashCommand.getFromClasses(CommandManager.getCommandClasses());
+        const commands = SlashCommandManager.getFromClasses(CommandManager.getCommandClasses());
 
         if (config.debug?.enabled) {
             const guild = await this.#client.guilds.fetch(config.debug.guild);
