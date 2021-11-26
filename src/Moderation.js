@@ -157,6 +157,9 @@ class Moderation {
      * @return {Promise}
      */
     static async bulkSave(moderations) {
+        if(!Array.isArray(moderations) || !moderations.length) {
+            return;
+        }
         moderations = moderations.map(m => m.getParameters());
         return Database.getInstance().queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
             `VALUES ${moderations.map(() => '(?,?,?,?,?,?,?,?,?)').join(', ')}`, moderations.flat());
