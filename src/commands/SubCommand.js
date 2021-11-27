@@ -24,15 +24,7 @@ class SubCommand extends AbstractCommand {
      * @param {AbstractCommand} parent
      */
     constructor(source, database, bot, parent) {
-        super(source, database, bot, parent.constructor);
-        this.options = parent.options;
-    }
-
-    /**
-     * @abstract
-     */
-    static getParentCommand() {
-
+        super(source, database, bot, parent);
     }
 
     static async getUsage(source) {

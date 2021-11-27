@@ -158,7 +158,7 @@ class AbstractCommand {
         this.source = source;
         this.database = database;
         this.bot = bot;
-        this.parentCommand = parentCommand;
+        this.constructor.parentCommand = parentCommand;
     }
 
     /**

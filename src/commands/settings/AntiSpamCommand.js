@@ -3,6 +3,8 @@ const SubCommand = require('../SubCommand');
 
 class GetSpamProtectionCommand extends GetConfigCommand {
 
+    static names = ['get','status'];
+
     static getParentCommand() {
         return SpamProtectionCommand;
     }
@@ -28,7 +30,9 @@ class SetSpamProtectionCommand extends SetConfigCommand {
     }
 
     async execute() {
-        const count = this.options.getInteger('value');
+        const count = this.options.get('value');
+        console.log(count);
+        console.log(this.options.data);
         if (count < 1 || count > 60) {
             await this.sendUsage();
         } else {
@@ -46,6 +50,14 @@ class SetSpamProtectionCommand extends SetConfigCommand {
             required: true,
             minValue: 1,
             maxValue: 60,
+        }];
+    }
+
+    parseOptions(args) {
+        return [{
+            type: 'INTEGER',
+            name: 'value',
+            value: parseInt(args.shift())
         }];
     }
 }

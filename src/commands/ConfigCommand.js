@@ -62,7 +62,10 @@ class ConfigCommand extends Command {
 
     parseOptions(args) {
         const name = args.shift();
-        return this.#getSubCommand(name).parseOptions(args);
+        return [{
+            type: 'SUB_COMMAND',
+            name: name,
+        }].concat(this.getSubCommand(name)?.parseOptions(args));
     }
 
     /**
@@ -70,24 +73,24 @@ class ConfigCommand extends Command {
      * @param {string} name
      * @return {SubCommand}
      */
-    #getSubCommand(name) {
+    getSubCommand(name) {
+        if (this.subCommand) return this.subCommand;
         for (const SC of this.constructor.getSubCommands()) {
             if (SC.names.includes(name)) {
-                return [{
-                    type: 'SUB_COMMAND',
-                    value: name,
-                }].concat(this.subCommand = new SC(this.source, this.database, this.bot, this));
+                return this.subCommand = new SC(this.source, this.database, this.bot, this.constructor);
             }
         }
     }
 
     async execute() {
-        this.#getSubCommand(this.options.getSubcommand());
+        this.getSubCommand(this.options.getSubcommand());
         if (!this.subCommand) {
             await this.sendUsage();
             return;
         }
         await this.subCommand._loadConfigs();
+        console.log(this.options);
+        this.subCommand.options = this.options;
         await this.subCommand.execute();
     }
 }
