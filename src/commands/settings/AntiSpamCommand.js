@@ -1,44 +1,83 @@
-const Command = require('../Command');
+const {ConfigCommand, GetConfigCommand, SetConfigCommand} = require('../ConfigCommand');
+const SubCommand = require('../SubCommand');
 
-class AntiSpamCommand extends Command {
+class GetSpamProtectionCommand extends GetConfigCommand {
 
-    static description = 'Configure message spam protection (deletes spammed messages)';
-
-    static usage = '<count>|off|status';
-
-    static comment = 'Count is the number of messages(1-60) a user is allowed to send per minute.';
-
-    static names = ['antispam','spammod','spamprotection'];
-
-    static userPerms = ['MANAGE_GUILD'];
+    static getParentCommand() {
+        return SpamProtectionCommand;
+    }
 
     async execute() {
-        if (this.args.length !== 1) {
-            await this.sendUsage();
-            return;
-        }
+        await this.reply(`Spam protection is currently ${this.getValue()}.`);
+    }
 
-        switch (this.args[0].toLowerCase()) {
-            case 'off':
-                this.guildConfig.antiSpam = -1;
-                await this.guildConfig.save();
-                await this.reply('Disabled spam protection!');
-                break;
-            case 'status':
-                await this.reply(`Spam protection is currently ${this.guildConfig.antiSpam === -1 ? 'disabled' : `set to ${this.guildConfig.antiSpam} messages per minute`}.`);
-                break;
-            default: {
-                const count = parseInt(this.args[0]);
-                if (count > 0 && count <= 60) {
-                    this.guildConfig.antiSpam = count;
-                    await this.guildConfig.save();
-                    await this.reply(`Enabled spam protection! Users can now only send ${count} messages per minute.`);
-                } else {
-                    await this.sendUsage();
-                }
-            }
+    getValue() {
+        if (this.guildConfig.antiSpam === -1) {
+            return 'disabled';
+        }
+        else {
+            return `set to ${this.guildConfig.antiSpam} messages per minute`;
         }
     }
 }
 
-module.exports = AntiSpamCommand;
+class SetSpamProtectionCommand extends SetConfigCommand {
+
+    static getParentCommand() {
+        return SpamProtectionCommand;
+    }
+
+    async execute() {
+        const count = this.options.getInteger('value');
+        if (count < 1 || count > 60) {
+            await this.sendUsage();
+        } else {
+            this.guildConfig.antiSpam = count;
+            await this.guildConfig.save();
+            await this.reply(`Enabled spam protection! Users can now only send ${count} messages per minute.`);
+        }
+    }
+
+    static getOptions() {
+        return [{
+            type: 'INTEGER',
+            name: 'value',
+            description: 'Maximum amount of messages a user is allowed to send per minute.',
+            required: true,
+            minValue: 1,
+            maxValue: 60,
+        }];
+    }
+}
+
+class DisableSpamProtectionCommand extends SubCommand {
+
+    static names = ['disable', 'off'];
+
+    static description = 'Disable the spam protection.';
+
+    static getParentCommand() {
+        return SpamProtectionCommand;
+    }
+
+    async execute() {
+        this.guildConfig.antiSpam = -1;
+        await this.guildConfig.save();
+        await this.reply('Disabled spam protection!');
+    }
+}
+
+class SpamProtectionCommand extends ConfigCommand {
+
+    static names = ['spamprotection', 'antispam','spammod'];
+
+    static userPerms = ['MANAGE_GUILD'];
+
+    static description = 'Configure message spam protection (deletes spammed messages)';
+
+    static getSubCommands() {
+        return [GetSpamProtectionCommand, SetSpamProtectionCommand, DisableSpamProtectionCommand];
+    }
+}
+
+module.exports = SpamProtectionCommand;

@@ -53,12 +53,14 @@ class AbstractCommand {
     /**
      * Description of the command
      * @type {string}
+     * @abstract
      */
     static description = '';
 
     /**
      * Parameters/Subcommands
      * @type {string}
+     * @abstract
      */
     static usage = '';
 
@@ -67,6 +69,7 @@ class AbstractCommand {
      * Only the primary name is used in slash commands and the help command.
      * Secondary names are only shortcuts for message commands.
      * @type {String[]}
+     * @abstract
      */
     static names = [];
 
@@ -98,7 +101,7 @@ class AbstractCommand {
      * Class of parent command
      * @type {typeof Command}
      */
-    static parentCommand;
+    static parentCommand = this.getParentCommand();
 
     /**
      * Source of the top-level-command
@@ -149,7 +152,7 @@ class AbstractCommand {
      * @param {CommandSource} source
      * @param {Database} database
      * @param {Client} bot
-     * @param {AbstractCommand|null} parentCommand
+     * @param {typeof AbstractCommand|null} parentCommand
      */
     constructor(source, database, bot, parentCommand) {
         this.source = source;
@@ -183,6 +186,14 @@ class AbstractCommand {
      */
     static getPrimaryName() {
         return this.names[0] ?? null;
+    }
+
+    /**
+     * get the parent command
+     * @return {null}
+     */
+    static getParentCommand() {
+        return null;
     }
 
     async _loadConfigs() {
