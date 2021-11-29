@@ -1,5 +1,6 @@
 const fs = require('fs');
-const defaultPrefix = require('../config.json').prefix;
+const config = require('../config.json');
+const defaultPrefix = config.prefix;
 const util = require('./util');
 const GuildConfig = require('./config/GuildConfig');
 const {Collection, Message} = require('discord.js');
@@ -49,6 +50,10 @@ class CommandManager {
                 try {
                     const command = require(path);
                     category.push(command);
+                    if (config.debug.enabled && command.supportsSlashCommands === false) {
+                        console.debug(`./commands/${folder}/${file} doesn't support slash commands!`);
+                    }
+
                     for (const name of command.names) {
                         if (commands.has(name)) {
                             console.error(`Two command registered the name '${name}':`);
