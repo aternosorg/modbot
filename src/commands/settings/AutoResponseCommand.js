@@ -2,6 +2,7 @@ const {ConfigCommand} = require('../ConfigCommand');
 const SubCommand = require('../SubCommand');
 const AutoResponse = require('../../AutoResponse');
 const {Snowflake, Collection} = require('discord.js');
+const util = require('../../util');
 
 class ListAutoResponseCommand extends SubCommand {
 
@@ -34,6 +35,95 @@ class ListAutoResponseCommand extends SubCommand {
     }
 }
 
+class AddAutoResponseCommand extends SubCommand {
+
+    static names = ['add'];
+
+    static description = 'Add an auto-response.';
+
+    static usage = 'all|<channels> regex|include|match <trigger>'
+
+    static getParentCommand() {
+        return AutoResponseCommand;
+    }
+
+    async execute() {
+        const trigger = this.options.getString('trigger'),
+            type = this.options.getString('type');
+            //all = this.options.getBoolean('all'),
+            //channels = this.options.getString('channels').split(' ');
+        if (!trigger || AutoResponse.triggerTypes.includes(type)) {
+            await this.sendUsage();
+            return;
+        }
+
+
+    }
+
+    static getOptions() {
+        return [{
+            name: 'trigger',
+            type: 'STRING',
+            description: 'Required keyword/regex',
+            required: true,
+        }, {
+            name: 'message',
+            type: 'STRING',
+            description: 'Automatic reply',
+            required: true,
+        },{
+            name: 'all',
+            type: 'BOOLEAN',
+            description: 'Respond in all channels',
+            required: false,
+        }, {
+            name: 'channels',
+            type: 'STRING',
+            description: 'List of channels to respond in',
+            required: false,
+        },{
+            name: 'type',
+            type: 'STRING',
+            description: 'Trigger type (default: include)',
+            choices: [{name: 'regex', value: 'regex'}, {name:'include', value:'include'}, {name:'match', value: 'include'}],
+            required: false,
+        }];
+    }
+
+    parseOptions(args) {
+        let all, channels, trigger, type;
+
+        if (['all', 'global'].includes(args[0].toLowerCase())) {
+            all = true;
+            args.shift();
+        }
+        else {
+            channels = util.channelMentions(this.source.getGuild(), args);
+        }
+
+        type = args.shift();
+        trigger = args.join(' ');
+
+        return [{
+            name: 'all',
+            type: 'BOOLEAN',
+            value: all,
+        },{
+            name: 'channels',
+            type: 'STRING',
+            value: channels.join(' '),
+        },{
+            name: 'type',
+            type: 'STRING',
+            value: type,
+        },{
+            name: 'trigger',
+            type: 'STRING',
+            value: trigger,
+        }];
+    }
+}
+
 class AutoResponseCommand extends ConfigCommand {
 
     static description = 'Manage auto-responses';
@@ -44,7 +134,7 @@ class AutoResponseCommand extends ConfigCommand {
 
 
     static getSubCommands() {
-        return [ListAutoResponseCommand];
+        return [ListAutoResponseCommand, AddAutoResponseCommand];
     }
 }
 
