@@ -30,9 +30,7 @@ class SetSpamProtectionCommand extends SetConfigCommand {
     }
 
     async execute() {
-        const count = this.options.get('value');
-        console.log(count);
-        console.log(this.options.data);
+        const count = this.options.getInteger('value');
         if (count < 1 || count > 60) {
             await this.sendUsage();
         } else {

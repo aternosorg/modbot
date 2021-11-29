@@ -190,7 +190,7 @@ class AbstractCommand {
 
     /**
      * get the parent command
-     * @return {null}
+     * @return {AbstractCommand}
      */
     static getParentCommand() {
         return null;

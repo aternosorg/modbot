@@ -65,7 +65,8 @@ class ConfigCommand extends Command {
         return [{
             type: 'SUB_COMMAND',
             name: name,
-        }].concat(this.getSubCommand(name)?.parseOptions(args));
+            options: this.getSubCommand(name)?.parseOptions(args)
+        }];
     }
 
     /**
@@ -89,7 +90,6 @@ class ConfigCommand extends Command {
             return;
         }
         await this.subCommand._loadConfigs();
-        console.log(this.options);
         this.subCommand.options = this.options;
         await this.subCommand.execute();
     }
