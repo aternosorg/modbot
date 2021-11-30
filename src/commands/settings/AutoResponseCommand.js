@@ -16,7 +16,7 @@ class ListAutoResponseCommand extends SubCommand {
 
     async execute() {
         /** @type {Collection<Number,AutoResponse>} */
-        const responses = await AutoResponse.getAll(/** @type {Snowflake} */ this.message.guild.id);
+        const responses = await AutoResponse.getAll(/** @type {Snowflake} */ this.source.getGuild().id);
         if (!responses.size) return this.reply('No auto-responses!');
 
         let text = '';
@@ -49,15 +49,32 @@ class AddAutoResponseCommand extends SubCommand {
 
     async execute() {
         const trigger = this.options.getString('trigger'),
-            type = this.options.getString('type');
-            //all = this.options.getBoolean('all'),
-            //channels = this.options.getString('channels').split(' ');
-        if (!trigger || AutoResponse.triggerTypes.includes(type)) {
+            type = this.options.getString('type'),
+            all = this.options.getBoolean('all'),
+            channels = util.channelMentions(this.source.getGuild(), this.options.getString('channels')?.split(' '));
+
+        if (!trigger || (!all && !channels.length)) {
             await this.sendUsage();
             return;
         }
+        if (!AutoResponse.triggerTypes.includes(type)) {
+            await this.sendError(`Unknown trigger type! Use one of ${AutoResponse.triggerTypes.join(', ')}`);
+            return;
+        }
 
+        let message = this.options.getString('message');
+        if (!this.source.isInteraction) {
+            await this.reply('Please enter your response:');
+            message = await util.getResponse(this.message.channel, this.message.author.id);
+        }
+        if (!message) {
+            return;
+        }
 
+        const response = await AutoResponse.new(/** @type {Snowflake} */this.source.getGuild().id, all, channels, type, trigger, message);
+        if (!response.success) return this.reply(response.message);
+
+        await this.reply(response.response.embed('Added new auto-response', util.color.green));
     }
 
     static getOptions() {

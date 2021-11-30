@@ -37,9 +37,6 @@ class AutoResponseCommand extends Command {
             description: 'change options of an auto-response'
         }
     }
-
-    static names = ['autoresponse','response','responses','autoresponses'];
-
     static userPerms = ['MANAGE_GUILD'];
 
     async execute() {
