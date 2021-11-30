@@ -20,7 +20,7 @@ class ServerInfoCommand extends Command{
         let generic = '';
         generic += `**Owner:** <@!${owner.id}> (${owner.user.tag}) \n`;
         generic += `**Owner ID:** ${owner.id} \n`;
-        generic += `**Created:** ${guild.createdAt.toUTCString()} \n`;
+        generic += `**Created:** <t:${Math.floor(guild.createdTimestamp/1000)}:D> \n`;
         generic += `**Guild ID:** ${guild.id} \n`;
         
         let statistics = '';
