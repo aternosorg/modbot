@@ -84,7 +84,7 @@ class ConfigCommand extends Command {
     }
 
     async execute() {
-        this.getSubCommand(this.options.getSubcommand());
+        this.getSubCommand(this.options.getSubcommand(false));
         if (!this.subCommand) {
             await this.sendUsage();
             return;
