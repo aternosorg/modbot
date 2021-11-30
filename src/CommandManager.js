@@ -50,7 +50,7 @@ class CommandManager {
                 try {
                     const command = require(path);
                     category.push(command);
-                    if (config.debug.enabled && command.supportsSlashCommands === false) {
+                    if (config.debug?.enabled && command.supportsSlashCommands === false) {
                         console.debug(`./commands/${folder}/${file} doesn't support slash commands!`);
                     }
 
