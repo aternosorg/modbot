@@ -37,6 +37,7 @@
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-jest": "^25.3.0",
     "eslint-plugin-jsdoc": "^37.0.3",
+    "eslint-plugin-json": "^3.1.0",
     "husky": "^6.0.0",
     "jest": "^27.2.5",
     "lint-staged": "^11.0.0"
@@ -45,6 +46,9 @@
     "*.js": [
       "eslint --fix",
       "jest --passWithNoTests --findRelatedTests"
+    ],
+    "*.json": [
+      "eslint --fix"
     ]
   }
 }
