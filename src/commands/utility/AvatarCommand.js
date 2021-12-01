@@ -20,9 +20,14 @@ class AvatarCommand extends Command{
             return this.sendUsage();
         }
 
+        const png = user.displayAvatarURL({size: 2048, format: 'png'});
+        const jpg = user.displayAvatarURL({size: 2048, format: 'jpg'});
+        const webp = user.displayAvatarURL({size: 2048, format: 'webp'});
+
         const avatarEmbed = new MessageEmbed()
             .setTitle(`Avatar of ${util.escapeFormatting(user.tag)}`)
             .setImage(user.displayAvatarURL({dynamic: true, size: 2048, format: 'png'}))
+            .setDescription(`[png](${png}) | [jpg](${jpg}) | [webp](${webp})`)
             .setFooter(`Command executed by ${util.escapeFormatting(this.source.getUser().tag)}`)
             .setTimestamp();
 
