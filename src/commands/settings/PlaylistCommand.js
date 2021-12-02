@@ -16,12 +16,12 @@ class PlaylistCommand extends Command {
     static userPerms = ['MANAGE_GUILD'];
 
     async execute() {
-        if (this.args.length !== 1) {
+        if (this.args.length < 1) {
             await this.sendUsage();
             return;
         }
 
-        switch (this.args[0].toLowerCase()) {
+        switch (this.args.shift().toLowerCase()) {
             case 'off':
                 this.guildConfig.playlist = null;
                 await this.guildConfig.save();
@@ -54,7 +54,10 @@ class PlaylistCommand extends Command {
                 await this.reply(new Discord.MessageEmbed()
                     .setDescription(`Set playlist to https://www.youtube.com/playlist?list=${playlistID}`)
                 );
+                break;
             }
+            default:
+                await this.sendUsage();
         }
     }
 }
