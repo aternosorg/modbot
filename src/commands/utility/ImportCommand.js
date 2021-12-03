@@ -1,4 +1,4 @@
-const Command = require('../../Command');
+const Command = require('../Command');
 const Request = require('../../Request');
 const ModBotImporter = require('../../data/ModBotImporter');
 const VortexImporter = require('../../data/VortexImporter');

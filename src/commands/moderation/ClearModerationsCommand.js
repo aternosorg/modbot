@@ -1,4 +1,4 @@
-const Command = require('../../Command');
+const Command = require('../Command');
 const User = require('../../User');
 const Moderation = require('../../Moderation');
 

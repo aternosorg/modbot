@@ -1,4 +1,4 @@
-const Command = require('../../Command');
+const Command = require('../Command');
 const Request = require('../../Request');
 const {MessageOptions, MessageEmbed, MessageActionRow, MessageButton} = require('discord.js');
 const Turndown = require('turndown');

@@ -1,4 +1,4 @@
-const Command = require('../../Command');
+const Command = require('../Command');
 const {Snowflake, MessageEmbed} = require('discord.js');
 const User = require('../../User');
 const util = require('../../util');

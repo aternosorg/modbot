@@ -1,4 +1,4 @@
-const Command = require('../../Command');
+const Command = require('../Command');
 const {MessageEmbed, Message} = require('discord.js');
 const util = require('../../util');
 const regexRegex = /^\/(.*)\/([gimsuy]*)$/;
