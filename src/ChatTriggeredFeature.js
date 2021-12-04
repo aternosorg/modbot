@@ -25,7 +25,7 @@ class ChatTriggeredFeature {
      * Cache for all chat triggered features by tableName
      * @type {{}}
      */
-    static cache = {}
+    static cache = {};
 
     /**
      * Possible trigger types
@@ -285,7 +285,7 @@ class ChatTriggeredFeature {
      * @returns {{trigger: Trigger, success: boolean, message: string}}
      */
     static getTrigger(type, value) {
-        if (!this.triggerTypes.includes(type)) return {success: false, message: 'Unknown trigger type'};
+        if (!this.triggerTypes.includes(type)) return {success: false, message: 'Usage: <type> <trigger>'};
         if (!value) return  {success: false, message:'Empty triggers are not allowed'};
 
         let content = value, flags;
