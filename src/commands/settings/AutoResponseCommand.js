@@ -49,12 +49,16 @@ class AddAutoResponseCommand extends SubCommand {
 
     async execute() {
         const trigger = this.options.getString('trigger'),
-            type = this.options.getString('type'),
+            type = this.options.getString('type') ?? 'include',
             all = this.options.getBoolean('all'),
             channels = util.channelMentions(this.source.getGuild(), this.options.getString('channels')?.split(' '));
 
-        if (!trigger || (!all && !channels.length)) {
+        if (!trigger) {
             await this.sendUsage();
+            return;
+        }
+        if (!all && !channels.length) {
+            await this.reply('Either specify a list of channels to reply in or use \'all\' for all channels.');
             return;
         }
         if (!AutoResponse.triggerTypes.includes(type)) {
@@ -65,7 +69,7 @@ class AddAutoResponseCommand extends SubCommand {
         let message = this.options.getString('message');
         if (!this.source.isInteraction) {
             await this.reply('Please enter your response:');
-            message = await util.getResponse(this.message.channel, this.message.author.id);
+            message = await util.getResponse(this.source.getChannel(), this.source.getUser().id);
         }
         if (!message) {
             return;
@@ -108,9 +112,9 @@ class AddAutoResponseCommand extends SubCommand {
     }
 
     parseOptions(args) {
-        let all, channels, trigger, type;
+        let all, channels = [], trigger, type;
 
-        if (['all', 'global'].includes(args[0].toLowerCase())) {
+        if (['all', 'global'].includes(args[0]?.toLowerCase())) {
             all = true;
             args.shift();
         }
