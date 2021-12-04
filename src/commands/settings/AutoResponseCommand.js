@@ -41,7 +41,7 @@ class AddAutoResponseCommand extends SubCommand {
 
     static description = 'Add an auto-response.';
 
-    static usage = 'all|<channels> regex|include|match <trigger>'
+    static usage = 'all|<channels> regex|include|match <trigger>';
 
     static getParentCommand() {
         return AutoResponseCommand;
@@ -149,6 +149,7 @@ class AutoResponseCommand extends ConfigCommand {
 
     static userPerms = ['MANAGE_GUILD'];
 
+    static usage = 'list|add';
 
     static getSubCommands() {
         return [ListAutoResponseCommand, AddAutoResponseCommand];

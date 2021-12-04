@@ -32,7 +32,7 @@ class ConfigCommand extends Command {
 
     static supportsSlashCommands = true;
 
-    static usage
+    static usage;
 
     /**
      * the subcommand executed right now
