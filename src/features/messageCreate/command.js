@@ -1,10 +1,10 @@
-const CommandManager = require('../../CommandManager');
+const CommandManager = require('../../commands/CommandManager');
 const UserConfig = require('../../config/UserConfig');
 const Database = require('../../Database');
 const {Client, Message, Constants: {APIErrors}} = require('discord.js');
-const Command = require('../../Command');
+const Command = require('../../commands/Command');
 const monitor = require('../../Monitor').getInstance();
-const CommandSource = require('../../CommandSource');
+const CommandSource = require('../../commands/CommandSource');
 
 module.exports = {
     /**

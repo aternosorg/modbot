@@ -1,4 +1,4 @@
-const Command = require('../../Command');
+const Command = require('../Command');
 const {Collection, MessageOptions} = require('discord.js');
 const youtube = require('@googleapis/youtube').youtube('v3');
 const {googleapikey} = require('../../../config.json');

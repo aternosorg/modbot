@@ -6,7 +6,7 @@ const {
     Collection,
 } = require('discord.js');
 
-class SlashCommand {
+class SlashCommandManager {
 
     /**
      * @param command
@@ -36,19 +36,19 @@ class SlashCommand {
 
     /**
      * @param {[]} commands
-     * @return {Collection<String, SlashCommand>}
+     * @return {Collection<String, SlashCommandManager>}
      */
     static getFromClasses(commands) {
         const result = new Collection();
         for (const command of commands) {
             if (command.supportsSlashCommands) {
-                result.set(`CHAT_INPUT:${command.names[0]}`, new SlashCommand(command, 'CHAT_INPUT'));
+                result.set(`CHAT_INPUT:${command.names[0]}`, new SlashCommandManager(command, 'CHAT_INPUT'));
             }
             if (command.supportedContextMenus.USER) {
-                result.set(`USER:${command.names[0]}`, new SlashCommand(command, 'USER'));
+                result.set(`USER:${command.names[0]}`, new SlashCommandManager(command, 'USER'));
             }
             if (command.supportedContextMenus.MESSAGE) {
-                result.set(`MESSAGE:${command.names[0]}`, new SlashCommand(command, 'MESSAGE'));
+                result.set(`MESSAGE:${command.names[0]}`, new SlashCommandManager(command, 'MESSAGE'));
             }
         }
         return result;
@@ -103,4 +103,4 @@ function matchingChoices(a, b) {
     });
 }
 
-module.exports = SlashCommand;
+module.exports = SlashCommandManager;

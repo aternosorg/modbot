@@ -1,4 +1,4 @@
-const Command = require('../Command');
+const Command = require('./Command');
 const util = require('../util');
 const Guild = require('../Guild');
 const {

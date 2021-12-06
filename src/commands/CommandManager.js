@@ -1,12 +1,12 @@
 const fs = require('fs');
-const config = require('../config.json');
+const config = require('../../config.json');
 const defaultPrefix = config.prefix;
-const util = require('./util');
-const GuildConfig = require('./config/GuildConfig');
+const util = require('../util');
+const GuildConfig = require('../config/GuildConfig');
 const {Collection, Message} = require('discord.js');
-const monitor = require('./Monitor').getInstance();
+const monitor = require('../Monitor').getInstance();
 const Command = require('./Command');
-const {CommandInfo} = require('./Typedefs');
+const {CommandInfo} = require('../Typedefs');
 
 class CommandManager {
 
@@ -36,11 +36,11 @@ class CommandManager {
      */
     static _loadCommands() {
         const commands = new Collection();
-        for (const folder of fs.readdirSync(`${__dirname}/commands`)) {
+        for (const folder of fs.readdirSync(__dirname)) {
 
             const category = [];
 
-            const dirPath = `${__dirname}/commands/${folder}`;
+            const dirPath = `${__dirname}/${folder}`;
             if (!fs.lstatSync(dirPath).isDirectory()) continue;
             for (const file of fs.readdirSync(dirPath)) {
                 const path = `${dirPath}/${file}`;

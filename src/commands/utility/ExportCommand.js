@@ -1,4 +1,4 @@
-const Command = require('../../Command');
+const Command = require('../Command');
 const Exporter = require('../../data/Exporter');
 const {MessageAttachment} = require('discord.js');
 
