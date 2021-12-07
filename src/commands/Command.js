@@ -114,7 +114,7 @@ class Command extends AbstractCommand {
             .setAuthor(`Help for ${this.getPrimaryName()} | Prefix: ${prefix}`)
             .setFooter(`Command executed by ${util.escapeFormatting(source.getUser().tag)}`)
             .addFields(
-                /** @type {any} */ { name: 'Usage', value: `\`${prefix}${this.getPrimaryName()}${this.usage ?? ''}`.trim() + '`', inline: true},
+                /** @type {any} */ { name: 'Usage', value: `\`${prefix}${this.getPrimaryName()} ${this.usage ?? ''}`.trim() + '`', inline: true},
                 /** @type {any} */ { name: 'Description', value: this.description, inline: true},
                 /** @type {any} */ { name: 'Required Permissions', value: this.userPerms.map(p => '`'+p+'`').join(', ') || 'none', inline: true }
             )

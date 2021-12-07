@@ -571,6 +571,9 @@ util.userMentions = async(mentions) => {
  */
 util.channelMentions = (guild, mentions) => {
     let res = [];
+    if(!Array.isArray(mentions)) {
+        return [];
+    }
     while (mentions.length && util.isChannelMention(guild, mentions[0])) {
         res.push(util.channelMentionToId(mentions.shift()));
     }

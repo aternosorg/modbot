@@ -32,8 +32,6 @@ class ConfigCommand extends Command {
 
     static supportsSlashCommands = true;
 
-    static usage
-
     /**
      * the subcommand executed right now
      * @type {SubCommand}
@@ -94,4 +92,5 @@ class ConfigCommand extends Command {
         await this.subCommand.execute();
     }
 }
+
 module.exports = {ConfigCommand, GetConfigCommand, SetConfigCommand};
