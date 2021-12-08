@@ -220,6 +220,11 @@ class BadWord extends ChatTriggeredFeature {
             }
         }
     }
+
+    getOverview() {
+        return `[${this.id}] ${this.global ? 'global' : this.channels.map(c => `<#${c}>`).join(', ')} ` +
+            '`' + this.trigger.asString() + '`\n';
+    }
 }
 
 module.exports = BadWord;
