@@ -39,8 +39,8 @@ class AddAutoResponseCommand extends SubCommand {
     async execute() {
         const trigger = this.options.getString('trigger'),
             type = this.options.getString('type') ?? 'include',
-            all = this.options.getBoolean('all'),
-            channels = util.channelMentions(this.source.getGuild(), this.options.getString('channels')?.split(' '));
+            channels = util.channelMentions(this.source.getGuild(), this.options.getString('channels')?.split(' ')),
+            all = !channels.length;
 
         if (!trigger) {
             await this.sendUsage();
@@ -81,15 +81,10 @@ class AddAutoResponseCommand extends SubCommand {
             type: 'STRING',
             description: 'Automatic reply',
             required: true,
-        },{
-            name: 'all',
-            type: 'BOOLEAN',
-            description: 'Respond in all channels',
-            required: false,
         }, {
             name: 'channels',
             type: 'STRING',
-            description: 'List of channels to respond in',
+            description: 'List of channels to respond in. Leave blank to respond in all channels.',
             required: false,
         },{
             name: 'type',

@@ -39,15 +39,12 @@ class AddBadWordCommand extends SubCommand {
     async execute() {
         let trigger = this.options.getString('trigger');
         const type = this.options.getString('type') ?? 'include',
-            all = this.options.getBoolean('all'),
-            channels = util.channelMentions(this.source.getGuild(), this.options.getString('channels')?.split(' '));
+            channels = util.channelMentions(this.source.getGuild(), this.options.getString('channels')?.split(' ')),
+            priority = this.options.getInteger('priority') ?? 0,
+            all = !channels.length;
 
         if (!trigger) {
             await this.sendUsage();
-            return;
-        }
-        if (!all && !channels.length) {
-            await this.reply('Either specify a list of channels to check bad-word in or use \'all\' for all channels.');
             return;
         }
         if (!BadWord.triggerTypes.includes(type)) {
@@ -55,16 +52,16 @@ class AddBadWordCommand extends SubCommand {
             return;
         }
 
-        const message = this.options.getString('message');
+        const response = this.options.getString('response');
 
-        trigger = this.getTrigger(type, trigger);
+        trigger = BadWord.getTrigger(type, trigger);
         if (!trigger.success) {
             return this.sendError(trigger.message);
         }
 
         /** @type {Punishment}*/
         const punishment = {
-            action: this.options.getString('punishment').toLowerCase() ?? 'none',
+            action: this.options.getString('punishment')?.toLowerCase() ?? 'none',
             duration: this.options.getString('duration') ?? ''
         };
 
@@ -78,7 +75,7 @@ class AddBadWordCommand extends SubCommand {
                 await this.sendError('You need to specify a punishment to set a duration');
                 return;
             }
-            else if (punishment.duration.split(' ').every(x => util.isTime(x))) {
+            else if (!punishment.duration.split(' ').every(x => util.isTime(x))) {
                 await this.sendError('Invalid duration: ' + punishment.duration);
                 return;
             }
@@ -87,9 +84,10 @@ class AddBadWordCommand extends SubCommand {
         const badWord = new BadWord(this.source.getGuild().id, {
             trigger: trigger.trigger,
             punishment,
-            all,
+            global: all,
             channels,
-            response: message ?? 'disabled',
+            response: response ?? 'disabled',
+            priority
         });
         await badWord.save();
         await this.reply(badWord.embed('Added new bad-word', util.color.green));
@@ -102,19 +100,14 @@ class AddBadWordCommand extends SubCommand {
             description: 'Required keyword/regex',
             required: true,
         }, {
-            name: 'message',
+            name: 'response',
             type: 'STRING',
             description: 'Automatic reply',
-            required: false,
-        },{
-            name: 'all',
-            type: 'BOOLEAN',
-            description: 'Respond in all channels',
             required: false,
         }, {
             name: 'channels',
             type: 'STRING',
-            description: 'List of channels to respond in',
+            description: 'List of channels to moderate in. Leave blank to moderate in all channels.',
             required: false,
         },{
             name: 'type',
@@ -127,6 +120,16 @@ class AddBadWordCommand extends SubCommand {
             type: 'STRING',
             description: 'Punishment type',
             choices: BadWord.punishmentTypes.map(t => {return { name: t, value: t };}),
+            required: false,
+        }, {
+            name: 'duration',
+            type: 'STRING',
+            description: 'Punishment duration',
+            required: false,
+        }, {
+            name: 'priority',
+            type: 'INTEGER',
+            description: 'If a message matches multiple bad-words the punishment with the highest priority is used.',
             required: false,
         }];
     }
@@ -268,7 +271,7 @@ class EditBadWordCommand extends SubCommand {
 
         const option = this.options.getString('option'),
             value = this.options.getString('value')?.split(' ');
-        if (!['trigger', 'message', 'channels'].includes(option) || !value || !badWord) {
+        if (!['trigger', 'response', 'channels', 'punishment', 'priority'].includes(option) || !value || !badWord) {
             return this.sendUsage();
         }
 
@@ -294,7 +297,7 @@ class EditBadWordCommand extends SubCommand {
             required: true,
             choices: [
                 {name: 'trigger', value: 'trigger'},
-                {name: 'message', value: 'response'},
+                {name: 'response', value: 'response'},
                 {name: 'channels', value: 'channels'},
                 {name: 'punishment', value: 'punishment'},
                 {name: 'priority', value: 'priority'},
