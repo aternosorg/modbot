@@ -37,7 +37,7 @@ class SubCommand extends AbstractCommand {
                 /** @type {any} */ { name: 'Usage', value: `\`${prefix}${this.parentCommand.getPrimaryName()} `+
                         `${this.getPrimaryName()} ${this.usage ?? ''}`.trim() + '`', inline: true},
                 /** @type {any} */ { name: 'Description', value: this.description, inline: true},
-                /** @type {any} */ { name: 'Required Permissions', value: this.userPerms.map(p => '`'+p+'`').join(', ') || 'none', inline: true }
+                /** @type {any} */ { name: 'Required Permissions', value: this.parentCommand.userPerms.concat(this.userPerms).map(p => '`'+p+'`').join(', ') || 'none', inline: true }
             )
             .setColor(util.color.red)
             .setTimestamp();
