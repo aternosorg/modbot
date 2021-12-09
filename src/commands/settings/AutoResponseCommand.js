@@ -17,7 +17,7 @@ class ListAutoResponseCommand extends SubCommand {
 
     async execute() {
         const messages = await BadWord.getGuildOverview(/** @type {Snowflake} */ this.source.getGuild().id)
-            ?? 'This server has no auto-responses!';
+            ?? ['This server has no auto-responses!'];
         for (const message of messages) {
             await this.reply(message);
         }
@@ -30,7 +30,7 @@ class AddAutoResponseCommand extends SubCommand {
 
     static description = 'Add an auto-response.';
 
-    static usage = 'all|<channels> regex|include|match <trigger>';
+    static usage = 'all|<channels> '+AutoResponse.triggerTypes.join('|')+' <trigger>';
 
     static getParentCommand() {
         return AutoResponseCommand;
@@ -95,7 +95,7 @@ class AddAutoResponseCommand extends SubCommand {
             name: 'type',
             type: 'STRING',
             description: 'Trigger type (default: include)',
-            choices: [{name: 'regex', value: 'regex'}, {name:'include', value:'include'}, {name:'match', value: 'include'}],
+            choices: AutoResponse.triggerTypes.map(t => {return { name: t, value: t };}),
             required: false,
         }];
     }
@@ -203,7 +203,7 @@ class ShowAutoResponseCommand extends SubCommand {
         return [{
             name: 'id',
             type: 'INTEGER',
-            description: 'The ID of the auto-response that should be removed.',
+            description: 'The ID of the auto-response that you want to view.',
             required: true,
             minValue: 0,
         }];
