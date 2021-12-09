@@ -50,7 +50,7 @@ class AddAutoResponseCommand extends SubCommand {
     async execute() {
         const trigger = this.options.getString('trigger'),
             type = this.options.getString('type') ?? 'include',
-            all = this.options.getBoolean('all'),
+            all = this.options.getBoolean('all') ?? false,
             channels = util.channelMentions(this.source.getGuild(), this.options.getString('channels')?.split(' '));
 
         if (!trigger) {
