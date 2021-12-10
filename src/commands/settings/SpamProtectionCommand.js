@@ -85,6 +85,8 @@ class SpamProtectionCommand extends ConfigCommand {
 
     static description = 'Configure message spam protection (deletes spammed messages)';
 
+    static usage = 'get|set|disable';
+
     static getSubCommands() {
         return [GetSpamProtectionCommand, SetSpamProtectionCommand, DisableSpamProtectionCommand];
     }
