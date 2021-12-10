@@ -76,7 +76,7 @@ class DisableHelpCenterCommand extends SubCommand {
 
     static names = ['disable', 'off'];
 
-    static description = 'Disable the spam protection.';
+    static description = 'Disable the help-center.';
 
     static getParentCommand() {
         return HelpCenterCommand;
