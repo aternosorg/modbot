@@ -1,4 +1,6 @@
-const {ConfigCommand, GetConfigCommand, SetConfigCommand} = require('../ConfigCommand');
+const ConfigCommand = require('../ConfigCommand');
+const GetConfigCommand = require('../GetConfigCommand');
+const SetConfigCommand = require('../SetConfigCommand');
 const SubCommand = require('../SubCommand');
 
 class GetSpamProtectionCommand extends GetConfigCommand {

@@ -1,4 +1,6 @@
-const {ConfigCommand, GetConfigCommand, SetConfigCommand} = require('../ConfigCommand');
+const ConfigCommand = require('../ConfigCommand');
+const GetConfigCommand = require('../GetConfigCommand');
+const SetConfigCommand = require('../SetConfigCommand');
 
 class GetCapsCommand extends GetConfigCommand {
 
