@@ -114,7 +114,13 @@ class ChatTriggeredFeature {
         return this.getCache().guilds;
     }
 
+    /**
+     * does this filter match this string
+     * @param {String} string
+     * @return {boolean}
+     */
     matchesString(string) {
+        if (!string) return false;
         switch (this.trigger.type) {
             case 'include':
                 if (string.toLowerCase().includes(this.trigger.content.toLowerCase())) {
