@@ -114,28 +114,23 @@ class ChatTriggeredFeature {
         return this.getCache().guilds;
     }
 
-    /**
-     * matches - does this message match this item
-     * @param   {Message} message
-     * @returns {boolean}
-     */
-    matches(message) {
+    matchesString(string) {
         switch (this.trigger.type) {
             case 'include':
-                if (message.content.toLowerCase().includes(this.trigger.content.toLowerCase())) {
+                if (string.toLowerCase().includes(this.trigger.content.toLowerCase())) {
                     return true;
                 }
                 break;
 
             case 'match':
-                if (message.content.toLowerCase() === this.trigger.content.toLowerCase()) {
+                if (string.toLowerCase() === this.trigger.content.toLowerCase()) {
                     return true;
                 }
                 break;
 
             case 'regex': {
                 let regex = new RegExp(this.trigger.content, this.trigger.flags);
-                if (regex.test(message.content)) {
+                if (regex.test(string)) {
                     return true;
                 }
                 break;
@@ -156,7 +151,7 @@ class ChatTriggeredFeature {
                 // Check all domains contained in the Discord message (and split them into "main part" and extension)
                 let regex = /https?:\/\/([^/]+)\.([^./]+)\b/ig,
                     matches;
-                while ((matches = regex.exec(message.content)) !== null) {
+                while ((matches = regex.exec(string)) !== null) {
                     if(!matches[1] || !matches[2]) {
                         continue;
                     }
@@ -181,6 +176,15 @@ class ChatTriggeredFeature {
         }
 
         return false;
+    }
+
+    /**
+     * matches - does this message match this item
+     * @param   {Message} message
+     * @returns {boolean}
+     */
+    matches(message) {
+        return this.matchesString(message.content);
     }
 
     /**
