@@ -2,28 +2,6 @@ const Command = require('./Command');
 const SubCommand = require('./SubCommand');
 
 /**
- * @class
- * @classdesc Get the current configuration
- * @abstract
- */
-class GetConfigCommand extends SubCommand {
-    static description = 'View the current configuration.';
-
-    static names = ['get','status'];
-}
-
-/**
- * @class
- * @classdesc Change the configuration
- * @abstract
- */
-class SetConfigCommand extends SubCommand {
-    static description = 'Reconfigure this option.';
-
-    static names = ['set'];
-}
-
-/**
  * Command used to set config options (guild/channel/user configs)
  * @class
  * @abstract
@@ -93,4 +71,4 @@ class ConfigCommand extends Command {
     }
 }
 
-module.exports = {ConfigCommand, GetConfigCommand, SetConfigCommand};
+module.exports = ConfigCommand;
