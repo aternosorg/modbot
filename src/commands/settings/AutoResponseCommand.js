@@ -13,7 +13,7 @@ class AutoResponseCommand extends ConfigCommand {
 
     static userPerms = ['MANAGE_GUILD'];
 
-    static usage = 'list|add|remove';
+    static usage = 'list|add|remove|show|edit';
 
     static getSubCommands() {
         return [

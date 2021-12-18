@@ -1,11 +1,11 @@
 const SubCommand = require('../../SubCommand');
-const AutoResponse = require('../../../AutoResponse');
+const BadWord = require('../../../BadWord');
 const util = require('../../../util');
 
-class ShowAutoResponseCommand extends SubCommand {
-    static names = ['show'];
+class RemoveBadWordCommand extends SubCommand {
+    static names = ['remove'];
 
-    static description = 'Show an auto-response.';
+    static description = 'Remove a bad-word.';
 
     static usage = '<id>';
 
@@ -15,19 +15,22 @@ class ShowAutoResponseCommand extends SubCommand {
             return this.sendUsage();
         }
         /**
-         * @type {AutoResponse}
+         * @type {BadWord}
          */
-        const response = await AutoResponse.getByID(id);
-        if (!response) {
+        const badWord = await BadWord.getByID(id);
+        if (!badWord) {
             return this.sendUsage();
         }
-        await this.reply(response.embed(`Auto-response ${response.id}`, util.color.green));    }
+        await badWord.remove();
+        await this.reply(badWord.embed(`Removed bad-word ${badWord.id}`, util.color.red));
+    }
+
 
     static getOptions() {
         return [{
             name: 'id',
             type: 'INTEGER',
-            description: 'The ID of the auto-response that you want to view.',
+            description: 'The ID of the bad-word that should be removed.',
             required: true,
             minValue: 0,
         }];
@@ -42,4 +45,4 @@ class ShowAutoResponseCommand extends SubCommand {
     }
 }
 
-module.exports = ShowAutoResponseCommand;
+module.exports = RemoveBadWordCommand;

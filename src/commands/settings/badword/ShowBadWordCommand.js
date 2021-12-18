@@ -1,11 +1,11 @@
 const SubCommand = require('../../SubCommand');
-const AutoResponse = require('../../../AutoResponse');
+const BadWord = require('../../../BadWord');
 const util = require('../../../util');
 
-class ShowAutoResponseCommand extends SubCommand {
+class ShowBadWordCommand extends SubCommand {
     static names = ['show'];
 
-    static description = 'Show an auto-response.';
+    static description = 'Show a bad-word.';
 
     static usage = '<id>';
 
@@ -15,19 +15,19 @@ class ShowAutoResponseCommand extends SubCommand {
             return this.sendUsage();
         }
         /**
-         * @type {AutoResponse}
+         * @type {BadWord}
          */
-        const response = await AutoResponse.getByID(id);
-        if (!response) {
+        const badWord = await BadWord.getByID(id);
+        if (!badWord) {
             return this.sendUsage();
         }
-        await this.reply(response.embed(`Auto-response ${response.id}`, util.color.green));    }
+        await this.reply(badWord.embed(`Bad-word ${badWord.id}`, util.color.green));    }
 
     static getOptions() {
         return [{
             name: 'id',
             type: 'INTEGER',
-            description: 'The ID of the auto-response that you want to view.',
+            description: 'The ID of the bad-word that you want to view.',
             required: true,
             minValue: 0,
         }];
@@ -42,4 +42,4 @@ class ShowAutoResponseCommand extends SubCommand {
     }
 }
 
-module.exports = ShowAutoResponseCommand;
+module.exports = ShowBadWordCommand;

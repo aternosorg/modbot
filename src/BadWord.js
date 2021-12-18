@@ -139,10 +139,10 @@ class BadWord extends ChatTriggeredFeature {
      * @param {Snowflake[]|null} channels
      * @param {String} triggerType
      * @param {String} triggerContent
+     * @param {String} [response] response to bad-word
      * @returns {Promise<{success:boolean, badWord: BadWord, message: String}>}
      */
-    static async new(guildID, global, channels, triggerType, triggerContent) {
-
+    static async new(guildID, global, channels, triggerType, triggerContent, response) {
         let trigger = this.getTrigger(triggerType, triggerContent);
         if (!trigger.success) return trigger;
 
@@ -151,7 +151,7 @@ class BadWord extends ChatTriggeredFeature {
             punishment: {action: 'none'},
             global,
             channels,
-            response: 'disabled'
+            response: response ?? 'disabled',
         });
         await badWord.save();
         return {success: true, badWord};
@@ -219,6 +219,11 @@ class BadWord extends ChatTriggeredFeature {
                 return {success: false, message:'Unknown option'};
             }
         }
+    }
+
+    getOverview() {
+        return `[${this.id}] ${this.global ? 'global' : this.channels.map(c => `<#${c}>`).join(', ')} ` +
+            '`' + this.trigger.asString() + '`\n';
     }
 }
 

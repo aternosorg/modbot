@@ -8,13 +8,13 @@ class AddAutoResponseCommand extends SubCommand {
 
     static description = 'Add an auto-response.';
 
-    static usage = 'all|<channels> regex|include|match <trigger>';
+    static usage = 'all|<channels> '+AutoResponse.triggerTypes.join('|')+' <trigger>';
 
     async execute() {
         const trigger = this.options.getString('trigger'),
             type = this.options.getString('type') ?? 'include',
-            all = this.options.getBoolean('all') ?? false,
-            channels = util.channelMentions(this.source.getGuild(), this.options.getString('channels')?.split(' '));
+            channels = util.channelMentions(this.source.getGuild(), this.options.getString('channels')?.split(' ')),
+            all = !channels.length;
 
         if (!trigger) {
             await this.sendUsage();
@@ -50,26 +50,21 @@ class AddAutoResponseCommand extends SubCommand {
             type: 'STRING',
             description: 'Required keyword/regex',
             required: true,
-        }, {
+        },{
             name: 'message',
             type: 'STRING',
             description: 'Automatic reply',
             required: true,
         },{
-            name: 'all',
-            type: 'BOOLEAN',
-            description: 'Respond in all channels',
-            required: false,
-        }, {
             name: 'channels',
             type: 'STRING',
-            description: 'List of channels to respond in',
+            description: 'List of channels to respond in. Leave blank to respond in all channels.',
             required: false,
         },{
             name: 'type',
             type: 'STRING',
             description: 'Trigger type (default: include)',
-            choices: [{name: 'regex', value: 'regex'}, {name:'include', value:'include'}, {name:'match', value: 'include'}],
+            choices: AutoResponse.triggerTypes.map(t => {return { name: t, value: t };}),
             required: false,
         }];
     }

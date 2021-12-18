@@ -60,10 +60,12 @@ module.exports = {
             else {
                 await monitor.error(`Failed to execute command ${name}`, e);
                 console.error(`An error occurred while executing command ${name}:`,e);
-                await interaction.reply({
-                    content: 'An error occurred while executing that command!',
-                    ephemeral: true,
-                });
+                if (e.code !== APIErrors.UNKNOWN_INTERACTION) {
+                    await interaction.reply({
+                        content: 'An error occurred while executing that command!',
+                        ephemeral: true,
+                    });
+                }
             }
         }
     }
