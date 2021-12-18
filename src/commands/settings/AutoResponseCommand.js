@@ -1,4 +1,4 @@
-const {ConfigCommand} = require('../ConfigCommand');
+const ConfigCommand = require('../ConfigCommand');
 const SubCommand = require('../SubCommand');
 const AutoResponse = require('../../AutoResponse');
 const {Snowflake} = require('discord.js');

@@ -1,4 +1,6 @@
-const {ConfigCommand, GetConfigCommand, SetConfigCommand} = require('../ConfigCommand');
+const ConfigCommand = require('../ConfigCommand');
+const GetConfigCommand = require('../GetConfigCommand');
+const SetConfigCommand = require('../SetConfigCommand');
 const SubCommand = require('../SubCommand');
 
 class GetSpamProtectionCommand extends GetConfigCommand {
@@ -84,6 +86,8 @@ class SpamProtectionCommand extends ConfigCommand {
     static userPerms = ['MANAGE_GUILD'];
 
     static description = 'Configure message spam protection (deletes spammed messages)';
+
+    static usage = 'get|set|disable';
 
     static getSubCommands() {
         return [GetSpamProtectionCommand, SetSpamProtectionCommand, DisableSpamProtectionCommand];
