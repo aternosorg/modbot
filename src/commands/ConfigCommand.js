@@ -27,6 +27,7 @@ class ConfigCommand extends Command {
 
     static getOptions() {
         return this.getSubCommands().map(c => {
+            c.parentCommand = this;
             return {
                 type: c.type,
                 name: c.getPrimaryName(),

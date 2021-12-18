@@ -1,8 +1,9 @@
 const ConfigCommand = require('../ConfigCommand');
 const SubCommand = require('../SubCommand');
 const AutoResponse = require('../../AutoResponse');
-const {Snowflake, Collection} = require('discord.js');
+const {Snowflake} = require('discord.js');
 const util = require('../../util');
+const BadWord = require('../../BadWord');
 
 class ListAutoResponseCommand extends SubCommand {
 
@@ -15,23 +16,11 @@ class ListAutoResponseCommand extends SubCommand {
     }
 
     async execute() {
-        /** @type {Collection<Number,AutoResponse>} */
-        const responses = await AutoResponse.getAll(/** @type {Snowflake} */ this.source.getGuild().id);
-        if (!responses.size) return this.reply('No auto-responses!');
-
-        let text = '';
-        for (const [id, response] of responses) {
-            const info = `[${id}] ${response.global ? 'global' : response.channels.map(c => `<#${c}>`).join(', ')} ` +
-                '`' + response.trigger.asString() + '`\n';
-
-            if (text.length + info.length < 2000) {
-                text += info;
-            } else {
-                await this.reply(text);
-                text = info;
-            }
+        const messages = await BadWord.getGuildOverview(/** @type {Snowflake} */ this.source.getGuild().id)
+            ?? ['This server has no auto-responses!'];
+        for (const message of messages) {
+            await this.reply(message);
         }
-        if (text.length) await this.reply(text);
     }
 }
 
@@ -41,7 +30,7 @@ class AddAutoResponseCommand extends SubCommand {
 
     static description = 'Add an auto-response.';
 
-    static usage = 'all|<channels> regex|include|match <trigger>';
+    static usage = 'all|<channels> '+AutoResponse.triggerTypes.join('|')+' <trigger>';
 
     static getParentCommand() {
         return AutoResponseCommand;
@@ -50,8 +39,8 @@ class AddAutoResponseCommand extends SubCommand {
     async execute() {
         const trigger = this.options.getString('trigger'),
             type = this.options.getString('type') ?? 'include',
-            all = this.options.getBoolean('all') ?? false,
-            channels = util.channelMentions(this.source.getGuild(), this.options.getString('channels')?.split(' '));
+            channels = util.channelMentions(this.source.getGuild(), this.options.getString('channels')?.split(' ')),
+            all = !channels.length;
 
         if (!trigger) {
             await this.sendUsage();
@@ -92,21 +81,16 @@ class AddAutoResponseCommand extends SubCommand {
             type: 'STRING',
             description: 'Automatic reply',
             required: true,
-        },{
-            name: 'all',
-            type: 'BOOLEAN',
-            description: 'Respond in all channels',
-            required: false,
         }, {
             name: 'channels',
             type: 'STRING',
-            description: 'List of channels to respond in',
+            description: 'List of channels to respond in. Leave blank to respond in all channels.',
             required: false,
         },{
             name: 'type',
             type: 'STRING',
             description: 'Trigger type (default: include)',
-            choices: [{name: 'regex', value: 'regex'}, {name:'include', value:'include'}, {name:'match', value: 'include'}],
+            choices: AutoResponse.triggerTypes.map(t => {return { name: t, value: t };}),
             required: false,
         }];
     }
@@ -214,7 +198,7 @@ class ShowAutoResponseCommand extends SubCommand {
         return [{
             name: 'id',
             type: 'INTEGER',
-            description: 'The ID of the auto-response that should be removed.',
+            description: 'The ID of the auto-response that you want to view.',
             required: true,
             minValue: 0,
         }];
@@ -310,7 +294,7 @@ class AutoResponseCommand extends ConfigCommand {
 
     static userPerms = ['MANAGE_GUILD'];
 
-    static usage = 'list|add|remove';
+    static usage = 'list|add|remove|show|edit';
 
     static getSubCommands() {
         return [

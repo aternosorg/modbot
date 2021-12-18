@@ -19,6 +19,11 @@ let database;
  */
 const cacheDuration = 10*60*1000;
 
+/**
+ * @class
+ * @classdesc a feature triggered by chat messages (autoresponses and badwords)
+ * @abstract
+ */
 class ChatTriggeredFeature {
 
     /**
@@ -187,9 +192,48 @@ class ChatTriggeredFeature {
      * serialize this object
      * must return data in same order as the static columns array
      * @returns {(*|string)[]}
+     * @abstract
      */
     serialize() {
-        throw 'Abstract method not overridden!';
+        throw new Error('Abstract method not overridden!');
+    }
+
+    /**
+     * get an overview of this object
+     * @return {string}
+     * @abstract
+     */
+    getOverview() {
+        throw new Error('Abstract method not overridden!');
+    }
+
+    /**
+     * get an overview of all objects of this type for this guild
+     * returns an array of strings shorter than 2000 characters or null if no objects exist
+     * @param {Snowflake} guildid
+     * @return {Promise<string[]|null>} null if empty
+     */
+    static async getGuildOverview(guildid) {
+        const objects = await this.getAll(guildid);
+        if (!objects || !objects.size) {
+            return null;
+        }
+
+        const res = [];
+        let text = '';
+        for (const object of objects.values()) {
+            const info = object.getOverview();
+
+            if (text.length + info.length < 2000) {
+                text += info;
+            } else {
+                res.push(text);
+                text = info;
+            }
+        }
+        if (text) res.push(text);
+
+        return res;
     }
 
     /**
