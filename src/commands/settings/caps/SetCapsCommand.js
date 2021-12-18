@@ -1,7 +1,6 @@
 const SetConfigCommand = require('../../SetConfigCommand');
 
 class SetCapsCommand extends SetConfigCommand {
-
     static usage = 'enabled|disabled';
 
     async execute() {

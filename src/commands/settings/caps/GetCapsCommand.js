@@ -1,7 +1,6 @@
 const GetConfigCommand = require('../../GetConfigCommand');
 
 class GetCapsCommand extends GetConfigCommand {
-
     async execute() {
         await this.reply(`Spam protection is currently ${this.getValue()}.`);
     }
