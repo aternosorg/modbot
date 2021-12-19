@@ -294,10 +294,6 @@ class AbstractCommand {
         const message = this.response;
 
         /**
-         * @type {Message}
-         */
-        let updating;
-        /**
          * @type {InteractionCollector<ButtonInteraction>}
          */
         const components = message.createMessageComponentCollector( {
@@ -306,14 +302,10 @@ class AbstractCommand {
              * @return {Promise<boolean>}
              */
             filter: async (interaction) => {
-                if (interaction.user.id === this.source.getUser().id) {
-                    updating = await interaction.reply({fetchReply: true, content: 'Updating embed...'});
-                    return true;
-                }
-                else {
-                    await interaction.reply({ephemeral: true, content: 'Only the message author can do that!'});
-                    return false;
-                }
+                if (interaction.user.id === this.source.getUser().id) return true;
+
+                await interaction.reply({ephemeral: true, content: 'Only the message author can do that!'});
+                return false;
             }
         });
 
@@ -328,7 +320,7 @@ class AbstractCommand {
                 index--;
             }
 
-            await message.edit({
+            await interaction.update({
                 embeds: [await generatePage(index)],
                 components: [new MessageActionRow({
                     components: [
@@ -337,7 +329,6 @@ class AbstractCommand {
                     ]
                 })]
             });
-            await updating.delete();
             clearTimeout(timeout);
             setTimeout(end, duration);
         });
