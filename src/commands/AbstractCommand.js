@@ -22,7 +22,6 @@ const GuildConfig = require('../config/GuildConfig');
 const ChannelConfig = require('../config/ChannelConfig');
 const UserConfig = require('../config/UserConfig');
 const util = require('../util');
-const icons = require('../icons');
 
 
 /**
@@ -276,13 +275,13 @@ class AbstractCommand {
         const previousButton = new MessageButton({
                 customId: 'previous',
                 style: 'SECONDARY',
-                emoji: icons.left,
+                label: 'Previous',
                 disabled: true,
             }),
             nextButton = new MessageButton({
                 customId: 'next',
-                style: 'SECONDARY',
-                emoji: icons.right,
+                style: 'SUCCESS',
+                label: 'Next',
                 disabled: pages === 1
             });
         await this.reply({
