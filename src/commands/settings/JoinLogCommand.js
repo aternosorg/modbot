@@ -7,7 +7,7 @@ class JoinLogCommand extends ConfigCommand {
 
     static description = 'Configure the channel that joins will be logged in';
 
-    static usage = '<#channel|id>|off|status';
+    static usage = 'set|get|disable';
 
     static names = ['joinlog','memberlog'];
 

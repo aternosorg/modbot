@@ -3,7 +3,7 @@ const {MessageEmbed} = require('discord.js');
 const util = require('../../../util');
 
 class DisableJoinLogCommand extends SubCommand {
-    static names = ['disable'];
+    static names = ['disable', 'off'];
 
     static description = 'Disable join logs';
 
