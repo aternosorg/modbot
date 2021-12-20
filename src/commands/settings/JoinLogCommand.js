@@ -15,9 +15,9 @@ class JoinLogCommand extends ConfigCommand {
 
     static getSubCommands() {
         return [
+            DisableJoinLogCommand,
             GetJoinLogCommand,
             SetJoinLogCommand,
-            DisableJoinLogCommand,
         ];
     }
 }

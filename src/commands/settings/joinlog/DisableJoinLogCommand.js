@@ -1,8 +1,10 @@
-const SetConfigCommand = require('../../SubCommand');
+const SubCommand = require('../../SubCommand');
 const {MessageEmbed} = require('discord.js');
 const util = require('../../../util');
 
-class SetJoinLogCommand extends SetConfigCommand {
+class DisableJoinLogCommand extends SubCommand {
+    static names = ['disable'];
+
     static description = 'Disable join logs';
 
     async execute() {
@@ -15,4 +17,4 @@ class SetJoinLogCommand extends SetConfigCommand {
     }
 }
 
-module.exports = SetJoinLogCommand;
+module.exports = DisableJoinLogCommand;
