@@ -7,7 +7,7 @@ class LinkCooldownCommand extends ConfigCommand {
 
     static description = 'Configure link cooldown';
 
-    static usage = 'set|off|status';
+    static usage = 'set|get|disable';
 
     static names = ['linkcooldown'];
 
