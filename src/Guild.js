@@ -1,6 +1,5 @@
 const RateLimiter = require('./RateLimiter');
 const Discord = require('discord.js');
-const DiscordGuild = Discord.Guild;
 const {
     Collection,
     Snowflake,
@@ -8,6 +7,7 @@ const {
     Role,
     User,
     GuildBan,
+    GuildChannel,
 } = Discord;
 const {APIErrors} = require('discord.js').Constants;
 
@@ -27,7 +27,7 @@ class Guild {
 
     /**
      *
-     * @param {DiscordGuild} guild
+     * @param {Discord.Guild} guild
      */
     constructor(guild) {
         this.guild = guild;
@@ -83,6 +83,25 @@ class Guild {
         }
         catch (e) {
             if (e.code === APIErrors.UNKNOWN_BAN) {
+                return null;
+            }
+            else {
+                throw e;
+            }
+        }
+    }
+
+    /**
+     * fetch a channel
+     * @param {Snowflake} id channel id
+     * @return {Promise<null|GuildChannel>}
+     */
+    async fetchChannel(id) {
+        try {
+            return await this.guild.channels.fetch(id);
+        }
+        catch (e) {
+            if (e.code === APIErrors.UNKNOWN_CHANNEL) {
                 return null;
             }
             else {
