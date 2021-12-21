@@ -1,79 +1,24 @@
-const Command = require('../Command');
-const util = require('../../util.js');
-const Discord = require('discord.js');
-const Guild = require('../../Guild');
+const ConfigCommand = require('../ConfigCommand');
+const AddModRoleCommand = require('./modroles/AddModRoleCommand');
+const ListModRolesCommand = require('./modroles/ListModRolesCommand');
+const RemoveModRoleCommand = require('./modroles/RemoveModRoleCommand');
 
-class ModRolesCommand extends Command {
+class ModRolesCommand extends ConfigCommand {
 
-    static description = 'Manage moderator roles';
+    static description = 'Manage moderator roles. Moderators are able to use specific commands without other permissions.';
 
-    static usage = 'add|remove|list [<@role|id>]';
+    static usage = 'add|remove|list';
 
-    static names = ['modrole','modroles'];
+    static names = ['modroles', 'modrole'];
 
     static userPerms = ['MANAGE_GUILD'];
 
-    async execute() {
-        if (this.args.length < 1) {
-            await this.sendUsage();
-            return;
-        }
-
-        const guild = new Guild(this.message.guild);
-        let role;
-        switch (this.args[0].toLowerCase()) {
-            case 'list':
-                await this.reply(new Discord.MessageEmbed()
-                    .setDescription(`Active moderator roles: ${this.guildConfig.listModRoles()}`)
-                    .setColor(util.color.green)
-                );
-                break;
-
-            case 'add':
-                if (this.args.length !== 2) return this.sendUsage();
-
-                role = util.roleMentionToId(this.args[1]);
-                if (role === null || await guild.fetchRole(role) === null) return this.sendUsage();
-
-                if (this.guildConfig.isModRole(role)) {
-                    return this.reply(new Discord.MessageEmbed()
-                        .setDescription(`<@&${role}> is already a moderator role!`)
-                        .setColor(util.color.red)
-                    );
-                }
-
-                this.guildConfig.addModRole(role);
-                await this.guildConfig.save();
-                await this.reply(new Discord.MessageEmbed()
-                    .setDescription(`Added <@&${role}> as a moderator role!`)
-                    .setColor(util.color.green)
-                );
-                break;
-
-            case 'remove':
-                if (this.args.length !== 2) return this.sendUsage();
-
-                role = util.roleMentionToId(this.args[1]);
-                if (role === null || await guild.fetchRole(role) === null) return this.sendUsage();
-
-                if (!this.guildConfig.isModRole(role)) {
-                    return this.reply(new Discord.MessageEmbed()
-                        .setDescription(`<@&${role}> is not a moderator role!`)
-                        .setColor(util.color.red)
-                    );
-                }
-
-                this.guildConfig.removeModRole(role);
-                await this.guildConfig.save();
-                await this.reply(new Discord.MessageEmbed()
-                    .setDescription(`<@&${role}> is no longer a moderator role!`)
-                    .setColor(util.color.green)
-                );
-                break;
-
-            default:
-                await this.sendUsage();
-        }
+    static getSubCommands() {
+        return [
+            AddModRoleCommand,
+            ListModRolesCommand,
+            RemoveModRoleCommand,
+        ];
     }
 }
 
