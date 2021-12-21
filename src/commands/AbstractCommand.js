@@ -257,6 +257,17 @@ class AbstractCommand {
     }
 
     /**
+     * send a discord embed with a success message
+     * @return {Promise<void>}
+     */
+    async sendSuccess(message) {
+        await this.reply({ephemeral: true}, new MessageEmbed({
+            color: util.color.green,
+            description: message,
+        }));
+    }
+
+    /**
      * send usage embed
      * @return {Promise<void>}
      */

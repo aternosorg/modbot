@@ -192,7 +192,9 @@ class GuildConfig extends Config {
      * @param  {Snowflake} role role id
      */
     addModRole(role) {
-        this.#modRoles.push(role);
+        if (!this.isModRole(role)) {
+            this.#modRoles.push(role);
+        }
     }
 
     /**
@@ -245,7 +247,9 @@ class GuildConfig extends Config {
      * @param  {Snowflake} role role id
      */
     addProtectedRole(role) {
-        this.#protectedRoles.push(role);
+        if (!this.isProtectedRole(role)) {
+            this.#protectedRoles.push(role);
+        }
     }
 
     /**
