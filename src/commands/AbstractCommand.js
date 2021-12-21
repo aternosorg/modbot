@@ -291,7 +291,7 @@ class AbstractCommand {
                 components: [previousButton, nextButton]
             })]
         }, await generatePage(0));
-        const message = this.response;
+        const source = this.source;
 
         /**
          * @type {Message}
@@ -300,7 +300,7 @@ class AbstractCommand {
         /**
          * @type {InteractionCollector<ButtonInteraction>}
          */
-        const components = message.createMessageComponentCollector( {
+        const components = this.response.createMessageComponentCollector( {
             /**
              * @param {ButtonInteraction} interaction
              * @return {Promise<boolean>}
@@ -328,7 +328,7 @@ class AbstractCommand {
                 index--;
             }
 
-            await message.edit({
+            await this.source.editResponse({
                 embeds: [await generatePage(index)],
                 components: [new MessageActionRow({
                     components: [
@@ -339,16 +339,18 @@ class AbstractCommand {
             });
             await updating.delete();
             clearTimeout(timeout);
-            setTimeout(end, duration);
+            timeout = setTimeout(end, duration);
         });
 
         async function end() {
             components.stop('TIME');
-            await message.edit({
-                components: [
-                    previousButton.setDisabled(true),
-                    nextButton.setDisabled(true)
-                ]});
+            await source.editResponse({
+                components: [new MessageActionRow({
+                    components: [
+                        previousButton.setDisabled(true),
+                        nextButton.setDisabled(true)
+                    ]
+                })]});
         }
     }
 
