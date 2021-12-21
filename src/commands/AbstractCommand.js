@@ -301,12 +301,12 @@ class AbstractCommand {
                 components: [previousButton, nextButton]
             })]
         }, await generatePage(0));
-        const message = this.response;
+        const source = this.source;
 
         /**
          * @type {InteractionCollector<ButtonInteraction>}
          */
-        const components = message.createMessageComponentCollector( {
+        const components = this.response.createMessageComponentCollector( {
             /**
              * @param {ButtonInteraction} interaction
              * @return {Promise<boolean>}
@@ -340,16 +340,18 @@ class AbstractCommand {
                 })]
             });
             clearTimeout(timeout);
-            setTimeout(end, duration);
+            timeout = setTimeout(end, duration);
         });
 
         async function end() {
             components.stop('TIME');
-            await message.edit({
-                components: [
-                    previousButton.setDisabled(true),
-                    nextButton.setDisabled(true)
-                ]});
+            await source.editResponse({
+                components: [new MessageActionRow({
+                    components: [
+                        previousButton.setDisabled(true),
+                        nextButton.setDisabled(true)
+                    ]
+                })]});
         }
     }
 
