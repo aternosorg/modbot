@@ -33,6 +33,12 @@ class CommandSource {
     #interaction;
 
     /**
+     * last response (if this is a message)
+     * @type {Message}
+     */
+    #response;
+
+    /**
      * @param {Message|CommandInteraction|ContextMenuInteraction} input
      */
     constructor(input) {
@@ -112,7 +118,17 @@ class CommandSource {
             }
         }
         else {
-            return this.#message.reply(options);
+            this.#response = this.#message.reply(options);
+            return this.#response;
+        }
+    }
+
+    editResponse(options) {
+        if (this.isInteraction) {
+            return this.#interaction.editReply(options);
+        }
+        else {
+            return this.#response.edit(options);
         }
     }
 
