@@ -22,7 +22,6 @@ const GuildConfig = require('../config/GuildConfig');
 const ChannelConfig = require('../config/ChannelConfig');
 const UserConfig = require('../config/UserConfig');
 const util = require('../util');
-const icons = require('../icons');
 
 
 /**
@@ -276,13 +275,13 @@ class AbstractCommand {
         const previousButton = new MessageButton({
                 customId: 'previous',
                 style: 'SECONDARY',
-                emoji: icons.left,
+                label: 'Previous',
                 disabled: true,
             }),
             nextButton = new MessageButton({
                 customId: 'next',
-                style: 'SECONDARY',
-                emoji: icons.right,
+                style: 'SUCCESS',
+                label: 'Next',
                 disabled: pages === 1
             });
         await this.reply({
@@ -294,10 +293,6 @@ class AbstractCommand {
         const source = this.source;
 
         /**
-         * @type {Message}
-         */
-        let updating;
-        /**
          * @type {InteractionCollector<ButtonInteraction>}
          */
         const components = this.response.createMessageComponentCollector( {
@@ -306,14 +301,10 @@ class AbstractCommand {
              * @return {Promise<boolean>}
              */
             filter: async (interaction) => {
-                if (interaction.user.id === this.source.getUser().id) {
-                    updating = await interaction.reply({fetchReply: true, content: 'Updating embed...'});
-                    return true;
-                }
-                else {
-                    await interaction.reply({ephemeral: true, content: 'Only the message author can do that!'});
-                    return false;
-                }
+                if (interaction.user.id === this.source.getUser().id) return true;
+
+                await interaction.reply({ephemeral: true, content: 'Only the message author can do that!'});
+                return false;
             }
         });
 
@@ -328,7 +319,7 @@ class AbstractCommand {
                 index--;
             }
 
-            await this.source.editResponse({
+            await interaction.update({
                 embeds: [await generatePage(index)],
                 components: [new MessageActionRow({
                     components: [
@@ -337,7 +328,6 @@ class AbstractCommand {
                     ]
                 })]
             });
-            await updating.delete();
             clearTimeout(timeout);
             timeout = setTimeout(end, duration);
         });
