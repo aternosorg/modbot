@@ -37,7 +37,7 @@ class EditBadWordCommand extends SubCommand {
         return [{
             name: 'id',
             type: 'INTEGER',
-            description: 'The ID of the bad-word that should be removed.',
+            description: 'The ID of the bad-word that should be edited.',
             required: true,
             minValue: 0,
         }, {
