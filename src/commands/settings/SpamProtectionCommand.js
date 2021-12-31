@@ -35,7 +35,12 @@ class SetSpamProtectionCommand extends SetConfigCommand {
         const count = this.options.getInteger('value');
         if (count < 1 || count > 60) {
             await this.sendUsage();
-        } else {
+        }
+        if (!this.args.length) {
+            await this.sendUsage();
+            return;
+        }
+        else {
             this.guildConfig.antiSpam = count;
             await this.guildConfig.save();
             await this.reply(`Enabled spam protection! Users can now only send ${count} messages per minute.`);
