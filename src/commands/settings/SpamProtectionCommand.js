@@ -33,8 +33,9 @@ class SetSpamProtectionCommand extends SetConfigCommand {
 
     async execute() {
         const count = this.options.getInteger('value');
-        if (count < 1 || count > 60) {
+        if (!count || count < 1 || count > 60) {
             await this.sendUsage();
+            return;
         } else {
             this.guildConfig.antiSpam = count;
             await this.guildConfig.save();
