@@ -14,6 +14,8 @@ class LogChannelCommand extends Command {
 
     static userPerms = ['MANAGE_GUILD'];
 
+    static supportsSlashCommands = false;
+
     async execute() {
         if (this.args.length === 0) {
             await this.sendUsage();
