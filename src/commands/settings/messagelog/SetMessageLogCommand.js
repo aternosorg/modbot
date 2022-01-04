@@ -3,10 +3,10 @@ const {MessageEmbed} = require('discord.js');
 const util = require('../../../util');
 const Guild = require('../../../Guild');
 
-class SetJoinLogCommand extends SetConfigCommand {
+class SetMessageLogCommand extends SetConfigCommand {
     static usage = '<#channel|channelid>';
 
-    static description = 'Set a channel new members will be logged in';
+    static description = 'Set a channel deleted and edited messages will be logged in';
 
     async execute() {
         const channelID = this.source.isInteraction ?
@@ -23,10 +23,10 @@ class SetJoinLogCommand extends SetConfigCommand {
             return;
         }
 
-        this.guildConfig.joinLogChannel = channelID;
+        this.guildConfig.messageLogChannel = channelID;
         await this.guildConfig.save();
         await this.reply(new MessageEmbed()
-            .setDescription(`Set join log channel to <#${channel.id}>.`)
+            .setDescription(`Set message log channel to <#${channel.id}>.`)
             .setColor(util.color.green)
         );
     }
@@ -35,7 +35,7 @@ class SetJoinLogCommand extends SetConfigCommand {
         return [{
             name: 'channel',
             type: 'CHANNEL',
-            description: 'The new join log channel.',
+            description: 'The new message log channel.',
             required: true
         }];
     }
@@ -49,4 +49,4 @@ class SetJoinLogCommand extends SetConfigCommand {
     }
 }
 
-module.exports = SetJoinLogCommand;
+module.exports = SetMessageLogCommand;
