@@ -9,6 +9,8 @@ class DeleteCommandsCommand extends Command {
 
     static names = ['deletecommands', 'delcommands'];
 
+    static supportsSlashCommands = false;
+
     async execute() {
         if (!this.args.length) {
             await this.sendUsage();
