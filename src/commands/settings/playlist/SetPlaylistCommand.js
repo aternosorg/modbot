@@ -26,7 +26,10 @@ class SetPlaylistCommand extends SetConfigCommand {
             id: playlist
         });
 
-        if (response.data.items.length === 0) return this.sendUsage();
+        if (response.data.items.length === 0) {
+            await this.reply('Playlist not found. Make sure the playlist is public or unlisted and the link is correct.');
+            return;
+        }
 
         this.guildConfig.playlist = playlist;
         VideoCommand.clearGuildCache(this.source.getGuild().id);
