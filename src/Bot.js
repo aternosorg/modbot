@@ -125,7 +125,7 @@ class Bot {
     async _loadSlashCommands() {
         console.log('Loading slash commands!');
         /**
-         * @type {Collection<String, SlashCommand>}
+         * @type {Collection<String, SlashCommandManager>}
          */
         const commands = SlashCommandManager.getFromClasses(CommandManager.getCommandClasses());
 
@@ -135,25 +135,7 @@ class Bot {
         }
 
         const commandManager = this.#client.application.commands;
-        await commandManager.fetch();
-
-        for (const registeredCommand of commandManager.cache.values()) {
-            const key = registeredCommand.type + ':' + registeredCommand.name;
-            if (commands.has(key)) {
-                const newCommand = commands.get(key);
-                commands.delete(key);
-                if (newCommand.matchesDefinition(registeredCommand))
-                    continue;
-                await registeredCommand.edit(newCommand);
-            }
-            else {
-                await registeredCommand.delete();
-            }
-        }
-
-        for (const command of commands.values()) {
-            await commandManager.create(command);
-        }
+        await commandManager.set(Array.from(commands.values()));
         console.log('Slash commands loaded!');
     }
 }
