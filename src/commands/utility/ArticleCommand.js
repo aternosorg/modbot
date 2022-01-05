@@ -1,7 +1,35 @@
 const Command = require('../Command');
 const Request = require('../../Request');
-const {MessageOptions, MessageEmbed, MessageActionRow, MessageButton} = require('discord.js');
+const {
+    MessageOptions,
+    MessageEmbed,
+    MessageActionRow,
+    MessageButton,
+    ApplicationCommandOptionChoice,
+} = require('discord.js');
 const Turndown = require('turndown');
+const got = require('got');
+/**
+ * cache of zendesk autocompletions
+ * Helpcenter ID => Query => Completions
+ * @type {Map<String, Map<String, ApplicationCommandOptionChoice[]>>}
+ */
+const completionCache = new Map();
+
+function setCompletionCache(helpcenter, query, articles) {
+    if (!completionCache.has(helpcenter)) {
+        completionCache.set(helpcenter, new Map());
+    }
+
+    completionCache.get(helpcenter).set(query, articles);
+    setTimeout(() => {
+        const hcCache = completionCache.get(helpcenter);
+        hcCache.delete(query);
+        if (!hcCache.size) {
+            completionCache.delete(helpcenter);
+        }
+    }, 60*60*1000);
+}
 
 class ArticleCommand extends Command {
 
@@ -63,12 +91,41 @@ class ArticleCommand extends Command {
         }
     }
 
+    async getAutoCompletions() {
+        console.log('getting autocompletions');
+        if (!this.guildConfig.helpcenter) {
+            return [];
+        }
+
+        const query = this.options.getString('query') ?? '';
+
+        const cachedCompletions = completionCache.get(this.guildConfig.helpcenter)?.get(query);
+        if (cachedCompletions) {
+            return cachedCompletions;
+        }
+
+        console.log('Requesting zendesk API!');
+        const res = await got.get(`https://${this.guildConfig.helpcenter}.zendesk.com/hc/api/internal/instant_search.json?query=${encodeURIComponent(query)}`).json();
+        const articles = res && res.results ? res.results.map(r => {
+            const title = r.title.replace(/<\/?[^>]+>/g, '');
+            return {
+                name: title,
+                value: title
+            };
+        }) : [];
+
+        setCompletionCache(this.guildConfig.helpcenter, query, articles);
+
+        return articles;
+    }
+
     static getOptions() {
         return [{
             name: 'query',
             type: 'STRING',
             description: 'Search query',
             required: true,
+            autocomplete: true,
         }];
     }
 
@@ -139,7 +196,9 @@ class ArticleCommand extends Command {
         if (string.length > 800) {
             string = string.substr(0, 800);
             string = string.replace(/\.?\n+.*$/, '');
-            embed.setFooter('To read more, click \'View Article\' below.');
+            embed.setFooter({
+                text: 'To read more, click \'View Article\' below.',
+            });
         }
 
         embed.setDescription(string);
