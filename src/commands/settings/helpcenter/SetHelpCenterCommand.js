@@ -1,5 +1,6 @@
 const SetConfigCommand = require('../../SetConfigCommand');
 const Request = require('../../../Request');
+const ArticleCommand = require('../../utility/ArticleCommand');
 
 class SetHelpCenterCommand extends SetConfigCommand {
     async execute() {
@@ -26,6 +27,7 @@ class SetHelpCenterCommand extends SetConfigCommand {
             }
         }
         this.guildConfig.helpcenter = subdomain;
+        ArticleCommand.clearCompletionCache();
         await this.guildConfig.save();
         await this.reply(`Set help-center to https://${subdomain}.zendesk.com/hc/`);
     }
