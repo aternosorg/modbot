@@ -90,8 +90,6 @@ class VideoCommand extends Command {
             matches = matches.map(m => ({name: m.item.snippet.title, value: m.item.snippet.title}));
         }
 
-        console.log(matches[0]);
-
         return matches;
     }
 
