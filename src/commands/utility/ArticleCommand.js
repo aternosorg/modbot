@@ -92,7 +92,6 @@ class ArticleCommand extends Command {
     }
 
     async getAutoCompletions() {
-        console.log('getting autocompletions');
         if (!this.guildConfig.helpcenter) {
             return [];
         }
@@ -104,7 +103,6 @@ class ArticleCommand extends Command {
             return cachedCompletions;
         }
 
-        console.log('Requesting zendesk API!');
         const res = await got.get(`https://${this.guildConfig.helpcenter}.zendesk.com/hc/api/internal/instant_search.json?query=${encodeURIComponent(query)}`).json();
         const articles = res && res.results ? res.results.map(r => {
             const title = r.title.replace(/<\/?[^>]+>/g, '');
@@ -203,6 +201,10 @@ class ArticleCommand extends Command {
 
         embed.setDescription(string);
         return embed;
+    }
+
+    static clearCompletionCache() {
+        completionCache.clear();
     }
 }
 

@@ -79,6 +79,20 @@ class VideoCommand extends Command {
         await this.reply(options);
     }
 
+    async getAutoCompletions() {
+        const query = this.options.getString('query');
+        let matches = [];
+        try {
+            matches = await this.constructor._get(this.guildConfig.playlist);
+        }
+        finally {
+            matches = new Fuse(matches, {keys:['snippet.title']}).search(query);
+            matches = matches.map(m => ({name: m.item.snippet.title, value: m.item.snippet.title}));
+        }
+
+        return matches;
+    }
+
     /**
      * get (the first 100) videos from this playlist
      * @param {String} playlist playlist id
@@ -105,6 +119,7 @@ class VideoCommand extends Command {
             type: 'STRING',
             description: 'Search query',
             required: true,
+            autocomplete: true,
         }];
     }
 
