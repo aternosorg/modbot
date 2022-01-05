@@ -10,7 +10,7 @@ const {
     MessageOptions,
     ReplyMessageOptions,
     InteractionReplyOptions,
-    ButtonInteraction,
+    AutocompleteInteraction,
 } = require('discord.js');
 
 class CommandSource {
@@ -40,14 +40,14 @@ class CommandSource {
     #response;
 
     /**
-     * @param {Message|CommandInteraction|ContextMenuInteraction|ButtonInteraction} input
+     * @param {Message|CommandInteraction|ContextMenuInteraction|AutocompleteInteraction} input
      */
     constructor(input) {
         if (input instanceof Message) {
             this.isInteraction = false;
             this.#message = input;
         }
-        else if (input instanceof CommandInteraction || input instanceof ContextMenuInteraction || input instanceof ButtonInteraction) {
+        else if (input instanceof CommandInteraction || input instanceof ContextMenuInteraction || input instanceof AutocompleteInteraction) {
             this.isInteraction = true;
             this.#interaction = input;
         }
