@@ -1,7 +1,6 @@
 const CommandManager = require('../../commands/CommandManager');
 const Database = require('../../Database');
 const {Client, CommandInteraction, Constants: {APIErrors}} = require('discord.js');
-const Command = require('../../commands/Command');
 const monitor = require('../../Monitor').getInstance();
 const CommandSource = require('../../commands/CommandSource');
 
@@ -18,8 +17,12 @@ module.exports = {
             return;
 
         const name = interaction.commandName;
+        /** @type {typeof Command}*/
         const CommandClass = CommandManager.getCommands().get(name);
-        if (CommandClass === undefined) return;
+        if (CommandClass === undefined) {
+            await interaction.reply('Unknown command!!');
+            return;
+        }
 
         if (CommandClass.guildOnly && !interaction.inGuild()) {
             await interaction.reply('This command can only be used in a guild!');
@@ -27,7 +30,6 @@ module.exports = {
         }
 
         try {
-            /** @type {Command} */
             const cmd = new CommandClass(new CommandSource(interaction), options.database, options.bot, name, '/');
 
             if (interaction.inGuild()) {

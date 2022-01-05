@@ -16,6 +16,7 @@ const {
     CommandInteractionOption,
     InteractionReplyOptions,
     InteractionCollector,
+    ApplicationCommandOptionChoice,
 } = require('discord.js');
 const CommandSource = require('./CommandSource');
 const GuildConfig = require('../config/GuildConfig');
@@ -244,6 +245,14 @@ class AbstractCommand {
      * @abstract
      */
     async execute() {}
+
+    /**
+     * get auto completion options
+     * @returns {Promise<ApplicationCommandOptionChoice[]>}
+     */
+    async getAutoCompletions() {
+        return [];
+    }
 
     /**
      * send a discord embed with an error message

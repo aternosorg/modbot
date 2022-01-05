@@ -87,7 +87,7 @@ class CommandManager {
 
     /**
      * get all commands (name => class)
-     * @return {Collection<String, Command>}
+     * @return {Collection<String, typeof Command>}
      */
     static getCommands() {
         return this.#commands;
