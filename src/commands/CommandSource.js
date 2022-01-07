@@ -11,6 +11,7 @@ const {
     ReplyMessageOptions,
     InteractionReplyOptions,
     AutocompleteInteraction,
+    InteractionDeferReplyOptions,
 } = require('discord.js');
 
 class CommandSource {
@@ -135,15 +136,16 @@ class CommandSource {
 
     /**
      * defer the reply to this message
+     * @param {InteractionDeferReplyOptions} [options]
      * @return {Promise}
      */
-    defer() {
+    defer(options) {
         if (this.isInteraction) {
             if (this.#interaction.deferred) {
                 return null;
             }
             else {
-                return this.#interaction.deferReply();
+                return this.#interaction.deferReply(options);
             }
         } else {
             return this.#message.channel.sendTyping();
