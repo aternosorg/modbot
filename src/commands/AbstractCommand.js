@@ -17,6 +17,7 @@ const {
     InteractionReplyOptions,
     InteractionCollector,
     ApplicationCommandOptionChoice,
+    InteractionDeferReplyOptions,
 } = require('discord.js');
 const CommandSource = require('./CommandSource');
 const GuildConfig = require('../config/GuildConfig');
@@ -252,6 +253,17 @@ class AbstractCommand {
      */
     async getAutoCompletions() {
         return [];
+    }
+
+    /**
+     *
+     * @param {InteractionDeferReplyOptions} [options]
+     * @returns {Promise}
+     */
+    async defer(options) {
+        options ??= {};
+        options.ephemeral ??= this.constructor.ephemeral;
+        return this.source.defer(options);
     }
 
     /**

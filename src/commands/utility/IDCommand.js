@@ -10,7 +10,7 @@ class IDCommand extends Command {
 
     static usage = '<username|username#1234>';
 
-    static names = ['id']
+    static names = ['id'];
 
     static userPerms = ['VIEW_AUDIT_LOG'];
 
@@ -19,7 +19,7 @@ class IDCommand extends Command {
     static supportsSlashCommands = true;
 
     async execute() {
-        await this.source.defer();
+        await this.defer();
         const query = this.options.getString('username');
         if (!query) return this.sendUsage();
 

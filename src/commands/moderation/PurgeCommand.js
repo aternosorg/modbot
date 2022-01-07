@@ -21,7 +21,7 @@ class PurgeCommand extends Command {
     static supportsSlashCommands = true;
 
     async execute() {
-        await this.source.defer();
+        await this.defer();
         const filter = {
             content: this.options.getString('content'),
             users: this.options.getUser('user') ? [this.options.getUser('user')?.id] : this.options.get('users')?.value ?? [],

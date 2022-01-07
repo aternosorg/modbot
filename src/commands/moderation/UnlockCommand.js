@@ -27,7 +27,7 @@ class UnlockCommand extends Command {
     static supportsSlashCommands = true;
 
     async execute() {
-        await this.source.defer();
+        await this.defer();
 
         const embed = new MessageEmbed()
             .setTitle('This channel has been unlocked.')
