@@ -40,14 +40,21 @@ class UserInfoCommand extends Command {
             this.database.query('SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = \'mute\'',[user.id, guildID]),
             this.database.query('SELECT * FROM moderations WHERE active = TRUE AND userid = ? AND guildid = ? AND action = \'ban\'', [user.id, guildID]),
         ]);
-        if (!mute && guildMember && guildMember.roles.cache.has(this.guildConfig.mutedRole)) mute = {reason: 'Unknown reason and timer'};
+        if (!mute && guildMember) {
+            if (guildMember.roles.cache.has(this.guildConfig.mutedRole)) {
+                mute = {reason: 'Has muted role (Unknown reason and timer)'};
+            }
+            if (guildMember.communicationDisabledUntilTimestamp) {
+                mute = {reason: `Timed out until <t:${Math.floor(guildMember.communicationDisabledUntilTimestamp / 1000)}:R>`};
+            }
+        }
         let muteTime = getRemainingDuration(mute);
         let banTime = getRemainingDuration(ban);
         if (!ban && await member.fetchBanInfo()) ban = member.banInfo;
 
 
         const embed = new MessageEmbed()
-            .setAuthor(user.tag, user.avatarURL())
+            .setAuthor({name: user.tag, iconURL: user.avatarURL()})
             .setDescription(
                 `**ID:** ${user.id}\n` +
                 `**Account Created:** <t:${Math.floor(user.createdTimestamp/1000)}:D>\n` +

@@ -47,11 +47,11 @@ class ModerationCommand extends Command {
     }
 
     async execute() {
-        if (!await this.checkRequirements()) return;
         this.targetedUsers = await this.getTargetedUsers();
         if (this.targetedUsers === null) return;
 
         this.loadInfo();
+        if (!await this.checkRequirements()) return;
         const successes = [];
         for (const target of this.targetedUsers) {
             if (await this.isProtected(target)) continue;

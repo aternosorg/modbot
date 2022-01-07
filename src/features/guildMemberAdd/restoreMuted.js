@@ -4,6 +4,9 @@ const util = require('../../util');
 const {APIErrors} = require('discord.js').Constants;
 
 exports.event = async (options, member) => {
+    if (member.communicationDisabledUntilTimestamp) {
+        return;
+    }
     let result = await options.database.query('SELECT * FROM moderations WHERE action = \'mute\' AND active = TRUE AND userid = ? AND guildid = ?',[member.id,member.guild.id]);
     if (result) {
         let guildConfig = await GuildConfig.get(member.guild.id);

@@ -262,12 +262,21 @@ class Member {
      * @return {Promise<void>}
      */
     async mute(database, reason, moderator, duration){
-        const {mutedRole} = await this._getGuildConfig();
-        if (!mutedRole) return Log.log(/** @type {GuildInfo} */ this.guild.guild.id ,'Can\'t mute user because no muted role is specified');
+        const timeout = duration && duration <= util.apiLimits.timeoutLimit;
+        let mutedRole;
+        if (!timeout) {
+            mutedRole = (await this._getGuildConfig()).mutedRole;
+            if (!mutedRole) return Log.log(/** @type {GuildInfo} */ this.guild.guild.id, 'Can\'t mute user because no muted role is specified');
+        }
         await this.dmPunishedUser('muted', reason, duration, 'in');
         if (!this.member) await this.fetchMember();
         if (this.member) {
-            await this.member.roles.add(mutedRole, this._shortenReason(`${moderator.tag} ${duration ? `(${util.secToTime(duration)}) ` : ''}| ${reason}`));
+            const shortedReason = this._shortenReason(`${moderator.tag} ${duration ? `(${util.secToTime(duration)}) ` : ''}| ${reason}`);
+            if (timeout) {
+                await this.member.timeout(duration*1000, shortedReason);
+            } else {
+                await this.member.roles.add(mutedRole, shortedReason);
+            }
         }
         const id = await database.addModeration(/** @type {Snowflake} */ this.guild.guild.id, this.user.id, 'mute', reason, duration, moderator.id);
         await Log.logModeration(/** @type {GuildInfo} */ this.guild.guild.id, moderator, this.user, reason, id, 'mute', { time: util.secToTime(duration) });
@@ -284,7 +293,10 @@ class Member {
         if (!this.member) await this.fetchMember();
         if (this.member) {
             const {mutedRole} = await this._getGuildConfig();
-            await this.member.roles.remove(mutedRole, this._shortenReason(`${moderator.tag} | ${reason}`));
+            if(this.member.roles.cache.has(mutedRole)) {
+                await this.member.roles.remove(mutedRole, this._shortenReason(`${moderator.tag} | ${reason}`));
+            }
+            await this.member.timeout(null);
         }
         await database.query('UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'mute\'', [this.guild.guild.id, this.user.id]);
         const id = await database.addModeration(/** @type {Snowflake} */ this.guild.guild.id, this.user.id, 'unmute', reason, null, moderator.id);
@@ -298,6 +310,9 @@ class Member {
      */
     async isMuted(database) {
         if (!this.member) await this.fetchMember(true);
+        if (this.member.communicationDisabledUntilTimestamp) {
+            return true;
+        }
         const {mutedRole} = await this._getGuildConfig();
         if (this.member && this.member.roles.cache.get(mutedRole)) return true;
         const response = await database.query('SELECT * FROM moderations WHERE active = TRUE AND action = \'mute\' AND guildid = ? AND userid = ?', [this.guild.guild.id, this.user.id]);

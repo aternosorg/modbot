@@ -181,7 +181,7 @@ class Database {
      * @param {Number}                                  [duration]    duration of the moderation
      * @param {Snowflake} [moderatorId] id of the moderator
      * @param {Number}                                  [value]       strike count
-     * @return {Number} the id of the moderation
+     * @return {Promise<Number>} the id of the moderation
      */
     async addModeration(guildId, userId, action, reason, duration, moderatorId, value= 0) {
         //disable old moderations
