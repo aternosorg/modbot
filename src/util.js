@@ -36,7 +36,15 @@ let database;
  */
 let bot;
 
-const util = {};
+const util = {
+    apiLimits: {
+        /**
+         * timeout limit in seconds
+         * @type {Number}
+         */
+        timeoutLimit: 28 * 24 * 60 * 60,
+    }
+};
 
 /**
  * Init - saves database and discord client

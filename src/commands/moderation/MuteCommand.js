@@ -1,5 +1,7 @@
 const TimedModerationCommand = require('../TimedModerationCommand');
 const Member = require('../../Member');
+const util = require('../../util');
+const {Constants: {APIErrors}} = require('discord.js');
 
 class MuteCommand extends TimedModerationCommand {
 
@@ -9,7 +11,7 @@ class MuteCommand extends TimedModerationCommand {
 
     static userPerms = ['BAN_MEMBERS'];
 
-    static botPerms = ['MANAGE_ROLES'];
+    static botPerms = ['MANAGE_ROLES', 'MODERATE_MEMBERS'];
 
     static type = {
         execute: 'mute',
@@ -18,12 +20,23 @@ class MuteCommand extends TimedModerationCommand {
 
     async executePunishment(target) {
         const member = new Member(target, this.source.getGuild());
-        await member.mute(this.database, this.reason, this.source.getUser(), this.duration);
+        try {
+            await member.mute(this.database, this.reason, this.source.getUser(), this.duration);
+        }
+        catch (e) {
+            if (e.code === APIErrors.UNKNOWN_ROLE) {
+                await this.sendError('Muted role could not be found. Please verify it\'s set correctly.');
+                return false;
+            }
+            else {
+                throw e;
+            }
+        }
         return true;
     }
 
     async checkRequirements() {
-        if(!this.guildConfig.mutedRole) {
+        if(this.duration && this.duration >= util.apiLimits.timeoutLimit && !this.guildConfig.mutedRole) {
             await this.sendError(`There is no muted role set for this server. Please use \`${this.prefix}mutedrole\` to specify it.`);
             return false;
         }

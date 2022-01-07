@@ -136,8 +136,11 @@ class Log{
         const embedColor = util.color.resolve(type);
         const logEmbed = new MessageEmbed()
             .setColor(embedColor)
-            .setAuthor(`Case ${insertId} | ${util.toTitleCase(type)} | ${user.tag}`, user.avatarURL())
-            .setFooter(user.id)
+            .setAuthor({
+                name: `Case ${insertId} | ${util.toTitleCase(type)} | ${user.tag}`,
+                iconURL: user.avatarURL()
+            })
+            .setFooter({text: user.id})
             .setTimestamp()
             .addFields(
                 /** @type {any} */ { name: 'User', value: `<@${user.id}>`, inline: true},
