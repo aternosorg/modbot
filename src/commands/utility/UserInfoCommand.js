@@ -44,7 +44,7 @@ class UserInfoCommand extends Command {
             if (guildMember.roles.cache.has(this.guildConfig.mutedRole)) {
                 mute = {reason: 'Has muted role (Unknown reason and timer)'};
             }
-            if (guildMember.communicationDisabledUntilTimestamp) {
+            if (guildMember.isCommunicationDisabled()) {
                 mute = {reason: `Timed out until <t:${Math.floor(guildMember.communicationDisabledUntilTimestamp / 1000)}:R>`};
             }
         }
@@ -62,9 +62,9 @@ class UserInfoCommand extends Command {
                 `**Moderations:** ${moderations.count}\n` +
                 `**Strikes:** ${strikes}\n` +
                 `**Muted:** ${mute ? `${icons.yes} - ${mute.reason}`: icons.no}\n` +
-                (muteTime ? `**Remaining:** ${muteTime}\n` : '') +
+                (muteTime ? `**Until:** ${muteTime}\n` : '') +
                 `**Banned:** ${ban ? `${icons.yes} - ${ban.reason || 'Unknown Reason'}` : icons.no}\n` +
-                (banTime ? `**Remaining:** ${banTime}\n` : '')
+                (banTime ? `**Until:** ${banTime}\n` : '')
             )
             .setColor(getColor(ban, mute));
 
