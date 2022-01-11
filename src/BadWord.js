@@ -206,7 +206,9 @@ class BadWord extends ChatTriggeredFeature {
                     this.channels = [];
                 }
                 else {
-                    let channels = await util.channelMentions(guild, args);
+                    // discord removes spaces between channel names in slash commands for some reason
+                    args = args.join(' ').replace('><', '> <').split(' ');
+                    let channels = util.channelMentions(guild, args.join(' ').replace('><', '> <').split(' '));
                     if (!channels) return {success: false, message:'No valid channels specified'};
                     this.global = false;
                     this.channels = channels;

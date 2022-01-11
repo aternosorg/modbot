@@ -66,11 +66,11 @@ class EditBadWordCommand extends SubCommand {
             type: 'INTEGER',
             value: parseInt(args.shift()),
         },{
-            name: 'type',
+            name: 'option',
             type: 'STRING',
             value: args.shift(),
         },{
-            name: 'trigger',
+            name: 'value',
             type: 'STRING',
             value: args.join(' '),
         }];
