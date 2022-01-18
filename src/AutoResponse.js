@@ -152,8 +152,6 @@ class AutoResponse extends ChatTriggeredFeature {
                     this.channels = [];
                 }
                 else {
-                    // discord removes spaces between channel names in slash commands for some reason
-                    args = args.join(' ').replace('><', '> <').split(' ');
                     let channels = util.channelMentions(guild, args);
                     if (!channels) return {success: false, message:'No valid channels specified'};
                     this.global = false;
