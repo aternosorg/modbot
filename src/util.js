@@ -573,15 +573,19 @@ util.userMentions = async(mentions) => {
 
 /**
  * get all mentioned channels
- * @param {Guild} guild     the guild that should have this channel
- * @param {String[]}                  mentions  array of strings with a channel mention or id
+ * @param {Guild}       guild     the guild that should have this channel
+ * @param {String[]}    mentions  array of strings with a channel mention or id
  * @return {Snowflake[]} channel ids
  */
 util.channelMentions = (guild, mentions) => {
-    let res = [];
+    const res = [];
     if(!Array.isArray(mentions)) {
         return [];
     }
+
+    // discord removes spaces between channel names in slash commands for some reason
+    mentions = mentions.flatMap(m => m.split(/(?<=>)(?=<)/g));
+
     while (mentions.length && util.isChannelMention(guild, mentions[0])) {
         res.push(util.channelMentionToId(mentions.shift()));
     }

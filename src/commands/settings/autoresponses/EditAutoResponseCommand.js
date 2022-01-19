@@ -21,7 +21,7 @@ class EditAutoResponseCommand extends SubCommand {
 
         const option = this.options.getString('option'),
             value = this.options.getString('value')?.split(' ');
-        if (!['trigger', 'message', 'channels'].includes(option) || !value || !autoResponse) {
+        if (!['trigger', 'response', 'channels'].includes(option) || !value || !autoResponse) {
             return this.sendUsage();
         }
 
@@ -64,11 +64,11 @@ class EditAutoResponseCommand extends SubCommand {
             type: 'INTEGER',
             value: parseInt(args.shift()),
         },{
-            name: 'type',
+            name: 'option',
             type: 'STRING',
             value: args.shift(),
         },{
-            name: 'trigger',
+            name: 'value',
             type: 'STRING',
             value: args.join(' '),
         }];
