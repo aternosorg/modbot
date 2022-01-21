@@ -377,12 +377,13 @@ class AbstractCommand {
     }
 
     /**
-     *
+     * Generate a message options object from this input
      * @param {String|MessageOptions|ReplyMessageOptions|InteractionReplyOptions|MessageEmbed|MessageAttachment} message
      * @param {MessageEmbed|MessageAttachment} additions
-     * @return {Promise<void>}
+     * @return {MessageOptions|ReplyMessageOptions|InteractionReplyOptions}
+     * @private
      */
-    async reply(message, ...additions) {
+    _generateMessageOptions(message, ...additions) {
         /** @type {MessageOptions|ReplyMessageOptions|InteractionReplyOptions}*/
         let options = {};
 
@@ -404,6 +405,18 @@ class AbstractCommand {
             options.ephemeral ??= true;
         }
 
+        return options;
+    }
+
+    /**
+     * Reply to this command
+     * @param {String|MessageOptions|ReplyMessageOptions|InteractionReplyOptions|MessageEmbed|MessageAttachment} message
+     * @param {MessageEmbed|MessageAttachment} additions
+     * @return {Promise<void>}
+     */
+    async reply(message, ...additions) {
+        const options = this._generateMessageOptions(message, ...additions);
+
         if (!this.source.isInteraction) {
             options.ephemeral = undefined;
             if (this.source.getGuild() && this.userConfig.deleteCommands) {
@@ -415,6 +428,17 @@ class AbstractCommand {
             }
         }
         this.response = await this.source.reply(options);
+    }
+
+    /**
+     * Edit the existing reply
+     * @param {String|MessageOptions|ReplyMessageOptions|InteractionReplyOptions|MessageEmbed|MessageAttachment} message
+     * @param {MessageEmbed|MessageAttachment} additions
+     * @return {Promise<void>}
+     */
+    async editReply(message, ...additions) {
+        const options = this._generateMessageOptions(message, ...additions);
+        this.source.editResponse(options);
     }
 
     /**
