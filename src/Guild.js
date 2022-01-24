@@ -20,13 +20,12 @@ class Guild {
 
     /**
      * Discord guild
-     * @type {Guild}
+     * @type {require('discord.js').Guild}
      */
     guild;
 
     /**
-     *
-     * @param {Guild} guild
+     * @param {import(discord.js).Guild} guild
      */
     constructor(guild) {
         this.guild = guild;
