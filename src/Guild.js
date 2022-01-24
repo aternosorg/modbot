@@ -20,7 +20,7 @@ class Guild {
 
     /**
      * Discord guild
-     * @type {require('discord.js').Guild}
+     * @type {Guild}
      */
     guild;
 
