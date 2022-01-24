@@ -1,5 +1,3 @@
-const RateLimiter = require('./RateLimiter');
-const Discord = require('discord.js');
 const {
     Collection,
     Snowflake,
@@ -8,8 +6,9 @@ const {
     User,
     GuildBan,
     GuildChannel,
-} = Discord;
-const {APIErrors} = require('discord.js').Constants;
+    Constants: { APIErrors },
+} = require('discord.js');
+const RateLimiter = require('./RateLimiter');
 
 class Guild {
 
@@ -27,7 +26,7 @@ class Guild {
 
     /**
      *
-     * @param {Discord.Guild} guild
+     * @param {Guild} guild
      */
     constructor(guild) {
         this.guild = guild;
