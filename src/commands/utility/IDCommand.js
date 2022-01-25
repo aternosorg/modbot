@@ -1,8 +1,13 @@
 const Command = require('../Command');
-const {User, MessageEmbed} = require('discord.js');
+const {
+    User,
+    MessageEmbed,
+    GuildMember,
+    GuildBan,
+    Snowflake,
+    Collection
+} = require('discord.js');
 const util = require('../../util');
-
-const resultLimit = 150;
 
 class IDCommand extends Command {
 
@@ -25,35 +30,56 @@ class IDCommand extends Command {
 
         const [,user, discrim] = query.match(/([^#]*)#?(\d{4})?$/);
 
-        let [users, bans] = await Promise.all([
-            this.source.getGuild().members.fetch({query}),
-            this.source.getGuild().bans.fetch(),
-        ]);
+        /**
+         * @type {Collection<Snowflake, GuildMember|GuildBan>}
+         */
+        let users = await this.source.getGuild().members.fetch({query});
 
-        users = users.concat(bans.filter(banInfo => this._matches(banInfo.user, user, discrim)));
+        if (users.size !== 0) {
+            await this.reply(this._generateResultEmbed(query, Array.from(users.values()))
+                .setFooter({text: 'I\'m still searching the ban, on big guilds this can take a while...'}));
 
-        const embed = new MessageEmbed()
-            .setTitle(`User search for ${query}`);
-        if (users.size === 0) {
-            return this.sendError('No users found');
-        }
-
-        if (users.size > resultLimit) {
-            embed.setTitle(`First ${resultLimit} results of user search for ${query}`);
-            users = Array.from(users.values()).slice(0, resultLimit);
-        }
-
-        users = users.map(u => `${util.escapeFormatting(u.user.tag)}: ${u.user.id}`);
-        embed.setColor(util.color.green);
-        while (users.length) {
-            let list = '';
-
-            while (users.length && list.length + users[0].length < 2000) {
-                list += users.shift() + '\n';
+            let bans = await this.source.getGuild().bans.fetch();
+            bans = bans.filter(banInfo => this._matches(banInfo.user, user, discrim));
+            users = users.concat(bans);
+            await this.editReply(this._generateResultEmbed(query, Array.from(users.values())));
+        } else {
+            let bans = await this.source.getGuild().bans.fetch();
+            bans = bans.filter(banInfo => this._matches(banInfo.user, user, discrim));
+            if (bans.size === 0) {
+                return this.sendError('No users found');
             }
-            embed.setDescription(list);
-            await this.reply(embed);
+            else {
+                await this.editReply(this._generateResultEmbed(query, Array.from(bans.values())));
+            }
         }
+    }
+
+    /**
+     * generate an embed of results
+     * @param {String} query
+     * @param {(GuildMember|GuildBan)[]} results
+     * @return {MessageEmbed}
+     * @private
+     */
+    _generateResultEmbed(query, results) {
+        const entries = results.map(u => `${util.escapeFormatting(u.user.tag)}: ${u.user.id}`);
+        let description = '', complete = true, count = 0;
+        for (const entry of entries) {
+            if (description.length + entry.length <= 4096) {
+                description += entry + '\n';
+                count ++;
+            }
+            else {
+                complete = false;
+                break;
+            }
+        }
+
+        return new MessageEmbed()
+            .setTitle(`${complete ? count : `First ${count}`} results for '${query}'`)
+            .setDescription(description)
+            .setColor(util.color.green);
     }
 
     /**
