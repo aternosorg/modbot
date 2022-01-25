@@ -445,7 +445,7 @@ class AbstractCommand {
      * @param {String} text
      * @param {Object} [options]
      * @param {Number} [options.time]
-     * @return {Promise<{interaction: ButtonInteraction, confirmed: boolean}>}
+     * @return {Promise<{component: ButtonInteraction, confirmed: boolean}>}
      */
     async getConfirmation(text, options = {time: 15000}) {
         const buttons = new MessageActionRow()
@@ -459,7 +459,7 @@ class AbstractCommand {
                     .setLabel('Cancel')
                     .setStyle('SUCCESS')
             );
-        await this.reply({ephemeral: false, content: text, components: [buttons]});
+        await this.reply({content: text, components: [buttons]});
         try {
             const component = await this.response.awaitMessageComponent({
                 max: 1, time: options.time, errors: ['time'],
@@ -477,14 +477,14 @@ class AbstractCommand {
             for (const button of buttons.components) {
                 button.setDisabled(true);
             }
-            await this.response.edit({components: [buttons]});
+            await this.editReply({components: [buttons]});
             return {component, confirmed: component.customId === 'confirm'};
         }
         catch (e) {
             for (const button of buttons.components) {
                 button.setDisabled(true);
             }
-            await this.response.edit({components: [buttons]});
+            await this.editReply({components: [buttons]});
             if (e.code === 'INTERACTION_COLLECTOR_ERROR')
                 return {component: null, confirmed: false};
             else

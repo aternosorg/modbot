@@ -3,6 +3,7 @@ const Database = require('../../Database');
 const {Client, CommandInteraction, Constants: {APIErrors}} = require('discord.js');
 const monitor = require('../../Monitor').getInstance();
 const CommandSource = require('../../commands/CommandSource');
+const config = require('../../../config.json');
 
 module.exports = {
     /**
@@ -58,6 +59,9 @@ module.exports = {
                     content: 'I am missing permissions to execute that command!',
                     ephemeral: true,
                 });
+                if (config.debug.enabled) {
+                    console.log('Missing permissions:', e);
+                }
             }
             else {
                 await monitor.error(`Failed to execute command ${name}`, e);
