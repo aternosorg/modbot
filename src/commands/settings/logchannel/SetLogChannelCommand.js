@@ -26,7 +26,7 @@ class SetLogChannelCommand extends SetConfigCommand {
         this.guildConfig.logChannel = channelID;
         await this.guildConfig.save();
         await this.reply(new MessageEmbed()
-            .setDescription(`Set log channel to <#${channel}>.`)
+            .setDescription(`Set log channel to <#${channel.id}>.`)
             .setColor(util.color.green)
         );
     }
