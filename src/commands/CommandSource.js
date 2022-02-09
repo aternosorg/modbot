@@ -105,7 +105,7 @@ class CommandSource {
      * @param {MessageOptions|ReplyMessageOptions|InteractionReplyOptions} options
      * @return {Promise<Message>}
      */
-    reply(options) {
+    async reply(options) {
         if (this.isInteraction) {
             options.fetchReply = true;
 
@@ -120,7 +120,7 @@ class CommandSource {
             }
         }
         else {
-            this.#response = this.#message.reply(options);
+            this.#response = await this.#message.reply(options);
             return this.#response;
         }
     }
