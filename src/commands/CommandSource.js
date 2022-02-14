@@ -120,7 +120,7 @@ class CommandSource {
             }
         }
         else {
-            this.#response = await this.#message.reply(options);
+            this.#response = await this.#message.channel.send(options);
             return this.#response;
         }
     }

@@ -419,12 +419,11 @@ class AbstractCommand {
 
         if (!this.source.isInteraction) {
             options.ephemeral = undefined;
-            if (this.source.getGuild() && this.userConfig.deleteCommands) {
-                this.response = await this.source.getChannel().send(options);
-                return;
-            } else {
-                options.failIfNotExists ??= false;
+            if (!this.source.isInteraction && !(this.source.getGuild() && this.userConfig.deleteCommands)) {
+                options.reply ??= {};
+                options.reply.messageReference ??= this.source.getRaw();
                 options.allowedMentions ??= {repliedUser: false};
+                options.reply.failIfNotExists ??= false;
             }
         }
         this.response = await this.source.reply(options);
