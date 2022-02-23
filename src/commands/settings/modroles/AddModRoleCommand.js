@@ -1,33 +1,19 @@
-const SubCommand = require('../../SubCommand');
-const Guild = require('../../../Guild');
-const {Snowflake} = require('discord.js');
-const util = require('../../../util');
+const RoleSubCommand = require('../../RoleSubCommand');
 
-class AddModRoleCommand extends SubCommand {
-    static usage = '<@role|id>';
-
+class AddModRoleCommand extends RoleSubCommand {
     static description = 'Add a moderator role.';
 
     static names = ['add'];
 
-    async execute() {
-        /** @type {Snowflake} */
-        const roleID = this.source.isInteraction ? this.options.getRole('role')?.id : this.options.getString('roleID');
-        const role = await (new Guild(this.source.getGuild())).fetchRole(roleID);
-
-        if (!role) {
-            await this.sendUsage();
+    async addRole(role) {
+        if (this.guildConfig.isModRole(role.id)) {
+            await this.sendSuccess(`<@&${role.id}> is already a mod role!`);
             return;
         }
 
-        if (this.guildConfig.isModRole(roleID)) {
-            await this.sendSuccess(`<@&${roleID}> is already a mod role!`);
-            return;
-        }
-
-        this.guildConfig.addModRole(roleID);
+        this.guildConfig.addModRole(role.id);
         await this.guildConfig.save();
-        await this.sendSuccess(`Added <@&${roleID}> to moderator roles.`);
+        await this.sendSuccess(`Added <@&${role.id}> to moderator roles.`);
     }
 
     static getOptions() {
@@ -36,14 +22,6 @@ class AddModRoleCommand extends SubCommand {
             type: 'ROLE',
             description: 'Moderator role',
             required: true,
-        }];
-    }
-
-    parseOptions(args) {
-        return [{
-            name: 'roleID',
-            type: 'STRING',
-            value: util.roleMentionToId(args.shift()),
         }];
     }
 }
