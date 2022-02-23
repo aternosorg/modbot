@@ -1,7 +1,7 @@
-const SubCommand = require('../../SubCommand');
-const Guild = require('../../../Guild');
+const SubCommand = require('./SubCommand');
+const Guild = require('../Guild');
 const {Snowflake, Role} = require('discord.js');
-const util = require('../../../util');
+const util = require('../util');
 
 /**
  * @class
