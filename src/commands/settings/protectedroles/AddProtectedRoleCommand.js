@@ -1,33 +1,19 @@
-const SubCommand = require('../../SubCommand');
-const Guild = require('../../../Guild');
-const {Snowflake} = require('discord.js');
-const util = require('../../../util');
+const RoleSubCommand = require('../../RoleSubCommand');
 
-class AddProtectedRoleCommand extends SubCommand {
-    static usage = '<@role|id>';
-
+class AddProtectedRoleCommand extends RoleSubCommand {
     static description = 'Add a protected role.';
 
     static names = ['add'];
 
-    async execute() {
-        /** @type {Snowflake} */
-        const roleID = this.source.isInteraction ? this.options.getRole('role')?.id : this.options.getString('roleID');
-        const role = await (new Guild(this.source.getGuild())).fetchRole(roleID);
-
-        if (!role) {
-            await this.sendUsage();
+    async addRole(role) {
+        if (this.guildConfig.isProtectedRole(role.id)) {
+            await this.sendSuccess(`<@&${role.id}> is already a protected role!`);
             return;
         }
 
-        if (this.guildConfig.isProtectedRole(roleID)) {
-            await this.sendSuccess(`<@&${roleID}> is already a protected role!`);
-            return;
-        }
-
-        this.guildConfig.addProtectedRole(roleID);
+        this.guildConfig.addProtectedRole(role.id);
         await this.guildConfig.save();
-        await this.sendSuccess(`Added <@&${roleID}> to the protected roles.`);
+        await this.sendSuccess(`Added <@&${role.id}> to the protected roles.`);
     }
 
     static getOptions() {
@@ -36,14 +22,6 @@ class AddProtectedRoleCommand extends SubCommand {
             type: 'ROLE',
             description: 'A role which should be invincible to moderations',
             required: true,
-        }];
-    }
-
-    parseOptions(args) {
-        return [{
-            name: 'roleID',
-            type: 'STRING',
-            value: util.roleMentionToId(args.shift()),
         }];
     }
 }
