@@ -42,7 +42,7 @@ class Guild {
             return await this.guild.members.fetch({user: id, force});
         }
         catch (e) {
-            if (e.code === APIErrors.UNKNOWN_MEMBER) {
+            if ([APIErrors.UNKNOWN_MEMBER, APIErrors.UNKNOWN_USER].includes(e.code)) {
                 return null;
             }
             else {
