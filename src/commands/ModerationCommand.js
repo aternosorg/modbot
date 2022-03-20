@@ -47,6 +47,7 @@ class ModerationCommand extends Command {
     }
 
     async execute() {
+        await this.defer();
         this.targetedUsers = await this.getTargetedUsers();
         if (this.targetedUsers === null) return;
 
