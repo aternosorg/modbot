@@ -22,6 +22,7 @@ class AvatarCommand extends Command{
 
         const avatarEmbed = new MessageEmbed()
             .setTitle(`Avatar of ${util.escapeFormatting(user.tag)}`)
+            .setURL(user.displayAvatarURL({dynamic: true, size: 2048, format: 'png'});
             .setImage(user.displayAvatarURL({dynamic: true, size: 2048, format: 'png'}))
             .setFooter(`Command executed by ${util.escapeFormatting(this.source.getUser().tag)}`)
             .setTimestamp();
