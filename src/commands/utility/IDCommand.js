@@ -1,3 +1,9 @@
+/**
+ * Discord bans fetched per page
+ * @type {number}
+ */
+const BAN_PAGE_SIZE = 1000;
+
 const Command = require('../Command');
 const {
     User,
@@ -30,28 +36,19 @@ class IDCommand extends Command {
 
         const [,user, discrim] = query.match(/([^#]*)#?(\d{4})?$/);
 
-        /**
-         * @type {Collection<Snowflake, GuildMember|GuildBan>}
-         */
-        let users = await this.source.getGuild().members.fetch({query});
+        const users = /** @type {Collection<Snowflake, GuildMember>} */ await this.source.getGuild().members.fetch({query});
 
         if (users.size !== 0) {
-            await this.reply(this._generateResultEmbed(query, Array.from(users.values()))
+            await this.editReply(this._generateResultEmbed(query, Array.from(users.values()))
                 .setFooter({text: 'I\'m still searching the ban, on big guilds this can take a while...'}));
-
-            let bans = await this.source.getGuild().bans.fetch();
-            bans = bans.filter(banInfo => this._matches(banInfo.user, user, discrim));
-            users = users.concat(bans);
-            await this.editReply(this._generateResultEmbed(query, Array.from(users.values())));
-        } else {
-            let bans = await this.source.getGuild().bans.fetch();
-            bans = bans.filter(banInfo => this._matches(banInfo.user, user, discrim));
-            if (bans.size === 0) {
-                return this.sendError('No users found');
-            }
-            else {
-                await this.editReply(this._generateResultEmbed(query, Array.from(bans.values())));
-            }
+        }
+        const bans = await this._fetchAndFilterBans(user, discrim);
+        if (bans.size === 0) {
+            return this.sendError('No users found');
+        }
+        else {
+            // noinspection JSCheckFunctionSignatures
+            await this.editReply(this._generateResultEmbed(query, Array.from(users.concat(bans).values())));
         }
     }
 
@@ -80,6 +77,44 @@ class IDCommand extends Command {
             .setTitle(`${complete ? count : `First ${count}`} results for '${query}'`)
             .setDescription(description)
             .setColor(util.color.green);
+    }
+
+    /**
+     *
+     * @param {string} user
+     * @param {string} discrim
+     * @return {Promise<Collection<Snowflake, GuildBan>>}
+     * @private
+     */
+    async _fetchAndFilterBans(user, discrim) {
+        return (await this._fetchAllBans()).filter(banInfo => this._matches(banInfo.user, user, discrim));
+    }
+
+    /**
+     * fetch all bans
+     * @return {Promise<Collection<Snowflake, GuildBan>>}
+     * @private
+     */
+    async _fetchAllBans() {
+        let bans = new Collection();
+        let done = false, previous = null;
+        while (!done) {
+            const options = {
+                limit: BAN_PAGE_SIZE
+            };
+            if (previous !== null) {
+                options.after = previous;
+            }
+
+            const newBans = /** @type {Collection<Snowflake, GuildBan>}*/ await this.source.getGuild().bans.fetch(options);
+            bans = bans.concat(newBans);
+            previous = newBans.lastKey();
+
+            if (newBans.size < BAN_PAGE_SIZE) {
+                done = true;
+            }
+        }
+        return bans;
     }
 
     /**
