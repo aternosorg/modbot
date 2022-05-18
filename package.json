@@ -28,7 +28,7 @@
     "discord.js": "^13.5.0",
     "fuse.js": "^6.4.6",
     "got": "^11.8.2",
-    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
     "string-similarity": "^4.0.4",
     "turndown": "^7.1.1"
   },
