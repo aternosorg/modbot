@@ -130,6 +130,9 @@ class CommandSource {
             return this.#interaction.editReply(options);
         }
         else {
+            if (!this.#response) {
+                return this.#message.channel.send(options);
+            }
             return this.#response.edit(options);
         }
     }
