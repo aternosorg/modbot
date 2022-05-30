@@ -38,12 +38,14 @@ class IDCommand extends Command {
 
         const users = /** @type {Collection<Snowflake, GuildMember>} */ await this.source.getGuild().members.fetch({query});
 
+        let replied = false;
         if (users.size !== 0) {
             await this.editReply(this._generateResultEmbed(query, Array.from(users.values()))
-                .setFooter({text: 'I\'m still searching the ban, on big guilds this can take a while...'}));
+                .setFooter({text: 'I\'m still searching in the ban list, on guilds with a lot of bans this can take a while...'}));
+            replied = true;
         }
         const bans = await this._fetchAndFilterBans(user, discrim);
-        if (bans.size === 0) {
+        if (bans.size === 0 && !replied) {
             return this.sendError('No users found');
         }
         else {
