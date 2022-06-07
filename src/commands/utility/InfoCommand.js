@@ -25,7 +25,7 @@ class InfoCommand extends Command {
                 '[[Discord]](https://discord.gg/zYYhgPtmxw) '
             )
             .setTimestamp()
-            .setFooter(util.escapeFormatting(this.source.getUser().tag));
+            .setFooter({text: util.escapeFormatting(this.source.getUser().tag)});
         await this.reply(embed);
     }
 }

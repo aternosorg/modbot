@@ -20,6 +20,6 @@ exports.event = async (options, member) => {
         .setThumbnail(member.user.avatarURL())
         .setDescription(description)
         .setTimestamp()
-        .setFooter(`Now at ${member.guild.memberCount} members`)
+        .setFooter({text: `Now at ${member.guild.memberCount} members`})
     );
 };

@@ -8,8 +8,8 @@ exports.event = async (options, {guild, user}) => {
         await options.database.query('UPDATE moderations SET active = FALSE WHERE action = \'ban\' AND active = TRUE AND userid = ? AND guildid = ?',[user.id,guild.id]);
 
         const embed = new MessageEmbed()
-            .setAuthor(`Ban ${result.id} was deleted from guild | ${util.escapeFormatting(user.tag)}`, user.avatarURL())
-            .setFooter(user.id);
+            .setAuthor({name: `Ban ${result.id} was deleted from guild | ${util.escapeFormatting(user.tag)}`, iconURL: user.avatarURL()})
+            .setFooter({text: user.id});
 
         if (result.expireTime) {
             const remaining = result.expireTime - Math.floor(Date.now()/1000);

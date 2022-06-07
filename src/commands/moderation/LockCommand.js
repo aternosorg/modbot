@@ -36,7 +36,7 @@ class LockCommand extends Command {
             .setTitle('This channel is locked.')
             .setColor(util.color.red)
             .setDescription(this.options.getString('message') ?? '')
-            .setFooter('You are not muted, this channel is locked for everyone. Don\'t send direct messages to team members or moderators.');
+            .setFooter({text: 'You are not muted, this channel is locked for everyone. Don\'t send direct messages to team members or moderators.'});
 
         if (this.options.getBoolean('all')) {
             /** @type {GuildChannel[]} */

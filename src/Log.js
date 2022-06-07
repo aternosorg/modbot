@@ -170,8 +170,8 @@ class Log{
     static async logCheck(guildInfo, user, reason, insertId, type) {
         const logEmbed = new MessageEmbed()
             .setColor(util.color.green)
-            .setAuthor(`Case ${insertId} | ${type} | ${user.tag}`, user.avatarURL())
-            .setFooter(user.id)
+            .setAuthor({name: `Case ${insertId} | ${type} | ${user.tag}`, iconURL: user.avatarURL()})
+            .setFooter({text: user.id})
             .setTimestamp()
             .addFields(
                 /** @type {any}*/ { name: 'User', value: `<@!${user.id}>`, inline: true},

@@ -18,20 +18,28 @@ exports.event = async (options, message) => {
     if (message.system) {
         embed = new Discord.MessageEmbed()
             .setColor(util.color.red)
-            .setAuthor(`A system message in #${message.channel.name} was deleted`);
+            .setAuthor({
+                name: `A system message in #${message.channel.name} was deleted`
+            });
     }
     else if(content.length === 0) {
         embed = new Discord.MessageEmbed()
             .setColor(util.color.red)
-            .setAuthor(`Empty message by ${util.escapeFormatting(message.author.tag)} in #${message.channel.name} was deleted`,message.author.avatarURL())
-            .setFooter(message.author.id);
+            .setAuthor({
+                name: `Empty message by ${util.escapeFormatting(message.author.tag)} in #${message.channel.name} was deleted`,
+                iconURL: message.author.avatarURL()
+            })
+            .setFooter({text: message.author.id});
     }
     else{
         embed = new Discord.MessageEmbed()
             .setColor(util.color.red)
-            .setAuthor(`Message by ${util.escapeFormatting(message.author.tag)} in #${message.channel.name} was deleted`,message.author.avatarURL())
+            .setAuthor({
+                name: `Message by ${util.escapeFormatting(message.author.tag)} in #${message.channel.name} was deleted`,
+                iconURL: message.author.avatarURL()
+            })
             .setDescription(content)
-            .setFooter(message.author.id);
+            .setFooter({text: message.author.id});
     }
 
     await Log.messageLogEmbed(message, embed);
