@@ -1,4 +1,7 @@
-const mysql = require('mysql');
+/**
+ * @type {import('mysql2/promise.d.ts')}
+ */
+const mysql = require('mysql2/promise');
 const monitor = require('./Monitor').getInstance();
 const {Snowflake} = require('discord.js');
 
@@ -39,7 +42,7 @@ class Database {
             if (this.con !== null) {
                 return resolve();
             }
-            this.waiting.push([resolve, reject]);
+            this.waiting.push({resolve, reject});
         });
     }
 
@@ -48,23 +51,17 @@ class Database {
      *
      * @private
      */
-    _connect() {
-        let newCon = mysql.createConnection(this.options);
-        newCon.on('error', (err) => {
-            newCon.end();
-            this._handleConnectionError(err);
-        });
-        newCon.connect((err) => {
-            if (err) {
-                newCon.end();
-                return this._handleConnectionError(err);
-            }
-            this.con = newCon;
-            for (let w of this.waiting) {
-                w[0]();
+    async _connect() {
+        try {
+            this.con = await mysql.createConnection(this.options);
+            for (let waiting of this.waiting) {
+                waiting.resolve();
             }
             this.waiting = [];
-        });
+        }
+        catch (error) {
+            return this._handleConnectionError(error);
+        }
     }
 
     /**
@@ -74,6 +71,7 @@ class Database {
      * @private
      */
     _handleConnectionError(err) {
+        console.error('A fatal database error occurred', err);
         monitor.error('A fatal database error occurred', err);
         if (err.code === 'ER_ACCESS_DENIED_ERROR') {
             console.error('Access to database denied. Make sure your config and database are set up correctly!');
@@ -81,8 +79,8 @@ class Database {
         }
 
         this.con = null;
-        for (let w of this.waiting) {
-            w[1](err);
+        for (let waiting of this.waiting) {
+            waiting.reject(err);
         }
         this.waiting = [];
         setTimeout(this._connect.bind(this), 5000);
@@ -108,24 +106,9 @@ class Database {
      * @param args
      * @returns {Promise<Object[]>}
      */
-    queryAll(...args) {
-        return new Promise((resolve, reject) => {
-            this.waitForConnection()
-                .then(() => {
-                    this.con.query(...args, (err, res) => {
-                        if (err) {
-                            if(err.fatal){
-                                this.con.end();
-                                this._handleConnectionError(err);
-                                return this.queryAll(...args).then(resolve).catch(reject);
-                            }
-                            return reject(err);
-                        }
-                        resolve(res);
-                    });
-                })
-                .catch(reject);
-        });
+    async queryAll(...args) {
+        await this.waitForConnection();
+        return (await this.con.query(...args))[0];
     }
 
     /**
@@ -135,7 +118,7 @@ class Database {
      * @returns {Promise<Object|null>}
      */
     async query(...args) {
-        return (await this.queryAll(...args))[0] || null;
+        return (await this.queryAll(...args))[0] ?? null;
     }
 
     /**

@@ -65,7 +65,7 @@ class SetPunishmentsCommand extends SubCommand {
         },{
             name: 'punishment',
             type: 'STRING',
-            value: args.shift().toLowerCase()
+            value: args.shift()?.toLowerCase()
         }, {
             name: 'duration',
             type: 'STRING',

@@ -1,32 +1,19 @@
-const SubCommand = require('../../SubCommand');
-const Guild = require('../../../Guild');
-const {Snowflake} = require('discord.js');
+const RoleSubCommand = require('../../RoleSubCommand');
 
-class RemoveProtectedRoleCommand extends SubCommand {
-    static usage = '<@role|id>';
-
+class RemoveProtectedRoleCommand extends RoleSubCommand {
     static description = 'Remove a protected role.';
 
     static names = ['remove'];
 
-    async execute() {
-        /** @type {Snowflake} */
-        const roleID = this.source.isInteraction ? this.options.getRole('role')?.id : this.options.getString('roleID');
-        const role = await (new Guild(this.source.getGuild())).fetchRole(roleID);
-
-        if (!role) {
-            await this.sendUsage();
+    async addRole(role) {
+        if (!this.guildConfig.isProtectedRole(role.id)) {
+            await this.sendError(`<@&${role.id}> is not a protected role!`);
             return;
         }
 
-        if (!this.guildConfig.isProtectedRole(roleID)) {
-            await this.sendError(`<@&${roleID}> is not a protected role!`);
-            return;
-        }
-
-        this.guildConfig.removeProtectedRole(roleID);
+        this.guildConfig.removeProtectedRole(role.id);
         await this.guildConfig.save();
-        await this.sendSuccess(`Removed <@&${roleID}> from protected roles.`);
+        await this.sendSuccess(`Removed <@&${role.id}> from protected roles.`);
     }
 
     static getOptions() {
@@ -35,14 +22,6 @@ class RemoveProtectedRoleCommand extends SubCommand {
             type: 'ROLE',
             description: 'Protected role',
             required: true,
-        }];
-    }
-
-    parseOptions(args) {
-        return [{
-            name: 'roleID',
-            type: 'STRING',
-            value: args.shift(),
         }];
     }
 }
