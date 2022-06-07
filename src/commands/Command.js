@@ -54,6 +54,12 @@ class Command extends AbstractCommand {
     static guildOnly = true;
 
     /**
+     * can this command only be used in whitelisted guilds (config->featureWhitelist)
+     * @type {boolean}
+     */
+    static private = false;
+
+    /**
      * @type {Message}
      * @deprecated use {@link source source}
      */

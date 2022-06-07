@@ -23,6 +23,12 @@ class CommandManager {
     static commandClasses = [];
 
     /**
+     * private commands
+     * @type {Command[]}
+     */
+    static privateCommands = [];
+
+    /**
      * loaded commands (name => class)
      * @type {Collection<String, Command>}
      * @private
@@ -49,7 +55,13 @@ class CommandManager {
                 }
                 try {
                     const command = require(path);
-                    category.push(command);
+                    if (command.private) {
+                        this.privateCommands.push(command);
+                    }
+
+                    if (!command.private) {
+                        category.push(command);
+                    }
                     if (config.debug?.enabled && command.supportsSlashCommands === false) {
                         console.debug(`./commands/${folder}/${file} doesn't support slash commands!`);
                     }
@@ -62,7 +74,9 @@ class CommandManager {
                         }
                         command.path = `${folder}/${file}`;
                         commands.set(name, command);
-                        this.commandClasses.push(command);
+                        if (!command.private) {
+                            this.commandClasses.push(command);
+                        }
                     }
                 } catch (e) {
                     monitor.error(`Failed to load command '${folder}/${file}'`, e);
@@ -99,6 +113,10 @@ class CommandManager {
      */
     static getCommandClasses() {
         return this.commandClasses;
+    }
+
+    static getPrivateCommands() {
+        return this.privateCommands;
     }
 
     /**

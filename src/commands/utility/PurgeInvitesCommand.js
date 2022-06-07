@@ -1,5 +1,6 @@
 const Command = require('../Command');
 const util = require('../../util');
+const config = require('../../../config.json');
 
 class PurgeInvitesCommand extends Command {
 
@@ -17,7 +18,13 @@ class PurgeInvitesCommand extends Command {
 
     static supportsSlashCommands = true;
 
+    static private = true;
+
     async execute() {
+        if (!config.featureWhitelist?.includes(this.source.getGuild().id)) {
+            return await this.sendError('This command is only allowed in whitelisted guilds');
+        }
+
         const maxDate = Date.now() - (util.timeToSec(this.options.getString('minimum-age') ?? '30d') * 1000);
         const maxUses = this.options.getInteger('max-uses') ?? 10;
 
@@ -62,6 +69,18 @@ class PurgeInvitesCommand extends Command {
             maxValue: 1000,
             description: 'Invites with more uses than specified here won\'t be deleted.',
             required: false,
+        }];
+    }
+
+    parseOptions(args) {
+        return [{
+            name: 'minimum-age',
+            type: 'STRING',
+            value: args.shift(),
+        }, {
+            name: 'max-uses',
+            type: 'INTEGER',
+            value: parseInt(args.shift()) || null
         }];
     }
 }

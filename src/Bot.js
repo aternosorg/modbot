@@ -136,6 +136,12 @@ class Bot {
 
         const commandManager = this.#client.application.commands;
         await commandManager.set(Array.from(commands.values()));
+
+        for (const guildid of config.featureWhitelist) {
+            const guild = await this.#client.guilds.fetch(guildid);
+            await guild.commands.set(Array.from(SlashCommandManager.getFromClasses(CommandManager.getPrivateCommands()).values()));
+        }
+
         console.log('Slash commands loaded!');
     }
 }
