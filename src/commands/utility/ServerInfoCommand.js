@@ -35,7 +35,7 @@ class ServerInfoCommand extends Command{
             .setTitle(`Info of ${guild.name}`)
             .setColor(util.color.red)
             .setThumbnail(guild.iconURL({dynamic: true, size: 2048}))
-            .setFooter(`Command executed by ${util.escapeFormatting(this.source.getUser().tag)}`)
+            .setFooter({text: `Command executed by ${util.escapeFormatting(this.source.getUser().tag)}`})
             .setTimestamp()
             .addFields(
                 /** @type {any} */ {name: '__**Generic**__', value: generic, inline: true},

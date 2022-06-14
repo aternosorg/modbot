@@ -31,8 +31,8 @@ class SubCommand extends AbstractCommand {
         const guildConfig = await GuildConfig.get(source.getGuild().id);
         const prefix = source.isInteraction ? '/' : guildConfig.prefix || defaultPrefix;
         const embed = new MessageEmbed()
-            .setAuthor(`Help for ${this.parentCommand.getPrimaryName()} ${this.getPrimaryName()} | Prefix: ${prefix}`)
-            .setFooter(`Command executed by ${util.escapeFormatting(source.getUser().tag)}`)
+            .setAuthor({name: `Help for ${this.parentCommand.getPrimaryName()} ${this.getPrimaryName()} | Prefix: ${prefix}`})
+            .setFooter({text: `Command executed by ${util.escapeFormatting(source.getUser().tag)}`})
             .addFields(
                 /** @type {any} */ { name: 'Usage', value: `\`${prefix}${this.parentCommand.getPrimaryName()} `+
                         `${this.getPrimaryName()} ${this.usage ?? ''}`.trim() + '`', inline: true},

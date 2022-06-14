@@ -26,7 +26,7 @@ class HelpCommand extends Command {
 
         if (!name) {
             //list all commands
-            embed.setFooter(`View a command or category using ${this.prefix}help <category|command>`);
+            embed.setFooter({text: `View a command or category using ${this.prefix}help <category|command>`});
             for (const [key, commands] of categories.entries()) {
                 embed.addField(util.toTitleCase(key), this._getNameList(commands));
             }
@@ -43,7 +43,7 @@ class HelpCommand extends Command {
             embed
                 .setTitle(`ModBot ${util.toTitleCase(name)} Commands:`)
                 .setDescription(description)
-                .setFooter(`View a command using ${this.prefix}help <command>`);
+                .setFooter({text: `View a command using ${this.prefix}help <command>`});
 
             return this.reply(data);
         }

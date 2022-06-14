@@ -26,7 +26,7 @@ class ModerationsCommand extends Command {
 
     static supportedContextMenus = {
         USER: true
-    }
+    };
 
     async execute() {
         let user, userID;
@@ -52,7 +52,10 @@ class ModerationsCommand extends Command {
             },
             new MessageEmbed()
                 .setColor(util.color.green)
-                .setAuthor(`Moderations for ${user.tag}`, user.avatarURL())
+                .setAuthor({
+                    name: `Moderations for ${user.tag}`,
+                    iconURL: user.avatarURL()
+                })
                 .setDescription('No moderations')
             );
         }
@@ -64,7 +67,10 @@ class ModerationsCommand extends Command {
 
             const embed = new MessageEmbed()
                 .setColor(util.color.orange)
-                .setAuthor(`Moderations for ${user.tag}`, user.avatarURL());
+                .setAuthor({
+                    name: `Moderations for ${user.tag}`,
+                    iconURL: user.avatarURL()
+                });
 
             for (const /** @type {Moderation} */ data of moderations.slice(start, end)) {
                 let text = '';
@@ -90,7 +96,10 @@ class ModerationsCommand extends Command {
                 embed.addField(`${data.action.toUpperCase()} [#${data.id}] - ${(new Date(data.created*1000)).toUTCString()}`, text);
             }
             return embed
-                .setAuthor(`Moderation ${start + 1} to ${end} for ${user.tag} | total ${moderations.length}`, user.avatarURL());
+                .setAuthor({
+                    name: `Moderation ${start + 1} to ${end} for ${user.tag} | total ${moderations.length}`,
+                    iconURL: user.avatarURL()
+                });
         }, Math.ceil(moderations.length / moderationsPerPage), 60000, !(this.options.getBoolean('public-reply') ?? false));
     }
 

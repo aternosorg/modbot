@@ -37,11 +37,14 @@ exports.event = async (options, old, newMsg) => {
 
     let embed = new Discord.MessageEmbed()
         .setColor(util.color.orange)
-        .setAuthor(`Message by ${util.escapeFormatting(old.author.tag)} in #${old.channel.name} was edited`,old.author.avatarURL())
+        .setAuthor({
+            name: `Message by ${util.escapeFormatting(old.author.tag)} in #${old.channel.name} was edited`,
+            iconURL: old.author.avatarURL()
+        })
         .setDescription(
             formatted
         )
-        .setFooter(old.author.id);
+        .setFooter({text: old.author.id});
 
     await Log.messageLogEmbed(old, embed);
 };

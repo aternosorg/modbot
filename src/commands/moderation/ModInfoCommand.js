@@ -36,7 +36,7 @@ class ModInfoCommand extends Command {
             .setTitle(`Moderation #${moderation.id} | ${moderation.action.toUpperCase()}`)
             .addField('Timestamp', (new Date(moderation.created*1000)).toUTCString(), true)
             .setColor(util.color.resolve(moderation.action))
-            .setFooter(`${user.tag} - ${moderation.userid}`, user.avatarURL());
+            .setFooter({text: `${user.tag} - ${moderation.userid}`, iconURL: user.avatarURL()});
 
         if (moderation.action === 'strike') {
             embed.addField('Strikes', moderation.value.toString(), true);

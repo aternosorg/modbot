@@ -66,9 +66,9 @@ class PurgeCommand extends Command {
         if (messages.size === 0) return this.sendError('No matching messages found!');
 
         const embed = new MessageEmbed()
-            .setAuthor(`${this.source.getUser().tag} purged ${messages.size} messages`)
+            .setAuthor({name: `${this.source.getUser().tag} purged ${messages.size} messages`})
             .addField('Channel', `<#${this.source.getChannel().id}>`, true)
-            .setFooter(this.source.getUser().id.toString());
+            .setFooter({text: this.source.getUser().id.toString()});
 
         if (filter.users.length) embed.addField('Users', filter.users.map(u => `<@!${u}>`).join(', '), true);
         if (filter.regex) embed.addField('Regex', '`' + filter.regex + '`', true);
