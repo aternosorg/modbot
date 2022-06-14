@@ -48,7 +48,7 @@ module.exports = {
                     await message.delete();
                 }
                 catch (e) {
-                    if (e.code === APIErrors.UNKNOWN_MESSAGE) {
+                    if (e.code !== APIErrors.UNKNOWN_MESSAGE) {
                         throw e;
                     }
                 }
