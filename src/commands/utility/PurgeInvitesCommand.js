@@ -36,7 +36,7 @@ class PurgeInvitesCommand extends Command {
             return;
         }
 
-        const {confirmed, component} = await this.getConfirmation(`Delete ${invites.size} invites older created before <t:${Math.floor(maxDate / 1000)}:d> with less than ${maxUses} uses!`);
+        const {confirmed, component} = await this.getConfirmation(`Delete ${invites.size} invites created before <t:${Math.floor(maxDate / 1000)}:d> with less than ${maxUses} uses!`);
         if (!confirmed) {
             if (component) {
                 await component.reply({
@@ -52,7 +52,9 @@ class PurgeInvitesCommand extends Command {
 
         await component.deferReply({ephemeral: true});
         await component.editReply(`Deleting ${invites.size} invites...`);
-        await Promise.all(invites.map(invite => invite.delete()));
+        for (const invite of invites.values()) {
+            await invite.delete();
+        }
         await component.editReply(`Deleted ${invites.size} invites!`);
     }
 
