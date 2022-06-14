@@ -5,6 +5,7 @@ const {Client, Message, Constants: {APIErrors}} = require('discord.js');
 const Command = require('../../commands/Command');
 const monitor = require('../../Monitor').getInstance();
 const CommandSource = require('../../commands/CommandSource');
+const config = require('../../../config.json');
 
 module.exports = {
     /**
@@ -56,19 +57,24 @@ module.exports = {
             try {
                 if  (e.code === APIErrors.MISSING_PERMISSIONS) {
                     await message.reply('I am missing permissions to execute that command!');
+                    if (config.debug.enabled) {
+                        console.log('Missing permissions:', e);
+                    }
                 }
                 else {
                     await message.reply('An error occurred while executing that command!');
+                    throw e;
                 }
             }
             catch (e2) {
                 if (e2.code === APIErrors.MISSING_PERMISSIONS) {
                     return;
                 }
-                throw e2;
+                else {
+                    await monitor.error(`Failed to execute command ${name}`, e);
+                    console.error(`An error occurred while executing command ${name}:`,e);
+                }
             }
-            await monitor.error(`Failed to execute command ${name}`, e);
-            console.error(`An error occurred while executing command ${name}:`,e);
         }
     }
 };

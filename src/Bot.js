@@ -1,4 +1,4 @@
-const {Client, Collection} = require('discord.js');
+const {Client, Collection, Guild} = require('discord.js');
 const Database = require('./Database');
 const util = require('./util');
 const fs = require('fs').promises;
@@ -136,6 +136,17 @@ class Bot {
 
         const commandManager = this.#client.application.commands;
         await commandManager.set(Array.from(commands.values()));
+
+        for (const guildid of (config.featureWhitelist ?? [])) {
+            const guild = await this.#client.guilds.fetch(guildid);
+
+            if (!(guild instanceof Guild)) {
+                continue;
+            }
+
+            await guild.commands.set(Array.from(SlashCommandManager.getFromClasses(CommandManager.getPrivateCommands()).values()));
+        }
+
         console.log('Slash commands loaded!');
     }
 }

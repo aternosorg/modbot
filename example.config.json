@@ -23,5 +23,6 @@
   "debug": {
     "enabled": false,
     "guild": ""
-  }
+  },
+  "featureWhitelist": ["guild-id of guild that should have additional features"]
 }
