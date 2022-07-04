@@ -20,12 +20,14 @@ class ImportDataCommand extends Command {
     static botPerms = [];
 
     async execute() {
-        if (!this.message.attachments.size) {
+        let dataUrl = this.source.isInteraction ? this.options.getAttachment('data').url
+            : this.source.getRaw().attachments.first()?.url;
+        if (!dataUrl) {
             await this.reply('Please attach a file to your message.');
             return;
         }
 
-        const request = new Request(this.message.attachments.first().url);
+        const request = new Request(dataUrl);
         /** @type {Exporter|VortexImporter}*/
         let data;
         try {
@@ -72,6 +74,15 @@ class ImportDataCommand extends Command {
             return new ModBotImporter(this.bot, this.source.getGuild().id, data);
 
         return null;
+    }
+
+    static getOptions() {
+        return [{
+            name: 'data',
+            type: 'ATTACHMENT',
+            description: 'ModBot/vortex data',
+            required: true
+        }];
     }
 }
 
