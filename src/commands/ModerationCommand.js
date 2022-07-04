@@ -14,8 +14,6 @@ class ModerationCommand extends Command {
 
     static usage = '<@user|id> [<@user|id…>] [<reason>]';
 
-    static supportsSlashCommands = true;
-
     /**
      * @type {Object}
      */

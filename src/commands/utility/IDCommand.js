@@ -27,8 +27,6 @@ class IDCommand extends Command {
 
     static modCommand = true;
 
-    static supportsSlashCommands = true;
-
     async execute() {
         await this.defer();
         const query = this.options.getString('username');

@@ -7,8 +7,6 @@ class PingCommand extends Command {
 
     static names = ['ping'];
 
-    static supportsSlashCommands = true;
-
     static guildOnly = false;
 
     async execute() {

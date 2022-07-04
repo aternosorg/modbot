@@ -49,7 +49,7 @@ class ImportDataCommand extends Command {
         }
         catch (e) {
             if (e instanceof TypeError) {
-                await this.message.channel.send('Invalid Data! Unable to import this');
+                await this.reply('Invalid Data! Unable to import this');
                 return;
             }
             else {
@@ -67,9 +67,9 @@ class ImportDataCommand extends Command {
      */
     getImporter(data) {
         if (!data.dataType)
-            return new VortexImporter(this.bot, this.message.guild.id, data);
+            return new VortexImporter(this.bot, this.source.getGuild().id, data);
         if (data.dataType.toLowerCase().startsWith('modbot-1.'))
-            return new ModBotImporter(this.bot, this.message.guild.id, data);
+            return new ModBotImporter(this.bot, this.source.getGuild().id, data);
 
         return null;
     }

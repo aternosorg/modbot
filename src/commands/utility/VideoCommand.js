@@ -14,8 +14,6 @@ class VideoCommand extends Command {
 
     static comment = 'The playlist can be configured with the `playlist` command';
 
-    static supportsSlashCommands = true;
-
     static ephemeral = false;
 
     /**

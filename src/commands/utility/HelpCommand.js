@@ -10,8 +10,6 @@ class HelpCommand extends Command {
 
     static names = ['help'];
 
-    static supportsSlashCommands = true;
-
     static guildOnly = false;
 
     async execute() {

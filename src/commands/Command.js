@@ -30,7 +30,7 @@ class Command extends AbstractCommand {
      * does this command support slash commands
      * @type {boolean}
      */
-    static supportsSlashCommands = false;
+    static supportsSlashCommands = true;
 
     /**
      * supported context menus

@@ -13,8 +13,6 @@ class ClearModerationsCommand extends Command {
 
     static modCommand = true;
 
-    static supportsSlashCommands = true;
-
     async execute() {
         const id = this.options.getInteger('id');
         if (!id || id < 1) {

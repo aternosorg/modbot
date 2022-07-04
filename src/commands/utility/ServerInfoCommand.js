@@ -10,8 +10,6 @@ class ServerInfoCommand extends Command{
 
     static description = 'Show the servers info';
 
-    static supportsSlashCommands = true;
-
     async execute() {
         const guild = this.source.getGuild();
         

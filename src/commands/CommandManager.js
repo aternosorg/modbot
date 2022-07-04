@@ -62,7 +62,7 @@ class CommandManager {
                     if (!command.private) {
                         category.push(command);
                     }
-                    if (config.debug?.enabled && command.supportsSlashCommands === false) {
+                    if (config.debug?.enabled && !command.supportsSlashCommands) {
                         console.debug(`./commands/${folder}/${file} doesn't support slash commands!`);
                     }
 

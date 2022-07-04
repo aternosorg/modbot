@@ -27,8 +27,6 @@ class LockCommand extends Command {
 
     static botPerms = ['MANAGE_CHANNELS', 'MANAGE_ROLES'];
 
-    static supportsSlashCommands = true;
-
     async execute() {
         await this.defer();
 

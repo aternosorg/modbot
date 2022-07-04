@@ -39,8 +39,6 @@ class ArticleCommand extends Command {
 
     static names = ['article', 'a'];
 
-    static supportsSlashCommands = true;
-
     static ephemeral = false;
 
     async execute() {
