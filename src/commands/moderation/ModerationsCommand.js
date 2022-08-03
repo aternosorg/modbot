@@ -22,8 +22,6 @@ class ModerationsCommand extends Command {
 
     static modCommand = true;
 
-    static supportsSlashCommands = true;
-
     static supportedContextMenus = {
         USER: true
     };

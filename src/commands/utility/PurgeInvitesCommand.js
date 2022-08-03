@@ -16,8 +16,6 @@ class PurgeInvitesCommand extends Command {
 
     static comment = 'By default all invites older than 30 days with less than 10 uses are deleted.';
 
-    static supportsSlashCommands = true;
-
     static private = true;
 
     async execute() {

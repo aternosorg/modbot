@@ -7,9 +7,6 @@ const SubCommand = require('./SubCommand');
  * @abstract
  */
 class ConfigCommand extends Command {
-
-    static supportsSlashCommands = true;
-
     /**
      * the subcommand executed right now
      * @type {SubCommand}

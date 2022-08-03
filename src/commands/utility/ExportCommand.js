@@ -14,8 +14,6 @@ class ExportCommand extends Command {
 
     static botPerms = [];
 
-    static supportsSlashCommands = true;
-
     async execute() {
         await this.defer();
         const exporter = new Exporter(this.source.getGuild().id);

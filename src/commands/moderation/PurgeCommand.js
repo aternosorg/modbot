@@ -18,8 +18,6 @@ class PurgeCommand extends Command {
 
     static botPerms = ['MANAGE_MESSAGES'];
 
-    static supportsSlashCommands = true;
-
     async execute() {
         await this.defer();
         const filter = {

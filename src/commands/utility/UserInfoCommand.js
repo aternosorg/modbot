@@ -16,8 +16,6 @@ class UserInfoCommand extends Command {
 
     static modCommand = true;
 
-    static supportsSlashCommands = true;
-
     async execute() {
         let user;
         if (this.source.isInteraction) {

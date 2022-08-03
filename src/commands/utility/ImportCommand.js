@@ -20,12 +20,14 @@ class ImportDataCommand extends Command {
     static botPerms = [];
 
     async execute() {
-        if (!this.message.attachments.size) {
+        let dataUrl = this.source.isInteraction ? this.options.getAttachment('data').url
+            : this.source.getRaw().attachments.first()?.url;
+        if (!dataUrl) {
             await this.reply('Please attach a file to your message.');
             return;
         }
 
-        const request = new Request(this.message.attachments.first().url);
+        const request = new Request(dataUrl);
         /** @type {Exporter|VortexImporter}*/
         let data;
         try {
@@ -49,7 +51,7 @@ class ImportDataCommand extends Command {
         }
         catch (e) {
             if (e instanceof TypeError) {
-                await this.message.channel.send('Invalid Data! Unable to import this');
+                await this.reply('Invalid Data! Unable to import this');
                 return;
             }
             else {
@@ -67,11 +69,20 @@ class ImportDataCommand extends Command {
      */
     getImporter(data) {
         if (!data.dataType)
-            return new VortexImporter(this.bot, this.message.guild.id, data);
+            return new VortexImporter(this.bot, this.source.getGuild().id, data);
         if (data.dataType.toLowerCase().startsWith('modbot-1.'))
-            return new ModBotImporter(this.bot, this.message.guild.id, data);
+            return new ModBotImporter(this.bot, this.source.getGuild().id, data);
 
         return null;
+    }
+
+    static getOptions() {
+        return [{
+            name: 'data',
+            type: 'ATTACHMENT',
+            description: 'ModBot/vortex data',
+            required: true
+        }];
     }
 }
 

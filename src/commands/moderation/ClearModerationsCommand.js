@@ -14,8 +14,6 @@ class ClearModerationsCommand extends Command {
 
     static modCommand = true;
 
-    static supportsSlashCommands = true;
-
     async execute() {
 
         let user;

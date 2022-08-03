@@ -12,8 +12,6 @@ class RaidModeCommand extends Command {
 
     static modCommand = true;
 
-    static supportsSlashCommands = true;
-
     static userPerms = ['BAN_MEMBERS'];
 
     static botPerms = ['KICK_MEMBERS'];

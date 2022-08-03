@@ -14,8 +14,6 @@ class ExampleCommand extends Command {
 
     static botPerms = [];
 
-    static supportsSlashCommands = true;
-
     async execute() {
         await this.reply('This is an example: ' + this.options.getString('input', true));
     }

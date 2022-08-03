@@ -8,8 +8,6 @@ class ExampleCommand extends Command {
 
     static userPerms = ['MANAGE_GUILD'];
 
-    static supportsSlashCommands = true;
-
     async execute() {
         await this.reply(this.guildConfig.getSettings());
     }

@@ -12,8 +12,6 @@ class InfoCommand extends Command {
 
     static botPerms = [];
 
-    static supportsSlashCommands = true;
-
     async execute() {
         const embed = new Discord.MessageEmbed()
             .setTitle('ModBot by Aternos')

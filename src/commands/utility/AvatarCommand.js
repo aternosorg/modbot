@@ -11,8 +11,6 @@ class AvatarCommand extends Command{
 
     static description = 'Show someones avatar';
 
-    static supportsSlashCommands = true;
-
     async execute() {
         const user = await this._getUser();
 
