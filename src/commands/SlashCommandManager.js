@@ -27,7 +27,7 @@ class SlashCommandManager {
      * @param {ApplicationCommand} command
      */
     matchesDefinition(command) {
-        if (this.name !== command.name || this.type !== this.type) {
+        if (this.name !== command.name || this.type !== command.type) {
             return false;
         }
         return this.type !== 'CHAT_INPUT' || (this.description === command.description
