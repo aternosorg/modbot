@@ -1,6 +1,3 @@
-/**
- * @type {import('mysql2/promise.d.ts')}
- */
 const mysql = require('mysql2/promise');
 const monitor = require('./Monitor').getInstance();
 const {Snowflake} = require('discord.js');
@@ -11,6 +8,11 @@ class Database {
      * @type {Database}
      */
     static #instance;
+
+    /**
+     * @type {import("mysql2").Connection}
+     */
+    con;
 
     /**
      * Database constructor
@@ -54,13 +56,26 @@ class Database {
     async _connect() {
         try {
             this.con = await mysql.createConnection(this.options);
+
+            this.con.on('error', this.#handleConnectionError.bind(this));
+
             for (let waiting of this.waiting) {
                 waiting.resolve();
             }
             this.waiting = [];
         }
         catch (error) {
-            return this._handleConnectionError(error);
+            return this.#handleFatalError(error);
+        }
+    }
+
+    #handleConnectionError(err) {
+        if (err.fatal) {
+            this.#handleFatalError(err);
+        }
+        else {
+            console.error('A database error occurred', err);
+            monitor.error('A database error occurred', err);
         }
     }
 
@@ -70,7 +85,7 @@ class Database {
      * @param err
      * @private
      */
-    _handleConnectionError(err) {
+    #handleFatalError(err) {
         console.error('A fatal database error occurred', err);
         monitor.error('A fatal database error occurred', err);
         if (err.code === 'ER_ACCESS_DENIED_ERROR') {
@@ -79,10 +94,6 @@ class Database {
         }
 
         this.con = null;
-        for (let waiting of this.waiting) {
-            waiting.reject(err);
-        }
-        this.waiting = [];
         setTimeout(this._connect.bind(this), 5000);
     }
 
