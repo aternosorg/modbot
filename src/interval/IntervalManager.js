@@ -26,11 +26,7 @@ export default class IntervalManager {
         }
         catch(error) {
             try {
-                await Logger.instance
-                    .error({
-                        message: `Failed to run interval '${interval.constructor.name}'`,
-                        error: Logger.instance.getData(error)
-                    });
+                await Logger.instance.error(`Failed to run interval '${interval.constructor.name}'`, error);
             }
             catch (e) {
                 console.error(e);

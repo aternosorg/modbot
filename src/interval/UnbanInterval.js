@@ -17,18 +17,14 @@ export default class UnbanInterval extends Interval {
             Math.floor(Date.now()/1000))) {
             const user = await client.users.fetch(result.userid);
             const unban = await Database.instance.queryAll('INSERT INTO moderations (guildid, userid, action, created, reason, active) VALUES (?,?,?,?,?,?)', result.guildid, result.userid, 'unban', Math.floor(Date.now()/1000), reason, false);
-            await Database.instance.query('UPDATE moderations SET active = FALSE WHERE action = \'ban\' AND userid = ? AND guildid = ?',[result.userid,result.guildid]);
+            await Database.instance.query('UPDATE moderations SET active = FALSE WHERE action = \'ban\' AND userid = ? AND guildid = ?',result.userid, result.guildid);
             try {
                 await client.guilds.resolve(result.guildid).members.unban(result.userid, reason);
                 await Log.logCheck(result.guildid, user, reason, unban.insertId, 'Unban');
             }
             catch (e) {
                 if (![RESTJSONErrorCodes.UnknownBan].includes(e.code)) {
-                    await Logger.instance.error({
-                        message: `Failed to unban user ${result.userid} in ${result.guildid}`,
-                        error: Logger.instance.getData(e),
-                        row: result,
-                    });
+                    await Logger.instance.error(`Failed to unban user ${result.userid} in ${result.guildid}`, e);
                 }
             }
         }

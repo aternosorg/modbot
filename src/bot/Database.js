@@ -71,10 +71,8 @@ export default class Database {
             this.#handleFatalError(err);
         }
         else {
-            Logger.instance.error({
-                message: 'A database error occurred',
-                error: Logger.instance.getData(err),
-            }).catch(console.error);
+            Logger.instance.error('A database error occurred', err)
+                .catch(console.error);
         }
     }
 
@@ -86,10 +84,8 @@ export default class Database {
      */
     #handleFatalError(err) {
         console.error('A fatal database error occurred', err);
-        Logger.instance.error({
-            message: 'A fatal database error occurred',
-            error: Logger.instance.getData(err),
-        }).catch(console.error);
+        Logger.instance.error('A fatal database error occurred', err)
+            .catch(console.error);
 
         if (err.code === 'ER_ACCESS_DENIED_ERROR') {
             console.error('Access to database denied. Make sure your config and database are set up correctly!');

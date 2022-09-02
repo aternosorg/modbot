@@ -23,52 +23,74 @@ export default class Logger {
 
     /**
      * @param {String|Object} message
+     * @param {Error} [error]
      * @returns {Promise}
      */
-    debug(message){
-        return this.#logMessage('DEBUG', console.debug, message);
+    debug(message, error = null) {
+        return this.#logMessage('DEBUG', console.debug, message, error);
     }
 
     /**
      * @param {String|Object} message
+     * @param {Error} [error]
      * @returns {Promise}
      */
-    info(message){
-        return this.#logMessage('INFO', console.log, message);
+    info(message, error = null) {
+        return this.#logMessage('INFO', console.log, message, error);
     }
 
     /**
      * @param {String|Object} message
+     * @param {Error} [error]
      * @returns {Promise}
      */
-    notice(message){
-        return this.#logMessage('NOTICE', console.log, message);
+    notice(message, error = null) {
+        return this.#logMessage('NOTICE', console.log, message, error);
     }
 
     /**
      * @param {String|Object} message
+     * @param {Error} [error]
      * @returns {Promise}
      */
-    warn(message){
-        return this.#logMessage('WARNING', console.warn, message);
+    warn(message, error = null) {
+        return this.#logMessage('WARNING', console.warn, message, error);
     }
 
     /**
      * @param {String|Object} message
+     * @param {Error} [error]
      * @returns {Promise}
      */
-    error(message){
-        return this.#logMessage('ERROR', console.error, message);
+    error(message, error = null) {
+        return this.#logMessage('ERROR', console.error, message, error);
+    }
+
+    /**
+     * @param {String|Object} message
+     * @param {Error} [error]
+     * @returns {Promise}
+     */
+    critical(message, error = null) {
+        return this.#logMessage('CRITICAL', console.error, message, error);
     }
 
     /**
      * @param {string} severity
      * @param {function(string|object)} logFunction
      * @param {String|Object} message
+     * @param {Error} [error]
      * @returns {Promise}
      */
-    #logMessage(severity, logFunction, message) {
+    #logMessage(severity, logFunction, message, error = null) {
         logFunction(message);
+        if (error) {
+            logFunction(error);
+            message = {
+                message,
+                error: this.getData(error),
+            };
+        }
 
         if (!this.#config.enabled) {
             return Promise.resolve();

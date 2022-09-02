@@ -34,11 +34,7 @@ export default class UnmuteInterval extends Interval {
                     }
                     catch (e) {
                         if (e.code !== RESTJSONErrorCodes.MissingPermissions) {
-                            await Logger.instance.error({
-                                message: `Failed to unmute user ${result.userid} in ${result.guildid}`,
-                                error: Logger.instance.getData(e),
-                                row: result,
-                            });
+                            await Logger.instance.error(`Failed to unmute user ${result.userid} in ${result.guildid}`, e);
                         }
                     }
                     await guild.sendDM(member.user, `You have been unmuted in \`${guild.guild.name}\` | ${reason}`);
@@ -47,7 +43,7 @@ export default class UnmuteInterval extends Interval {
 
             const user = await client.users.fetch(result.userid);
             const unmute = await Database.instance.queryAll('INSERT INTO moderations (guildid, userid, action, created, reason, active) VALUES (?,?,?,?,?,?)', result.guildid, result.userid, 'unmute', Math.floor(Date.now()/1000), reason, false);
-            await Database.instance.query('UPDATE moderations SET active = FALSE WHERE action = \'mute\' AND userid = ? AND guildid = ?',[result.userid,result.guildid]);
+            await Database.instance.query('UPDATE moderations SET active = FALSE WHERE action = \'mute\' AND userid = ? AND guildid = ?',result.userid, result.guildid);
             await Log.logCheck(result.guildid, user, reason, unmute.insertId, 'Unmute');
         }
     }
