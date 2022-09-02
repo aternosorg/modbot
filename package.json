@@ -46,8 +46,7 @@
   },
   "lint-staged": {
     "*.js": [
-      "eslint --fix",
-      "jest --passWithNoTests --findRelatedTests"
+      "eslint --fix"
     ],
     "*.json": [
       "eslint --fix"
