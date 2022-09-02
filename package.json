@@ -3,6 +3,7 @@
   "version": "2.3.0",
   "description": "Discord Bot for the Aternos Discord server",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "jest",
     "prepare": "husky install",
@@ -25,7 +26,8 @@
     "@google-cloud/logging": "^9.1.1",
     "@googleapis/youtube": "^2.0.0",
     "diff": "^4.0.2",
-    "discord.js": "^13.8.0",
+    "discord-api-types": "^0.37.5",
+    "discord.js": "^14.3.0",
     "fuse.js": "^6.4.6",
     "got": "^11.8.2",
     "mysql2": "^2.3.3",
@@ -35,7 +37,6 @@
   "devDependencies": {
     "@types/node": "^17.0.34",
     "eslint": "^8.3.0",
-    "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-jest": "^25.3.0",
     "eslint-plugin-jsdoc": "^37.0.3",
     "eslint-plugin-json": "^3.1.0",
