@@ -1,5 +1,5 @@
 const SubCommand = require('../../SubCommand');
-const AutoResponse = require('../../../AutoResponse');
+const AutoResponse = require('../../../database/AutoResponse.js');
 const util = require('../../../util');
 
 class RemoveAutoResponseCommand extends SubCommand {

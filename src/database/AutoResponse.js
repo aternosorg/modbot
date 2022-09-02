@@ -1,12 +1,12 @@
-const ChatTriggeredFeature = require('./ChatTriggeredFeature');
+const ChatTriggeredFeature = require('./ChatTriggeredFeature.js');
 const {
     Snowflake,
     MessageEmbed,
     Guild
 } = require('discord.js');
-const util = require('./util');
-const Trigger = require('./Trigger');
-const TypeChecker = require('./config/TypeChecker');
+const util = require('../util.js');
+const Trigger = require('./Trigger.js');
+const TypeChecker = require('../config/TypeChecker.js');
 
 /**
  * Class representing an auto response

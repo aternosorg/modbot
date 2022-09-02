@@ -1,6 +1,6 @@
 const Command = require('../Command');
 const util = require('../../util');
-const Member = require('../../Member');
+const Member = require('../../discord/Member.js');
 const {MessageEmbed} = require('discord.js');
 const icons = require('../../icons');
 

@@ -1,6 +1,6 @@
 const Command = require('./Command');
 const util = require('../util');
-const Guild = require('../Guild');
+const Guild = require('../discord/Guild.js');
 const {
     MessageEmbed,
     User,

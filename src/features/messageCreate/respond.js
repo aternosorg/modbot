@@ -1,4 +1,4 @@
-const AutoResponse = require('../../AutoResponse');
+const AutoResponse = require('../../database/AutoResponse.js');
 const CommandManager = require('../../commands/CommandManager');
 const {Message} = require('discord.js');
 

@@ -1,4 +1,4 @@
-const Database = require('../Database');
+const Database = require('../bot/Database.js');
 const {
     PermissionResolvable,
     Client,

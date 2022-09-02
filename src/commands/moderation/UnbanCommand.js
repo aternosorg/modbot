@@ -1,5 +1,5 @@
 const ModerationCommand = require('../ModerationCommand');
-const Member = require('../../Member');
+const Member = require('../../discord/Member.js');
 const util = require('../../util');
 
 class UnbanCommand extends ModerationCommand {

@@ -6,7 +6,7 @@ const {
 
 } = require('discord.js');
 const monitor = require('./Monitor').getInstance();
-const Database = require('./Database');
+const Database = require('../bot/Database.js');
 
 /**
  * Database

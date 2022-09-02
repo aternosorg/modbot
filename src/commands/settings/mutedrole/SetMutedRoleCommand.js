@@ -1,7 +1,7 @@
 const SetConfigCommand = require('../../SetConfigCommand');
-const Guild = require('../../../Guild');
+const Guild = require('../../../discord/Guild.js');
 const util = require('../../../util');
-const User = require('../../../User');
+const User = require('../../../discord/User.js');
 const {Snowflake} = require('discord.js');
 
 class SetMutedRoleCommand extends SetConfigCommand {

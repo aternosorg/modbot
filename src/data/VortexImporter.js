@@ -1,5 +1,5 @@
 const {Client, Snowflake, MessageEmbed} = require('discord.js');
-const Moderation = require('../Moderation');
+const Moderation = require('../database/Moderation.js');
 const TypeChecker = require('../config/TypeChecker');
 const Importer = require('./Importer');
 

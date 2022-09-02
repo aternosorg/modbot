@@ -1,5 +1,5 @@
 const {Client, Snowflake, Collection} = require('discord.js');
-const Database = require('../Database');
+const Database = require('../bot/Database.js');
 
 /**
  * Config cache time (ms)

@@ -1,8 +1,8 @@
 const GuildConfig = require('../config/GuildConfig');
 const ChannelConfig = require('../config/ChannelConfig');
-const Moderation = require('../Moderation');
-const AutoResponse = require('../AutoResponse');
-const BadWord = require('../BadWord');
+const Moderation = require('../database/Moderation.js');
+const AutoResponse = require('../database/AutoResponse.js');
+const BadWord = require('../database/BadWord.js');
 const {MessageEmbed, Client, Snowflake} = require('discord.js');
 const Exporter = require('./Exporter');
 const Importer = require('./Importer');

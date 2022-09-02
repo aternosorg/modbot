@@ -1,7 +1,7 @@
 const SetConfigCommand = require('../../SetConfigCommand');
 const {MessageEmbed} = require('discord.js');
 const util = require('../../../util');
-const Guild = require('../../../Guild');
+const Guild = require('../../../discord/Guild.js');
 
 class SetMessageLogCommand extends SetConfigCommand {
     static usage = '<#channel|channelid>';

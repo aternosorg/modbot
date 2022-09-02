@@ -1,13 +1,13 @@
-const ChatTriggeredFeature = require('./ChatTriggeredFeature');
+const ChatTriggeredFeature = require('./ChatTriggeredFeature.js');
 const {
     Snowflake,
     MessageEmbed,
     Guild,
 } = require('discord.js');
-const {Punishment} = require('./Typedefs');
-const Trigger = require('./Trigger');
-const util = require('./util');
-const TypeChecker = require('./config/TypeChecker');
+const {Punishment} = require('../Typedefs.js');
+const Trigger = require('./Trigger.js');
+const util = require('../util.js');
+const TypeChecker = require('../config/TypeChecker.js');
 
 /**
  * Class representing a bad word

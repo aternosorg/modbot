@@ -1,7 +1,7 @@
 import Bot from './Bot.js';
-import Database from '../Database.js';
+import Database from './Database.js';
 import Logger from '../logging/Logger.js';
-import Config from '../Config.js';
+import Config from './Config.js';
 
 export default class BotManager {
     static #instance = new BotManager();

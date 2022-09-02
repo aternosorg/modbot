@@ -1,5 +1,5 @@
 const StrikeCommand = require('./StrikeCommand');
-const Member = require('../../Member');
+const Member = require('../../discord/Member.js');
 
 class PardonCommand extends StrikeCommand {
 

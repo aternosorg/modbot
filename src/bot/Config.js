@@ -1,5 +1,5 @@
-import Logger from './logging/Logger.js';
-import {exists, readJSON} from './util/fsutils.js';
+import Logger from '../logging/Logger.js';
+import {exists, readJSON} from '../util/fsutils.js';
 
 /**
  * @typedef {Object} ConfigData

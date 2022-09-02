@@ -1,5 +1,5 @@
 const CommandManager = require('../../commands/CommandManager');
-const Database = require('../../Database');
+const Database = require('../../bot/Database.js');
 const {Client, CommandInteraction, Constants: {APIErrors}} = require('discord.js');
 const monitor = require('../../Monitor').getInstance();
 const CommandSource = require('../../commands/CommandSource');

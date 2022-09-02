@@ -1,5 +1,5 @@
 const SubCommand = require('../../SubCommand');
-const BadWord = require('../../../BadWord');
+const BadWord = require('../../../database/BadWord.js');
 const util = require('../../../util');
 
 class RemoveBadWordCommand extends SubCommand {

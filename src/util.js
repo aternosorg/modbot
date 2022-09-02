@@ -10,11 +10,11 @@ const {
     Collection,
     TextBasedChannelFields
 } = require('discord.js');
-const Database = require('./Database');
+const Database = require('./bot/Database.js');
 const GuildConfig = require('./config/GuildConfig.js');
-const ChatTriggeredFeature = require('./ChatTriggeredFeature');
+const ChatTriggeredFeature = require('./database/ChatTriggeredFeature.js');
 const Config = require('./config/Config');
-const RateLimiter = require('./RateLimiter');
+const RateLimiter = require('./discord/RateLimiter.js');
 const {APIErrors} = Constants;
 const {GuildInfo} = require('./Typedefs');
 

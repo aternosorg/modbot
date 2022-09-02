@@ -1,4 +1,4 @@
-class Trigger{
+class Trigger {
     /**
      * @type {String}
      */

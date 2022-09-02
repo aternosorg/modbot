@@ -7,7 +7,7 @@ const {
     CommandInteractionOptionResolver,
 } = require('discord.js');
 const defaultPrefix = require('../../config.json').prefix;
-const Database = require('../Database');
+const Database = require('../bot/Database.js');
 const CommandSource = require('./CommandSource');
 const GuildConfig = require('../config/GuildConfig');
 

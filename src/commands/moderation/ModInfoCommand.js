@@ -1,7 +1,7 @@
 const Command = require('../Command');
 const {MessageEmbed} = require('discord.js');
 const util = require('../../util');
-const Moderation = require('../../Moderation');
+const Moderation = require('../../database/Moderation.js');
 
 class ModInfoCommand extends Command {
 

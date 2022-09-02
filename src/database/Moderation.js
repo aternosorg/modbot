@@ -1,6 +1,6 @@
-const Database = require('./Database');
+const Database = require('../bot/Database.js');
 const {Snowflake} = require('discord.js');
-const TypeChecker = require('./config/TypeChecker');
+const TypeChecker = require('../config/TypeChecker.js');
 
 class Moderation {
 

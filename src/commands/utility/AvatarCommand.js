@@ -1,6 +1,6 @@
 const Command = require('../Command');
 const {Snowflake, MessageEmbed} = require('discord.js');
-const User = require('../../User');
+const User = require('../../discord/User.js');
 const util = require('../../util');
 
 class AvatarCommand extends Command{

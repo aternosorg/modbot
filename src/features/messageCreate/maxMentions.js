@@ -1,7 +1,7 @@
 const util = require('../../util');
 const Log = require('../../Log');
 const GuildConfig = require('../../config/GuildConfig');
-const Member = require('../../Member');
+const Member = require('../../discord/Member.js');
 
 exports.event = async (options, message) => {
     if (!message.guild || await util.ignoresAutomod(message)) return;

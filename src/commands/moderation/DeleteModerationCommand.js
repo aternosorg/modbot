@@ -1,5 +1,5 @@
 const Command = require('../Command');
-const Moderation = require('../../Moderation');
+const Moderation = require('../../database/Moderation.js');
 
 class ClearModerationsCommand extends Command {
 

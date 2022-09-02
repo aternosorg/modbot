@@ -1,5 +1,5 @@
 const SubCommand = require('./SubCommand');
-const Guild = require('../Guild');
+const Guild = require('../discord/Guild.js');
 const {Snowflake, Role} = require('discord.js');
 const util = require('../util');
 

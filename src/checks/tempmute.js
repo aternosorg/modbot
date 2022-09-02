@@ -1,6 +1,6 @@
 const Log = require('../Log');
 const GuildConfig = require('../config/GuildConfig');
-const RateLimiter = require('../RateLimiter');
+const RateLimiter = require('../discord/RateLimiter.js');
 const {Guild, Constants: {APIErrors}} = require('discord.js');
 const deleteGuild = require('../features/guildDelete/deleteConfig');
 const monitor = require('../Monitor').getInstance();

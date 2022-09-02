@@ -1,5 +1,5 @@
 const SubCommand = require('../../SubCommand');
-const BadWord = require('../../../BadWord');
+const BadWord = require('../../../database/BadWord.js');
 const {Snowflake} = require('discord.js');
 
 class ListBadWordCommand extends SubCommand {

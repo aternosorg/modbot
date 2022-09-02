@@ -1,8 +1,8 @@
 const Command = require('../Command');
 const {MessageEmbed} = require('discord.js');
 const util = require('../../util');
-const User = require('../../User');
-const Moderation = require('../../Moderation');
+const User = require('../../discord/User.js');
+const Moderation = require('../../database/Moderation.js');
 
 /**
  * number of moderations that will be displayed on a single page. (3-25)

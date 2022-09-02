@@ -1,7 +1,7 @@
-const Guild = require('./Guild');
-const Log = require('./Log');
-const util = require('./util');
-const GuildConfig = require('./config/GuildConfig');
+const Guild = require('./Guild.js');
+const Log = require('../Log.js');
+const util = require('../util.js');
+const GuildConfig = require('../config/GuildConfig.js');
 const {APIErrors} = require('discord.js').Constants;
 const {
     User,
@@ -10,8 +10,8 @@ const {
     Snowflake,
     GuildBan,
 } = require('discord.js');
-const Database = require('./Database');
-const {Punishment, GuildInfo} = require('./Typedefs');
+const Database = require('../bot/Database.js');
+const {Punishment, GuildInfo} = require('../Typedefs.js');
 
 class Member {
 

@@ -8,7 +8,7 @@ const {
     GuildChannel,
     Constants: { APIErrors },
 } = require('discord.js');
-const RateLimiter = require('./RateLimiter');
+const RateLimiter = require('./RateLimiter.js');
 
 class Guild {
 

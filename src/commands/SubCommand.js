@@ -1,6 +1,6 @@
 const {AbstractCommand, AbstractCommandType} = require('./AbstractCommand');
 const CommandSource = require('./CommandSource');
-const Database = require('../Database');
+const Database = require('../bot/Database.js');
 const {
     Client, MessageEmbed
 } = require('discord.js');

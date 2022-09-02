@@ -1,6 +1,6 @@
 const CommandManager = require('../../commands/CommandManager');
 const UserConfig = require('../../config/UserConfig');
-const Database = require('../../Database');
+const Database = require('../../bot/Database.js');
 const {Client, Message, Constants: {APIErrors}} = require('discord.js');
 const Command = require('../../commands/Command');
 const monitor = require('../../Monitor').getInstance();

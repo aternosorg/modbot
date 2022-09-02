@@ -3,9 +3,9 @@ const {
     Message,
     Snowflake,
 } = require('discord.js');
-const Trigger = require('./Trigger');
+const Trigger = require('./Trigger.js');
 const stringSimilarity = require('string-similarity');
-const Database = require('./Database');
+const Database = require('../bot/Database.js');
 
 /**
  * Database
@@ -255,7 +255,7 @@ class ChatTriggeredFeature {
         }
         else {
             /** @property {Number} insertId*/
-            const dbentry = await database.queryAll(`INSERT INTO ${database.escapeId(this.constructor.tableName)} (${database.escapeIdArray(this.constructor.columns).join(', ')}) VALUES (${',?'.repeat(this.constructor.columns.length).slice(1)})`,this.serialize());
+            const dbentry = await database.queryAll(`INSERT INTO ${database.escapeId(this.constructor.tableName)} (${database.escapeId(this.constructor.columns).join(', ')}) VALUES (${',?'.repeat(this.constructor.columns.length).slice(1)})`,this.serialize());
             this.id = dbentry.insertId;
         }
 

@@ -1,5 +1,5 @@
 const TimedModerationCommand = require('../TimedModerationCommand');
-const Member = require('../../Member');
+const Member = require('../../discord/Member.js');
 const util = require('../../util');
 const {Constants: {APIErrors}} = require('discord.js');
 
