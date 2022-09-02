@@ -6,7 +6,6 @@ import {RESTJSONErrorCodes} from 'discord.js';
 import Logger from '../logging/Logger.js';
 import GuildConfig from '../config/GuildConfig.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
-import deleteGuild from '../features/guildDelete/deleteConfig.js';
 
 export default class UnmuteInterval extends Interval {
     getInterval() {
@@ -21,8 +20,8 @@ export default class UnmuteInterval extends Interval {
             const guild = await GuildWrapper.fetch(result.guildid);
 
             if (!guild) {
-                // TODO: refactor
-                await deleteGuild.delete(Database.instance, result.guildid);
+                const wrapper = new GuildWrapper({id: result.guildid});
+                await wrapper.deleteData();
             }
 
             const member = await guild.fetchMember(result.userid);

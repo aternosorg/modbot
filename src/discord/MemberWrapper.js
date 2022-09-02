@@ -1,19 +1,9 @@
-const Guild = require('./GuildWrapper.js');
-const Log = require('./GuildLog.js');
-const util = require('../util.js');
-const GuildConfig = require('../config/GuildConfig.js');
-const {APIErrors} = require('discord.js').Constants;
-const {
-    User,
-    GuildMember,
-    ClientUser,
-    Snowflake,
-    GuildBan,
-} = require('discord.js');
-const Database = require('../bot/Database.js');
-const {Punishment, GuildInfo} = require('../Typedefs.js');
+import GuildConfig from '../config/GuildConfig.js';
+import util from '../util.js';
+import {EmbedBuilder, RESTJSONErrorCodes} from 'discord.js';
+import {formatTime, parseTime} from '../util/timeutils';
 
-class Member {
+export default class MemberWrapper {
 
     /**
      * @type {User}
@@ -26,12 +16,12 @@ class Member {
     guild;
 
     /**
-     * @type {GuildMember}
+     * @type {GuildMember|null}
      */
     member;
 
     /**
-     * @type {GuildBan}
+     * @type {import('discord.js').GuildBan}
      */
     banInfo;
 
@@ -41,13 +31,13 @@ class Member {
      */
     constructor(user, guild) {
         this.user = user;
-        this.guild = GuildWrapper.get(guild);
+        this.guild = guild;
     }
 
     /**
      * fetch this member
      * @param {boolean} [force] bypass cache
-     * @returns {Promise<GuildMember>}
+     * @returns {Promise<?GuildMember>}
      */
     async fetchMember(force) {
         this.member = await this.guild.fetchMember(this.user.id, force);
@@ -86,7 +76,7 @@ class Member {
      * strike this member
      * @param {Database}                            database
      * @param {String}                              reason
-     * @param {User|ClientUser} moderator
+     * @param {User|import('discord.js').ClientUser} moderator
      * @param {number}                              amount
      * @return {Promise<void>}
      */
@@ -95,7 +85,7 @@ class Member {
         const id = await database.addModeration(this.guild.guild.id, this.user.id, 'strike', reason, null, moderator.id, amount);
         const total = await this.getStrikeSum(database);
         await Promise.all([
-            Log.logModeration(this.guild.guild.id, moderator, this.user, reason, id, 'strike', { amount, total }),
+            this.#logModeration(moderator, reason, id, 'strike', null, amount, total),
             this.executePunishment((await this._getGuildConfig()).findPunishment(total), database, `Reaching ${total} strikes`, true)
         ]);
     }
@@ -127,7 +117,7 @@ class Member {
                 throw new Error('Empty punishment');
         }
         if (typeof punishment.duration === 'string') {
-            punishment.duration = util.timeToSec(punishment.duration);
+            punishment.duration = parseTime(punishment.duration);
         }
 
         switch (punishment.action.toLowerCase()) {
@@ -158,43 +148,40 @@ class Member {
      * pardon strikes from this member
      * @param {Database}                            database
      * @param {String}                              reason
-     * @param {User|ClientUser} moderator
+     * @param {User|import('discord.js').ClientUser} moderator
      * @param {number}                              amount
      * @return {Promise<void>}
      */
     async pardon(database, reason, moderator, amount = 1){
         await this.guild.sendDM(this.user, `${amount} strikes have been pardoned in \`${this.guild.guild.name}\` | ${reason}`);
 
-        const id = await database.addModeration(/** @type {Snowflake} */ this.guild.guild.id, this.user.id, 'pardon', reason, null, moderator.id, -amount);
-        await Log.logModeration(/** @type {GuildInfo} */ this.guild.guild.id, moderator, this.user, reason, id, 'pardon', {
-            amount,
-            total: await this.getStrikeSum(database)
-        });
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'pardon', reason, null, moderator.id, -amount);
+        await this.#logModeration(moderator, reason, id, 'pardon', null, amount, await this.getStrikeSum(database));
     }
 
     /**
      * ban this user from this guild
      * @param {Database}                            database
      * @param {String}                              reason
-     * @param {User|ClientUser} moderator
+     * @param {User|import('discord.js').ClientUser} moderator
      * @param {Number}                              [duration]
      * @return {Promise<void>}
      */
     async ban(database, reason, moderator, duration){
         await this.dmPunishedUser('banned', reason, duration, 'from');
         await this.guild.guild.members.ban(this.user.id, {
-            days: 1,
+            deleteMessageDays: 1,
             reason: this._shortenReason(`${moderator.tag} ${duration ? `(${util.secToTime(duration)}) ` : ''}| ${reason}`)
         });
-        const id = await database.addModeration(/** @type {Snowflake} */ this.guild.guild.id, this.user.id, 'ban', reason, duration, moderator.id);
-        await Log.logModeration(/** @type {GuildInfo} */ this.guild.guild.id, moderator, this.user, reason, id, 'ban', { time: util.secToTime(duration) });
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'ban', reason, duration, moderator.id);
+        await this.#logModeration(moderator, reason, id, 'ban', formatTime(duration));
     }
 
     /**
      * unban this member
      * @param {Database}                            database
      * @param {String}                              reason
-     * @param {User|ClientUser} moderator
+     * @param {User|import('discord.js').ClientUser} moderator
      * @return {Promise<void>}
      */
     async unban(database, reason, moderator){
@@ -202,13 +189,13 @@ class Member {
             await this.guild.guild.members.unban(this.user, this._shortenReason(`${moderator.tag} | ${reason}`));
         }
         catch (e) {
-            if (e.code !== APIErrors.UNKNOWN_BAN) {
+            if (e.code !== RESTJSONErrorCodes.UnknownBan) {
                 throw e;
             }
         }
         await database.query('UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'ban\'', [this.guild.guild.id, this.user.id]);
-        const id = await database.addModeration(/** @type {Snowflake} */this.guild.guild.id, this.user.id, 'unban', reason, null, moderator.id);
-        await Log.logModeration(/** @type {GuildInfo} */ this.guild.guild.id, moderator, this.user, reason, id, 'unban');
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'unban', reason, null, moderator.id);
+        await this.#logModeration(moderator, reason, id, 'unban');
     }
 
     /**
@@ -227,37 +214,37 @@ class Member {
      * softban this user from this guild
      * @param {Database}                            database
      * @param {String}                              reason
-     * @param {User|ClientUser} moderator
+     * @param {User|import('discord.js').ClientUser} moderator
      * @return {Promise<void>}
      */
     async softban(database, reason, moderator){
         await this.dmPunishedUser('softbanned', reason, null, 'from');
-        await this.guild.guild.members.ban(this.user.id, {days: 1, reason: this._shortenReason(`${moderator.tag} | ${reason}`)});
+        await this.guild.guild.members.ban(this.user.id, {deleteMessageDays: 1, reason: this._shortenReason(`${moderator.tag} | ${reason}`)});
         await this.guild.guild.members.unban(this.user.id, 'softban');
-        const id = await database.addModeration(/** @type {Snowflake} */ this.guild.guild.id, this.user.id, 'softban', reason, null, moderator.id);
-        await Log.logModeration(/** @type {GuildInfo} */ this.guild.guild.id, moderator, this.user, reason, id, 'softban');
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'softban', reason, null, moderator.id);
+        await this.#logModeration(moderator, reason, id, 'softban');
     }
 
     /**
      * kick this user from this guild
      * @param {Database}                            database
      * @param {String}                              reason
-     * @param {User|ClientUser} moderator
+     * @param {User|import('discord.js').ClientUser} moderator
      * @return {Promise<void>}
      */
     async kick(database, reason, moderator){
         await this.dmPunishedUser('kicked', reason, null, 'from');
         if (!this.member && await this.fetchMember() === null) return;
         await this.member.kick(this._shortenReason(`${moderator.tag} | ${reason}`));
-        const id = await database.addModeration(/** @type {Snowflake} */ this.guild.guild.id, this.user.id, 'kick', reason, null, moderator.id);
-        await Log.logModeration(/** @type {GuildInfo} */ this.guild.guild.id, moderator, this.user, reason, id, 'kick');
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'kick', reason, null, moderator.id);
+        await this.#logModeration(moderator, reason, id, 'kick');
     }
 
     /**
      * mute this user in this guild
      * @param {Database}                            database
      * @param {String}                              reason
-     * @param {User|ClientUser} moderator
+     * @param {User|import('discord.js').ClientUser} moderator
      * @param {Number}                              [duration]
      * @return {Promise<void>}
      */
@@ -266,7 +253,9 @@ class Member {
         let mutedRole;
         if (!timeout) {
             mutedRole = (await this._getGuildConfig()).mutedRole;
-            if (!mutedRole) return Log.log(/** @type {GuildInfo} */ this.guild.guild.id, 'Can\'t mute user because no muted role is specified');
+            if (!mutedRole) {
+                return this.guild.log({content: 'Can\'t mute user because no muted role is specified'});
+            }
         }
         await this.dmPunishedUser('muted', reason, duration, 'in');
         if (!this.member) await this.fetchMember();
@@ -278,15 +267,15 @@ class Member {
                 await this.member.roles.add(mutedRole, shortedReason);
             }
         }
-        const id = await database.addModeration(/** @type {Snowflake} */ this.guild.guild.id, this.user.id, 'mute', reason, duration, moderator.id);
-        await Log.logModeration(/** @type {GuildInfo} */ this.guild.guild.id, moderator, this.user, reason, id, 'mute', { time: util.secToTime(duration) });
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'mute', reason, duration, moderator.id);
+        await this.#logModeration(moderator, reason, id, 'mute', formatTime(duration));
     }
 
     /**
      * unmute this user in this guild
      * @param {Database}                            database
      * @param {String}                              reason
-     * @param {User|ClientUser} moderator
+     * @param {User|import('discord.js').ClientUser} moderator
      * @return {Promise<void>}
      */
     async unmute(database, reason, moderator){
@@ -299,8 +288,8 @@ class Member {
             await this.member.timeout(null);
         }
         await database.query('UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'mute\'', [this.guild.guild.id, this.user.id]);
-        const id = await database.addModeration(/** @type {Snowflake} */ this.guild.guild.id, this.user.id, 'unmute', reason, null, moderator.id);
-        await Log.logModeration(/** @type {GuildInfo} */ this.guild.guild.id, moderator, this.user, reason, id, 'unmute');
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'unmute', reason, null, moderator.id);
+        await this.#logModeration(moderator, reason, id, 'unmute');
     }
 
     /**
@@ -320,6 +309,45 @@ class Member {
     }
 
     /**
+     *
+     * @param {import('discord.js').User} moderator
+     * @param {string} reason
+     * @param {number} id
+     * @param {string} type
+     * @param {?string} time
+     * @param {?number} amount
+     * @param {?number} total
+     * @return {Promise<?Message>}
+     */
+    async #logModeration(moderator, reason, id, type, time = null, amount = null, total = null) {
+        const embedColor = util.color.resolve(type);
+        const embed = new EmbedBuilder()
+            .setColor(embedColor)
+            .setAuthor({
+                name: `Case ${id} | ${util.toTitleCase(type)} | ${this.user.tag}`,
+                iconURL: this.user.avatarURL()
+            })
+            .setFooter({text: this.user.id})
+            .setTimestamp()
+            .addFields(
+                /** @type {any} */ { name: 'User', value: `<@${this.user.id}>`, inline: true},
+                /** @type {any} */ { name: 'Moderator', value: `<@${moderator.id}>`, inline: true},
+                /** @type {any} */ { name: 'Reason', value: reason.substring(0, 1024), inline: true}
+            );
+        if (time) {
+            embed.addFields(/** @type {any} */ {name: 'Duration', value: time, inline: true});
+        }
+        if (amount) {
+            embed.addFields(
+                /** @type {any} */ {name: 'Amount', value: amount.toString(), inline: true},
+                /** @type {any} */ {name: 'Total Strikes', value: total.toString(), inline: true},
+            );
+        }
+
+        return this.guild.log({embeds: [embed]});
+    }
+
+    /**
      * send the user a dm about this punishment
      * @param {String}  verb
      * @param {String}  reason
@@ -335,4 +363,4 @@ class Member {
 
 }
 
-module.exports = Member;
+module.exports = MemberWrapper;

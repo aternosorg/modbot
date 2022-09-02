@@ -1,7 +1,7 @@
 const BadWord = require('../../database/BadWord.js');
 const util = require('../../util');
 const Log = require('../../discord/GuildLog.js');
-const Member = require('../../discord/Member.js');
+const Member = require('../../discord/MemberWrapper.js');
 
 exports.event = async (options, message) => {
     if (!message.guild || await util.ignoresAutomod(message)) return;

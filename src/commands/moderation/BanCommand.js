@@ -1,5 +1,5 @@
 const TimedModerationCommand = require('../TimedModerationCommand');
-const Member = require('../../discord/Member.js');
+const Member = require('../../discord/MemberWrapper.js');
 
 class BanCommand extends TimedModerationCommand {
 

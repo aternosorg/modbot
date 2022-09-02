@@ -1,7 +1,8 @@
-import {BaseGuildTextChannel, Collection, RESTJSONErrorCodes, TextChannel} from 'discord.js';
+import {BaseGuildTextChannel, Collection, RESTJSONErrorCodes} from 'discord.js';
 import RateLimiter from './RateLimiter.js';
 import Bot from '../bot/Bot.js';
 import GuildConfig from '../config/GuildConfig.js';
+import Database from '../bot/Database.js';
 
 export default class GuildWrapper {
 
@@ -52,7 +53,7 @@ export default class GuildWrapper {
      * fetch a guild member
      * @param {import('discord.js').Snowflake} id user id
      * @param {boolean} [force] bypass cache
-     * @return {Promise<null|GuildMember>}
+     * @return {Promise<import('discord.js').GuildMember|null>}
      */
     async fetchMember(id, force = false) {
         try {
@@ -89,7 +90,7 @@ export default class GuildWrapper {
 
     /**
      * fetch a ban
-     * @param {Snowflake} id user id
+     * @param {import('discord.js').Snowflake} id user id
      * @return {Promise<null|import('discord.js').GuildBan>}
      */
     async fetchBan(id) {
@@ -194,6 +195,20 @@ export default class GuildWrapper {
     async logJoin(options) {
         const config = await this.getConfig();
         return this.sendMessageToChannel(config.joinLogChannel, options);
+    }
+
+    /**
+     * delete ALL importing for this guild
+     * @return {Promise<void>}
+     */
+    async deleteData() {
+        return Promise.all([
+            Database.instance.query('DELETE FROM channels WHERE guildid = ?', this.guild.id),
+            Database.instance.query('DELETE FROM guilds WHERE id = ?', this.guild.id),
+            Database.instance.query('DELETE FROM responses WHERE guildid = ?', this.guild.id),
+            Database.instance.query('DELETE FROM badWords WHERE guildid = ?', this.guild.id),
+            Database.instance.query('DELETE FROM moderations WHERE guildid = ?', this.guild.id)
+        ]);
     }
 
     /**

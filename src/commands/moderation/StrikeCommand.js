@@ -1,5 +1,5 @@
 const ModerationCommand = require('../ModerationCommand');
-const Member = require('../../discord/Member.js');
+const Member = require('../../discord/MemberWrapper.js');
 
 class StrikeCommand extends ModerationCommand {
 

@@ -7,7 +7,7 @@ const {
 } = Discord;
 const {APIErrors} = Constants;
 
-class User {
+class UserWrapper {
 
     /**
      * @type {Snowflake}
@@ -36,7 +36,7 @@ class User {
 
     /**
      * fetch this user
-     * @return {Promise<User>}
+     * @return {Promise<UserWrapper>}
      * @deprecated use this.fetchUser() instead
      */
     async fetch() {
@@ -87,7 +87,7 @@ class User {
      *
      * @param {String} string
      * @param {Client} client
-     * @return {Promise<null|User>}
+     * @return {Promise<null|UserWrapper>}
      */
     static async getMentionedUser(string, client) {
         const userID = this.getID(string);
@@ -95,9 +95,9 @@ class User {
             return null;
         }
 
-        let user = new User(userID, client);
+        let user = new UserWrapper(userID, client);
         return user.fetchUser();
     }
 }
 
-module.exports = User;
+module.exports = UserWrapper;

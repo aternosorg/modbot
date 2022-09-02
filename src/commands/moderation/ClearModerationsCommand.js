@@ -1,5 +1,5 @@
 const Command = require('../Command');
-const User = require('../../discord/User.js');
+const User = require('../../discord/UserWrapper.js');
 const Moderation = require('../../database/Moderation.js');
 
 class ClearModerationsCommand extends Command {
