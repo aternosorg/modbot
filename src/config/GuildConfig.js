@@ -1,44 +1,34 @@
-const config = require('../../config.json');
-const Config = require('./Config');
-const Discord = require('discord.js');
-const {
-    MessageEmbed,
-    Snowflake,
-    GuildMember,
-    Collection,
-} = require('discord.js');
-const {Punishment} = require('../Typedefs');
-const TypeChecker = require('./TypeChecker');
+import ObjectConfig from './ObjectConfig.js';
+import TypeChecker from './TypeChecker.js';
+import {Collection, EmbedBuilder} from 'discord.js';
 
 /**
- * Class representing the config of a guild
+ * @classdesc config of a guild
  */
-class GuildConfig extends Config {
+export default class GuildConfig extends ObjectConfig {
 
     static tableName = 'guilds';
 
     #punishments = {};
     #modRoles = [];
     #protectedRoles = [];
-    prefix = config.prefix;
 
     /**
      * Constructor - create a guild config
      *
-     * @param  {Snowflake}                        id                        guild id
+     * @param  {import('discord.js').Snowflake}   id                        guild id
      * @param  {Object}                           [json]                    options
-     * @param  {Snowflake}                        [json.logChannel]         id of the log channel
-     * @param  {Snowflake}                        [json.messageLogChannel]  id of the message log channel
-     * @param  {Snowflake}                        [json.joinLogChannel]     id of the join log channel
-     * @param  {Snowflake}                        [json.mutedRole]          id of the muted role
+     * @param  {import('discord.js').Snowflake}   [json.logChannel]         id of the log channel
+     * @param  {import('discord.js').Snowflake}   [json.messageLogChannel]  id of the message log channel
+     * @param  {import('discord.js').Snowflake}   [json.joinLogChannel]     id of the join log channel
+     * @param  {import('discord.js').Snowflake}   [json.mutedRole]          id of the muted role
      * @param  {Snowflake[]}                      [json.modRoles]           role ids that can execute commands
      * @param  {Snowflake[]}                      [json.protectedRoles]     role ids that can't be targeted by moderations
      * @param  {Object}                           [json.punishments]        automatic punishments for strikes
-     * @param  {String}                           [json.playlist]           id of youtube playlist for tutorials
+     * @param  {String}                           [json.playlist]           id of YouTube playlist for tutorials
      * @param  {String}                           [json.helpcenter]         subdomain of the zendesk help center
      * @param  {Boolean}                          [json.invites]            allow invites (can be overwritten per channel)
      * @param  {Number}                           [json.linkCooldown]       cooldown on links in s (user based)
-     * @param  {String}                           [json.prefix]             alternative prefix for commands
      * @param  {Number}                           [json.maxMentions]        maximum amount of mentions allowed
      * @param  {Boolean}                          [json.caps]               should caps be automatically deleted
      * @param  {Boolean}                          [json.raidMode]           is anti-raid-mode enabled
@@ -63,8 +53,6 @@ class GuildConfig extends Config {
         this.helpcenter = json.helpcenter;
         this.invites = json.invites ?? true;
         this.linkCooldown = json.linkCooldown || -1;
-        if (typeof(json.prefix) === 'string')
-            this.prefix = json.prefix;
         this.caps = json.caps || false;
         this.maxMentions = json.maxMentions || 5;
         this.raidMode = json.raidMode || false;
@@ -100,7 +88,6 @@ class GuildConfig extends Config {
         TypeChecker.assertStringUndefinedOrNull(json.helpcenter, 'Help center');
         TypeChecker.assertOfTypes(json.invites, ['boolean', 'undefined'], 'Invites');
         TypeChecker.assertNumberUndefinedOrNull(json.linkCooldown, 'Link cooldown');
-        TypeChecker.assertStringUndefinedOrNull(json.prefix, 'Prefix');
         TypeChecker.assertNumberUndefinedOrNull(json.maxMentions, 'Max mentions');
         TypeChecker.assertNumberUndefinedOrNull(json.antiSpam, 'Anti Spam');
         TypeChecker.assertNumberUndefinedOrNull(json.similarMessages, 'Similar Messages');
@@ -116,15 +103,17 @@ class GuildConfig extends Config {
 
     /**
      * generate a settings embed
-     * @returns {MessageEmbed}
+     * @returns {EmbedBuilder}
      */
     getSettings() {
         const util = require('../util');
-        return new MessageEmbed()
-            .setTitle(`Settings | Prefix: ${this.prefix}`)
-            .addField('Moderation', this.getModerationSettings(), false)
-            .addField('Automod', this.getAutomodSettings(), false)
-            .addField('Connections', this.getConnectionsSettings(), false)
+        return new EmbedBuilder()
+            .setTitle('Settings')
+            .addFields([
+                {name: 'Moderation', value: this.getModerationSettings(), inline: false},
+                {name: 'Automod', value: this.getAutomodSettings(), inline: false},
+                {name: 'Connections', value: this.getConnectionsSettings(), inline: false}
+            ])
             .setColor(util.color.red);
     }
 
@@ -145,7 +134,7 @@ class GuildConfig extends Config {
      * @returns {string}
      */
     getConnectionsSettings() {
-        //How can youtube's link shortener *NOT* support playlists?
+        //How can YouTube's link shortener *NOT* support playlists?
         return `Playlist: ${this.playlist ? `[${this.playlist}](https://www.youtube.com/playlist?list=${this.playlist})` : 'disabled'}\n` +
             `Helpcenter: ${this.helpcenter ? `https://${this.helpcenter}.zendesk.com/` : 'disabled'}\n`;
     }
@@ -166,7 +155,7 @@ class GuildConfig extends Config {
 
     /**
      * Is this a moderator role?
-     * @param  {Snowflake} role role id
+     * @param  {import('discord.js').Snowflake} role role id
      * @return {Boolean}
      */
     isModRole(role) {
@@ -181,7 +170,7 @@ class GuildConfig extends Config {
      */
     isMod(member) {
         for (let [key] of member.roles.cache) {
-            if (this.isModRole(/** @type {Snowflake} */ key))
+            if (this.isModRole(/** @type {import('discord.js').Snowflake} */ key))
                 return true;
         }
         return false;
@@ -189,7 +178,7 @@ class GuildConfig extends Config {
 
     /**
      * Add this role to the moderator roles
-     * @param  {Snowflake} role role id
+     * @param  {import('discord.js').Snowflake} role role id
      */
     addModRole(role) {
         if (!this.isModRole(role)) {
@@ -199,7 +188,7 @@ class GuildConfig extends Config {
 
     /**
      * Remove this role from the moderator roles
-     * @param  {Snowflake} role role id
+     * @param  {import('discord.js').Snowflake} role role id
      */
     removeModRole(role) {
         const newRoles = [];
@@ -220,7 +209,7 @@ class GuildConfig extends Config {
 
     /**
      * Is this a protected role?
-     * @param  {Snowflake} role role id
+     * @param  {import('discord.js').Snowflake} role role id
      * @return {Boolean}
      */
     isProtectedRole(role) {
@@ -236,7 +225,7 @@ class GuildConfig extends Config {
     isProtected(member) {
         if (this.isMod(member)) return true;
         for (let [key] of member.roles.cache) {
-            if (this.isProtectedRole(/** @type {Snowflake} */ key))
+            if (this.isProtectedRole(/** @type {import('discord.js').Snowflake} */ key))
                 return true;
         }
         return false;
@@ -244,7 +233,7 @@ class GuildConfig extends Config {
 
     /**
      * Add this role to the protected roles
-     * @param  {Snowflake} role role id
+     * @param  {import('discord.js').Snowflake} role role id
      */
     addProtectedRole(role) {
         if (!this.isProtectedRole(role)) {
@@ -254,7 +243,7 @@ class GuildConfig extends Config {
 
     /**
      * Remove this role from the protected roles
-     * @param  {Snowflake} role role id
+     * @param  {import('discord.js').Snowflake} role role id
      */
     removeProtectedRole(role) {
         let newRoles = [];
@@ -315,7 +304,7 @@ class GuildConfig extends Config {
      * @return {Collection<Number, Punishment>}
      */
     getPunishments() {
-        const punishments = new Discord.Collection();
+        const punishments = new Collection();
 
         for (const key of Object.keys(this.#punishments)) {
             punishments.set(parseInt(key), this.#punishments[key]);
@@ -326,9 +315,8 @@ class GuildConfig extends Config {
 
     getDataObject(o = this) {
         //copy to new object
-        /** @type {Config} */
         const cleanObject = {};
-        Object.assign(cleanObject,o);
+        Object.assign(cleanObject, o);
 
         //copy private properties
         cleanObject.punishments = this.#punishments;
@@ -338,5 +326,3 @@ class GuildConfig extends Config {
         return super.getDataObject(cleanObject);
     }
 }
-
-module.exports = GuildConfig;

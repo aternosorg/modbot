@@ -1,12 +1,14 @@
 import UnbanInterval from './UnbanInterval.js';
 import Logger from '../logging/Logger.js';
+import UnmuteInterval from './UnmuteInterval.js';
 
 export default class IntervalManager {
     /**
      * @type {Interval[]}
      */
     #intervals = [
-        new UnbanInterval()
+        new UnbanInterval(),
+        new UnmuteInterval(),
     ];
 
     schedule() {

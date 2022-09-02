@@ -13,7 +13,7 @@ const {
 const Database = require('./bot/Database.js');
 const GuildConfig = require('./config/GuildConfig.js');
 const ChatTriggeredFeature = require('./database/ChatTriggeredFeature.js');
-const Config = require('./config/Config');
+const Config = require('./config/ObjectConfig.js');
 const RateLimiter = require('./discord/RateLimiter.js');
 const {APIErrors} = Constants;
 const {GuildInfo} = require('./Typedefs');

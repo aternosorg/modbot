@@ -5,7 +5,12 @@ const Discord = require('discord.js');
 let ignore = new Discord.Collection();
 const cache = 30*1000;
 exports.event = async (options, message) => {
-    if (!message.guild || message.author.bot || ignore.has(message.id)) {
+    if (!message.guild || message.author.bot) {
+        return;
+    }
+
+    if (ignore.has(message.id)) {
+        ignore.delete(message.id);
         return;
     }
 
@@ -47,8 +52,4 @@ exports.event = async (options, message) => {
 
 exports.ignore = (id) => {
     ignore.set(id, Date.now());
-};
-
-exports.purgeCache = () => {
-    ignore = ignore.filter(timestamp => timestamp > Date.now() + cache);
 };

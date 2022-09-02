@@ -1,5 +1,4 @@
-const {Client, Snowflake, Collection} = require('discord.js');
-const Database = require('../bot/Database.js');
+import {Collection} from 'discord.js';
 
 /**
  * Config cache time (ms)
@@ -7,25 +6,16 @@ const Database = require('../bot/Database.js');
  */
 const cacheDuration = 10*60*1000;
 
-class Config {
-
-    /**
-     * Database
-     * @type {Database}
-     */
-    static database;
-
-    /**
-     * Discord Client
-     * @type {Client}
-     */
-    static client;
+/**
+ * @classdesc a config stored in the database (e.g. GuildConfig)
+ */
+export default class ObjectConfig {
 
     /**
      * Cache for all configs by tableName
      * @type {{}}
      */
-    static cache = {}
+    static cache = {};
 
     /**
      * table name
@@ -56,7 +46,7 @@ class Config {
     createdAt;
 
     /**
-     * @param {Snowflake} id ID in the database
+     * @param {String} id ID in the database
      */
     constructor(id) {
         this.id = id;
@@ -74,7 +64,7 @@ class Config {
     }
 
     /**
-     * @return {Collection<String, Config>}
+     * @return {Collection<String, ObjectConfig>}
      */
     static getCache() {
         let cache = this.cache[this.tableName];
@@ -101,7 +91,7 @@ class Config {
     /**
      * create an empty config
      * @param {String} key
-     * @return {Config}
+     * @return {this}
      */
     static empty(key) {
         return new this(key);
@@ -110,7 +100,7 @@ class Config {
     /**
      * create a config from a database result
      * @param result
-     * @return {Config}
+     * @return {this}
      */
     static create(result) {
         return new this(result.id, JSON.parse(result.config));
@@ -170,7 +160,7 @@ class Config {
     /**
      * Get config
      * @param {String} id
-     * @return {Promise<Config>}
+     * @return {Promise<this>}
      */
     static async get(id) {
         const cache = this.getCache();
@@ -194,12 +184,11 @@ class Config {
 
     /**
      * get a clean data object
-     * @param {Config} [original]
-     * @return {Config}
+     * @param {this} [original]
+     * @return {this}
      */
     getDataObject(original = this) {
         //copy to new object
-        /** @type {Config} */
         const cleanObject = {};
         Object.assign(cleanObject,original);
 
@@ -209,5 +198,3 @@ class Config {
         return cleanObject;
     }
 }
-
-module.exports = Config;

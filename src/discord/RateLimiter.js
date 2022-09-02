@@ -1,32 +1,8 @@
-const {
-    Guild,
-    Collection,
-    User,
-    GuildMember,
+import {Collection} from 'discord.js';
+import Database from '../bot/Database.js';
+import Logger from '../logging/Logger.js';
 
-} = require('discord.js');
-const monitor = require('./Monitor').getInstance();
-const Database = require('../bot/Database.js');
-
-/**
- * Database
- * @type {Database}
- */
-let database;
-
-/**
- * limit certain actions
- */
-class RateLimiter {
-
-    /**
-     * save database
-     * @param {Database} db
-     */
-    static init(db) {
-        database = db;
-    }
-
+export default class RateLimiter {
     static #modCountCache = new Collection();
     static #modCountTimeouts = new Collection();
 
@@ -40,7 +16,7 @@ class RateLimiter {
     static async sendDM(guild, user, message) {
         let count = this.#modCountCache.get(guild.id);
         if (!count) {
-            count = await database.query(`SELECT COUNT(*) AS count FROM moderations WHERE guildid = ${guild.id} AND created >= ${Math.floor(Date.now()/1000) - 60*60*24}`);
+            count = await Database.instance.query(`SELECT COUNT(*) AS count FROM moderations WHERE guildid = ${guild.id} AND created >= ${Math.floor(Date.now()/1000) - 60*60*24}`);
             count = parseInt(count.count);
         }
 
@@ -55,13 +31,13 @@ class RateLimiter {
             await user.send(message);
         }
         else {
-            await monitor.warn(`Guild ${guild.name}(${guild.id}) exceeded DM limit`, {
+            await Logger.instance.warn({
+                message: `Guild ${guild.name}(${guild.id}) exceeded DM limit`,
                 dms: count,
                 memberCount: guild.memberCount,
                 guildID: guild.id,
                 guildName: guild.name
             });
-            console.log(`Didn't send DM in guild ${guild.name}(${guild.id}), count: ${count}`);
         }
     }
 

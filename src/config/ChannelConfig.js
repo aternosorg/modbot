@@ -1,4 +1,4 @@
-const Config = require('./Config');
+const Config = require('./ObjectConfig.js');
 const {Constants, Snowflake, GuildChannel, Client} = require('discord.js');
 const {APIErrors} = Constants;
 const TypeChecker = require('./TypeChecker');
@@ -80,7 +80,7 @@ class ChannelConfig extends Config {
     /**
      * @param {Client} bot
      * @param {Snowflake} guildID
-     * @param {Config} data
+     * @param {ObjectConfig.js} data
      * @return {Promise<void>}
      */
     static async import(bot, guildID, data) {

@@ -1,16 +1,8 @@
-const {
-    Collection,
-    Snowflake,
-    GuildMember,
-    Role,
-    User,
-    GuildBan,
-    GuildChannel,
-    Constants: { APIErrors },
-} = require('discord.js');
-const RateLimiter = require('./RateLimiter.js');
+import {Collection, RESTJSONErrorCodes} from 'discord.js';
+import RateLimiter from './RateLimiter.js';
+import Bot from '../bot/Bot.js';
 
-class Guild {
+export default class Guild {
 
     /**
      * Guild Cache
@@ -32,17 +24,33 @@ class Guild {
     }
 
     /**
+     * @param {import("discord.js").Snowflake} id
+     * @return {Promise<Guild>}
+     */
+    static async fetch(id) {
+        try {
+            return new this(await Bot.instance.client.guilds.fetch(id));
+        }
+        catch (e) {
+            if (e.code === RESTJSONErrorCodes.UnknownGuild) {
+                return null;
+            }
+            throw e;
+        }
+    }
+
+    /**
      * fetch a guild member
-     * @param {Snowflake}   id  user id
+     * @param {import('discord.js').Snowflake} id user id
      * @param {boolean} [force] bypass cache
      * @return {Promise<null|GuildMember>}
      */
     async fetchMember(id, force = false) {
         try {
-            return await this.guild.members.fetch({user: id, force});
+            return this.guild.members.fetch({user: id, force});
         }
         catch (e) {
-            if ([APIErrors.UNKNOWN_MEMBER, APIErrors.UNKNOWN_USER].includes(e.code)) {
+            if ([RESTJSONErrorCodes.UnknownMember, RESTJSONErrorCodes.UnknownUser].includes(e.code)) {
                 return null;
             }
             else {
@@ -53,7 +61,7 @@ class Guild {
 
     /**
      * fetch a role
-     * @param {Snowflake} id role id
+     * @param {import('discord.js').Snowflake} id role id
      * @return {Promise<null|Role>}
      */
     async fetchRole(id) {
@@ -61,7 +69,7 @@ class Guild {
             return await this.guild.roles.fetch(id);
         }
         catch (e) {
-            if (e.code === APIErrors.UNKNOWN_ROLE) {
+            if (e.code === RESTJSONErrorCodes.UnknownRole) {
                 return null;
             }
             else {
@@ -73,14 +81,14 @@ class Guild {
     /**
      * fetch a ban
      * @param {Snowflake} id user id
-     * @return {Promise<null|GuildBan>}
+     * @return {Promise<null|import('discord.js').GuildBan>}
      */
     async fetchBan(id) {
         try {
             return await this.guild.bans.fetch(id);
         }
         catch (e) {
-            if (e.code === APIErrors.UNKNOWN_BAN) {
+            if (e.code === RESTJSONErrorCodes.UnknownBan) {
                 return null;
             }
             else {
@@ -91,15 +99,15 @@ class Guild {
 
     /**
      * fetch a channel
-     * @param {Snowflake} id channel id
-     * @return {Promise<null|GuildChannel>}
+     * @param {import("discord.js").Snowflake} id channel id
+     * @return {Promise<null|import("discord.js").GuildChannel>}
      */
     async fetchChannel(id) {
         try {
             return await this.guild.channels.fetch(id);
         }
         catch (e) {
-            if (e.code === APIErrors.UNKNOWN_CHANNEL) {
+            if (e.code === RESTJSONErrorCodes.UnknownChannel) {
                 return null;
             }
             else {
@@ -110,17 +118,18 @@ class Guild {
 
     /**
      * try to send a dm
-     * @param {User}    user
+     * @param {import("discord.js").User} user
      * @param {String} message
      * @return {Promise<boolean>} was this successful
      */
     async sendDM(user, message) {
-        if (!await this.fetchMember(user.id)) return;
+        if (!await this.fetchMember(user.id)) return false;
+
         try {
             await RateLimiter.sendDM(this.guild, user, message);
         }
         catch (e) {
-            if (e.code === APIErrors.CANNOT_MESSAGE_USER) {
+            if (e.code === RESTJSONErrorCodes.CannotSendMessagesToThisUser) {
                 return false;
             }
             else {
@@ -132,8 +141,9 @@ class Guild {
 
     /**
      * get a guild from cache or create a new one
-     * @param {Guild}   guild
+     * @param {import("discord.js".Guild)} guild
      * @return {Guild}
+     * @deprecated
      */
     static get(guild) {
         if (this.#cache.has(guild.id))
