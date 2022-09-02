@@ -4,6 +4,8 @@ import Logger from '../logging/Logger.js';
 import BanRemoveEventListener from './BanRemoveEventListener.js';
 import GuildDeleteEventListener from './GuildDeleteEventListener.js';
 import LogJoinEventListener from './guildMemberAdd/LogJoinEventListener.js';
+import RaidModeEventListener from './guildMemberAdd/RaidModeEventListener.js';
+import RestoreMutedRoleEventListener from './guildMemberAdd/RestoreMutedRoleEventListener.js';
 
 export default class EventManager {
     /**
@@ -13,7 +15,11 @@ export default class EventManager {
         new ErrorEventListener(),
         new BanRemoveEventListener(),
         new GuildDeleteEventListener(),
+
+        // new members
         new LogJoinEventListener(),
+        new RaidModeEventListener(),
+        new RestoreMutedRoleEventListener(),
     ];
 
     subscribe() {
