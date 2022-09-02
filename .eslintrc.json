@@ -3,11 +3,13 @@
         "commonjs": true,
         "es2021": true,
         "node": true,
-        "jest/globals": true
+        "jest/globals": true,
+        "es6": true
     },
     "extends": ["eslint:recommended","plugin:json/recommended"],
     "parserOptions": {
-        "ecmaVersion": "latest"
+        "ecmaVersion": "latest",
+        "sourceType": "module"
     },
     "rules": {
         "indent": [
@@ -28,8 +30,7 @@
         "semi": [
             "error",
             "always"
-        ],
-        "jsdoc/no-undefined-types": 1
+        ]
     },
     "plugins": [
         "jsdoc",
