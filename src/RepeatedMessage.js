@@ -5,7 +5,7 @@ const {
     TextBasedChannelFields
 } = require('discord.js');
 const stringSimilarity = require('string-similarity');
-const Log = require('./Log');
+const Log = require('./discord/GuildLog.js');
 
 class RepeatedMessage {
 

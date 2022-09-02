@@ -123,7 +123,7 @@ export default class Database {
      */
     async queryAll(sql, ...values) {
         await this.waitForConnection();
-        return (await this.#connection.query(sql, ...values))[0];
+        return (await this.#connection.query(sql, values))[0];
     }
 
     /**

@@ -1,5 +1,5 @@
 const util = require('../../util');
-const Log = require('../../Log');
+const Log = require('../../discord/GuildLog.js');
 const {MessageEmbed} = require('discord.js');
 
 exports.event = async (options, {guild, user}) => {

@@ -2,7 +2,7 @@ const Command = require('../Command');
 const {MessageEmbed, Message} = require('discord.js');
 const util = require('../../util');
 const regexRegex = /^\/(.*)\/([gimsuy]*)$/;
-const Log = require('../../Log');
+const Log = require('../../discord/GuildLog.js');
 
 class PurgeCommand extends Command {
 

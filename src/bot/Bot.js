@@ -46,6 +46,10 @@ export default class Bot {
         return this.#instance ??= new Bot();
     }
 
+    get client() {
+        return this.#client;
+    }
+
     async start(){
         await this.#client.login(config.authToken);
     }

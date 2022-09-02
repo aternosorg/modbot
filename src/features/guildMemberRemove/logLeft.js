@@ -1,4 +1,4 @@
-const Log = require('../../Log');
+const Log = require('../../discord/GuildLog.js');
 const {MessageEmbed, GuildMember} = require('discord.js');
 const util = require('../../util');
 

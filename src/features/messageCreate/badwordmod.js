@@ -1,6 +1,6 @@
 const BadWord = require('../../database/BadWord.js');
 const util = require('../../util');
-const Log = require('../../Log');
+const Log = require('../../discord/GuildLog.js');
 const Member = require('../../discord/Member.js');
 
 exports.event = async (options, message) => {

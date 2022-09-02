@@ -1,4 +1,4 @@
-const util = require('./util');
+const util = require('../util.js');
 const {
     Constants,
     MessageEmbed,
@@ -8,11 +8,11 @@ const {
     User,
     GuildChannel,
 } = require('discord.js');
-const GuildConfig = require('./config/GuildConfig');
+const GuildConfig = require('../config/GuildConfig.js');
 const {APIErrors} = Constants;
-const {GuildInfo} = require('./Typedefs');
+const {GuildInfo} = require('../Typedefs.js');
 
-class Log{
+class GuildLog {
     /**
      * Logs a message to the guilds log channel (if specified)
      * @param {GuildInfo} guildInfo
@@ -118,7 +118,7 @@ class Log{
     }
 
     /**
-     * Log a moderation
+     * GuildLog a moderation
      * @async
      * @param {GuildInfo} guildInfo
      * @param {User|ClientUser} moderator user that started the moderation
@@ -158,7 +158,7 @@ class Log{
     }
 
     /**
-     * Log automatic unbans etc.
+     * GuildLog automatic unbans etc.
      * @async
      * @param {GuildInfo} guildInfo
      * @param {User} user user that was moderated
@@ -208,4 +208,4 @@ class Log{
     }
 }
 
-module.exports = Log;
+module.exports = GuildLog;

@@ -1,4 +1,4 @@
-const Log = require('../../Log');
+const Log = require('../../discord/GuildLog.js');
 const GuildConfig = require('../../config/GuildConfig');
 
 exports.event = async (options, member) => {

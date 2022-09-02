@@ -1,5 +1,5 @@
 const Command = require('../Command');
-const Log = require('../../Log');
+const Log = require('../../discord/GuildLog.js');
 const {GuildInfo} = require('../../Typedefs');
 
 class RaidModeCommand extends Command {

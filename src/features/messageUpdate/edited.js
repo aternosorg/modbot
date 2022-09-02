@@ -1,5 +1,5 @@
 const util = require('../../util.js');
-const Log = require('../../Log');
+const Log = require('../../discord/GuildLog.js');
 const Discord = require('discord.js');
 const jsdiff = require('diff');
 
