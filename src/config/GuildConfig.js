@@ -1,6 +1,7 @@
 import ObjectConfig from './ObjectConfig.js';
 import TypeChecker from './TypeChecker.js';
 import {Collection, EmbedBuilder} from 'discord.js';
+import Punishment from '../database/Punishment.js';
 
 /**
  * @classdesc config of a guild
@@ -268,7 +269,7 @@ export default class GuildConfig extends ObjectConfig {
      * @return {Punishment}
      */
     getPunishment(strikes) {
-        return this.#punishments[strikes];
+        return new Punishment(this.#punishments[strikes]);
     }
 
     /**
@@ -288,7 +289,7 @@ export default class GuildConfig extends ObjectConfig {
     /**
      * set a punishment
      * @param {Number} strikes
-     * @param {Punishment|null} punishment
+     * @param {?Punishment} punishment
      * @return {Promise<>}
      */
     setPunishment(strikes, punishment) {
