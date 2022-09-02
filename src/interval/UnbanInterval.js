@@ -1,7 +1,7 @@
 import Interval from './Interval.js';
 import Database from '../bot/Database.js';
 import Bot from '../bot/Bot.js';
-import {MessageEmbed, RESTJSONErrorCodes} from 'discord.js';
+import {EmbedBuilder, RESTJSONErrorCodes} from 'discord.js';
 import Logger from '../logging/Logger.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
 import util from '../util.js';
@@ -25,8 +25,8 @@ export default class UnbanInterval extends Interval {
 
             await Database.instance.query('UPDATE moderations SET active = FALSE WHERE action = \'ban\' AND userid = ? AND guildid = ?',result.userid, result.guildid);
             try {
-                await member.unban(reason);
-                const embed = new MessageEmbed()
+                await member.unban(reason, Bot.instance.client.user);
+                const embed = new EmbedBuilder()
                     .setColor(util.color.green)
                     .setAuthor({name: `Case ${unban.insertId} | Unban | ${user.tag}`, iconURL: user.avatarURL()})
                     .setFooter({text: user.id})

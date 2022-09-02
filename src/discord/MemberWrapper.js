@@ -2,6 +2,7 @@ import GuildConfig from '../config/GuildConfig.js';
 import util from '../util.js';
 import {EmbedBuilder, RESTJSONErrorCodes} from 'discord.js';
 import {formatTime, parseTime} from '../util/timeutils';
+import Database from '../bot/Database.js';
 
 export default class MemberWrapper {
 
@@ -74,42 +75,40 @@ export default class MemberWrapper {
 
     /**
      * strike this member
-     * @param {Database}                            database
      * @param {String}                              reason
      * @param {User|import('discord.js').ClientUser} moderator
      * @param {number}                              amount
      * @return {Promise<void>}
      */
-    async strike(database, reason, moderator, amount = 1){
+    async strike(reason, moderator, amount = 1){
         await this.dmPunishedUser('striked', reason, null, 'in');
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'strike', reason, null, moderator.id, amount);
-        const total = await this.getStrikeSum(database);
+        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'strike', reason, null, moderator.id, amount);
+        const total = await this.getStrikeSum();
         await Promise.all([
             this.#logModeration(moderator, reason, id, 'strike', null, amount, total),
-            this.executePunishment((await this._getGuildConfig()).findPunishment(total), database, `Reaching ${total} strikes`, true)
+            this.executePunishment((await this._getGuildConfig()).findPunishment(total), `Reaching ${total} strikes`, true)
         ]);
     }
 
     /**
      * get the
-     * @param {Database}database
      * @return {Promise<number>}
      */
-    async getStrikeSum(database) {
-        return (
-            await database.query('SELECT SUM(value) AS sum FROM moderations WHERE guildid = ? AND userid = ? AND (action = \'strike\' OR action = \'pardon\')',[this.guild.guild.id, this.user.id])
+    async getStrikeSum() {
+        return (await Database.instance.query(
+            'SELECT SUM(value) AS sum FROM moderations WHERE guildid = ? AND userid = ? AND (action = \'strike\' OR action = \'pardon\')',
+            this.guild.guild.id, this.user.id)
         )?.sum || 0;
     }
 
     /**
      * execute this punishment
      * @param {Punishment} punishment
-     * @param {Database} database
      * @param {String} reason
      * @param {boolean} [allowEmpty] return if there is no punishment instead of throwing an exception
      * @return {Promise<void>}
      */
-    async executePunishment(punishment, database, reason, allowEmpty = false) {
+    async executePunishment(punishment, reason, allowEmpty = false) {
         if (!punishment) {
             if (allowEmpty)
                 return;
@@ -122,19 +121,19 @@ export default class MemberWrapper {
 
         switch (punishment.action.toLowerCase()) {
             case 'ban':
-                return this.ban(database, reason, this.user.client.user, punishment.duration);
+                return this.ban(reason, this.user.client.user, punishment.duration);
 
             case 'kick':
-                return this.kick(database, reason, this.user.client.user);
+                return this.kick(reason, this.user.client.user);
 
             case 'mute':
-                return this.mute(database, reason, this.user.client.user, punishment.duration);
+                return this.mute(reason, this.user.client.user, punishment.duration);
 
             case 'softban':
-                return this.softban(database, reason, this.user.client.user);
+                return this.softban(reason, this.user.client.user);
 
             case 'strike':
-                return this.strike(database, reason, this.user.client.user);
+                return this.strike(reason, this.user.client.user);
 
             case 'dm':
                 return this.guild.sendDM(this.user, `Your message in \`${this.guild.guild.name}\` was removed: ` + punishment.message);
@@ -146,45 +145,42 @@ export default class MemberWrapper {
 
     /**
      * pardon strikes from this member
-     * @param {Database}                            database
      * @param {String}                              reason
      * @param {User|import('discord.js').ClientUser} moderator
      * @param {number}                              amount
      * @return {Promise<void>}
      */
-    async pardon(database, reason, moderator, amount = 1){
+    async pardon(reason, moderator, amount = 1){
         await this.guild.sendDM(this.user, `${amount} strikes have been pardoned in \`${this.guild.guild.name}\` | ${reason}`);
 
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'pardon', reason, null, moderator.id, -amount);
-        await this.#logModeration(moderator, reason, id, 'pardon', null, amount, await this.getStrikeSum(database));
+        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'pardon', reason, null, moderator.id, -amount);
+        await this.#logModeration(moderator, reason, id, 'pardon', null, amount, await this.getStrikeSum());
     }
 
     /**
      * ban this user from this guild
-     * @param {Database}                            database
      * @param {String}                              reason
      * @param {User|import('discord.js').ClientUser} moderator
      * @param {Number}                              [duration]
      * @return {Promise<void>}
      */
-    async ban(database, reason, moderator, duration){
+    async ban(reason, moderator, duration){
         await this.dmPunishedUser('banned', reason, duration, 'from');
         await this.guild.guild.members.ban(this.user.id, {
             deleteMessageDays: 1,
-            reason: this._shortenReason(`${moderator.tag} ${duration ? `(${util.secToTime(duration)}) ` : ''}| ${reason}`)
+            reason: this._shortenReason(`${moderator.tag} ${duration ? `(${formatTime(duration)}) ` : ''}| ${reason}`)
         });
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'ban', reason, duration, moderator.id);
+        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'ban', reason, duration, moderator.id);
         await this.#logModeration(moderator, reason, id, 'ban', formatTime(duration));
     }
 
     /**
      * unban this member
-     * @param {Database}                            database
      * @param {String}                              reason
      * @param {User|import('discord.js').ClientUser} moderator
      * @return {Promise<void>}
      */
-    async unban(database, reason, moderator){
+    async unban(reason, moderator){
         try {
             await this.guild.guild.members.unban(this.user, this._shortenReason(`${moderator.tag} | ${reason}`));
         }
@@ -193,62 +189,60 @@ export default class MemberWrapper {
                 throw e;
             }
         }
-        await database.query('UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'ban\'', [this.guild.guild.id, this.user.id]);
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'unban', reason, null, moderator.id);
+        await Database.instance.query(
+            'UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'ban\'',
+            this.guild.guild.id, this.user.id);
+        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'unban', reason, null, moderator.id);
         await this.#logModeration(moderator, reason, id, 'unban');
     }
 
     /**
      * is this member banned
-     * @param {Database} database
      * @returns {Promise<boolean>}
      */
-    async isBanned(database) {
+    async isBanned() {
         await this.fetchBanInfo();
-        if (this.banInfo) return true;
-        const response = await database.query('SELECT * FROM moderations WHERE active = TRUE AND action = \'ban\' AND guildid = ? AND userid = ?', [this.guild.guild.id, this.user.id]);
-        return !!response;
+        return this.banInfo || await Database.instance.query(
+            'SELECT * FROM moderations WHERE active = TRUE AND action = \'ban\' AND guildid = ? AND userid = ?',
+            this.guild.guild.id, this.user.id);
     }
 
     /**
      * softban this user from this guild
-     * @param {Database}                            database
      * @param {String}                              reason
      * @param {User|import('discord.js').ClientUser} moderator
      * @return {Promise<void>}
      */
-    async softban(database, reason, moderator){
+    async softban(reason, moderator){
         await this.dmPunishedUser('softbanned', reason, null, 'from');
         await this.guild.guild.members.ban(this.user.id, {deleteMessageDays: 1, reason: this._shortenReason(`${moderator.tag} | ${reason}`)});
         await this.guild.guild.members.unban(this.user.id, 'softban');
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'softban', reason, null, moderator.id);
+        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'softban', reason, null, moderator.id);
         await this.#logModeration(moderator, reason, id, 'softban');
     }
 
     /**
      * kick this user from this guild
-     * @param {Database}                            database
      * @param {String}                              reason
      * @param {User|import('discord.js').ClientUser} moderator
      * @return {Promise<void>}
      */
-    async kick(database, reason, moderator){
+    async kick(reason, moderator){
         await this.dmPunishedUser('kicked', reason, null, 'from');
         if (!this.member && await this.fetchMember() === null) return;
         await this.member.kick(this._shortenReason(`${moderator.tag} | ${reason}`));
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'kick', reason, null, moderator.id);
+        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'kick', reason, null, moderator.id);
         await this.#logModeration(moderator, reason, id, 'kick');
     }
 
     /**
      * mute this user in this guild
-     * @param {Database}                            database
      * @param {String}                              reason
      * @param {User|import('discord.js').ClientUser} moderator
      * @param {Number}                              [duration]
      * @return {Promise<void>}
      */
-    async mute(database, reason, moderator, duration){
+    async mute(reason, moderator, duration){
         const timeout = duration && duration <= util.apiLimits.timeoutLimit;
         let mutedRole;
         if (!timeout) {
@@ -260,25 +254,24 @@ export default class MemberWrapper {
         await this.dmPunishedUser('muted', reason, duration, 'in');
         if (!this.member) await this.fetchMember();
         if (this.member) {
-            const shortedReason = this._shortenReason(`${moderator.tag} ${duration ? `(${util.secToTime(duration)}) ` : ''}| ${reason}`);
+            const shortedReason = this._shortenReason(`${moderator.tag} ${duration ? `(${formatTime(duration)}) ` : ''}| ${reason}`);
             if (timeout) {
                 await this.member.timeout(duration*1000, shortedReason);
             } else {
                 await this.member.roles.add(mutedRole, shortedReason);
             }
         }
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'mute', reason, duration, moderator.id);
+        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'mute', reason, duration, moderator.id);
         await this.#logModeration(moderator, reason, id, 'mute', formatTime(duration));
     }
 
     /**
      * unmute this user in this guild
-     * @param {Database}                            database
      * @param {String}                              reason
      * @param {User|import('discord.js').ClientUser} moderator
      * @return {Promise<void>}
      */
-    async unmute(database, reason, moderator){
+    async unmute(reason, moderator){
         if (!this.member) await this.fetchMember();
         if (this.member) {
             const {mutedRole} = await this._getGuildConfig();
@@ -287,25 +280,31 @@ export default class MemberWrapper {
             }
             await this.member.timeout(null);
         }
-        await database.query('UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'mute\'', [this.guild.guild.id, this.user.id]);
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'unmute', reason, null, moderator.id);
+        await Database.instance.query(
+            'UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'mute\'',
+            this.guild.guild.id, this.user.id);
+        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'unmute', reason, null, moderator.id);
         await this.#logModeration(moderator, reason, id, 'unmute');
     }
 
     /**
      * is this member muted
-     * @param {Database} database
      * @returns {Promise<boolean>}
      */
-    async isMuted(database) {
+    async isMuted() {
         if (!this.member) await this.fetchMember(true);
         if (this.member.communicationDisabledUntilTimestamp) {
             return true;
         }
+
         const {mutedRole} = await this._getGuildConfig();
-        if (this.member && this.member.roles.cache.get(mutedRole)) return true;
-        const response = await database.query('SELECT * FROM moderations WHERE active = TRUE AND action = \'mute\' AND guildid = ? AND userid = ?', [this.guild.guild.id, this.user.id]);
-        return !!response;
+        if (this.member && this.member.roles.cache.get(mutedRole)) {
+            return true;
+        }
+
+        return !!await Database.instance.query(
+            'SELECT * FROM moderations WHERE active = TRUE AND action = \'mute\' AND guildid = ? AND userid = ?',
+            this.guild.guild.id, this.user.id);
     }
 
     /**
@@ -357,7 +356,7 @@ export default class MemberWrapper {
      */
     async dmPunishedUser(verb, reason, duration, preposition = 'from') {
         return this.guild.sendDM(this.user,
-            `You have been ${verb} ${preposition} \`${this.guild.guild.name}\` ${duration ? `for ${util.secToTime(duration)}` : ''} | ${reason}`
+            `You have been ${verb} ${preposition} \`${this.guild.guild.name}\` ${duration ? `for ${formatTime(duration)}` : ''} | ${reason}`
         );
     }
 

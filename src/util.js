@@ -246,6 +246,7 @@ util.isRole = async (guild, id) => {
  * Converts a time string ("1d 5h 2s") to seconds. Supported time values: s, m, h, d, w, M, y
  * @param {String} time a time string ("1d 5h 2s")
  * @return {Number} time in seconds
+ * @deprecated use {@link parseTime} instead
  */
 util.timeToSec = (time) => {
     //Convert time to s
@@ -283,9 +284,10 @@ util.timeToSec = (time) => {
 };
 
 /**
- * Converts seconds ("1d 5h 2s") to a time string. Supported time values: s, m, h, d, M, y
+ * Converts seconds to a time string ("1d 5h 2s").
  * @param {Number|String} seconds time in seconds
  * @return {String} a time string ("1d 5h 2s")
+ * @deprecated use {@link formatTime} instead
  */
 util.secToTime = (seconds) => {
     seconds = parseInt(seconds);
