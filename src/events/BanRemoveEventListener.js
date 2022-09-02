@@ -1,7 +1,7 @@
 import EventListener from './EventListener.js';
 import {EmbedBuilder, escapeMarkdown} from 'discord.js';
 import Database from '../bot/Database.js';
-import {formatTime} from '../util/timeutils';
+import {formatTime} from '../util/timeutils.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
 
 export default class BanRemoveEventListener extends EventListener {
@@ -31,10 +31,9 @@ export default class BanRemoveEventListener extends EventListener {
 
             if (databaseBan.expireTime) {
                 const remaining = databaseBan.expireTime - Math.floor(Date.now()/1000);
-                embed.addFields([{
-                    name: 'Remaining timer',
-                    value: formatTime(remaining)
-                }]);
+                embed.addFields(
+                    /** @type {any} */ {name: 'Remaining timer',  value: formatTime(remaining)},
+                );
             }
             await (await GuildWrapper.fetch(ban.guild.id))
                 .log({embeds: [embed]});
