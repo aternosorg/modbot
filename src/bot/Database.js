@@ -144,12 +144,12 @@ export default class Database {
 
     /**
      * add a moderation
-     * @param {Snowflake} guildId       id of the guild
-     * @param {Snowflake} userId        id of the moderated user
+     * @param {import('discord.js').Snowflake}          guildId       id of the guild
+     * @param {import('discord.js').Snowflake}          userId        id of the moderated user
      * @param {String}                                  action        moderation type (e.g. 'ban')
      * @param {String}                                  reason        reason for the moderation
      * @param {Number}                                  [duration]    duration of the moderation
-     * @param {Snowflake} [moderatorId] id of the moderator
+     * @param {import('discord.js').Snowflake}          [moderatorId] id of the moderator
      * @param {Number}                                  [value]       strike count
      * @return {Promise<Number>} the id of the moderation
      */
