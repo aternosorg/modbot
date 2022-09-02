@@ -1,9 +1,9 @@
 const Command = require('../Command');
 const Request = require('../../Request');
-const ModBotImporter = require('../../data/ModBotImporter');
-const VortexImporter = require('../../data/VortexImporter');
-const Exporter = require('../../data/Exporter');
-const Importer = require('../../data/Importer');
+const ModBotImporter = require('../../database/export/ModBotImporter');
+const VortexImporter = require('../../database/export/VortexImporter');
+const Exporter = require('../../database/export/Exporter');
+const Importer = require('../../database/export/Importer');
 
 class ImportDataCommand extends Command {
 

@@ -1,5 +1,5 @@
 const Command = require('../Command');
-const Exporter = require('../../data/Exporter');
+const Exporter = require('../../database/export/Exporter');
 const {MessageAttachment} = require('discord.js');
 
 class ExportCommand extends Command {
