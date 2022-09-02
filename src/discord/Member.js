@@ -1,4 +1,4 @@
-const Guild = require('./Guild.js');
+const Guild = require('./GuildWrapper.js');
 const Log = require('./GuildLog.js');
 const util = require('../util.js');
 const GuildConfig = require('../config/GuildConfig.js');
@@ -21,7 +21,7 @@ class Member {
     user;
 
     /**
-     * @type {Guild}
+     * @type {GuildWrapper}
      */
     guild;
 
@@ -37,11 +37,11 @@ class Member {
 
     /**
      * @param {User} user
-     * @param {Guild} guild
+     * @param {GuildWrapper} guild
      */
     constructor(user, guild) {
         this.user = user;
-        this.guild = Guild.get(guild);
+        this.guild = GuildWrapper.get(guild);
     }
 
     /**

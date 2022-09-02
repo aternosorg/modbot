@@ -1,5 +1,5 @@
 const SubCommand = require('./SubCommand');
-const Guild = require('../discord/Guild.js');
+const Guild = require('../discord/GuildWrapper.js');
 const {Snowflake, Role} = require('discord.js');
 const util = require('../util');
 
@@ -18,7 +18,7 @@ class RoleSubCommand extends SubCommand {
             await this.sendUsage();
             return;
         }
-        const role = await (new Guild(this.source.getGuild())).fetchRole(roleID);
+        const role = await (new GuildWrapper(this.source.getGuild())).fetchRole(roleID);
 
         if (!role) {
             await this.sendUsage();

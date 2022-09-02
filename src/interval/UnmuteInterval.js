@@ -5,7 +5,7 @@ import Bot from '../bot/Bot.js';
 import {RESTJSONErrorCodes} from 'discord.js';
 import Logger from '../logging/Logger.js';
 import GuildConfig from '../config/GuildConfig.js';
-import Guild from '../discord/Guild.js';
+import GuildWrapper from '../discord/GuildWrapper.js';
 import deleteGuild from '../features/guildDelete/deleteConfig.js';
 
 export default class UnmuteInterval extends Interval {
@@ -18,7 +18,7 @@ export default class UnmuteInterval extends Interval {
         const client = Bot.instance.client;
         for (const result of await Database.instance.queryAll('SELECT * FROM moderations WHERE action = \'mute\' AND active = TRUE AND expireTime IS NOT NULL AND expireTime <= ?',
             Math.floor(Date.now()/1000))) {
-            const guild = await Guild.fetch(result.guildid);
+            const guild = await GuildWrapper.fetch(result.guildid);
 
             if (!guild) {
                 // TODO: refactor

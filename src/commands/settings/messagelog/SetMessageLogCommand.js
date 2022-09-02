@@ -1,7 +1,7 @@
 const SetConfigCommand = require('../../SetConfigCommand');
 const {MessageEmbed} = require('discord.js');
 const util = require('../../../util');
-const Guild = require('../../../discord/Guild.js');
+const Guild = require('../../../discord/GuildWrapper.js');
 
 class SetMessageLogCommand extends SetConfigCommand {
     static usage = '<#channel|channelid>';
@@ -17,7 +17,7 @@ class SetMessageLogCommand extends SetConfigCommand {
             return;
         }
 
-        const channel = await (new Guild(this.source.getGuild())).fetchChannel(channelID);
+        const channel = await (new GuildWrapper(this.source.getGuild())).fetchChannel(channelID);
         if (!channel) {
             await this.sendUsage();
             return;

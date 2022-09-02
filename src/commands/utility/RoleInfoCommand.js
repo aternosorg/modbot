@@ -1,7 +1,7 @@
 const Command = require('../Command');
 const Discord = require('discord.js');
 const util = require('../../util');
-const Guild = require('../../discord/Guild.js');
+const Guild = require('../../discord/GuildWrapper.js');
 const DiscordGuild = Discord.Guild;
 const {Snowflake} = Discord;
 
@@ -23,7 +23,7 @@ class RoleInfoCommand extends Command {
             if (!roleid) {
                 return this.sendUsage();
             }
-            const guild = new Guild(/** @type {DiscordGuild}*/this.source.getGuild());
+            const guild = new GuildWrapper(/** @type {DiscordGuild}*/this.source.getGuild());
             role = await guild.fetchRole(roleid);
         }
 

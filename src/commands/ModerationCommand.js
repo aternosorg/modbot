@@ -1,6 +1,6 @@
 const Command = require('./Command');
 const util = require('../util');
-const Guild = require('../discord/Guild.js');
+const Guild = require('../discord/GuildWrapper.js');
 const {
     MessageEmbed,
     User,
@@ -115,7 +115,7 @@ class ModerationCommand extends Command {
             await this.sendError('I can\'t interact with bots!');
             return true;
         }
-        const guild = Guild.get(this.source.getGuild());
+        const guild = GuildWrapper.get(this.source.getGuild());
         const member = await guild.fetchMember(target.id);
         if (member === null) return false;
 

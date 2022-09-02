@@ -1,8 +1,8 @@
 import EventListener from './EventListener.js';
 import {EmbedBuilder, escapeMarkdown} from 'discord.js';
-import GuildLog from '../discord/GuildLog.js';
 import Database from '../bot/Database.js';
 import {formatTime} from '../util/timeutils';
+import GuildWrapper from '../discord/GuildWrapper.js';
 
 export default class BanRemoveEventListener extends EventListener {
     get name() {
@@ -36,7 +36,8 @@ export default class BanRemoveEventListener extends EventListener {
                     value: formatTime(remaining)
                 }]);
             }
-            await GuildLog.logEmbed(ban.guild.id, embed);
+            await (await GuildWrapper.fetch(ban.guild.id))
+                .log({embeds: [embed]});
         }
     }
 }

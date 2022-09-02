@@ -1,5 +1,5 @@
 const SetConfigCommand = require('../../SetConfigCommand');
-const Guild = require('../../../discord/Guild.js');
+const Guild = require('../../../discord/GuildWrapper.js');
 const util = require('../../../util');
 const User = require('../../../discord/User.js');
 const {Snowflake} = require('discord.js');
@@ -12,7 +12,7 @@ class SetMutedRoleCommand extends SetConfigCommand {
         let roleID = this.source.isInteraction ?
             this.options.getRole('role')?.id : this.options.getString('roleid');
 
-        const role = roleID ? await (new Guild(this.source.getGuild())).fetchRole(roleID) : await this.source.getGuild().roles.create({name: 'Muted', hoist: false});
+        const role = roleID ? await (new GuildWrapper(this.source.getGuild())).fetchRole(roleID) : await this.source.getGuild().roles.create({name: 'Muted', hoist: false});
 
         if (!role) {
             await this.sendUsage();
@@ -40,7 +40,7 @@ class SetMutedRoleCommand extends SetConfigCommand {
             });
         }
 
-        const guild = new Guild(this.source.getGuild());
+        const guild = new GuildWrapper(this.source.getGuild());
         const oldRole = this.guildConfig.mutedRole && this.guildConfig.mutedRole !== roleID ? await guild.fetchRole(this.guildConfig.mutedRole) : null;
         if (oldRole) {
             //transfer members
