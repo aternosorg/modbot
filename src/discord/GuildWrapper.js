@@ -198,7 +198,7 @@ export default class GuildWrapper {
     }
 
     /**
-     * delete ALL importing for this guild
+     * delete ALL data for this guild
      * @return {Promise<void>}
      */
     async deleteData() {

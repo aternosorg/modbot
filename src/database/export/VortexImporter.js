@@ -1,7 +1,7 @@
 const {Client, Snowflake, MessageEmbed} = require('discord.js');
-const Moderation = require('../database/Moderation.js');
-const TypeChecker = require('../config/TypeChecker');
-const Importer = require('./Importer');
+const Moderation = require('../Moderation.js');
+const TypeChecker = require('../../config/TypeChecker.js');
+const Importer = require('./Importer.js');
 
 class VortexImporter extends Importer {
     /**

@@ -1,11 +1,11 @@
-const GuildConfig = require('../config/GuildConfig');
-const ChannelConfig = require('../config/ChannelConfig');
-const Moderation = require('../database/Moderation.js');
-const AutoResponse = require('../database/AutoResponse.js');
-const BadWord = require('../database/BadWord.js');
+const GuildConfig = require('../../config/GuildConfig.js');
+const ChannelConfig = require('../../config/ChannelConfig.js');
+const Moderation = require('../Moderation.js');
+const AutoResponse = require('../AutoResponse.js');
+const BadWord = require('../BadWord.js');
 const {MessageEmbed, Client, Snowflake} = require('discord.js');
-const Exporter = require('./Exporter');
-const Importer = require('./Importer');
+const Exporter = require('./Exporter.js');
+const Importer = require('./Importer.js');
 
 class ModBotImporter extends Importer {
 
