@@ -1,37 +1,36 @@
-const mysql = require('mysql2/promise');
-const monitor = require('./Monitor').getInstance();
-const {Snowflake} = require('discord.js');
+import * as mysql from 'mysql2/promise';
+import Logger from './logging/Logger.js';
 
-class Database {
-
-    /**
-     * @type {Database}
-     */
-    static #instance;
+export default class Database {
+    static #instance = new Database();
 
     /**
      * @type {import("mysql2").Connection}
      */
-    con;
+    #connection = null;
 
     /**
-     * Database constructor
-     *
-     * @param options
+     * @type {{resolve: function, reject: function}[]}
      */
-    constructor(options) {
-        this.options = options;
-        this.con = null;
-        this.waiting = [];
-        this._connect();
-        Database.#instance = this;
-    }
+    #waiting = [];
 
     /**
      * @return {Database}
      */
-    static getInstance() {
+    static get instance() {
         return this.#instance;
+    }
+
+    /**
+     * @param {DatabaseConfig} options
+     * @returns {Promise<void>}
+     */
+    async connect(options) {
+        this.options = options;
+        this.options.charset = 'utf8mb4';
+        this.options.supportBigNumbers = true;
+        this.options.bigNumberStrings = true;
+        await this.#connect();
     }
 
     /**
@@ -41,28 +40,26 @@ class Database {
      */
     waitForConnection() {
         return new Promise((resolve, reject) => {
-            if (this.con !== null) {
+            if (this.#connection !== null) {
                 return resolve();
             }
-            this.waiting.push({resolve, reject});
+            this.#waiting.push({resolve, reject});
         });
     }
 
     /**
      * Connect to MySQL
-     *
-     * @private
      */
-    async _connect() {
+    async #connect() {
         try {
-            this.con = await mysql.createConnection(this.options);
+            this.#connection = await mysql.createConnection(this.options);
 
-            this.con.on('error', this.#handleConnectionError.bind(this));
+            this.#connection.on('error', this.#handleConnectionError.bind(this));
 
-            for (let waiting of this.waiting) {
+            for (let waiting of this.#waiting) {
                 waiting.resolve();
             }
-            this.waiting = [];
+            this.#waiting = [];
         }
         catch (error) {
             return this.#handleFatalError(error);
@@ -74,8 +71,10 @@ class Database {
             this.#handleFatalError(err);
         }
         else {
-            console.error('A database error occurred', err);
-            monitor.error('A database error occurred', err);
+            Logger.instance.error({
+                message: 'A database error occurred',
+                error: Logger.instance.getData(err),
+            }).catch(console.error);
         }
     }
 
@@ -87,14 +86,18 @@ class Database {
      */
     #handleFatalError(err) {
         console.error('A fatal database error occurred', err);
-        monitor.error('A fatal database error occurred', err);
+        Logger.instance.error({
+            message: 'A fatal database error occurred',
+            error: Logger.instance.getData(err),
+        }).catch(console.error);
+
         if (err.code === 'ER_ACCESS_DENIED_ERROR') {
             console.error('Access to database denied. Make sure your config and database are set up correctly!');
             process.exit(1);
         }
 
-        this.con = null;
-        setTimeout(this._connect.bind(this), 5000);
+        this.#connection = null;
+        setTimeout(this.#connect.bind(this), 5000);
     }
 
     /**
@@ -114,56 +117,33 @@ class Database {
     /**
      * Execute query and return all results
      *
-     * @param args
+     * @param {string} sql
+     * @param {*} values
      * @returns {Promise<Object[]>}
      */
-    async queryAll(...args) {
+    async queryAll(sql, ...values) {
         await this.waitForConnection();
-        return (await this.con.query(...args))[0];
+        return (await this.#connection.query(sql, ...values))[0];
     }
 
     /**
      * Execute query and return the first result
      *
-     * @param args
+     * @param {string} sql
+     * @param {*} values
      * @returns {Promise<Object|null>}
      */
-    async query(...args) {
-        return (await this.queryAll(...args))[0] ?? null;
+    async query(sql, ...values) {
+        return (await this.queryAll(sql, ...values))[0] ?? null;
     }
 
     /**
      * Escape table/column names
-     *
-     * @param args  arguments to forward to the mysql escapeId function
+     * @param {string|string[]} ids
      * @return {string}
      */
-    escapeId(...args) {
-        return mysql.escapeId(...args);
-    }
-
-    /**
-     * escape a value
-     * @param args
-     * @returns {string}
-     */
-    escapeValue(...args) {
-        return mysql.escape(...args);
-    }
-
-    /**
-     * Escape an array of table/column names
-     *
-     * @param array values that should be escaped
-     * @param args  arguments to forward to the mysql escapeId function
-     * @return {[]}
-     */
-    escapeIdArray(array, ...args) {
-        const escaped = [];
-        for (const element of array) {
-            escaped.push(this.escapeId(element, ...args));
-        }
-        return escaped;
+    escapeId(ids) {
+        return this.#connection.escapeId(ids);
     }
 
     /**
@@ -187,5 +167,3 @@ class Database {
         return insert.insertId;
     }
 }
-
-module.exports = Database;
