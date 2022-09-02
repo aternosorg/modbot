@@ -61,6 +61,7 @@ util.init = (db, client) => {
 
 /**
  * Color codes
+ * @deprecated
  */
 util.color = {
     red: 0xf04747,
@@ -72,6 +73,7 @@ util.color = {
  * Resolves an action to a color
  * @param  {String} action name of the action to resolve
  * @return {Number|null}  hex color code or null
+ * @deprecated
  */
 util.color.resolve = (action) => {
     switch (action.toLowerCase()) {

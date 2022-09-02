@@ -1,14 +1,14 @@
 import GuildMemberAddEventListener from './GuildMemberAddEventListener.js';
 import {bold, EmbedBuilder, time, TimestampStyles} from 'discord.js';
-import util from '../../util.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
+import colors from '../../util/colors.js';
 
 export default class LogJoinEventListener extends GuildMemberAddEventListener {
     async execute(member) {
         const guild = await (GuildWrapper.fetch(member.guild.id));
         const embed = new EmbedBuilder()
             .setTitle(`${member.user.tag} joined this server`)
-            .setColor(util.color.green)
+            .setColor(colors.GREEN)
             .setThumbnail(member.user.avatarURL())
             .setDescription(
                 `${bold('ID:')} ${member.id}\n` +
