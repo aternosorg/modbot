@@ -3,6 +3,7 @@ import ErrorEventListener from './ErrorEventListener.js';
 import Logger from '../logging/Logger.js';
 import BanRemoveEventListener from './BanRemoveEventListener.js';
 import GuildDeleteEventListener from './GuildDeleteEventListener.js';
+import LogJoinEventListener from './guildMemberAdd/LogJoinEventListener.js';
 
 export default class EventManager {
     /**
@@ -12,6 +13,7 @@ export default class EventManager {
         new ErrorEventListener(),
         new BanRemoveEventListener(),
         new GuildDeleteEventListener(),
+        new LogJoinEventListener(),
     ];
 
     subscribe() {
