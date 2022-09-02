@@ -1,13 +1,16 @@
-const Bot = require("./src/Bot");
-const Monitor = require("./src/Monitor");
+import Logger from './src/logging/Logger.js';
+import BotManager from './src/bot/BotManager.js';
 
-Bot.getInstance().start().catch(async (error) => {
+BotManager.instance.start().catch(async (error) => {
     try {
-        await Monitor.getInstance().emergency('Bot crashed', error);
+        await Logger.instance.error({
+            message: 'Bot crashed',
+            error: Logger.instance.getData(error),
+        });
     }
     catch (e) {
         console.error('Failed to send fatal error to monitoring');
     }
     console.error(error);
-    process.exit(1)
+    process.exit(1);
 });
