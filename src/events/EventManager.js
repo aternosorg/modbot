@@ -1,6 +1,7 @@
 import Bot from '../bot/Bot.js';
-import ErrorEventListener from './error/ErrorEventListener.js';
+import ErrorEventListener from './ErrorEventListener.js';
 import Logger from '../logging/Logger.js';
+import BanRemoveEventListener from './BanRemoveEventListener.js';
 
 export default class EventManager {
     /**
@@ -8,6 +9,7 @@ export default class EventManager {
      */
     #eventListeners = [
         new ErrorEventListener(),
+        new BanRemoveEventListener(),
     ];
 
     subscribe() {

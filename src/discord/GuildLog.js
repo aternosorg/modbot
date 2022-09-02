@@ -12,6 +12,9 @@ const GuildConfig = require('../config/GuildConfig.js');
 const {APIErrors} = Constants;
 const {GuildInfo} = require('../Typedefs.js');
 
+/**
+ * @deprecated
+ */
 class GuildLog {
     /**
      * Logs a message to the guilds log channel (if specified)

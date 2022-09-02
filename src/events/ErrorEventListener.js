@@ -1,5 +1,5 @@
-import EventListener from '../EventListener.js';
-import Logger from '../../logging/Logger.js';
+import EventListener from './EventListener.js';
+import Logger from '../logging/Logger.js';
 
 export default class ErrorEventListener extends EventListener {
     get name() {
