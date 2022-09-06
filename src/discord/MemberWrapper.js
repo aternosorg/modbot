@@ -1,8 +1,9 @@
 import GuildConfig from '../config/GuildConfig.js';
 import util from '../util.js';
-import {EmbedBuilder, RESTJSONErrorCodes} from 'discord.js';
+import {EmbedBuilder, Guild, RESTJSONErrorCodes} from 'discord.js';
 import {formatTime, parseTime} from '../util/timeutils';
 import Database from '../bot/Database.js';
+import GuildWrapper from './GuildWrapper.js';
 
 export default class MemberWrapper {
 
@@ -28,11 +29,11 @@ export default class MemberWrapper {
 
     /**
      * @param {User} user
-     * @param {GuildWrapper} guild
+     * @param {GuildWrapper|import('discord.js').Guild} guild
      */
     constructor(user, guild) {
         this.user = user;
-        this.guild = guild;
+        this.guild = guild instanceof Guild ? new GuildWrapper(guild) : guild;
     }
 
     /**
