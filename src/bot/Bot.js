@@ -3,12 +3,12 @@ import {
     Partials,
     GatewayIntentBits,
     AllowedMentionsTypes,
-    ActivityType
+    ActivityType, RESTJSONErrorCodes, EmbedBuilder, escapeMarkdown
 } from 'discord.js';
-
-import {createRequire} from 'module';
-const require = createRequire(import.meta.url);
-const config = require('../../config.json');
+import {retry} from '../util/util.js';
+import Config from './Config.js';
+import colors from '../util/colors.js';
+import GuildWrapper from '../discord/GuildWrapper.js';
 
 export default class Bot {
     static #instance = null;
@@ -51,6 +51,46 @@ export default class Bot {
     }
 
     async start(){
-        await this.#client.login(config.authToken);
+        await this.#client.login(Config.instance.data.authToken);
+    }
+
+    /**
+     * delete - deletes a message and ignores it in message logs
+     * @param {Message} message
+     * @param {string} reason
+     * @param {?number} [timeout]
+     * @returns {Promise}
+     */
+    async delete(message, reason, timeout = null) {
+        if (timeout) {
+            setTimeout(() => {
+                Bot.instance.delete(message, reason).catch(console.error);
+            }, timeout);
+            return;
+        }
+
+        // TODO: ignore message deletion
+        try {
+            message = await retry(message.delete, message);
+        } catch (e) {
+            if (e.code !== RESTJSONErrorCodes.UnknownMessage) {
+                throw e;
+            }
+        }
+
+        const guild = new GuildWrapper(message.guild);
+
+        if (message.content.length === 0) return;
+        return guild.logMessage({
+            embeds: [new EmbedBuilder()
+                .setTitle(`Message in <#${message.channel.id}> deleted`)
+                .setFooter({text: message.author.id })
+                .setAuthor({name: escapeMarkdown(message.author.tag), iconURL: message.author.avatarURL()})
+                .setColor(colors.ORANGE)
+                .setFields(
+                    /** @type {any}*/ { name: 'Message', value: message.content.substring(0, 1024) },
+                    /** @type {any}*/ { name: 'Reason', value: reason.substring(0, 1024) },
+                )]
+        });
     }
 }
