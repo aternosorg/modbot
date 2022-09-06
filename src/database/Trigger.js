@@ -1,4 +1,4 @@
-class Trigger {
+export default class Trigger {
     /**
      * @type {String}
      */
@@ -33,5 +33,3 @@ class Trigger {
         return `(${this.type}): ${this.type === 'regex' ? `/${this.content}/` : this.content}`;
     }
 }
-
-module.exports = Trigger;
