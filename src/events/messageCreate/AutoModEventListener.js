@@ -1,10 +1,11 @@
 import MessageCreateEventListener from './MessageCreateEventListener.js';
 import BadWord from '../../database/BadWord.js';
 import Member from '../../discord/MemberWrapper.js';
-import {PermissionFlagsBits} from 'discord.js';
+import {Collection, PermissionFlagsBits} from 'discord.js';
 import GuildConfig from '../../config/GuildConfig.js';
 import Bot from '../../bot/Bot.js';
 import ChannelConfig from '../../config/ChannelConfig.js';
+import {formatTime} from '../../util/timeutils.js';
 
 export default class AutoModEventListener extends MessageCreateEventListener {
 
@@ -15,6 +16,16 @@ export default class AutoModEventListener extends MessageCreateEventListener {
     RESPONSE_TIMEOUT = 5000;
 
     /**
+     * @type {Collection<string, number>}
+     */
+    linkCoolDowns = new Collection();
+
+    constructor() {
+        super();
+        setInterval(this.cleanUpCaches.bind(this), 5000);
+    }
+
+    /**
      * @param {import('discord.js').Message} message
      * @return {Promise<void>}
      */
@@ -23,12 +34,12 @@ export default class AutoModEventListener extends MessageCreateEventListener {
             return;
         }
 
-        await this.badWords(message);
-        await this.caps(message);
-        await this.invites(message);
-        await this.linkCooldown(message);
-        await this.maxMentions(message);
-        await this.spam(message);
+        for (const fn of [this.badWords, this.caps, this.invites, this.linkCoolDown, this.maxMentions, this.spam]) {
+            if (message.deleted) {
+                return;
+            }
+            await fn(message);
+        }
     }
 
     /**
@@ -48,9 +59,6 @@ export default class AutoModEventListener extends MessageCreateEventListener {
      * @return {Promise<void>}
      */
     async badWords(message) {
-        if (message.deleted) {
-            return;
-        }
         /** @type {import('discord.js').TextChannel|import('discord.js').VoiceChannel}*/
         const channel = message.channel;
 
@@ -118,8 +126,29 @@ export default class AutoModEventListener extends MessageCreateEventListener {
      * @param {import('discord.js').Message} message
      * @return {Promise<void>}
      */
-    async linkCooldown(message) {
+    async linkCoolDown(message) {
+        if (!message.content.match(/https?:\/\//i)) {
+            return;
+        }
 
+        const guild = await GuildConfig.get(message.guild.id);
+
+        if (guild.linkCooldown === -1) {
+            return;
+        }
+
+        const now = Math.floor(Date.now() / 1000),
+            key = `${message.guild.id}-${message.author.id}`,
+            coolDownEnd = (this.linkCoolDowns.get(key) ?? 0) + guild.linkCooldown;
+        if (coolDownEnd > now) {
+            await Bot.instance.delete(message, 'Sending too many links');
+            const response = await message.channel.send(
+                `<@!${message.author.id}> You can post a link again in ${formatTime(coolDownEnd - now) || '1s'}!`);
+            await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
+        }
+        else {
+            this.linkCoolDowns.set(key, now);
+        }
     }
 
     /**
@@ -136,5 +165,13 @@ export default class AutoModEventListener extends MessageCreateEventListener {
      */
     async spam(message) {
 
+    }
+
+    cleanUpCaches() {
+        for (const [key, time] of this.linkCoolDowns.entries()) {
+            if (time < Math.floor(Date.now()/1000)) {
+                this.linkCoolDowns.delete(key);
+            }
+        }
     }
 }
