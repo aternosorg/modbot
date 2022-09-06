@@ -1,37 +1,24 @@
-const Discord = require('discord.js');
-const {
-    Constants,
-    Snowflake,
-    Client,
+import {RESTJSONErrorCodes} from 'discord.js';
+import Bot from '../bot/Bot.js';
 
-} = Discord;
-const {APIErrors} = Constants;
-
-class UserWrapper {
+export default class UserWrapper {
 
     /**
-     * @type {Snowflake}
+     * @type {import('discord.js').Snowflake}
      */
     id;
 
     /**
-     * @type {Discord.User}
+     * @type {import('discord.js').User}
      */
     user;
 
     /**
-     * @type {Client}
-     */
-    client;
-
-    /**
      *
-     * @param {Snowflake} id
-     * @param {Client} client
+     * @param {import('discord.js').Snowflake} id
      */
-    constructor(id, client) {
+    constructor(id) {
         this.id = id;
-        this.client = client;
     }
 
     /**
@@ -46,14 +33,14 @@ class UserWrapper {
 
     /**
      * fetch this user
-     * @return {Promise<Discord.User>}
+     * @return {Promise<import('discord.js').User>}
      */
     async fetchUser() {
         try {
-            this.user = await this.client.users.fetch(this.id);
+            this.user = await Bot.instance.client.users.fetch(this.id);
         }
         catch (e) {
-            if (e.code === APIErrors.UNKNOWN_USER || e.httpStatus === 404) {
+            if (e.code === RESTJSONErrorCodes.UnknownUser || e.httpStatus === 404) {
                 this.user = null;
             }
             else {
@@ -69,7 +56,7 @@ class UserWrapper {
      * - <@790967448111153153>
      * - <@!790967448111153153>
      * @param {String} string
-     * @return {Snowflake|null|*}
+     * @return {import('discord.js').Snowflake|null}
      */
     static getID(string) {
         if (/^<@!?\d+>$/.test(string)) {
@@ -86,16 +73,15 @@ class UserWrapper {
     /**
      *
      * @param {String} string
-     * @param {Client} client
      * @return {Promise<null|UserWrapper>}
      */
-    static async getMentionedUser(string, client) {
+    static async getMentionedUser(string) {
         const userID = this.getID(string);
         if (!userID) {
             return null;
         }
 
-        let user = new UserWrapper(userID, client);
+        let user = new UserWrapper(userID);
         return user.fetchUser();
     }
 }
