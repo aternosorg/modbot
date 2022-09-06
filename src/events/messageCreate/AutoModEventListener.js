@@ -6,6 +6,7 @@ import GuildConfig from '../../config/GuildConfig.js';
 import Bot from '../../bot/Bot.js';
 import ChannelConfig from '../../config/ChannelConfig.js';
 import {formatTime} from '../../util/timeutils.js';
+import Punishment from '../../database/Punishment.js';
 
 export default class AutoModEventListener extends MessageCreateEventListener {
 
@@ -156,7 +157,18 @@ export default class AutoModEventListener extends MessageCreateEventListener {
      * @return {Promise<void>}
      */
     async maxMentions(message) {
+        /** @type {GuildConfig} */
+        const guildConfig = await GuildConfig.get(message.guild.id);
+        if (guildConfig.maxMentions === -1 || message.mentions.users.size <= guildConfig.maxMentions) {
+            return;
+        }
 
+        const reason = `Mentioning ${message.mentions.users.size} users`;
+        await Bot.instance.delete(message, reason);
+        const response = await message.channel.send(`<@!${message.author.id}> You're not allowed to mention more than ${guildConfig.maxMentions} users!`);
+        await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
+        await (new Member(message.author, message.guild))
+            .executePunishment(new Punishment({ action: 'strike' }), reason);
     }
 
     /**

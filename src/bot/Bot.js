@@ -62,6 +62,10 @@ export default class Bot {
      * @returns {Promise<?Message>} deleted message
      */
     async delete(message, reason, timeout = null) {
+        if (!message.deletable) {
+            return null;
+        }
+
         if (timeout) {
             setTimeout(() => {
                 Bot.instance.delete(message, reason).catch(console.error);
