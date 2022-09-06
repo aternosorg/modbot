@@ -72,7 +72,14 @@ export default class AutoModEventListener extends MessageCreateEventListener {
      * @return {Promise<void>}
      */
     async caps(message) {
+        const uppercase = (message.content.match(/[A-Z]/g) ?? []).length;
+        const lowercase = (message.content.match(/[a-z]/g) ?? []).length;
 
+        if (uppercase > 5 && uppercase / (lowercase + uppercase) >= 0.7) {
+            await Bot.instance.delete(message, 'Too many caps');
+            const response = await message.channel.send(`<@!${message.author.id}> Don't use that many capital letters!`);
+            await Bot.instance.delete(response, null, 3000);
+        }
     }
 
     /**
