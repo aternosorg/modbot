@@ -36,10 +36,9 @@ export default class AutoModEventListener extends MessageCreateEventListener {
         }
 
         for (const fn of [this.badWords, this.caps, this.invites, this.linkCoolDown, this.maxMentions, this.spam]) {
-            if (message.deleted) {
+            if (await fn(message)) {
                 return;
             }
-            await fn(message);
         }
     }
 
@@ -57,7 +56,7 @@ export default class AutoModEventListener extends MessageCreateEventListener {
 
     /**
      * @param {import('discord.js').Message} message
-     * @return {Promise<void>}
+     * @return {Promise<boolean>} has the message been deleted
      */
     async badWords(message) {
         /** @type {import('discord.js').TextChannel|import('discord.js').VoiceChannel}*/
@@ -77,45 +76,51 @@ export default class AutoModEventListener extends MessageCreateEventListener {
                     const member = new Member(message.author, message.guild);
                     await member.executePunishment(word.punishment, reason);
                 }
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     /**
      * @param {import('discord.js').Message} message
-     * @return {Promise<void>}
+     * @return {Promise<boolean>} has the message been deleted
      */
     async caps(message) {
         const uppercase = (message.content.match(/[A-Z]/g) ?? []).length;
         const lowercase = (message.content.match(/[a-z]/g) ?? []).length;
 
-        if (uppercase > 5 && uppercase / (lowercase + uppercase) >= 0.7) {
-            await Bot.instance.delete(message, 'Too many caps');
-            const response = await message.channel.send(`<@!${message.author.id}> Don't use that many capital letters!`);
-            await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
+        if (uppercase <= 5 || (uppercase / (lowercase + uppercase) < 0.7)) {
+            return false;
         }
+
+        await Bot.instance.delete(message, 'Too many caps');
+        const response = await message.channel.send(`<@!${message.author.id}> Don't use that many capital letters!`);
+        await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
+        return true;
     }
 
     /**
      * @param {import('discord.js').Message} message
-     * @return {Promise<void>}
+     * @return {Promise<boolean>} has the message been deleted
      */
     async invites(message) {
         if (!this.includesInvite(message.content)) {
-            return;
+            return false;
         }
 
         const guildConfig = await GuildConfig.get(message.guild.id);
         const channelConfig = await ChannelConfig.get(message.channel.id);
         const allowed = channelConfig.invites ?? guildConfig.invites;
 
-        if (!allowed) {
-            await Bot.instance.delete(message, 'Invites are not allowed here');
-            const response = await message.channel.send(`<@!${message.author.id}> Invites are not allowed here!`);
-            await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
+        if (allowed) {
+            return false;
         }
 
+        await Bot.instance.delete(message, 'Invites are not allowed here');
+        const response = await message.channel.send(`<@!${message.author.id}> Invites are not allowed here!`);
+        await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
+        return true;
     }
 
     includesInvite(string) {
@@ -125,42 +130,42 @@ export default class AutoModEventListener extends MessageCreateEventListener {
 
     /**
      * @param {import('discord.js').Message} message
-     * @return {Promise<void>}
+     * @return {Promise<boolean>} has the message been deleted
      */
     async linkCoolDown(message) {
         if (!message.content.match(/https?:\/\//i)) {
-            return;
+            return false;
         }
 
         const guild = await GuildConfig.get(message.guild.id);
 
         if (guild.linkCooldown === -1) {
-            return;
+            return false;
         }
 
         const now = Math.floor(Date.now() / 1000),
             key = `${message.guild.id}-${message.author.id}`,
             coolDownEnd = (this.linkCoolDowns.get(key) ?? 0) + guild.linkCooldown;
-        if (coolDownEnd > now) {
-            await Bot.instance.delete(message, 'Sending too many links');
-            const response = await message.channel.send(
-                `<@!${message.author.id}> You can post a link again in ${formatTime(coolDownEnd - now) || '1s'}!`);
-            await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
-        }
-        else {
+        if (coolDownEnd <= now) {
             this.linkCoolDowns.set(key, now);
+            return false;
         }
+        await Bot.instance.delete(message, 'Sending too many links');
+        const response = await message.channel.send(
+            `<@!${message.author.id}> You can post a link again in ${formatTime(coolDownEnd - now) || '1s'}!`);
+        await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
+        return true;
     }
 
     /**
      * @param {import('discord.js').Message} message
-     * @return {Promise<void>}
+     * @return {Promise<boolean>} has the message been deleted
      */
     async maxMentions(message) {
         /** @type {GuildConfig} */
         const guildConfig = await GuildConfig.get(message.guild.id);
         if (guildConfig.maxMentions === -1 || message.mentions.users.size <= guildConfig.maxMentions) {
-            return;
+            return false;
         }
 
         const reason = `Mentioning ${message.mentions.users.size} users`;
@@ -169,6 +174,7 @@ export default class AutoModEventListener extends MessageCreateEventListener {
         await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
         await (new Member(message.author, message.guild))
             .executePunishment(new Punishment({ action: 'strike' }), reason);
+        return true;
     }
 
     /**
