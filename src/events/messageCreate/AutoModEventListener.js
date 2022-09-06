@@ -1,12 +1,18 @@
 import MessageCreateEventListener from './MessageCreateEventListener.js';
-import util from '../../util.js';
 import BadWord from '../../database/BadWord.js';
 import Member from '../../discord/MemberWrapper.js';
 import {PermissionFlagsBits} from 'discord.js';
 import GuildConfig from '../../config/GuildConfig.js';
 import Bot from '../../bot/Bot.js';
+import ChannelConfig from '../../config/ChannelConfig.js';
 
 export default class AutoModEventListener extends MessageCreateEventListener {
+
+    /**
+     * how long should a response be shown
+     * @type {number}
+     */
+    RESPONSE_TIMEOUT = 5000;
 
     /**
      * @param {import('discord.js').Message} message
@@ -56,7 +62,7 @@ export default class AutoModEventListener extends MessageCreateEventListener {
                 await Bot.instance.delete(message, reason);
                 if (word.response !== 'disabled') {
                     const response = await channel.send(`<@!${message.author.id}>` + word.getResponse());
-                    await util.delete(response, { timeout: 5000 });
+                    await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
                 }
                 if (word.punishment.action !== 'none') {
                     const member = new Member(message.author, message.guild);
@@ -78,7 +84,7 @@ export default class AutoModEventListener extends MessageCreateEventListener {
         if (uppercase > 5 && uppercase / (lowercase + uppercase) >= 0.7) {
             await Bot.instance.delete(message, 'Too many caps');
             const response = await message.channel.send(`<@!${message.author.id}> Don't use that many capital letters!`);
-            await Bot.instance.delete(response, null, 3000);
+            await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
         }
     }
 
@@ -87,7 +93,25 @@ export default class AutoModEventListener extends MessageCreateEventListener {
      * @return {Promise<void>}
      */
     async invites(message) {
+        if (!this.includesInvite(message.content)) {
+            return;
+        }
 
+        const guildConfig = await GuildConfig.get(message.guild.id);
+        const channelConfig = await ChannelConfig.get(message.channel.id);
+        const allowed = channelConfig.invites ?? guildConfig.invites;
+
+        if (!allowed) {
+            await Bot.instance.delete(message, 'Invites are not allowed here');
+            const response = await message.channel.send(`<@!${message.author.id}> Invites are not allowed here!`);
+            await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
+        }
+
+    }
+
+    includesInvite(string) {
+        return ['discord.gg','discord.com/invite', 'discordapp.com/invite', 'invite.gg', 'discord.me', 'top.gg/servers', 'dsc.gg']
+            .some(url => string.match(new RegExp(url + '/\\w+')));
     }
 
     /**
