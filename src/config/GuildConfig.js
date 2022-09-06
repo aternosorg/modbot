@@ -166,12 +166,12 @@ export default class GuildConfig extends ObjectConfig {
     /**
      * Is this member a mod
      * @async
-     * @param {GuildMember} member member object of the user in the specific guild
+     * @param {import('discord.js').GuildMember} member member object of the user in the specific guild
      * @return {Boolean}
      */
     isMod(member) {
         for (let [key] of member.roles.cache) {
-            if (this.isModRole(/** @type {import('discord.js').Snowflake} */ key))
+            if (this.isModRole(key))
                 return true;
         }
         return false;
@@ -220,13 +220,13 @@ export default class GuildConfig extends ObjectConfig {
     /**
      * Is this member protected?
      * @async
-     * @param {GuildMember} member member object of the user in the specific guild
+     * @param {import('discord.js').GuildMember} member member object of the user in the specific guild
      * @return {Boolean}
      */
     isProtected(member) {
         if (this.isMod(member)) return true;
         for (let [key] of member.roles.cache) {
-            if (this.isProtectedRole(/** @type {import('discord.js').Snowflake} */ key))
+            if (this.isProtectedRole(key))
                 return true;
         }
         return false;
