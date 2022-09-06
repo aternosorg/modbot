@@ -1,17 +1,12 @@
-const ChatTriggeredFeature = require('./ChatTriggeredFeature.js');
-const {
-    Snowflake,
-    MessageEmbed,
-    Guild
-} = require('discord.js');
-const util = require('../util.js');
-const Trigger = require('./Trigger.js');
-const TypeChecker = require('../config/TypeChecker.js');
+import ChatTriggeredFeature from './ChatTriggeredFeature.js';
+import TypeChecker from '../config/TypeChecker.js';
+import {EmbedBuilder} from 'discord.js';
+import * as util from 'util';
 
 /**
  * Class representing an auto response
  */
-class AutoResponse extends ChatTriggeredFeature {
+export default class AutoResponse extends ChatTriggeredFeature {
 
     static tableName = 'responses';
 
@@ -19,12 +14,12 @@ class AutoResponse extends ChatTriggeredFeature {
 
     /**
      * constructor - create an auto response
-     * @param {Snowflake} gid guild ID
+     * @param {import('discord.js').Snowflake} gid guild ID
      * @param {Object} json options
      * @param {Trigger} json.trigger filter that triggers the response
      * @param {String} json.response message to send to the channel
      * @param {Boolean} json.global does this apply to all channels in this guild
-     * @param {Snowflake[]} [json.channels] channels that this applies to
+     * @param {import('discord.js').Snowflake[]} [json.channels] channels that this applies to
      * @param {Number} [id] id in DB
      * @return {AutoResponse} the auto response
      */
@@ -76,10 +71,10 @@ class AutoResponse extends ChatTriggeredFeature {
      * generate an Embed displaying the info of this response
      * @param {String}        title
      * @param {Number}        color
-     * @returns {MessageEmbed}
+     * @returns {EmbedBuilder}
      */
     embed(title, color) {
-        return new MessageEmbed()
+        return new EmbedBuilder()
             .setTitle(title + ` [${this.id}]`)
             .setColor(color)
             .addFields(
@@ -98,17 +93,18 @@ class AutoResponse extends ChatTriggeredFeature {
 
     /**
      * create a new response
-     * @param {Snowflake} guildID
+     * @param {import('discord.js').Snowflake} guildID
      * @param {boolean} global
-     * @param {Snowflake[]|null} channels
+     * @param {import('discord.js').Snowflake[]|null} channels
      * @param {String} triggerType
      * @param {String} triggerContent
      * @param {String} responseText
-     * @returns {Promise<{success:boolean, response: AutoResponse, message: String}>}
+     * @returns {Promise<{success:boolean, response: ?AutoResponse, message: ?string}>}
      */
     static async new(guildID, global, channels, triggerType, triggerContent, responseText) {
         let trigger = this.getTrigger(triggerType, triggerContent);
-        if (!trigger.success) return trigger;
+        if (!trigger.success)
+            return {success: false, response: null, message: trigger.message};
 
         const response = new AutoResponse(guildID, {
             trigger: trigger.trigger,
@@ -117,7 +113,7 @@ class AutoResponse extends ChatTriggeredFeature {
             response: responseText
         });
         await response.save();
-        return {success: true, response: response};
+        return {success: true, response: response, message: null};
     }
 
     /**
@@ -152,6 +148,7 @@ class AutoResponse extends ChatTriggeredFeature {
                     this.channels = [];
                 }
                 else {
+                    // TODO: update
                     let channels = util.channelMentions(guild, args);
                     if (!channels) return {success: false, message:'No valid channels specified'};
                     this.global = false;
@@ -172,5 +169,3 @@ class AutoResponse extends ChatTriggeredFeature {
             '`' + this.trigger.asString() + '`\n';
     }
 }
-
-module.exports = AutoResponse;

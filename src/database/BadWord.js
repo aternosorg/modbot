@@ -1,18 +1,13 @@
-const ChatTriggeredFeature = require('./ChatTriggeredFeature.js');
-const {
-    Snowflake,
-    MessageEmbed,
-    Guild,
-} = require('discord.js');
-const {Punishment} = require('../Typedefs.js');
-const Trigger = require('./Trigger.js');
-const util = require('../util.js');
-const TypeChecker = require('../config/TypeChecker.js');
+import ChatTriggeredFeature from './ChatTriggeredFeature.js';
+import TypeChecker from '../config/TypeChecker.js';
+import {EmbedBuilder} from 'discord.js';
+import * as util from 'util';
+import Punishment from './Punishment.js';
 
 /**
  * Class representing a bad word
  */
-class BadWord extends ChatTriggeredFeature {
+export default class BadWord extends ChatTriggeredFeature {
 
     static punishmentTypes = ['none', 'ban', 'kick', 'mute', 'softban', 'strike', 'dm'];
 
@@ -24,13 +19,13 @@ class BadWord extends ChatTriggeredFeature {
 
     /**
      * constructor - create a bad word
-     * @param {Snowflake} gid guild ID
+     * @param {import('discord.js').Snowflake} gid guild ID
      * @param {Object} json options
      * @param {Trigger} json.trigger filter that triggers the bad word
      * @param {String|Punishment} json.punishment punishment for the members which trigger this
-     * @param {String} [json.response] a message that is send by this filter. It's automatically deleted after 5 seconds
+     * @param {String} [json.response] a message that is sent by this filter. It's automatically deleted after 5 seconds
      * @param {Boolean} json.global does this apply to all channels in this guild
-     * @param {Snowflake[]} [json.channels] channels that this applies to
+     * @param {import('discord.js').Snowflake[]} [json.channels] channels that this applies to
      * @param {Number} [json.priority] badword priority (higher -> more important)
      * @param {Number} [id] id in DB
      * @return {BadWord}
@@ -95,11 +90,11 @@ class BadWord extends ChatTriggeredFeature {
      * generate an Embed displaying the info of this bad word
      * @param {String}        title
      * @param {Number}        color
-     * @returns {MessageEmbed}
+     * @returns {EmbedBuilder}
      */
     embed(title, color) {
         const duration = this.punishment.duration, trigger = this.trigger;
-        return new MessageEmbed()
+        return new EmbedBuilder()
             .setTitle(title + ` [${this.id}]`)
             .setColor(color)
             .addFields(
@@ -134,27 +129,28 @@ class BadWord extends ChatTriggeredFeature {
 
     /**
      * create a new bad word
-     * @param {Snowflake} guildID
+     * @param {import('discord.js').Snowflake} guildID
      * @param {boolean} global
      * @param {Snowflake[]|null} channels
      * @param {String} triggerType
      * @param {String} triggerContent
      * @param {String} [response] response to bad-word
-     * @returns {Promise<{success:boolean, badWord: BadWord, message: String}>}
+     * @returns {Promise<{success:boolean, badWord: ?BadWord, message: ?string}>}
      */
     static async new(guildID, global, channels, triggerType, triggerContent, response) {
         let trigger = this.getTrigger(triggerType, triggerContent);
-        if (!trigger.success) return trigger;
+        if (!trigger.success)
+            return {success: false, badWord: null, message: trigger.message};
 
         const badWord = new BadWord(guildID, {
             trigger: trigger.trigger,
-            punishment: {action: 'none'},
+            punishment: new Punishment({action: 'none'}),
             global,
             channels,
             response: response ?? 'disabled',
         });
         await badWord.save();
-        return {success: true, badWord};
+        return {success: true, badWord, message: null};
     }
 
     /**
@@ -206,6 +202,7 @@ class BadWord extends ChatTriggeredFeature {
                     this.channels = [];
                 }
                 else {
+                    // TODO: update
                     let channels = util.channelMentions(guild, args);
                     if (!channels) return {success: false, message:'No valid channels specified'};
                     this.global = false;
@@ -225,6 +222,8 @@ class BadWord extends ChatTriggeredFeature {
         return `[${this.id}] ${this.global ? 'global' : this.channels.map(c => `<#${c}>`).join(', ')} ` +
             '`' + this.trigger.asString() + '`\n';
     }
-}
 
-module.exports = BadWord;
+    getResponse() {
+        return this.response === 'default' ? BadWord.defaultResponse : this.response;
+    }
+}

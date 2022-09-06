@@ -1,17 +1,7 @@
-const {
-    Collection,
-    Message,
-    Snowflake,
-} = require('discord.js');
-const Trigger = require('./Trigger.js');
-const stringSimilarity = require('string-similarity');
-const Database = require('../bot/Database.js');
-
-/**
- * Database
- * @type {Database}
- */
-let database;
+import Trigger from './Trigger.js';
+import {Collection} from 'discord.js';
+import stringSimilarity from 'string-similarity';
+import Database from '../bot/Database.js';
 
 /**
  * Config cache time (ms)
@@ -21,10 +11,10 @@ const cacheDuration = 10*60*1000;
 
 /**
  * @class
- * @classdesc a feature triggered by chat messages (autoresponses and badwords)
+ * @classdesc a feature triggered by chat messages (auto responses and bad words)
  * @abstract
  */
-class ChatTriggeredFeature {
+export default class ChatTriggeredFeature {
 
     /**
      * Cache for all chat triggered features by tableName
@@ -64,12 +54,12 @@ class ChatTriggeredFeature {
     global;
 
     /**
-     * @type {Snowflake}
+     * @type {import('discord.js').Snowflake}
      */
     gid;
 
     /**
-     * @type {Snowflake[]}
+     * @type {import('discord.js').Snowflake[]}
      */
     channels = [];
 
@@ -80,14 +70,6 @@ class ChatTriggeredFeature {
     constructor(id, trigger) {
         this.id = id;
         this.trigger = new Trigger(trigger);
-    }
-
-    /**
-     * save database
-     * @param {Database} db
-     */
-    static init(db) {
-        database = db;
     }
 
     static getCache() {
@@ -208,13 +190,21 @@ class ChatTriggeredFeature {
     }
 
     /**
+     * get escaped table name
+     * @return {string}
+     */
+    get #escapedTableName() {
+        return Database.instance.escapeId(this.constructor.tableName);
+    }
+
+    /**
      * get an overview of all objects of this type for this guild
      * returns an array of strings shorter than 2000 characters or null if no objects exist
-     * @param {Snowflake} guildid
+     * @param {import('discord.js').Snowflake} guildId
      * @return {Promise<string[]|null>} null if empty
      */
-    static async getGuildOverview(guildid) {
-        const objects = await this.getAll(guildid);
+    static async getGuildOverview(guildId) {
+        const objects = await this.getAll(guildId);
         if (!objects || !objects.size) {
             return null;
         }
@@ -247,16 +237,19 @@ class ChatTriggeredFeature {
                 columns = this.constructor.columns,
                 data = this.serialize();
             for (const column of columns) {
-                assignments.push(`${database.escapeId(column)}=?`);
+                assignments.push(`${Database.instance.escapeId(column)}=?`);
             }
             if (data.length !== columns.length) throw 'Unable to update, lengths differ!';
             data.push(this.id);
-            await database.queryAll(`UPDATE ${database.escapeId(this.constructor.tableName)} SET ${assignments.join(', ')} WHERE id = ?`, data);
+            await Database.instance.queryAll(`UPDATE ${this.#escapedTableName}SET ${assignments.join(', ')}WHERE id = ?`, data);
         }
         else {
+            const columns = Database.instance.escapeId(this.constructor.columns);
+            const values = ',?'.repeat(this.constructor.columns.length).slice(1);
             /** @property {Number} insertId*/
-            const dbentry = await database.queryAll(`INSERT INTO ${database.escapeId(this.constructor.tableName)} (${database.escapeId(this.constructor.columns).join(', ')}) VALUES (${',?'.repeat(this.constructor.columns.length).slice(1)})`,this.serialize());
-            this.id = dbentry.insertId;
+            const dbEntry = await Database.instance.queryAll(
+                `INSERT INTO ${this.#escapedTableName} (${columns})VALUES (${values})`, this.serialize());
+            this.id = dbEntry.insertId;
         }
 
         if (this.global) {
@@ -279,7 +272,7 @@ class ChatTriggeredFeature {
      * @returns {Promise<void>}
      */
     async remove() {
-        await database.query(`DELETE FROM ${database.escapeId(this.constructor.tableName)} WHERE id = ?`,[this.id]);
+        await Database.instance.query(`DELETE FROM ${this.#escapedTableName} WHERE id = ?`,[this.id]);
 
         if (this.global) {
             if (this.constructor.getGuildCache().has(this.gid))
@@ -298,7 +291,7 @@ class ChatTriggeredFeature {
     /**
      * create this object from data retrieved from the database
      * @param data
-     * @returns {Promise<ChatTriggeredFeature>}
+     * @returns {this}
      */
     static fromData(data) {
         return new this(data.guildid, {
@@ -312,12 +305,12 @@ class ChatTriggeredFeature {
     }
 
     /**
-     * Get a single bad word / autoresponse
+     * Get a single bad word / auto response
      * @param {String|Number} id
      * @returns {Promise<null|ChatTriggeredFeature>}
      */
     static async getByID(id) {
-        const result = await database.query(`SELECT * FROM ${database.escapeId(this.tableName)} WHERE id = ?`, [id]);
+        const result = await Database.instance.query(`SELECT * FROM ${this.#escapedTableName} WHERE id = ?`, [id]);
         if (!result) return null;
         return this.fromData(result);
     }
@@ -326,34 +319,34 @@ class ChatTriggeredFeature {
      * get a trigger
      * @param {String} type trigger type
      * @param {String} value trigger value
-     * @returns {{trigger: Trigger, success: boolean, message: string}}
+     * @returns {{trigger: ?Trigger, success: boolean, message: ?string}}
      */
     static getTrigger(type, value) {
-        if (!this.triggerTypes.includes(type)) return {success: false, message: 'Usage: <type> <trigger>'};
-        if (!value) return  {success: false, message:'Empty triggers are not allowed'};
+        if (!this.triggerTypes.includes(type)) return {success: false, message: 'Usage: <type> <trigger>', trigger: null};
+        if (!value) return  {success: false, message:'Empty triggers are not allowed', trigger: null};
 
         let content = value, flags;
         if (type === 'regex') {
             /** @type {String[]}*/
             let parts = value.split(/(?<!\\)\//);
-            if (parts.length < 2 || parts.shift()?.length) return {success: false, message:'Invalid regex trigger'};
+            if (parts.length < 2 || parts.shift()?.length) return {success: false, message:'Invalid regex trigger', trigger: null};
             [content, flags] = parts;
             try {
                 new RegExp(content, flags);
             } catch {
-                return {success: false, message:'Invalid regex trigger'};
+                return {success: false, message:'Invalid regex trigger', trigger: null};
             }
         }
 
-        return {success: true, trigger:new Trigger({type, content: content, flags: flags})};
+        return {success: true, trigger: new Trigger({type, content: content, flags: flags}), message: null};
     }
 
     /**
      * Get items for a channel
      * @async
-     * @param {Snowflake} channelId
-     * @param {Snowflake} guildId
-     * @return {Collection<Number,ChatTriggeredFeature>}
+     * @param {import('discord.js').Snowflake} channelId
+     * @param {import('discord.js').Snowflake} guildId
+     * @return {Collection<Number, this>}
      */
     static async get(channelId, guildId) {
 
@@ -371,11 +364,12 @@ class ChatTriggeredFeature {
     /**
      * Get all items for a guild
      * @async
-     * @param {Snowflake} guildId
+     * @param {import('discord.js').Snowflake} guildId
      * @return {Collection<Number,ChatTriggeredFeature>}
      */
     static async getAll(guildId) {
-        const result = await database.queryAll(`SELECT * FROM ${database.escapeId(this.tableName)} WHERE guildid = ?`, [guildId]);
+        const result = await Database.instance.queryAll(
+            `SELECT * FROM ${this.#escapedTableName} WHERE guildid = ?`, [guildId]);
 
         const collection = new Collection();
         for (const res of result) {
@@ -388,10 +382,11 @@ class ChatTriggeredFeature {
     /**
      * Reload cache for a guild
      * @async
-     * @param {Snowflake} guildId
+     * @param {import('discord.js').Snowflake} guildId
      */
     static async refreshGuild(guildId) {
-        const result = await database.queryAll(`SELECT * FROM ${database.escapeId(this.tableName)} WHERE guildid = ? AND global = TRUE`, [guildId]);
+        const result = await Database.instance.queryAll(
+            `SELECT * FROM ${this.#escapedTableName} WHERE guildid = ? AND global = TRUE`, [guildId]);
 
         const newItems = new Collection();
         for (const res of result) {
@@ -406,10 +401,11 @@ class ChatTriggeredFeature {
     /**
      * Reload cache for a channel
      * @async
-     * @param {Snowflake} channelId
+     * @param {import('discord.js').Snowflake} channelId
      */
     static async refreshChannel(channelId) {
-        const result = await database.queryAll(`SELECT * FROM ${database.escapeId(this.tableName)} WHERE channels LIKE ?`, [`%${channelId}%`]);
+        const result = await Database.instance.queryAll(
+            `SELECT * FROM ${this.#escapedTableName} WHERE channels LIKE ?`, [`%${channelId}%`]);
 
         const newItems = new Collection();
         for (const res of result) {
@@ -422,5 +418,3 @@ class ChatTriggeredFeature {
     }
 
 }
-
-module.exports = ChatTriggeredFeature;
