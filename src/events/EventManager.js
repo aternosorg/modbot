@@ -8,6 +8,7 @@ import RaidModeEventListener from './guildMemberAdd/RaidModeEventListener.js';
 import RestoreMutedRoleEventListener from './guildMemberAdd/RestoreMutedRoleEventListener.js';
 import GuildMemberRemoveEventListener from './GuildMemberRemoveEventListener.js';
 import AutoModEventListener from './messageCreate/AutoModEventListener.js';
+import AutoResponseEventListener from './messageCreate/AutoResponseEventListener.js';
 
 export default class EventManager {
     /**
@@ -18,12 +19,16 @@ export default class EventManager {
         new BanRemoveEventListener(),
         new GuildDeleteEventListener(),
         new GuildMemberRemoveEventListener(),
-        new AutoModEventListener(),
 
-        // new members
+        // members
+        // join
         new LogJoinEventListener(),
         new RaidModeEventListener(),
         new RestoreMutedRoleEventListener(),
+
+        // messages
+        new AutoModEventListener(),
+        new AutoResponseEventListener()
     ];
 
     subscribe() {
