@@ -1,6 +1,4 @@
-const {MessageEmbed} = require('discord.js');
-
-class Importer {
+export default class Importer {
 
     /**
      * import all data to the DB
@@ -20,11 +18,9 @@ class Importer {
 
     /**
      * generate an embed showing an overview of imported data
-     * @return {MessageEmbed}
+     * @return {import('discord.js').EmbedBuilder}
      */
     generateEmbed() {
 
     }
 }
-
-module.exports = Importer;

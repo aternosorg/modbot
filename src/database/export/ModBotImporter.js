@@ -1,13 +1,12 @@
-const GuildConfig = require('../../config/GuildConfig.js');
-const ChannelConfig = require('../../config/ChannelConfig.js');
-const Moderation = require('../Moderation.js');
-const AutoResponse = require('../AutoResponse.js');
-const BadWord = require('../BadWord.js');
-const {MessageEmbed, Client, Snowflake} = require('discord.js');
-const Exporter = require('./Exporter.js');
-const Importer = require('./Importer.js');
+import Importer from './Importer.js';
+import GuildConfig from '../../config/GuildConfig.js';
+import ChannelConfig from '../../config/ChannelConfig.js';
+import AutoResponse from '../AutoResponse.js';
+import BadWord from '../BadWord.js';
+import Moderation from '../Moderation.js';
+import {EmbedBuilder} from 'discord.js';
 
-class ModBotImporter extends Importer {
+export default class ModBotImporter extends Importer {
 
     /**
      * @type {Client}
@@ -15,7 +14,7 @@ class ModBotImporter extends Importer {
     bot;
 
     /**
-     * @type {Snowflake}
+     * @type {import('discord.js').Snowflake}
      */
     guildID;
 
@@ -26,7 +25,7 @@ class ModBotImporter extends Importer {
     
     /**
      * @param {Client} bot
-     * @param {Snowflake} guildID
+     * @param {import('discord.js').Snowflake} guildID
      * @param {Exporter} data JSON exported data (modbot-1.0.0)
      */
     constructor(bot, guildID, data) {
@@ -110,13 +109,13 @@ class ModBotImporter extends Importer {
     }
 
     generateEmbed() {
-        return new MessageEmbed()
+        return new EmbedBuilder()
             .setTitle('Imported Data')
-            .addField('Channel Configs', this.data.channels.filter(c => c === true).length.toString(), true)
-            .addField('Moderations', this.data.moderations.length.toString(), true)
-            .addField('Responses', this.data.responses.length.toString(), true)
-            .addField('BadWords', this.data.badWords.length.toString(), true);
+            .addFields(
+                /** @type {any} */{ name: 'Channel Configs', value: this.data.channels.filter(c => c !== null).length.toString(), inline: true },
+                /** @type {any} */{ name: 'Moderations', value: this.data.moderations.length.toString(), inline: true },
+                /** @type {any} */{ name: 'Responses', value: this.data.responses.length.toString(), inline: true },
+                /** @type {any} */{ name: 'BadWords', value: this.data.badWords.length.toString(), inline: true },
+            );
     }
 }
-
-module.exports = ModBotImporter;

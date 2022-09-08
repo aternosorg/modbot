@@ -1,9 +1,15 @@
-const {Client, Snowflake, MessageEmbed} = require('discord.js');
-const Moderation = require('../Moderation.js');
-const TypeChecker = require('../../config/TypeChecker.js');
-const Importer = require('./Importer.js');
+import Importer from './Importer.js';
+import TypeChecker from '../../config/TypeChecker.js';
+import Moderation from '../Moderation.js';
+import {EmbedBuilder} from 'discord.js';
 
-class VortexImporter extends Importer {
+/***
+ * @typedef {Object} VortexModeration
+ * @property {number} value
+ * @property {import('discord.js').Snowflake} id
+ */
+
+export default class VortexImporter extends Importer {
     /**
      * key: userid
      * value: timestamp
@@ -27,7 +33,7 @@ class VortexImporter extends Importer {
 
     /**
      * @param {Client} bot
-     * @param {Snowflake} guildID
+     * @param {import('discord.js').Snowflake} guildID
      * @param {Object} data JSON exported data from vortex
      * @param {Object} data.tempmutes
      * @param {Object} data.strikes
@@ -44,7 +50,7 @@ class VortexImporter extends Importer {
 
     /**
      * @param {Object} object
-     * @return {{id: Snowflake, value: Number}[]}
+     * @return {VortexModeration[]}
      */
     keyValueArray(object) {
         const result = [];
@@ -75,7 +81,7 @@ class VortexImporter extends Importer {
             this._importTempbans()
         ]);
     }
-    
+
     async _importTempmutes() {
         const mutes = this.keyValueArray(this.tempmutes).filter(e => e.value < Number.MAX_SAFE_INTEGER);
         return Moderation.bulkSave(mutes.map(m => this._timedModeration(m, 'mute')));
@@ -92,44 +98,44 @@ class VortexImporter extends Importer {
     }
 
     /**
-     * @param moderation
+     * @param {VortexModeration} moderation
      * @param {String} type
      * @return {Moderation}
      */
     _timedModeration(moderation, type) {
         return new Moderation({
             guildid: this.guildID,
-            userid: /** @type {Snowflake}*/ moderation.id,
+            userid: moderation.id,
             action: type,
-            expireTime: /** @type {Number}*/ moderation.value,
+            expireTime: moderation.value,
             reason: /** @type {String} */'Imported from Vortex',
             moderator: this.bot.user.id
         });
     }
 
     /**
-     * @param moderation
+     * @param {VortexModeration} moderation
      * @return {Moderation}
      * @private
      */
     _strike(moderation) {
         return new Moderation({
             guildid: this.guildID,
-            userid: /** @type {Snowflake}*/ moderation.id,
+            userid: moderation.id,
             value: moderation.value,
             action: 'strike',
-            reason: /** @type {String} */'Imported from Vortex',
+            reason: 'Imported from Vortex',
             moderator: this.bot.user.id
         });
     }
 
     generateEmbed() {
-        return new MessageEmbed()
+        return new EmbedBuilder()
             .setTitle('Imported Data')
-            .addField('Mutes', Object.keys(this.tempmutes).length.toString(), true)
-            .addField('Strikes', Object.keys(this.strikes).length.toString(), true)
-            .addField('Bans', Object.keys(this.tempbans).length.toString(), true);
+            .addFields(
+                /** @type {any} */ { name: 'Mutes', value: Object.keys(this.tempmutes).length.toString(), inline: true},
+                /** @type {any} */ { name: 'Strikes', value: Object.keys(this.strikes).length.toString(), inline: true},
+                /** @type {any} */ { name: 'Bans', value: Object.keys(this.tempbans).length.toString(), inline: true},
+            );
     }
 }
-
-module.exports = VortexImporter;

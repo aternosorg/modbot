@@ -1,21 +1,20 @@
-const Database = require('../bot/Database.js');
-const {Snowflake} = require('discord.js');
-const TypeChecker = require('../config/TypeChecker.js');
+import TypeChecker from '../config/TypeChecker.js';
+import Database from '../bot/Database.js';
 
-class Moderation {
+export default class Moderation {
 
     /**
-     * @type {Snowflake}
+     * @type {Number}
      */
     id;
 
     /**
-     * @type {Snowflake}
+     * @type {import('discord.js').Snowflake}
      */
     guildid;
 
     /**
-     * @type {Snowflake}
+     * @type {import('discord.js').Snowflake}
      */
     userid;
 
@@ -57,7 +56,7 @@ class Moderation {
     reason;
 
     /**
-     * @type {Snowflake}
+     * @type {import('discord.js').Snowflake}
      */
     moderator;
 
@@ -69,14 +68,14 @@ class Moderation {
     /**
      * @param {Object} data
      * @param {Number} [data.id]
-     * @param {Snowflake} data.guildid
-     * @param {Snowflake} data.userid
+     * @param {import('discord.js').Snowflake} data.guildid
+     * @param {import('discord.js').Snowflake} data.userid
      * @param {String} data.action
      * @param {Number} [data.created]
      * @param {Number} [data.value]
      * @param {String} [data.reason]
      * @param {Number} [data.expireTime]
-     * @param {Snowflake} data.moderator
+     * @param {import('discord.js').Snowflake} data.moderator
      * @param {boolean} [data.active]
      */
     constructor(data) {
@@ -118,7 +117,7 @@ class Moderation {
      */
     static async getAll(guildID) {
         const result = [];
-        for (const moderation of await Database.getInstance().queryAll('SELECT id, userid, action, created, value, expireTime, reason, moderator, active ' +
+        for (const moderation of await Database.instance.queryAll('SELECT id, userid, action, created, value, expireTime, reason, moderator, active ' +
             'FROM moderations WHERE guildid = ?', [guildID])) {
             result.push(new Moderation(moderation));
         }
@@ -139,8 +138,8 @@ class Moderation {
      * @return {Promise}
      */
     async save() {
-        return Database.getInstance().query('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
-            'VALUES (?,?,?,?,?,?,?,?,?)', this.getParameters());
+        return Database.instance.query('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
+            'VALUES (?,?,?,?,?,?,?,?,?)', ...this.getParameters());
     }
 
     /**
@@ -161,8 +160,8 @@ class Moderation {
             return;
         }
         moderations = moderations.map(m => m.getParameters());
-        return Database.getInstance().queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
-            `VALUES ${moderations.map(() => '(?,?,?,?,?,?,?,?,?)').join(', ')}`, moderations.flat());
+        return Database.instance.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
+            `VALUES ${moderations.map(() => '(?,?,?,?,?,?,?,?,?)').join(', ')}`, ...moderations.flat());
     }
 }
 

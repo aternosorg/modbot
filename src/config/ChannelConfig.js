@@ -1,12 +1,13 @@
-const Config = require('./ObjectConfig.js');
-const {Constants, Snowflake, GuildChannel, Client} = require('discord.js');
-const {APIErrors} = Constants;
-const TypeChecker = require('./TypeChecker');
+import TypeChecker from './TypeChecker.js';
+import {RESTJSONErrorCodes} from 'discord.js';
+import ObjectConfig from './ObjectConfig.js';
+import Database from '../bot/Database.js';
+import Bot from '../bot/Bot.js';
 
 /**
  * Class representing the config of a channel
  */
-class ChannelConfig extends Config {
+export default class ChannelConfig extends ObjectConfig {
 
     static tableName = 'channels';
 
@@ -17,7 +18,7 @@ class ChannelConfig extends Config {
     /**
      * Constructor - create a channel config
      *
-     * @param  {Snowflake}  id             channel id
+     * @param  {import('discord.js').Snowflake}  id             channel id
      * @param  {Object}                         [json]          options
      * @param  {Boolean}                        [json.invites]  allow invites
      * @param  {Object}                         [json.lock]     permissions before locking (only affected perms)
@@ -44,12 +45,12 @@ class ChannelConfig extends Config {
 
     /**
      * get all channel configs from this guild
-     * @param {Snowflake} guildID
+     * @param {import('discord.js').Snowflake} guildID
      * @return {Promise<ChannelConfig[]>}
      */
     static async getForGuild(guildID) {
         const result = [];
-        for (const {id, config} of await this.database.queryAll('SELECT id, config FROM channels WHERE guildid = ?', [guildID])) {
+        for (const {id, config} of await Database.instance.queryAll('SELECT id, config FROM channels WHERE guildid = ?', [guildID])) {
             result.push(new ChannelConfig(id, JSON.parse(config)));
         }
         return result;
@@ -61,27 +62,27 @@ class ChannelConfig extends Config {
      */
     async getGuildID() {
         try {
-            /** @type {GuildChannel} */
-            const channel = await this.constructor.client.channels.fetch(this.id);
+            const channel = await Bot.instance.client.channels.fetch(this.id);
             return channel.guild.id;
         }
         catch (e) {
-            if ([APIErrors.UNKNOWN_CHANNEL, APIErrors.MISSING_ACCESS].includes(e.code)) {
+            if ([RESTJSONErrorCodes.UnknownChannel, RESTJSONErrorCodes.MissingAccess].includes(e.code)) {
                 return null;
             }
             throw e;
         }
     }
 
-    async _insert() {
-        return this.constructor.database.query(`INSERT INTO ${this.constructor.getTableName()} (config,id,guildid) VALUES (?,?,?)`,[this.toJSONString(), this.id, await this.getGuildID()]);
+    async insert() {
+        return Database.instance.query('INSERT INTO channels (config,id,guildid) VALUES (?,?,?)',
+            this.toJSONString(), this.id, await this.getGuildID());
     }
 
     /**
      * @param {Client} bot
-     * @param {Snowflake} guildID
-     * @param {ObjectConfig.js} data
-     * @return {Promise<void>}
+     * @param {import('discord.js').Snowflake} guildID
+     * @param {ObjectConfig} data
+     * @return {Promise<?ChannelConfig>}
      */
     static async import(bot, guildID, data) {
         let channel;
@@ -89,13 +90,14 @@ class ChannelConfig extends Config {
             channel = await bot.channels.fetch(data.id);
         }
         catch (e) {
-            return false;
+            return null;
         }
 
-        if (channel.guild.id !== guildID) return false;
+        if (channel.guild.id !== guildID) return null;
 
-        await (new this(data.id, data)).save();
-        return true;
+        const config = new this(data.id, data);
+        await config.save();
+        return config;
     }
 }
 

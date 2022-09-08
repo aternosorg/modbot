@@ -1,4 +1,5 @@
 import {Collection} from 'discord.js';
+import Database from '../bot/Database.js';
 
 /**
  * Config cache time (ms)
@@ -54,16 +55,6 @@ export default class ObjectConfig {
     }
 
     /**
-     * save database
-     * @param {Database} db
-     * @param {Client} client
-     */
-    static init(db, client) {
-        this.database = db;
-        this.client = client;
-    }
-
-    /**
      * @return {Collection<String, ObjectConfig>}
      */
     static getCache() {
@@ -84,8 +75,8 @@ export default class ObjectConfig {
      * get the escaped table name
      * @return {string}
      */
-    static getTableName() {
-        return this.database.escapeId(this.tableName);
+    static get escapedTableName() {
+        return Database.instance.escapeId(this.tableName);
     }
 
     /**
@@ -116,7 +107,7 @@ export default class ObjectConfig {
         if (result) {
             await this._update();
         } else {
-            await this._insert();
+            await this.insert();
             this.constructor.getCache().set(this.id, this);
         }
     }
@@ -127,7 +118,7 @@ export default class ObjectConfig {
      * @private
      */
     static async _select(key) {
-        return this.database.query(`SELECT id, config FROM ${this.getTableName()} WHERE id = ?`, [key]);
+        return Database.instance.query(`SELECT id, config FROM ${this.escapedTableName} WHERE id = ?`, key);
     }
 
     /**
@@ -145,16 +136,19 @@ export default class ObjectConfig {
      * @private
      */
     async _update() {
-        return this.constructor.database.query(`UPDATE ${this.constructor.getTableName()} SET config = ? WHERE id = ?`, [this.toJSONString(), this.id]);
+        return this.constructor.database.query(
+            `UPDATE ${this.constructor.escapedTableName} SET config = ? WHERE id = ?`, this.toJSONString(), this.id);
     }
 
     /**
      * Insert a config into the DB
      * @return {Promise}
-     * @private
+     * @protected
      */
-    async _insert() {
-        return this.constructor.database.query(`INSERT INTO ${this.constructor.getTableName()} (config,id) VALUES (?,?)`, [this.toJSONString(), this.id]);
+    async insert() {
+        return Database.instance.query(
+            `INSERT INTO ${Database.instance.escapeId(this.constructor.escapedTableName)} (config,id) VALUES (?,?)`,
+            this.toJSONString(), this.id);
     }
 
     /**

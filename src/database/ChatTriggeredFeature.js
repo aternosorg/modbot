@@ -365,7 +365,7 @@ export default class ChatTriggeredFeature {
      * Get all items for a guild
      * @async
      * @param {import('discord.js').Snowflake} guildId
-     * @return {Collection<Number,ChatTriggeredFeature>}
+     * @return {Collection<Number, this>}
      */
     static async getAll(guildId) {
         const result = await Database.instance.queryAll(

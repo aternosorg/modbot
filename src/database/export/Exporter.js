@@ -1,11 +1,10 @@
-const GuildConfig = require('../../config/GuildConfig.js');
-const ChannelConfig = require('../../config/ChannelConfig.js');
-const Moderation = require('../Moderation.js');
-const AutoResponse = require('../AutoResponse.js');
-const BadWord = require('../BadWord.js');
-const {Snowflake} = require('discord.js');
+import GuildConfig from '../../config/GuildConfig.js';
+import ChannelConfig from '../../config/ChannelConfig.js';
+import Moderation from '../Moderation.js';
+import AutoResponse from '../AutoResponse.js';
+import BadWord from '../BadWord.js';
 
-class Exporter {
+export default class Exporter {
 
     /**
      * @type {string}
@@ -23,17 +22,17 @@ class Exporter {
     channels;
 
     /**
-     * @type {Snowflake}
+     * @type {import('discord.js').Snowflake}
      */
     guildID;
 
     /**
-     * @type {AutoResponse[]}
+     * @type {ChatTriggeredFeature[]}
      */
     responses;
 
     /**
-     * @type {BadWord[]}
+     * @type {ChatTriggeredFeature[]}
      */
     badWords;
 
@@ -43,7 +42,7 @@ class Exporter {
     moderations;
 
     /**
-     * @param guildID
+     * @param {import('discord.js').Snowflake} guildID
      */
     constructor(guildID) {
         this.guildID = guildID;
