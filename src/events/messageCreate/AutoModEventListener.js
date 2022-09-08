@@ -7,6 +7,7 @@ import Bot from '../../bot/Bot.js';
 import ChannelConfig from '../../config/ChannelConfig.js';
 import {formatTime} from '../../util/timeutils.js';
 import Punishment from '../../database/Punishment.js';
+import RepeatedMessage from '../../RepeatedMessage.js';
 
 export default class AutoModEventListener extends MessageCreateEventListener {
 
@@ -179,10 +180,17 @@ export default class AutoModEventListener extends MessageCreateEventListener {
 
     /**
      * @param {import('discord.js').Message} message
-     * @return {Promise<void>}
+     * @return {Promise<boolean>}
      */
     async spam(message) {
+        const guildConfig = await GuildConfig.get(message.guild.id);
+        if (guildConfig.antiSpam === -1 && guildConfig.similarMessages === -1) {
+            return false;
+        }
 
+        RepeatedMessage.add(message);
+        return (guildConfig.antiSpam !== -1 && await RepeatedMessage.checkSpam(message, guildConfig.antiSpam, this.RESPONSE_TIMEOUT))
+            || (guildConfig.similarMessages !== -1 && await RepeatedMessage.checkSimilar(message, guildConfig.similarMessages, this.RESPONSE_TIMEOUT));
     }
 
     cleanUpCaches() {

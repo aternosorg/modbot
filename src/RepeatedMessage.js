@@ -1,31 +1,26 @@
-const {
-    Collection,
-    Snowflake,
-    Message,
-    TextBasedChannelFields
-} = require('discord.js');
-const stringSimilarity = require('string-similarity');
-const Log = require('./discord/GuildLog.js');
+import {Collection} from 'discord.js';
+import {compareTwoStrings} from 'string-similarity';
+import Bot from './bot/Bot.js';
 
-class RepeatedMessage {
+export default class RepeatedMessage {
 
     /**
      * Repeated messages
      * key: {guildid}-{userid}
-     * @type {Collection<Snowflake, RepeatedMessage>}
+     * @type {Collection<string, RepeatedMessage>}
      */
     static #members = new Collection();
 
     /**
      * the key of this RepeatedMessage
      * {message.guild.id}-{message.author.id}
-     * @type {String}
+     * @type {string}
      */
     #key;
 
     /**
      * messages that haven't been deleted
-     * @type {Message[]}
+     * @type {import('discord.js').Message[]}
      */
     #messages = [];
 
@@ -35,7 +30,7 @@ class RepeatedMessage {
     warned = false;
 
     /**
-     * @param {Message} message
+     * @param {import('discord.js').Message} message
      */
     constructor(message) {
         this.#key = this.constructor.getKey(message);
@@ -49,7 +44,7 @@ class RepeatedMessage {
      * @return {boolean}
      */
     similarEnough(messageA, messageB) {
-        const similarity = stringSimilarity.compareTwoStrings(messageA.content, messageB.content);
+        const similarity = compareTwoStrings(messageA.content, messageB.content);
         return similarity > 0.85;
     }
 
@@ -63,8 +58,8 @@ class RepeatedMessage {
 
     /**
      * get similar messages
-     * @param {Message} newMessage
-     * @return {Message[]}
+     * @param {import('discord.js')} newMessage
+     * @return {import('discord.js')[]}
      */
     getSimilarMessages(newMessage) {
         let similarMessages = [];
@@ -86,7 +81,7 @@ class RepeatedMessage {
 
     /**
      * add a message
-     * @param {Message} message
+     * @param {import('discord.js')} message
      */
     add(message) {
         this.#messages.push(message);
@@ -116,7 +111,7 @@ class RepeatedMessage {
 
     /**
      * delete an array of messages if possible
-     * @param {Message[]} messages
+     * @param {import('discord.js').Message[]} messages
      * @param {String} reason
      * @returns {Promise<void>}
      */
@@ -125,11 +120,10 @@ class RepeatedMessage {
 
         if (messages.length === 0) return;
 
-        /** @type {TextBasedChannelFields} */
-        const channel = messages[0].channel;
+        const channel = /** @type {import('discord.js').TextChannel} */ messages[0].channel;
         await channel.bulkDelete(messages);
 
-        await Promise.all(messages.map(m => Log.logMessageDeletion(m , reason)));
+        await Promise.all(messages.map(m => Bot.instance.logMessageDeletion(m, reason)));
     }
 
     /**
@@ -151,7 +145,7 @@ class RepeatedMessage {
 
     /**
      * add this message to the correct cache
-     * @param {Message} message
+     * @param {import('discord.js').Message} message
      */
     static add(message) {
         const key = this.getKey(message);
@@ -167,45 +161,45 @@ class RepeatedMessage {
 
     /**
      * remove this message if it is fast message spam
-     * @param {Message} message
-     * @param {Number}                      count   maximum allowed number of messages per minute
+     * @param {import('discord.js').Message} message
+     * @param {Number} count maximum allowed number of messages per minute
+     * @param {number} timeout reply timeout in ms
+     * @return {Promise<boolean>} was this message deleted
      */
-    static async checkSpam(message, count) {
+    static async checkSpam(message, count, timeout) {
         const cache = this.#members.get(this.getKey(message));
 
         if (cache.getMessageCount() > count) {
             await cache.deleteAll();
             if (!cache.warned) {
                 cache.warned = true;
-                /** @type {Message} */
                 const reply = await message.channel.send(`<@!${message.author.id}> Stop sending messages this fast!`);
-                setTimeout(() => {
-                    reply.delete().catch(console.error);
-                }, 3000);
+                await Bot.instance.delete(reply, null, timeout);
             }
+            return true;
         }
+        return false;
     }
 
     /**
      * remove this message if it is repeated
-     * @param {Message} message
-     * @param {Number}                      count   maximum allowed number of similar messages per minute
+     * @param {import('discord.js').Message} message
+     * @param {Number} count maximum allowed number of similar messages per minute
+     * @param {number} timeout reply timeout in ms
+     * @return {Promise<boolean>} was this message deleted
      */
-    static async checkSimilar(message, count) {
+    static async checkSimilar(message, count, timeout) {
         const cache = this.#members.get(this.getKey(message));
         const similar = cache.getSimilarMessageCount(message);
         if (similar > count) {
             await cache.deleteSimilar(message);
             if (!cache.warned) {
                 cache.warned = true;
-                /** @type {Message} */
                 const reply = await message.channel.send(`<@!${message.author.id}> Stop repeating your messages!`);
-                setTimeout(() => {
-                    reply.delete().catch(console.error);
-                }, 3000);
+                await Bot.instance.delete(reply, null, timeout);
             }
+            return true;
         }
+        return false;
     }
 }
-
-module.exports = RepeatedMessage;

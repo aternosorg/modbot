@@ -56,7 +56,7 @@ export default class Bot {
 
     /**
      * delete - deletes a message and ignores it in message logs
-     * @param {Message} message
+     * @param {import('discord.js').Message} message
      * @param {?string} reason if null don't send in message log
      * @param {?number} [timeout]
      * @returns {Promise<?Message>} deleted message
@@ -82,21 +82,30 @@ export default class Bot {
             }
         }
 
-        const guild = new GuildWrapper(message.guild);
-
         if (message.content && reason) {
-            await guild.logMessage({
-                embeds: [new EmbedBuilder()
-                    .setTitle(`Message in <#${message.channel.id}> deleted`)
-                    .setFooter({text: message.author.id})
-                    .setAuthor({name: escapeMarkdown(message.author.tag), iconURL: message.author.avatarURL()})
-                    .setColor(colors.ORANGE)
-                    .setFields(
-                        /** @type {any}*/ {name: 'Message', value: message.content.substring(0, 1024)},
-                        /** @type {any}*/ {name: 'Reason', value: reason.substring(0, 1024)},
-                    )]
-            });
+            await this.logMessageDeletion(message, reason);
         }
         return message;
+    }
+
+    /**
+     * log that a message has been deleted
+     * @param {import('discord.js').Message} message
+     * @param {string} reason
+     * @return {Promise<void>}
+     */
+    async logMessageDeletion(message, reason) {
+        const guild = new GuildWrapper(message.guild);
+        await guild.logMessage({
+            embeds: [new EmbedBuilder()
+                .setTitle(`Message in <#${message.channel.id}> deleted`)
+                .setFooter({text: message.author.id})
+                .setAuthor({name: escapeMarkdown(message.author.tag), iconURL: message.author.avatarURL()})
+                .setColor(colors.ORANGE)
+                .setFields(
+                    /** @type {any}*/ {name: 'Message', value: message.content.substring(0, 1024)},
+                    /** @type {any}*/ {name: 'Reason', value: reason.substring(0, 1024)},
+                )]
+        });
     }
 }
