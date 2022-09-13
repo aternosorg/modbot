@@ -9,7 +9,7 @@ const {
 const defaultPrefix = require('../../../config.json').prefix;
 const Database = require('../../bot/Database.js');
 const CommandSource = require('./CommandSource.js');
-const GuildConfig = require('../../config/GuildConfig.js');
+const GuildConfig = require('../../settings/GuildSettings.js');
 
 /**
  * @class
@@ -54,7 +54,7 @@ class OldCommand extends AbstractCommand {
     static guildOnly = true;
 
     /**
-     * can this command only be used in whitelisted guilds (config->featureWhitelist)
+     * can this command only be used in whitelisted guilds (settings->featureWhitelist)
      * @type {boolean}
      */
     static private = false;
@@ -114,7 +114,7 @@ class OldCommand extends AbstractCommand {
      * @return {MessageEmbed}
      */
     static async getUsage(source) {
-        const guildConfig = await GuildConfig.get(source.getGuild().id);
+        const guildConfig = await GuildSettings.get(source.getGuild().id);
         const prefix = source.isInteraction ? '/' : guildConfig.prefix || defaultPrefix;
         const embed = new MessageEmbed()
             .setAuthor({name: `Help for ${this.getPrimaryName()} | Prefix: ${prefix}`})

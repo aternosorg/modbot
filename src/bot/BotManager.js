@@ -15,7 +15,7 @@ export default class BotManager {
     }
 
     async start() {
-        await Logger.instance.debug('Loading config');
+        await Logger.instance.debug('Loading settings');
         await Config.instance.load();
         await Logger.instance.info('Connecting to database');
         await Database.instance.connect(Config.instance.data.database);

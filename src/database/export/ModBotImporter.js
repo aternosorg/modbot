@@ -1,6 +1,6 @@
 import Importer from './Importer.js';
-import GuildConfig from '../../config/GuildConfig.js';
-import ChannelConfig from '../../config/ChannelConfig.js';
+import GuildSettings from '../../settings/GuildSettings.js';
+import ChannelSettings from '../../settings/ChannelSettings.js';
 import AutoResponse from '../AutoResponse.js';
 import BadWord from '../BadWord.js';
 import Moderation from '../Moderation.js';
@@ -40,12 +40,12 @@ export default class ModBotImporter extends Importer {
      * @throws {TypeError}
      */
     checkAllTypes() {
-        GuildConfig.checkTypes(this.data.guildConfig);
+        GuildSettings.checkTypes(this.data.guildConfig);
 
         if (!(this.data.channels instanceof Array)) {
             throw new TypeError('Channels must be an array');
         }
-        this.data.channels.forEach(c => ChannelConfig.checkTypes(c));
+        this.data.channels.forEach(c => ChannelSettings.checkTypes(c));
 
         if (!(this.data.responses instanceof Array)) {
             throw new TypeError('Responses must be an array');
@@ -81,13 +81,13 @@ export default class ModBotImporter extends Importer {
     }
 
     _importGuildConfig() {
-        const guildConfig = new GuildConfig(this.guildID, this.data.guildConfig);
+        const guildConfig = new GuildSettings(this.guildID, this.data.guildConfig);
         return guildConfig.save();
     }
 
     async _importChannelConfigs() {
         const channels = this.data.channels;
-        return this.data.channels = await Promise.all(channels.map(c => ChannelConfig.import(this.bot, this.guildID, c)));
+        return this.data.channels = await Promise.all(channels.map(c => ChannelSettings.import(this.bot, this.guildID, c)));
     }
 
     _importModerations() {

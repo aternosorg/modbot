@@ -1,12 +1,12 @@
-import ObjectConfig from './ObjectConfig.js';
+import Settings from './Settings.js';
 import TypeChecker from './TypeChecker.js';
 import {Collection, EmbedBuilder} from 'discord.js';
 import Punishment from '../database/Punishment.js';
 
 /**
- * @classdesc config of a guild
+ * @classdesc settings of a guild
  */
-export default class GuildConfig extends ObjectConfig {
+export default class GuildSettings extends Settings {
 
     static tableName = 'guilds';
 
@@ -15,7 +15,7 @@ export default class GuildConfig extends ObjectConfig {
     #protectedRoles = [];
 
     /**
-     * Constructor - create a guild config
+     * Constructor - create a guild settings
      *
      * @param  {import('discord.js').Snowflake}   id                        guild id
      * @param  {Object}                           [json]                    options
@@ -35,7 +35,7 @@ export default class GuildConfig extends ObjectConfig {
      * @param  {Boolean}                          [json.raidMode]           is anti-raid-mode enabled
      * @param  {Number}                           [json.antiSpam]           should message spam detection be enabled
      * @param  {Number}                           [json.similarMessages]    should similar message detection be enabled
-     * @return {GuildConfig}
+     * @return {GuildSettings}
      */
     constructor(id, json = {}) {
         super(id);
@@ -62,7 +62,7 @@ export default class GuildConfig extends ObjectConfig {
     }
 
     /**
-     * check if the types of this object are a valid guild config
+     * check if the types of this object are a valid guild settings
      * @param {Object} json
      * @throws {TypeError} incorrect types
      */
@@ -96,7 +96,7 @@ export default class GuildConfig extends ObjectConfig {
 
     /**
      * @param {String} id
-     * @return {Promise<GuildConfig>}
+     * @return {Promise<GuildSettings>}
      */
     static async get(id) {
         return super.get(id);

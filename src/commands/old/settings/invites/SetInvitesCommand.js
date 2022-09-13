@@ -1,5 +1,5 @@
 const SetConfigCommand = require('../../SetConfigCommand.js');
-const ChannelConfig = require('../../../../config/ChannelConfig.js');
+const ChannelConfig = require('../../../../settings/ChannelSettings.js');
 const {MessageEmbed} = require('discord.js');
 const util = require('../../../../util.js');
 
@@ -15,8 +15,8 @@ class SetInvitesCommand extends SetConfigCommand {
                 await this.sendUsage();
                 return;
             }
-            /** @type {ChannelConfig} */
-            const channelConfig = await ChannelConfig.get(channelID);
+            /** @type {ChannelSettings.js} */
+            const channelConfig = await ChannelSettings.get(channelID);
             channelConfig.invites = mode;
             await channelConfig.save();
             if (channelConfig.invites === null) {

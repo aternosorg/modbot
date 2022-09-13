@@ -1,5 +1,5 @@
 import Importer from './Importer.js';
-import TypeChecker from '../../config/TypeChecker.js';
+import TypeChecker from '../../settings/TypeChecker.js';
 import Moderation from '../Moderation.js';
 import {EmbedBuilder} from 'discord.js';
 

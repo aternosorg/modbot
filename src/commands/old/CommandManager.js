@@ -2,7 +2,7 @@ const fs = require('fs');
 const config = require('../../../config.json');
 const defaultPrefix = config.prefix;
 const util = require('../../util.js');
-const GuildConfig = require('../../config/GuildConfig.js');
+const GuildConfig = require('../../settings/GuildSettings.js');
 const {Collection, Message} = require('discord.js');
 const monitor = require('../Monitor').getInstance();
 const Command = require('./OldCommand.js');
@@ -128,8 +128,8 @@ class CommandManager {
         if (message.author.bot || !message.content) return {isCommand: false};
         const prefixes = [defaultPrefix.toLowerCase()];
         if (message.guild) {
-            /** @type {GuildConfig} */
-            const guild = await GuildConfig.get(/** @type {String} */ message.guild.id);
+            /** @type {GuildSettings.js} */
+            const guild = await GuildSettings.get(/** @type {String} */ message.guild.id);
             prefixes.push(guild.prefix.toLowerCase());
         }
         const prefix = util.startsWithMultiple(message.content.toLowerCase(), ...prefixes);

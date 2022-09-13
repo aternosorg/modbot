@@ -8,7 +8,7 @@ const {
     User,
     GuildChannel,
 } = require('discord.js');
-const GuildConfig = require('../config/GuildConfig.js');
+const GuildConfig = require('../settings/GuildSettings.js');
 const {APIErrors} = Constants;
 const {GuildInfo} = require('../Typedefs.js');
 
@@ -27,8 +27,8 @@ class GuildLog {
         /** @type {Guild} */
         const guild = await util.resolveGuild(guildInfo);
 
-        /** @type {GuildConfig} */
-        const guildConfig = await GuildConfig.get(guild.id);
+        /** @type {GuildSettings.js} */
+        const guildConfig = await GuildSettings.get(guild.id);
         if (!guildConfig.logChannel) return null;
 
         return this._send(guild.channels.resolve(guildConfig.logChannel), message, options);
@@ -85,8 +85,8 @@ class GuildLog {
         /** @type {Guild} */
         const guild = await util.resolveGuild(guildInfo);
 
-        /** @type {GuildConfig} */
-        const guildConfig = await GuildConfig.get(guild.id);
+        /** @type {GuildSettings.js} */
+        const guildConfig = await GuildSettings.get(guild.id);
         if (!guildConfig.messageLogChannel) return null;
 
         return this._send(guild.channels.resolve(guildConfig.messageLogChannel), message, options);
@@ -113,8 +113,8 @@ class GuildLog {
         /** @type {Guild} */
         const guild = await util.resolveGuild(guildInfo);
 
-        /** @type {GuildConfig} */
-        const guildConfig = await GuildConfig.get(guild.id);
+        /** @type {GuildSettings.js} */
+        const guildConfig = await GuildSettings.get(guild.id);
         if (!guildConfig.joinLogChannel) return null;
 
         return this._send(guild.channels.resolve(/** @type {String} */guildConfig.joinLogChannel), message, options);

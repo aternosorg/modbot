@@ -1,7 +1,7 @@
-const Config = require('./ObjectConfig.js');
+const Config = require('./Settings.js');
 const {Snowflake} = require('discord.js');
 
-class UserConfig extends Config {
+class UserSettings extends Settings {
 
     static tableName = 'users';
 
@@ -12,12 +12,12 @@ class UserConfig extends Config {
     deleteCommands;
 
     /**
-     * Constructor - create a channel config
+     * Constructor - create a channel settings
      *
      * @param {Snowflake} id user id
      * @param {Object} [json] options
      * @param {boolean} [json.deleteCommands] should commands be deleted automatically
-     * @return {UserConfig} the config of the channel
+     * @return {UserSettings} the settings of the channel
      */
     constructor(id, json = {}) {
         super(id);
@@ -26,11 +26,11 @@ class UserConfig extends Config {
 
     /**
      * @param {Snowflake|String} userid
-     * @return {Promise<UserConfig>}
+     * @return {Promise<UserSettings>}
      */
     static async get(userid) {
         return super.get(userid);
     }
 }
 
-module.exports = UserConfig;
+module.exports = UserSettings;

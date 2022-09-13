@@ -7,7 +7,7 @@ const {
     TextChannel,
 } = require('discord.js');
 const util = require('../../../util.js');
-const ChannelConfig = require('../../../config/ChannelConfig.js');
+const ChannelConfig = require('../../../settings/ChannelSettings.js');
 const {APIErrors} = Constants;
 
 class UnlockCommand extends OldCommand {
@@ -76,8 +76,8 @@ class UnlockCommand extends OldCommand {
     async unlock(channels, embed) {
         const everyone = this.source.getGuild().roles.everyone.id;
         for (const channel of channels) {
-            /** @type {ChannelConfig} */
-            const channelConfig = await ChannelConfig.get(channel.id);
+            /** @type {ChannelSettings.js} */
+            const channelConfig = await ChannelSettings.get(channel.id);
             await util.retry(channel.permissionOverwrites.edit, channel.permissionOverwrites, [everyone, channelConfig.lock], 3, 
                 (/** @type GuildChannel*/ result) => {
                     for (const /** @type {PermissionResolvable} */ key of Object.keys(channelConfig.lock)) {
@@ -110,7 +110,7 @@ class UnlockCommand extends OldCommand {
      */
     async locked(channel) {
         if (!(channel instanceof TextChannel)) return false;
-        return Object.keys((await ChannelConfig.get(channel.id)).lock).length !== 0;
+        return Object.keys((await ChannelSettings.get(channel.id)).lock).length !== 0;
     }
 
     static getOptions() {

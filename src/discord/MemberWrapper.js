@@ -1,4 +1,4 @@
-import GuildConfig from '../config/GuildConfig.js';
+import GuildSettings from '../settings/GuildSettings.js';
 import {EmbedBuilder, Guild, RESTJSONErrorCodes} from 'discord.js';
 import {formatTime, parseTime} from '../util/timeutils.js';
 import Database from '../bot/Database.js';
@@ -58,12 +58,12 @@ export default class MemberWrapper {
     }
 
     /**
-     * get the guild config
-     * @return {Promise<GuildConfig>}
+     * get the guild settings
+     * @return {Promise<GuildSettings>}
      * @private
      */
     async _getGuildConfig() {
-        return GuildConfig.get(this.guild.guild.id);
+        return GuildSettings.get(this.guild.guild.id);
     }
 
     /**

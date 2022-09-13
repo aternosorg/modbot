@@ -1,5 +1,5 @@
 import ChatTriggeredFeature from './ChatTriggeredFeature.js';
-import TypeChecker from '../config/TypeChecker.js';
+import TypeChecker from '../settings/TypeChecker.js';
 import {EmbedBuilder} from 'discord.js';
 import * as util from 'util';
 

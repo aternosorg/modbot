@@ -2,7 +2,7 @@ const Command = require('./OldCommand.js');
 const SubCommand = require('./SubCommand.js');
 
 /**
- * OldCommand used to set config options (guild/channel/user configs)
+ * OldCommand used to set settings options (guild/channel/user configs)
  * @class
  * @abstract
  */

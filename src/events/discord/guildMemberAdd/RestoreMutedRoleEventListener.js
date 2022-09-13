@@ -1,5 +1,5 @@
 import GuildMemberAddEventListener from './GuildMemberAddEventListener.js';
-import GuildConfig from '../../../config/GuildConfig.js';
+import GuildSettings from '../../../settings/GuildSettings.js';
 import GuildWrapper from '../../../discord/GuildWrapper.js';
 import {EmbedBuilder, escapeMarkdown, RESTJSONErrorCodes} from 'discord.js';
 import Database from '../../../bot/Database.js';
@@ -16,7 +16,7 @@ export default class RestoreMutedRoleEventListener extends GuildMemberAddEventLi
             member.id,member.guild.id);
 
         if (mute) {
-            const guildConfig = await GuildConfig.get(member.guild.id);
+            const guildConfig = await GuildSettings.get(member.guild.id);
             try {
                 await member.roles.add(guildConfig.mutedRole);
             }

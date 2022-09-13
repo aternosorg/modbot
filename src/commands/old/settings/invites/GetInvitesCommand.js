@@ -1,5 +1,5 @@
 const GetConfigCommand = require('../../GetConfigCommand.js');
-const ChannelConfig = require('../../../../config/ChannelConfig.js');
+const ChannelConfig = require('../../../../settings/ChannelSettings.js');
 const {MessageEmbed} = require('discord.js');
 const util = require('../../../../util.js');
 
@@ -14,8 +14,8 @@ class GetInvitesCommand extends GetConfigCommand {
             : this.options.getString('channelid');
 
         if (channelID) {
-            /** @type {ChannelConfig} */
-            const channelConfig = await ChannelConfig.get(channelID);
+            /** @type {ChannelSettings.js} */
+            const channelConfig = await ChannelSettings.get(channelID);
             if (channelConfig.invites === null) {
                 await this.reply(
                     new MessageEmbed()

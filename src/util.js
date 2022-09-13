@@ -11,9 +11,9 @@ const {
     TextBasedChannelFields
 } = require('discord.js');
 const Database = require('./bot/Database.js');
-const GuildConfig = require('./config/GuildConfig.js');
+const GuildConfig = require('./settings/GuildSettings.js');
 const ChatTriggeredFeature = require('./database/ChatTriggeredFeature.js');
-const Config = require('./config/ObjectConfig.js');
+const Config = require('./settings/Settings.js');
 const RateLimiter = require('./discord/RateLimiter.js');
 const {APIErrors} = Constants;
 const {GuildInfo} = require('./Typedefs');
@@ -55,7 +55,7 @@ util.init = (db, client) => {
     database = db;
     bot = client;
     ChatTriggeredFeature.init(database);
-    Config.init(database, client);
+    Settings.init(database, client);
     RateLimiter.init(database);
 };
 
@@ -499,8 +499,8 @@ async function messagesAfter(channel, message, limit) {
  */
 util.ignoresAutomod = async (message) => {
     if (!message.guild) return false;
-    /** @type {GuildConfig} */
-    const guildconfig = await GuildConfig.get(message.guild.id);
+    /** @type {GuildSettings.js} */
+    const guildconfig = await GuildSettings.get(message.guild.id);
     return message.system || message.author.bot || message.member.permissions.has('MANAGE_MESSAGES') || guildconfig.isProtected(message.member);
 };
 

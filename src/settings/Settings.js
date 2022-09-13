@@ -8,9 +8,9 @@ import Database from '../bot/Database.js';
 const cacheDuration = 10*60*1000;
 
 /**
- * @classdesc a config stored in the database (e.g. GuildConfig)
+ * @classdesc a settings stored in the database (e.g. GuildSettings)
  */
-export default class ObjectConfig {
+export default class Settings {
 
     /**
      * Cache for all configs by tableName
@@ -55,13 +55,13 @@ export default class ObjectConfig {
     }
 
     /**
-     * @return {Collection<String, ObjectConfig>}
+     * @return {Collection<String, Settings>}
      */
     static getCache() {
         let cache = this.cache[this.tableName];
         if (!cache) {
             /**
-             * config cache
+             * settings cache
              * @type {Collection}
              */
             cache = new Collection();
@@ -80,7 +80,7 @@ export default class ObjectConfig {
     }
 
     /**
-     * create an empty config
+     * create an empty settings
      * @param {String} key
      * @return {this}
      */
@@ -89,7 +89,7 @@ export default class ObjectConfig {
     }
 
     /**
-     * create a config from a database result
+     * create a settings from a database result
      * @param result
      * @return {this}
      */
@@ -113,7 +113,7 @@ export default class ObjectConfig {
     }
 
     /**
-     * Get this config from the DB
+     * Get this settings from the DB
      * @return {Promise}
      * @private
      */
@@ -122,7 +122,7 @@ export default class ObjectConfig {
     }
 
     /**
-     * Get this config from the DB
+     * Get this settings from the DB
      * @return {Promise}
      * @private
      */
@@ -131,7 +131,7 @@ export default class ObjectConfig {
     }
 
     /**
-     * Update this config in the DB
+     * Update this settings in the DB
      * @return {Promise}
      * @private
      */
@@ -141,7 +141,7 @@ export default class ObjectConfig {
     }
 
     /**
-     * Insert a config into the DB
+     * Insert a settings into the DB
      * @return {Promise}
      * @protected
      */
@@ -152,7 +152,7 @@ export default class ObjectConfig {
     }
 
     /**
-     * Get config
+     * Get settings
      * @param {String} id
      * @return {Promise<this>}
      */

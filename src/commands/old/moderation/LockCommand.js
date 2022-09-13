@@ -7,7 +7,7 @@ const {
     TextChannel,
 } = require('discord.js');
 const util = require('../../../util.js');
-const ChannelConfig = require('../../../config/ChannelConfig.js');
+const ChannelConfig = require('../../../settings/ChannelSettings.js');
 const {APIErrors} = Constants;
 
 
@@ -89,8 +89,8 @@ class LockCommand extends OldCommand {
                     throw e;
                 }
             }
-            /** @type {ChannelConfig} */
-            const channelConfig = await ChannelConfig.get(channel.id);
+            /** @type {ChannelSettings.js} */
+            const channelConfig = await ChannelSettings.get(channel.id);
             const options = {};
             for (const /** @type {PermissionResolvable} */perm of PERMS) {
                 if (!channel.permissionsFor(everyone).has(perm)) continue;

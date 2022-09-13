@@ -1,5 +1,5 @@
-import GuildConfig from '../../config/GuildConfig.js';
-import ChannelConfig from '../../config/ChannelConfig.js';
+import GuildSettings from '../../settings/GuildSettings.js';
+import ChannelSettings from '../../settings/ChannelSettings.js';
 import Moderation from '../Moderation.js';
 import AutoResponse from '../AutoResponse.js';
 import BadWord from '../BadWord.js';
@@ -12,12 +12,12 @@ export default class Exporter {
     dataType = 'modbot-1.0.0';
 
     /**
-     * @type {GuildConfig}
+     * @type {GuildSettings}
      */
     guildConfig;
 
     /**
-     * @type {ChannelConfig[]}
+     * @type {ChannelSettings[]}
      */
     channels;
 
@@ -65,11 +65,11 @@ export default class Exporter {
     }
 
     async _getGuildConfig() {
-        this.guildConfig = (await GuildConfig.get(this.guildID)).getDataObject();
+        this.guildConfig = (await GuildSettings.get(this.guildID)).getDataObject();
     }
 
     async _getChannelConfigs() {
-        this.channels = (await ChannelConfig.getForGuild(this.guildID)).map(c => c.getDataObject());
+        this.channels = (await ChannelSettings.getForGuild(this.guildID)).map(c => c.getDataObject());
     }
 
     async _getModerations() {

@@ -50,7 +50,7 @@ export default class Config {
 
     async load() {
         if (process.env.MODBOT_USE_ENV) {
-            // load config from env
+            // load settings from env
             this.#data = {
                 authToken: process.env.MODBOT_AUTH_TOKEN,
                 database: {
@@ -78,15 +78,15 @@ export default class Config {
             };
         }
         else {
-            // load config from file
-            if (!await exists('./config.json')) {
-                await Logger.instance.error('No config file found.\n' +
-                    'Create a config.json or use environment variables as described in the README.md');
+            // load settings from file
+            if (!await exists('./settings.json')) {
+                await Logger.instance.error('No settings file found.\n' +
+                    'Create a settings.json or use environment variables as described in the README.md');
                 // TODO
                 process.exit(1);
             }
 
-            this.#data = await readJSON('./config.json');
+            this.#data = await readJSON('./settings.json');
             this.#data.monitoring ??= {
                 enabled: false,
                 projectId: '',

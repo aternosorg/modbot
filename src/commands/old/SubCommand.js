@@ -4,7 +4,7 @@ const Database = require('../../bot/Database.js');
 const {
     Client, MessageEmbed
 } = require('discord.js');
-const GuildConfig = require('../../config/GuildConfig.js');
+const GuildConfig = require('../../settings/GuildSettings.js');
 const {prefix: defaultPrefix} = require('../../../config.json');
 const util = require('../../util.js');
 /**
@@ -28,7 +28,7 @@ class SubCommand extends AbstractCommand {
     }
 
     static async getUsage(source) {
-        const guildConfig = await GuildConfig.get(source.getGuild().id);
+        const guildConfig = await GuildSettings.get(source.getGuild().id);
         const prefix = source.isInteraction ? '/' : guildConfig.prefix || defaultPrefix;
         const embed = new MessageEmbed()
             .setAuthor({name: `Help for ${this.parentCommand.getPrimaryName()} ${this.getPrimaryName()} | Prefix: ${prefix}`})

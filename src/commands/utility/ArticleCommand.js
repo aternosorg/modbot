@@ -1,5 +1,5 @@
 import Command from '../Command.js';
-import GuildConfig from '../../config/GuildConfig.js';
+import GuildSettings from '../../settings/GuildSettings.js';
 import got from 'got';
 import {
     ActionRowBuilder,
@@ -53,7 +53,7 @@ export default class ArticleCommand extends Command {
     }
 
     async execute(interaction) {
-        const guildConfig = (await GuildConfig.get(interaction.guild.id));
+        const guildConfig = (await GuildSettings.get(interaction.guild.id));
         if (!guildConfig.helpcenter) {
             await interaction.reply('No help center configured!');
             return;
@@ -90,7 +90,7 @@ export default class ArticleCommand extends Command {
     }
 
     async complete(interaction) {
-        const guildConfig = (await GuildConfig.get(interaction.guild.id));
+        const guildConfig = (await GuildSettings.get(interaction.guild.id));
         if (!guildConfig.helpcenter) {
             return [];
         }

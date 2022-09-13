@@ -1,13 +1,13 @@
 import TypeChecker from './TypeChecker.js';
 import {RESTJSONErrorCodes} from 'discord.js';
-import ObjectConfig from './ObjectConfig.js';
+import Settings from './Settings.js';
 import Database from '../bot/Database.js';
 import Bot from '../bot/Bot.js';
 
 /**
- * Class representing the config of a channel
+ * Class representing the settings of a channel
  */
-export default class ChannelConfig extends ObjectConfig {
+export default class ChannelSettings extends Settings {
 
     static tableName = 'channels';
 
@@ -16,13 +16,13 @@ export default class ChannelConfig extends ObjectConfig {
     lock;
 
     /**
-     * Constructor - create a channel config
+     * Constructor - create a channel settings
      *
      * @param  {import('discord.js').Snowflake}  id             channel id
      * @param  {Object}                         [json]          options
      * @param  {Boolean}                        [json.invites]  allow invites
      * @param  {Object}                         [json.lock]     permissions before locking (only affected perms)
-     * @return {ChannelConfig} the config of the channel
+     * @return {ChannelSettings} the settings of the channel
      */
     constructor(id, json = {}) {
         super(id);
@@ -32,7 +32,7 @@ export default class ChannelConfig extends ObjectConfig {
     }
 
     /**
-     * check if the types of this object are a valid guild config
+     * check if the types of this object are a valid guild settings
      * @param {Object} json
      * @throws {TypeError} incorrect types
      */
@@ -46,12 +46,12 @@ export default class ChannelConfig extends ObjectConfig {
     /**
      * get all channel configs from this guild
      * @param {import('discord.js').Snowflake} guildID
-     * @return {Promise<ChannelConfig[]>}
+     * @return {Promise<ChannelSettings[]>}
      */
     static async getForGuild(guildID) {
         const result = [];
-        for (const {id, config} of await Database.instance.queryAll('SELECT id, config FROM channels WHERE guildid = ?', [guildID])) {
-            result.push(new ChannelConfig(id, JSON.parse(config)));
+        for (const {id, config} of await Database.instance.queryAll('SELECT id, settings FROM channels WHERE guildid = ?', [guildID])) {
+            result.push(new ChannelSettings(id, JSON.parse(config)));
         }
         return result;
     }
@@ -74,15 +74,15 @@ export default class ChannelConfig extends ObjectConfig {
     }
 
     async insert() {
-        return Database.instance.query('INSERT INTO channels (config,id,guildid) VALUES (?,?,?)',
+        return Database.instance.query('INSERT INTO channels (settings,id,guildid) VALUES (?,?,?)',
             this.toJSONString(), this.id, await this.getGuildID());
     }
 
     /**
      * @param {Client} bot
      * @param {import('discord.js').Snowflake} guildID
-     * @param {ObjectConfig} data
-     * @return {Promise<?ChannelConfig>}
+     * @param {Settings} data
+     * @return {Promise<?ChannelSettings>}
      */
     static async import(bot, guildID, data) {
         let channel;

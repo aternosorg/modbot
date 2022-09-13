@@ -1,7 +1,7 @@
 import {BaseGuildTextChannel, Collection, RESTJSONErrorCodes} from 'discord.js';
 import RateLimiter from './RateLimiter.js';
 import Bot from '../bot/Bot.js';
-import GuildConfig from '../config/GuildConfig.js';
+import GuildSettings from '../settings/GuildSettings.js';
 import Database from '../bot/Database.js';
 
 export default class GuildWrapper {
@@ -43,10 +43,10 @@ export default class GuildWrapper {
 
     /**
      * get the guildconfig of this guild
-     * @return {Promise<GuildConfig>}
+     * @return {Promise<GuildSettings>}
      */
     async getConfig() {
-        return GuildConfig.get(this.guild.id);
+        return GuildSettings.get(this.guild.id);
     }
 
     /**

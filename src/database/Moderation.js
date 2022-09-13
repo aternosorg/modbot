@@ -1,4 +1,4 @@
-import TypeChecker from '../config/TypeChecker.js';
+import TypeChecker from '../settings/TypeChecker.js';
 import Database from '../bot/Database.js';
 
 export default class Moderation {

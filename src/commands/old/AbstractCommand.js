@@ -20,9 +20,9 @@ const {
     InteractionDeferReplyOptions,
 } = require('discord.js');
 const CommandSource = require('./CommandSource.js');
-const GuildConfig = require('../../config/GuildConfig.js');
-const ChannelConfig = require('../../config/ChannelConfig.js');
-const UserConfig = require('../../config/UserConfig.js');
+const GuildConfig = require('../../settings/GuildSettings.js');
+const ChannelConfig = require('../../settings/ChannelSettings.js');
+const UserConfig = require('../../settings/UserSettings.js');
 const util = require('../../util.js');
 
 
@@ -122,12 +122,12 @@ class AbstractCommand {
     database;
 
     /**
-     * @type {GuildConfig}
+     * @type {GuildSettings.js}
      */
     guildConfig;
 
     /**
-     * @type {ChannelConfig}
+     * @type {ChannelSettings.js}
      */
     channelConfig;
 
@@ -198,8 +198,8 @@ class AbstractCommand {
     }
 
     async _loadConfigs() {
-        this.guildConfig = await GuildConfig.get(this.source.getGuild().id);
-        this.channelConfig = await ChannelConfig.get(this.source.getChannel().id);
+        this.guildConfig = await GuildSettings.get(this.source.getGuild().id);
+        this.channelConfig = await ChannelSettings.get(this.source.getChannel().id);
         this.userConfig = await UserConfig.get(this.source.getUser().id);
     }
 

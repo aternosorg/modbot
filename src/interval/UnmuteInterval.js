@@ -3,7 +3,7 @@ import Database from '../bot/Database.js';
 import Bot from '../bot/Bot.js';
 import {EmbedBuilder, RESTJSONErrorCodes} from 'discord.js';
 import Logger from '../Logger.js';
-import GuildConfig from '../config/GuildConfig.js';
+import GuildSettings from '../settings/GuildSettings.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
 import colors from '../util/colors.js';
 
@@ -26,7 +26,7 @@ export default class UnmuteInterval extends Interval {
 
             const member = await guild.fetchMember(result.userid);
             if (member) {
-                const guildConfig = await GuildConfig.get(result.guildid);
+                const guildConfig = await GuildSettings.get(result.guildid);
                 if (member.roles.cache.get(guildConfig.mutedRole)) {
                     try {
                         await member.roles.remove(guildConfig.mutedRole, reason);

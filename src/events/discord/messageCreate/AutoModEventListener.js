@@ -2,9 +2,9 @@ import MessageCreateEventListener from './MessageCreateEventListener.js';
 import BadWord from '../../../database/BadWord.js';
 import Member from '../../../discord/MemberWrapper.js';
 import {Collection, PermissionFlagsBits} from 'discord.js';
-import GuildConfig from '../../../config/GuildConfig.js';
+import GuildSettings from '../../../settings/GuildSettings.js';
 import Bot from '../../../bot/Bot.js';
-import ChannelConfig from '../../../config/ChannelConfig.js';
+import ChannelSettings from '../../../settings/ChannelSettings.js';
 import {formatTime} from '../../../util/timeutils.js';
 import Punishment from '../../../database/Punishment.js';
 import RepeatedMessage from './RepeatedMessage.js';
@@ -51,7 +51,7 @@ export default class AutoModEventListener extends MessageCreateEventListener {
         if (!message.guild || message.system || message.author.bot) {
             return true;
         }
-        const guildconfig = await GuildConfig.get(message.guild.id);
+        const guildconfig = await GuildSettings.get(message.guild.id);
         return message.member.permissions.has(PermissionFlagsBits.ManageMessages) || guildconfig.isProtected(message.member);
     }
 
@@ -110,8 +110,8 @@ export default class AutoModEventListener extends MessageCreateEventListener {
             return false;
         }
 
-        const guildConfig = await GuildConfig.get(message.guild.id);
-        const channelConfig = await ChannelConfig.get(message.channel.id);
+        const guildConfig = await GuildSettings.get(message.guild.id);
+        const channelConfig = await ChannelSettings.get(message.channel.id);
         const allowed = channelConfig.invites ?? guildConfig.invites;
 
         if (allowed) {
@@ -138,7 +138,7 @@ export default class AutoModEventListener extends MessageCreateEventListener {
             return false;
         }
 
-        const guild = await GuildConfig.get(message.guild.id);
+        const guild = await GuildSettings.get(message.guild.id);
 
         if (guild.linkCooldown === -1) {
             return false;
@@ -163,8 +163,8 @@ export default class AutoModEventListener extends MessageCreateEventListener {
      * @return {Promise<boolean>} has the message been deleted
      */
     async maxMentions(message) {
-        /** @type {GuildConfig} */
-        const guildConfig = await GuildConfig.get(message.guild.id);
+        /** @type {GuildSettings} */
+        const guildConfig = await GuildSettings.get(message.guild.id);
         if (guildConfig.maxMentions === -1 || message.mentions.users.size <= guildConfig.maxMentions) {
             return false;
         }
@@ -183,7 +183,7 @@ export default class AutoModEventListener extends MessageCreateEventListener {
      * @return {Promise<boolean>}
      */
     async spam(message) {
-        const guildConfig = await GuildConfig.get(message.guild.id);
+        const guildConfig = await GuildSettings.get(message.guild.id);
         if (guildConfig.antiSpam === -1 && guildConfig.similarMessages === -1) {
             return false;
         }
