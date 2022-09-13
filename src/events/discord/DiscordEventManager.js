@@ -11,6 +11,7 @@ import AutoResponseEventListener from './messageCreate/AutoResponseEventListener
 import EventManager from '../EventManager.js';
 import MessageDeleteEventListener from './MessageDeleteEventListener.js';
 import MessageDeleteBulkEventListener from './MessageDeleteBulkEventListener.js';
+import MessageUpdateEventListener from './MessageUpdateEventListener.js';
 
 export default class DiscordEventManager extends EventManager {
 
@@ -39,6 +40,7 @@ export default class DiscordEventManager extends EventManager {
             new AutoResponseEventListener(),
             new MessageDeleteEventListener(),
             new MessageDeleteBulkEventListener(),
+            new MessageUpdateEventListener(),
         ];
     }
 }
