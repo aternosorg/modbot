@@ -1,5 +1,5 @@
 import * as mysql from 'mysql2/promise';
-import Logger from '../logging/Logger.js';
+import Logger from '../Logger.js';
 
 export default class Database {
     static #instance = new Database();

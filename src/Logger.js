@@ -1,4 +1,4 @@
-import Config from '../bot/Config.js';
+import Config from './bot/Config.js';
 import {Logging} from '@google-cloud/logging';
 
 export default class Logger {

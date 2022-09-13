@@ -2,7 +2,7 @@ import Interval from './Interval.js';
 import Database from '../bot/Database.js';
 import Bot from '../bot/Bot.js';
 import {EmbedBuilder, RESTJSONErrorCodes} from 'discord.js';
-import Logger from '../logging/Logger.js';
+import Logger from '../Logger.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
 import MemberWrapper from '../discord/MemberWrapper.js';
 import colors from '../util/colors.js';

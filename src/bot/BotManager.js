@@ -1,6 +1,6 @@
 import Bot from './Bot.js';
 import Database from './Database.js';
-import Logger from '../logging/Logger.js';
+import Logger from '../Logger.js';
 import Config from './Config.js';
 import IntervalManager from '../interval/IntervalManager.js';
 import DiscordEventManager from '../events/discord/DiscordEventManager.js';

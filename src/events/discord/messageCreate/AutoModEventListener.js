@@ -7,7 +7,7 @@ import Bot from '../../../bot/Bot.js';
 import ChannelConfig from '../../../config/ChannelConfig.js';
 import {formatTime} from '../../../util/timeutils.js';
 import Punishment from '../../../database/Punishment.js';
-import RepeatedMessage from '../../../RepeatedMessage.js';
+import RepeatedMessage from './RepeatedMessage.js';
 
 export default class AutoModEventListener extends MessageCreateEventListener {
 

@@ -1,4 +1,4 @@
-import Logger from './src/logging/Logger.js';
+import Logger from './src/Logger.js';
 import BotManager from './src/bot/BotManager.js';
 
 BotManager.instance.start().catch(async (error) => {

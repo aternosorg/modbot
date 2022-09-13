@@ -1,5 +1,5 @@
 import UnbanInterval from './UnbanInterval.js';
-import Logger from '../logging/Logger.js';
+import Logger from '../Logger.js';
 import UnmuteInterval from './UnmuteInterval.js';
 
 export default class IntervalManager {
