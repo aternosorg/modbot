@@ -3,13 +3,11 @@ import Database from './Database.js';
 import Logger from '../logging/Logger.js';
 import Config from './Config.js';
 import IntervalManager from '../interval/IntervalManager.js';
-import EventManager from '../events/EventManager.js';
+import DiscordEventManager from '../events/DiscordEventManager.js';
+import RestEventManagerEventManager from '../events/rest/RestEventManager.js';
 
 export default class BotManager {
     static #instance = new BotManager();
-
-    #intervals = new IntervalManager();
-    #events = new EventManager();
 
     static get instance() {
         return this.#instance;
@@ -27,11 +25,13 @@ export default class BotManager {
         await Logger.instance.info('Online');
 
         await Logger.instance.debug('Loading event listeners');
-        this.#events.subscribe();
+        new DiscordEventManager().subscribe();
+        new RestEventManagerEventManager().subscribe();
+
         // TODO: load slash commands
         // TODO: register slash commands
         await Logger.instance.debug('Loading intervals');
-        this.#intervals.schedule();
+        new IntervalManager().schedule();
         await Logger.instance.info('Loaded intervals, events and commands');
     }
 
