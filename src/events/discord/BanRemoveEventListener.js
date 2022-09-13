@@ -1,8 +1,8 @@
-import EventListener from './EventListener.js';
+import EventListener from '../EventListener.js';
 import {EmbedBuilder, escapeMarkdown} from 'discord.js';
-import Database from '../bot/Database.js';
-import {formatTime} from '../util/timeutils.js';
-import GuildWrapper from '../discord/GuildWrapper.js';
+import Database from '../../bot/Database.js';
+import {formatTime} from '../../util/timeutils.js';
+import GuildWrapper from '../../discord/GuildWrapper.js';
 
 export default class BanRemoveEventListener extends EventListener {
     get name() {

@@ -3,7 +3,7 @@ import Database from './Database.js';
 import Logger from '../logging/Logger.js';
 import Config from './Config.js';
 import IntervalManager from '../interval/IntervalManager.js';
-import DiscordEventManager from '../events/DiscordEventManager.js';
+import DiscordEventManager from '../events/discord/DiscordEventManager.js';
 import RestEventManagerEventManager from '../events/rest/RestEventManager.js';
 
 export default class BotManager {

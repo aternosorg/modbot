@@ -1,5 +1,5 @@
-import EventListener from './EventListener.js';
-import GuildWrapper from '../discord/GuildWrapper.js';
+import EventListener from '../EventListener.js';
+import GuildWrapper from '../../discord/GuildWrapper.js';
 
 export default class GuildDeleteEventListener extends EventListener {
     get name() {

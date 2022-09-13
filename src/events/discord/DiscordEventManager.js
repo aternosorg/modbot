@@ -1,4 +1,4 @@
-import Bot from '../bot/Bot.js';
+import Bot from '../../bot/Bot.js';
 import ErrorEventListener from './ErrorEventListener.js';
 import BanRemoveEventListener from './BanRemoveEventListener.js';
 import GuildDeleteEventListener from './GuildDeleteEventListener.js';
@@ -8,7 +8,7 @@ import RestoreMutedRoleEventListener from './guildMemberAdd/RestoreMutedRoleEven
 import GuildMemberRemoveEventListener from './GuildMemberRemoveEventListener.js';
 import AutoModEventListener from './messageCreate/AutoModEventListener.js';
 import AutoResponseEventListener from './messageCreate/AutoResponseEventListener.js';
-import EventManager from './EventManager.js';
+import EventManager from '../EventManager.js';
 
 export default class DiscordEventManager extends EventManager {
 

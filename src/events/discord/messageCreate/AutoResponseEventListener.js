@@ -1,5 +1,5 @@
 import MessageCreateEventListener from './MessageCreateEventListener.js';
-import AutoResponse from '../../database/AutoResponse.js';
+import AutoResponse from '../../../database/AutoResponse.js';
 
 export default class AutoResponseEventListener extends MessageCreateEventListener {
 

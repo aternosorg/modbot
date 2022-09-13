@@ -1,7 +1,7 @@
 import GuildMemberAddEventListener from './GuildMemberAddEventListener.js';
 import {bold, EmbedBuilder, time, TimestampStyles} from 'discord.js';
-import GuildWrapper from '../../discord/GuildWrapper.js';
-import colors from '../../util/colors.js';
+import GuildWrapper from '../../../discord/GuildWrapper.js';
+import colors from '../../../util/colors.js';
 
 export default class LogJoinEventListener extends GuildMemberAddEventListener {
     async execute(member) {

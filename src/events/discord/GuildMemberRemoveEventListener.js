@@ -1,7 +1,7 @@
-import EventListener from './EventListener.js';
+import EventListener from '../EventListener.js';
 import {bold, EmbedBuilder, time, TimestampStyles} from 'discord.js';
-import GuildWrapper from '../discord/GuildWrapper.js';
-import colors from '../util/colors.js';
+import GuildWrapper from '../../discord/GuildWrapper.js';
+import colors from '../../util/colors.js';
 
 export default class GuildMemberRemoveEventListener extends EventListener {
     get name() {

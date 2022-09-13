@@ -1,8 +1,8 @@
 import GuildMemberAddEventListener from './GuildMemberAddEventListener.js';
-import GuildConfig from '../../config/GuildConfig.js';
-import GuildWrapper from '../../discord/GuildWrapper.js';
+import GuildConfig from '../../../config/GuildConfig.js';
+import GuildWrapper from '../../../discord/GuildWrapper.js';
 import {EmbedBuilder, escapeMarkdown, RESTJSONErrorCodes} from 'discord.js';
-import Database from '../../bot/Database.js';
+import Database from '../../../bot/Database.js';
 
 export default class RestoreMutedRoleEventListener extends GuildMemberAddEventListener {
 

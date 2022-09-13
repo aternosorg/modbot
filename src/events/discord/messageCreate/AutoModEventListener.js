@@ -1,13 +1,13 @@
 import MessageCreateEventListener from './MessageCreateEventListener.js';
-import BadWord from '../../database/BadWord.js';
-import Member from '../../discord/MemberWrapper.js';
+import BadWord from '../../../database/BadWord.js';
+import Member from '../../../discord/MemberWrapper.js';
 import {Collection, PermissionFlagsBits} from 'discord.js';
-import GuildConfig from '../../config/GuildConfig.js';
-import Bot from '../../bot/Bot.js';
-import ChannelConfig from '../../config/ChannelConfig.js';
-import {formatTime} from '../../util/timeutils.js';
-import Punishment from '../../database/Punishment.js';
-import RepeatedMessage from '../../RepeatedMessage.js';
+import GuildConfig from '../../../config/GuildConfig.js';
+import Bot from '../../../bot/Bot.js';
+import ChannelConfig from '../../../config/ChannelConfig.js';
+import {formatTime} from '../../../util/timeutils.js';
+import Punishment from '../../../database/Punishment.js';
+import RepeatedMessage from '../../../RepeatedMessage.js';
 
 export default class AutoModEventListener extends MessageCreateEventListener {
 

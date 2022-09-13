@@ -1,4 +1,4 @@
-import EventListener from '../EventListener.js';
+import EventListener from '../../EventListener.js';
 
 /**
  * @abstract

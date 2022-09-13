@@ -1,6 +1,6 @@
 import GuildMemberAddEventListener from './GuildMemberAddEventListener.js';
-import GuildConfig from '../../config/GuildConfig.js';
-import GuildWrapper from '../../discord/GuildWrapper.js';
+import GuildConfig from '../../../config/GuildConfig.js';
+import GuildWrapper from '../../../discord/GuildWrapper.js';
 import {userMention} from 'discord.js';
 
 export default class RaidModeEventListener extends GuildMemberAddEventListener {
