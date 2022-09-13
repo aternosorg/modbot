@@ -5,6 +5,7 @@ import Config from './Config.js';
 import IntervalManager from '../interval/IntervalManager.js';
 import DiscordEventManager from '../events/discord/DiscordEventManager.js';
 import RestEventManagerEventManager from '../events/rest/RestEventManager.js';
+import CommandManager from '../commands/CommandManager.js';
 
 export default class BotManager {
     static #instance = new BotManager();
@@ -27,12 +28,11 @@ export default class BotManager {
         await Logger.instance.debug('Loading event listeners');
         new DiscordEventManager().subscribe();
         new RestEventManagerEventManager().subscribe();
-
-        // TODO: load slash commands
-        // TODO: register slash commands
+        await Logger.instance.notice('Registering slash commands');
+        await CommandManager.instance.register();
         await Logger.instance.debug('Loading intervals');
         new IntervalManager().schedule();
-        await Logger.instance.info('Loaded intervals, events and commands');
+        await Logger.instance.info('Started');
     }
 
 }

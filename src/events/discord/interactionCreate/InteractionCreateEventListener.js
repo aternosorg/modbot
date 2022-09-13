@@ -1,4 +1,5 @@
 import EventListener from '../../EventListener.js';
+import CommandManager from '../../../commands/CommandManager.js';
 
 export default class InteractionCreateEventListener extends EventListener {
     get name() {
@@ -6,11 +7,10 @@ export default class InteractionCreateEventListener extends EventListener {
     }
 
     /**
-     * @abstract
      * @param {import('discord.js').BaseInteraction} interaction
      * @return {Promise<unknown>}
      */
     async execute(interaction) {
-        interaction.createdAt;
+        await CommandManager.instance.execute(interaction);
     }
 }

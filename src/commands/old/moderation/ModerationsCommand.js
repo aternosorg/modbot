@@ -1,0 +1,129 @@
+const Command = require('../OldCommand.js');
+const {MessageEmbed} = require('discord.js');
+const util = require('../../../util.js');
+const User = require('../../../discord/UserWrapper.js');
+const Moderation = require('../../../database/Moderation.js');
+
+/**
+ * number of moderations that will be displayed on a single page. (3-25)
+ * @type {number}
+ */
+const moderationsPerPage = 20;
+
+class ModerationsCommand extends OldCommand {
+
+    static description = 'List all moderations for a user';
+
+    static usage = '<@user|userId>';
+
+    static names = ['moderations','modlog','modlogs'];
+
+    static userPerms = ['VIEW_AUDIT_LOG'];
+
+    static modCommand = true;
+
+    static supportedContextMenus = {
+        USER: true
+    };
+
+    async execute() {
+        let user, userID;
+        if (this.source.isInteraction) {
+            user = this.options.getUser('user', false);
+            userID = user.id;
+        } else {
+            userID = this.options.getString('userID', false);
+            if (!userID) {
+                return this.sendUsage();
+            }
+            user = await (new User(userID, this.bot)).fetchUser();
+            if (!user) {
+                return this.sendUsage();
+            }
+        }
+
+        const moderations = await this.database.queryAll('SELECT * FROM moderations WHERE userid = ? AND guildid = ?', [userID, this.source.getGuild().id]);
+
+        if (moderations.length === 0) {
+            return this.reply({
+                ephemeral: !(this.options.getBoolean('public-reply') ?? false)
+            },
+            new MessageEmbed()
+                .setColor(util.color.green)
+                .setAuthor({
+                    name: `Moderations for ${user.tag}`,
+                    iconURL: user.avatarURL()
+                })
+                .setDescription('No moderations')
+            );
+        }
+
+        await this.multiPageResponse(async ( index) => {
+            const start = index * moderationsPerPage;
+            let end = (index + 1) * moderationsPerPage;
+            if (end > moderations.length) end = moderations.length;
+
+            const embed = new MessageEmbed()
+                .setColor(util.color.orange)
+                .setAuthor({
+                    name: `Moderations for ${user.tag}`,
+                    iconURL: user.avatarURL()
+                });
+
+            for (const /** @type {Moderation} */ data of moderations.slice(start, end)) {
+                let text = '';
+
+                if (data.action === 'strike') {
+                    text += `Strikes: ${data.value}\n`;
+                }
+                else if (data.action === 'pardon') {
+                    text += `Pardoned Strikes: ${-data.value}\n`;
+                }
+
+                if (data.expireTime) {
+                    text += `Duration: ${util.secToTime(data.expireTime - data.created)}\n`;
+                }
+
+                if (data.moderator) {
+                    text += `Moderator: <@!${data.moderator}>\n`;
+                }
+
+                const limit = 6000 / moderationsPerPage - text.length;
+                text += `Reason: ${data.reason.length < limit ? data.reason : data.reason.slice(0, limit - 3) + '...'}`;
+
+                embed.addField(`${data.action.toUpperCase()} [#${data.id}] - ${(new Date(data.created*1000)).toUTCString()}`, text);
+            }
+            return embed
+                .setAuthor({
+                    name: `Moderation ${start + 1} to ${end} for ${user.tag} | total ${moderations.length}`,
+                    iconURL: user.avatarURL()
+                });
+        }, Math.ceil(moderations.length / moderationsPerPage), 60000, !(this.options.getBoolean('public-reply') ?? false));
+    }
+
+    static getOptions() {
+        return [{
+            name: 'user',
+            type: 'USER',
+            description: 'User',
+            required: true,
+        },{
+            name: 'public-reply',
+            type: 'BOOLEAN',
+            description: 'Show reply publicly to all other users in this channel',
+            required: false,
+        }];
+    }
+
+    parseOptions(args) {
+        return [
+            {
+                name: 'userID',
+                type: 'STRING',
+                value: util.userMentionToId(args[0]),
+            }
+        ];
+    }
+}
+
+module.exports = ModerationsCommand;

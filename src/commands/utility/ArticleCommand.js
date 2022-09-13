@@ -1,20 +1,21 @@
-const Command = require('../Command');
-const Request = require('../../Request');
-const {
-    MessageOptions,
-    MessageEmbed,
-    MessageActionRow,
-    MessageButton,
-    ApplicationCommandOptionChoice,
-} = require('discord.js');
-const Turndown = require('turndown');
-const got = require('got');
+import Command from '../Command.js';
+import GuildConfig from '../../config/GuildConfig.js';
+import got from 'got';
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle, EmbedBuilder, SelectMenuBuilder,
+} from 'discord.js';
+import Turndown from 'turndown';
+import icons from '../../util/icons.js';
+
 /**
  * cache of zendesk autocompletions
  * Helpcenter ID => Query => Completions
- * @type {Map<String, Map<String, ApplicationCommandOptionChoice[]>>}
+ * @type {Map<String, Map<String, import('discord.js').ApplicationCommandOptionChoiceData[]>>}
  */
 const completionCache = new Map();
+const CACHE_DURATION = 60*60*1000;
 
 function setCompletionCache(helpcenter, query, articles) {
     if (!completionCache.has(helpcenter)) {
@@ -28,121 +29,146 @@ function setCompletionCache(helpcenter, query, articles) {
         if (!hcCache.size) {
             completionCache.delete(helpcenter);
         }
-    }, 60*60*1000);
+    }, CACHE_DURATION);
 }
 
-class ArticleCommand extends Command {
+export default class ArticleCommand extends Command {
 
-    static description = 'Search articles in the help center';
+    getName() {
+        return 'article';
+    }
 
-    static usage = '<query>';
+    getDescription() {
+        return 'Search articles in the help center';
+    }
 
-    static names = ['article', 'a'];
+    buildOptions(builder) {
+        builder
+            .addStringOption(option =>
+                option.setName('query')
+                    .setDescription('Search query')
+                    .setRequired(true)
+                    .setAutocomplete(true));
+        return builder;
+    }
 
-    static ephemeral = false;
-
-    async execute() {
-        if (!this.guildConfig.helpcenter) {
-            await this.sendError('No help center configured!');
+    async execute(interaction) {
+        const guildConfig = (await GuildConfig.get(interaction.guild.id));
+        if (!guildConfig.helpcenter) {
+            await interaction.reply('No help center configured!');
             return;
         }
 
-        const query = this.options.getString('query');
-        if (!query) {
-            await this.sendUsage();
-            return;
+        const query = interaction.options.getString('query');
+
+        /** @type {{count: number, results: {html_url: string, title: string, body: string}[]}} */
+        const data = await got.get(`https://${guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles/search.json?query=` + encodeURIComponent(query)).json();
+        if (data.count) {
+            const results = data.results.map(result => {
+                return { default: false, label: result.title.substring(0, 100), emoji: icons.article, value: result.html_url.substring(0, 100) };
+            });
+
+            /** @type {import('discord.js').Message} */
+            const answer = await interaction.reply(this.generateMessage(results, data.results[0].body));
+
+            const collector = await answer.createMessageComponentCollector({filter: interaction => interaction.customId === 'article', idle: 30_000});
+            collector.on('collect', async (interaction) => {
+                const index = data.results.findIndex(result => result.html_url === interaction.values[0]);
+                await interaction.update(this.generateMessage(results, data.results[index].body, index));
+            });
+
+            await new Promise(resolve => collector.on('end', resolve));
+            // Remove select menu
+            await answer.edit({embeds: answer.embeds, components: answer.components.slice(0, 1)});
         }
-
-        const request = new Request(`https://${this.guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles/search.json?query=` + encodeURIComponent(query));
-        await request.getJSON();
-
-        if (request.JSON.count !== 0) {
-            /**
-             * @type {{html_url: String, title: String, label_names: String[], body: String}}
-             */
-            const result = request.JSON.results[0];
-            /** @type {MessageOptions} */
-            const options = {
-                embeds: [
-                    this.createEmbed(result)
-                ],
-                components: [
-                    new MessageActionRow()
-                        .addComponents(new MessageButton({
-                            style: 'LINK',
-                            url: result.html_url,
-                            label: 'View Article',
-                        }))
-                ]
-            };
-
-            if (!this.source.isInteraction && this.userConfig.deleteCommands && this.source.getRaw().reference) {
-                options.reply = {
-                    messageReference: this.source.getRaw().reference.messageId,
-                    failIfNotExists: false
-                };
-            }
-
-            await this.reply(options);
-        } else {
-            await this.sendError('No article found!');
+        else {
+            await interaction.reply({
+                ephemeral: true,
+                content: 'No article found!'
+            });
         }
     }
 
-    async getAutoCompletions() {
-        if (!this.guildConfig.helpcenter) {
+    async complete(interaction) {
+        const guildConfig = (await GuildConfig.get(interaction.guild.id));
+        if (!guildConfig.helpcenter) {
             return [];
         }
 
-        const query = this.options.getString('query') ?? '';
+        const query = interaction.options.getString('query') ?? '';
 
-        const cachedCompletions = completionCache.get(this.guildConfig.helpcenter)?.get(query);
+        const cachedCompletions = completionCache.get(guildConfig.helpcenter)?.get(query);
         if (cachedCompletions) {
             return cachedCompletions;
         }
 
-        const res = await got.get(`https://${this.guildConfig.helpcenter}.zendesk.com/hc/api/internal/instant_search.json?query=${encodeURIComponent(query)}`).json();
-        const articles = res && res.results ? res.results.map(r => {
-            const title = r.title.replace(/<\/?[^>]+>/g, '');
-            return {
-                name: title,
-                value: title
-            };
-        }) : [];
+        let articles = [];
+        if (query) {
+            const res = await got.get(`https://${guildConfig.helpcenter}.zendesk.com/hc/api/internal/instant_search.json?query=${encodeURIComponent(query)}`).json();
+            if (res && res.results) {
+                articles = res.results.map(r => {
+                    const title = r.title.replace(/<\/?[^>]+>/g, '');
+                    return { name: title, value: title };
+                });
+            }
+        }
+        else {
+            const res = await got.get(`https://${guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles?per_page=100`).json();
+            if (res && res.articles) {
+                articles = res.articles.filter(r => r.promoted).map(r => {
+                    const title = r.title.replace(/<\/?[^>]+>/g, '');
+                    return { name: title, value: title };
+                });
+            }
+        }
 
-        setCompletionCache(this.guildConfig.helpcenter, query, articles);
+        setCompletionCache(guildConfig.helpcenter, query, articles);
 
         return articles;
     }
 
-    static getOptions() {
-        return [{
-            name: 'query',
-            type: 'STRING',
-            description: 'Search query',
-            required: true,
-            autocomplete: true,
-        }];
-    }
+    /**
+     * @param {import('discord.js').APISelectMenuOption[]} results
+     * @param {string} body
+     * @param {number} [index]
+     * @return {import('discord.js').MessagePayload}
+     */
+    generateMessage(results, body, index = 0) {
+        for (const result of results) {
+            result.default = false;
+        }
+        results[index].default = true;
 
-    parseOptions(args) {
-        return [
-            {
-                name: 'query',
-                type: 'STRING',
-                value: args.join(' '),
-            }
-        ];
+        return {
+            embeds: [this.createEmbed(results[index], body)],
+            components: [
+                new ActionRowBuilder()
+                    .addComponents(
+                        /** @type {any} */ new ButtonBuilder()
+                            .setStyle(ButtonStyle.Link)
+                            .setURL(results[index].value)
+                            .setLabel('View Article')
+                    ),
+                new ActionRowBuilder()
+                    .addComponents(
+                        /** @type {any} */ new SelectMenuBuilder()
+                            .setOptions(/** @type {any} */ results)
+                            .setCustomId('article')
+                    )
+            ],
+            fetchReply: true,
+        };
     }
 
     /**
      * get a description from the HTML body of an article
-     * @param result
-     * @return {MessageEmbed}
+     * @param {import('discord.js').APISelectMenuOption} result
+     * @param {string} body website body
+     * @return {EmbedBuilder}
      */
-    createEmbed(result) {
-        const embed = new MessageEmbed()
-            .setTitle(result.title);
+    createEmbed(result, body) {
+        const embed = new EmbedBuilder()
+            .setTitle(result.label);
 
         //set up turndown
         const turndown = new Turndown({
@@ -188,9 +214,9 @@ class ArticleCommand extends Command {
                 }
             });
         //convert string
-        let string = turndown.turndown(result.body);
+        let string = turndown.turndown(body);
         if (string.length > 800) {
-            string = string.substr(0, 800);
+            string = string.substring(0, 800);
             string = string.replace(/\.?\n+.*$/, '');
             embed.setFooter({
                 text: 'To read more, click \'View Article\' below.',
@@ -200,10 +226,4 @@ class ArticleCommand extends Command {
         embed.setDescription(string);
         return embed;
     }
-
-    static clearCompletionCache() {
-        completionCache.clear();
-    }
 }
-
-module.exports = ArticleCommand;

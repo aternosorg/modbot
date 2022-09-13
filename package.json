@@ -23,13 +23,14 @@
     "node": ">=16.6.0"
   },
   "dependencies": {
+    "@discordjs/rest": "^1.1.0",
     "@google-cloud/logging": "^9.1.1",
     "@googleapis/youtube": "^2.0.0",
     "diff": "^4.0.2",
     "discord-api-types": "^0.37.5",
     "discord.js": "^14.3.0",
     "fuse.js": "^6.4.6",
-    "got": "^11.8.2",
+    "got": "^12.4.1",
     "mysql2": "^2.3.3",
     "string-similarity": "^4.0.4",
     "turndown": "^7.1.1"

@@ -1,159 +1,85 @@
-const fs = require('fs');
-const config = require('../../config.json');
-const defaultPrefix = config.prefix;
-const util = require('../util');
-const GuildConfig = require('../config/GuildConfig');
-const {Collection, Message} = require('discord.js');
-const monitor = require('../Monitor').getInstance();
-const Command = require('./Command');
-const {CommandInfo} = require('../Typedefs');
+import Bot from '../bot/Bot.js';
+import {Routes} from 'discord.js';
+import ArticleCommand from './utility/ArticleCommand.js';
 
-class CommandManager {
+export default class CommandManager {
+    static #instance;
 
-    /**
-     * command categories
-     * @type {Collection<String, Command[]>}
-     */
-    static #categories = new Collection();
+    static get instance() {
+        return this.#instance ??= new CommandManager();
+    }
 
     /**
-     * array of all available command classes
-     * @type {[]}
-     */
-    static commandClasses = [];
-
-    /**
-     * private commands
-     * @type {Command[]}
-     */
-    static privateCommands = [];
-
-    /**
-     * loaded commands (name => class)
-     * @type {Collection<String, Command>}
-     * @private
-     */
-    static #commands = this._loadCommands();
-
-    /**
-     * load commands
      * @return {Command[]}
-     * @private
      */
-    static _loadCommands() {
-        const commands = new Collection();
-        for (const folder of fs.readdirSync(__dirname)) {
+    getCommands() {
+        return [
+            new ArticleCommand(),
+        ];
+    }
 
-            const category = [];
-
-            const dirPath = `${__dirname}/${folder}`;
-            if (!fs.lstatSync(dirPath).isDirectory()) continue;
-            for (const file of fs.readdirSync(dirPath)) {
-                const path = `${dirPath}/${file}`;
-                if (!file.endsWith('.js') || !fs.lstatSync(path).isFile()) {
-                    continue;
-                }
-                try {
-                    const command = require(path);
-                    if (command.private) {
-                        this.privateCommands.push(command);
-                    }
-
-                    if (!command.private) {
-                        category.push(command);
-                    }
-                    if (config.debug?.enabled && !command.supportsSlashCommands) {
-                        console.debug(`./commands/${folder}/${file} doesn't support slash commands!`);
-                    }
-
-                    for (const name of command.names) {
-                        if (commands.has(name)) {
-                            console.error(`Two command registered the name '${name}':`);
-                            console.error(`- ${commands.get(name).path}`);
-                            console.error(`- ${folder}/${file}`);
-                        }
-                        command.path = `${folder}/${file}`;
-                        commands.set(name, command);
-                        if (!command.private) {
-                            this.commandClasses.push(command);
-                        }
-                    }
-                } catch (e) {
-                    monitor.error(`Failed to load command '${folder}/${file}'`, e);
-                    console.error(`Failed to load command '${folder}/${file}'`, e);
-                }
+    /**
+     * register all slash commands
+     * @return {Promise<void>}
+     */
+    async register() {
+        const commands = [];
+        for (const command of this.getCommands()) {
+            commands.push(command.buildSlashCommand());
+            if (command.supportsMessageCommands()) {
+                commands.push(command.buildMessageCommand());
             }
-
-            if (category.length !== 0) {
-                this.#categories.set(folder, category);
+            if (command.supportsUserCommands()) {
+                commands.push(command.buildUserCommand());
             }
         }
-        return commands;
+
+        await Bot.instance.client.rest.put(Routes.applicationCommands(Bot.instance.client.user.id), { body: commands });
     }
 
     /**
-     * get command categories
-     * @return {Collection<String, Command[]>}
-     */
-    static getCategories() {
-        return this.#categories;
-    }
-
-    /**
-     * get all commands (name => class)
-     * @return {Collection<String, typeof Command>}
-     */
-    static getCommands() {
-        return this.#commands;
-    }
-
-    /**
-     * get all command classes
-     * @return {[]}
-     */
-    static getCommandClasses() {
-        return this.commandClasses;
-    }
-
-    static getPrivateCommands() {
-        return this.privateCommands;
-    }
-
-    /**
-     * get the command in this message
-     * @param {Message} message
-     * @return {Promise<CommandInfo|null>}
-     */
-    static async getCommandName(message) {
-        if (message.author.bot || !message.content) return {isCommand: false};
-        const prefixes = [defaultPrefix.toLowerCase()];
-        if (message.guild) {
-            /** @type {GuildConfig} */
-            const guild = await GuildConfig.get(/** @type {String} */ message.guild.id);
-            prefixes.push(guild.prefix.toLowerCase());
-        }
-        const prefix = util.startsWithMultiple(message.content.toLowerCase(), ...prefixes);
-        const args = util.split(message.content.substring(prefix.length),' ');
-        if (!prefix || !args.length) return {isCommand: false};
-
-        return {
-            isCommand: true,
-            name: args[0].toLowerCase(),
-            prefix,
-            args
-        };
-    }
-
-    /**
-     * is this message a bot command
-     * @param {Message} message
+     * @param {import('discord.js').BaseInteraction} interaction
      * @return {Promise<boolean>}
      */
-    static async isCommand(message) {
-        const {isCommand, name} = await this.getCommandName(message);
-        if (!isCommand) return false;
-        return this.#commands.has(name);
+    async execute(interaction) {
+        const command = this.getCommands().find(c => c.getName() === interaction.commandName);
+        if (!command) {
+            return false;
+        }
+
+        if (!interaction.inGuild()) {
+            if (!command.isAvailableInDMs()) {
+                return false;
+            }
+        } else {
+            const missingUserPermissions = interaction.memberPermissions.missing(command.getRequiredUserPermissions());
+            if (missingUserPermissions.length) {
+                interaction.reply(`You're missing the following permissions to execute this command: ${missingUserPermissions}`);
+                return false;
+            }
+
+            const missingBotPermissions = interaction.appPermissions.missing(command.getRequiredBotPermissions());
+            if (missingBotPermissions.length) {
+                interaction.reply(`I'm missing the following permissions to execute this command: ${missingBotPermissions}`);
+                return false;
+            }
+        }
+
+        if (interaction.isAutocomplete()) {
+            await this.autocomplete(/** @type {import('discord.js').AutocompleteInteraction} */ interaction, command);
+            return true;
+        }
+
+        await command.execute(interaction);
+        return true;
+    }
+
+    /**
+     * @param {import('discord.js').AutocompleteInteraction} interaction
+     * @param {Command} command
+     * @return {Promise<void>}
+     */
+    async autocomplete(interaction, command) {
+        await interaction.respond(await command.complete(interaction));
     }
 }
-
-module.exports = CommandManager;

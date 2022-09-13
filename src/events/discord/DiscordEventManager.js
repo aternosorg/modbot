@@ -13,6 +13,7 @@ import MessageDeleteEventListener from './MessageDeleteEventListener.js';
 import MessageDeleteBulkEventListener from './MessageDeleteBulkEventListener.js';
 import MessageUpdateEventListener from './MessageUpdateEventListener.js';
 import WarnEventListener from './WarnEventListener.js';
+import InteractionCreateEventListener from './interactionCreate/InteractionCreateEventListener.js';
 
 export default class DiscordEventManager extends EventManager {
 
@@ -30,6 +31,7 @@ export default class DiscordEventManager extends EventManager {
             new GuildDeleteEventListener(),
             new GuildMemberRemoveEventListener(),
             new WarnEventListener(),
+            new InteractionCreateEventListener(),
 
             // members
             // join
