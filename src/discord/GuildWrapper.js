@@ -227,5 +227,3 @@ export default class GuildWrapper {
         }
     }
 }
-
-module.exports = GuildWrapper;

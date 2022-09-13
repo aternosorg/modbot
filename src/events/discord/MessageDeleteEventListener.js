@@ -3,6 +3,7 @@ import {EmbedBuilder, escapeMarkdown} from 'discord.js';
 import Bot from '../../bot/Bot.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import colors from '../../util/colors.js';
+import {EMBED_DESCRIPTION_LIMIT} from '../../util/apiLimits.js';
 
 export default class MessageDeleteEventListener extends EventListener {
     get name() {
@@ -40,7 +41,7 @@ export default class MessageDeleteEventListener extends EventListener {
                 .setFooter({text: message.author.id});
 
             if (message.content.length) {
-                embed.setDescription(message.content.substring(0, 4096));
+                embed.setDescription(message.content.substring(0, EMBED_DESCRIPTION_LIMIT));
             }
         }
 

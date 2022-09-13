@@ -32,6 +32,7 @@ export default class Bot {
                 GatewayIntentBits.GuildMessages,
                 GatewayIntentBits.GuildMessageReactions,
                 GatewayIntentBits.DirectMessages,
+                GatewayIntentBits.MessageContent,
             ],
             allowedMentions: {
                 parse: [
@@ -43,6 +44,7 @@ export default class Bot {
             partials: [
                 Partials.GuildMember,
                 Partials.Channel,
+                Partials.Message,
             ],
         });
     }

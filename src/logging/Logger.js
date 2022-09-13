@@ -5,14 +5,18 @@ export default class Logger {
 
     static #instance = new Logger();
 
-    #config = Config.instance.data.monitoring;
+    #cloudLog;
 
-    #cloudLogging = new Logging({
-        projectId: this.#config.monitoring.projectId,
-        credentials: this.#config.monitoring.credentials
-    });
+    get config() {
+        return Config.instance.data?.monitoring;
+    }
 
-    #cloudLog = this.#cloudLogging.log(this.#config.monitoring.logName);
+    get cloudLog() {
+        return this.#cloudLog ??= new Logging({
+            projectId: this.config.monitoring.projectId,
+            credentials: this.config.monitoring.credentials
+        }).log(this.config.monitoring.logName);
+    }
 
     /**
      * @returns {Logger}
@@ -92,7 +96,7 @@ export default class Logger {
             };
         }
 
-        if (!this.#config.enabled) {
+        if (!this.config?.enabled) {
             return Promise.resolve();
         }
 
@@ -109,7 +113,7 @@ export default class Logger {
             JSON.stringify(message);
         }
 
-        return this.#cloudLog.write(this.#cloudLog.entry(metadata, message));
+        return this.cloudLog.write(this.cloudLog.entry(metadata, message));
     }
     
     getData(object) {

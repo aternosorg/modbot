@@ -8,7 +8,7 @@ export default {RED, ORANGE, GREEN};
  * @param  {String} action name of the action to resolve
  * @return {Number|null}  hex color code or null
  */
-export function resolve(action) {
+export function resolveColor(action) {
     switch (action.toLowerCase()) {
         case 'banned':
         case 'ban':

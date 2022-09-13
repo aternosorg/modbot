@@ -1,4 +1,4 @@
-class TypeChecker {
+export default class TypeChecker {
     /**
      * check if value has correct type, otherwise throw a type error
      * @param value
@@ -53,5 +53,3 @@ class TypeChecker {
         return this.assertOfTypes(value, ['string'], name);
     }
 }
-
-module.exports = TypeChecker;

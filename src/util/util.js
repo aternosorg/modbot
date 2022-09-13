@@ -26,3 +26,12 @@ export async function retry(fn, thisArg, args = [], maxRetries = 5, returnValMat
     }
     throw err;
 }
+
+/**
+ * convert a string to title case
+ * @param {string} s
+ * @return {string}
+ */
+export function toTitleCase(s) {
+    return s.toLowerCase().replace(/^(\w)|\s(\w)/g, c => c.toUpperCase());
+}

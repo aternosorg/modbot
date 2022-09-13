@@ -1,11 +1,11 @@
 import Interval from './Interval.js';
 import Database from '../bot/Database.js';
-import Log from '../discord/GuildLog.js';
 import Bot from '../bot/Bot.js';
-import {RESTJSONErrorCodes} from 'discord.js';
+import {EmbedBuilder, RESTJSONErrorCodes} from 'discord.js';
 import Logger from '../logging/Logger.js';
 import GuildConfig from '../config/GuildConfig.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
+import colors from '../util/colors.js';
 
 export default class UnmuteInterval extends Interval {
     getInterval() {
@@ -41,9 +41,20 @@ export default class UnmuteInterval extends Interval {
             }
 
             const user = await client.users.fetch(result.userid);
+            /** @property {number} insertId */
             const unmute = await Database.instance.queryAll('INSERT INTO moderations (guildid, userid, action, created, reason, active) VALUES (?,?,?,?,?,?)', result.guildid, result.userid, 'unmute', Math.floor(Date.now()/1000), reason, false);
             await Database.instance.query('UPDATE moderations SET active = FALSE WHERE action = \'mute\' AND userid = ? AND guildid = ?',result.userid, result.guildid);
-            await Log.logCheck(result.guildid, user, reason, unmute.insertId, 'Unmute');
+
+            const embed = new EmbedBuilder()
+                .setColor(colors.GREEN)
+                .setAuthor({name: `Case ${unmute.insertId} | Unmute | ${user.tag}`, iconURL: user.avatarURL()})
+                .setFooter({text: user.id})
+                .setTimestamp()
+                .addFields(
+                    /** @type {any} */ { name: 'User', value: `<@!${user.id}>`, inline: true},
+                    /** @type {any} */ { name: 'Reason', value: reason.substring(0, 512), inline: true}
+                );
+            await guild.log({embeds: [embed]});
         }
     }
 }

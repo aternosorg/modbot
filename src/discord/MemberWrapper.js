@@ -1,9 +1,11 @@
 import GuildConfig from '../config/GuildConfig.js';
-import util from '../util.js';
 import {EmbedBuilder, Guild, RESTJSONErrorCodes} from 'discord.js';
-import {formatTime, parseTime} from '../util/timeutils';
+import {formatTime, parseTime} from '../util/timeutils.js';
 import Database from '../bot/Database.js';
 import GuildWrapper from './GuildWrapper.js';
+import {resolveColor} from '../util/colors.js';
+import {toTitleCase} from '../util/util.js';
+import {TIMEOUT_LIMIT} from '../util/apiLimits.js';
 
 export default class MemberWrapper {
 
@@ -244,7 +246,7 @@ export default class MemberWrapper {
      * @return {Promise<void>}
      */
     async mute(reason, moderator, duration){
-        const timeout = duration && duration <= util.apiLimits.timeoutLimit;
+        const timeout = duration && duration <= TIMEOUT_LIMIT;
         let mutedRole;
         if (!timeout) {
             mutedRole = (await this._getGuildConfig()).mutedRole;
@@ -320,11 +322,11 @@ export default class MemberWrapper {
      * @return {Promise<?Message>}
      */
     async #logModeration(moderator, reason, id, type, time = null, amount = null, total = null) {
-        const embedColor = util.color.resolve(type);
+        const embedColor = resolveColor(type);
         const embed = new EmbedBuilder()
             .setColor(embedColor)
             .setAuthor({
-                name: `Case ${id} | ${util.toTitleCase(type)} | ${this.user.tag}`,
+                name: `Case ${id} | ${toTitleCase(type)} | ${this.user.tag}`,
                 iconURL: this.user.avatarURL()
             })
             .setFooter({text: this.user.id})
@@ -362,5 +364,3 @@ export default class MemberWrapper {
     }
 
 }
-
-module.exports = MemberWrapper;

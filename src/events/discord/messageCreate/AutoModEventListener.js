@@ -37,7 +37,7 @@ export default class AutoModEventListener extends MessageCreateEventListener {
         }
 
         for (const fn of [this.badWords, this.caps, this.invites, this.linkCoolDown, this.maxMentions, this.spam]) {
-            if (await fn(message)) {
+            if (await fn.bind(this)(message)) {
                 return;
             }
         }

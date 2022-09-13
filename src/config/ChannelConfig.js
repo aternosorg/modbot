@@ -100,5 +100,3 @@ export default class ChannelConfig extends ObjectConfig {
         return config;
     }
 }
-
-module.exports = ChannelConfig;

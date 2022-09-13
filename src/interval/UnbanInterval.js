@@ -4,8 +4,8 @@ import Bot from '../bot/Bot.js';
 import {EmbedBuilder, RESTJSONErrorCodes} from 'discord.js';
 import Logger from '../logging/Logger.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
-import util from '../util.js';
 import MemberWrapper from '../discord/MemberWrapper.js';
+import colors from '../util/colors.js';
 
 export default class UnbanInterval extends Interval {
     getInterval() {
@@ -27,7 +27,7 @@ export default class UnbanInterval extends Interval {
             try {
                 await member.unban(reason, Bot.instance.client.user);
                 const embed = new EmbedBuilder()
-                    .setColor(util.color.green)
+                    .setColor(colors.GREEN)
                     .setAuthor({name: `Case ${unban.insertId} | Unban | ${user.tag}`, iconURL: user.avatarURL()})
                     .setFooter({text: user.id})
                     .setTimestamp()

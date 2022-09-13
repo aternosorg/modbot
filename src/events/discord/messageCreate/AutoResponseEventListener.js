@@ -8,7 +8,7 @@ export default class AutoResponseEventListener extends MessageCreateEventListene
             return;
         }
         /** @type {IterableIterator<AutoResponse>} */
-        const responses = await AutoResponse.get(message.channel.id, message.guild.id).values();
+        const responses = (await AutoResponse.get(message.channel.id, message.guild.id)).values();
         const triggered = Array.from(responses).filter(response => response.matches(message));
 
         if (triggered.length) {

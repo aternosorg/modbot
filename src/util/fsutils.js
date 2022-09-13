@@ -24,5 +24,5 @@ export async function exists(path) {
  * @return {Promise<*>}
  */
 export async function readJSON(path) {
-    return JSON.parse(readFile(path).toString());
+    return JSON.parse((await readFile(path)).toString());
 }

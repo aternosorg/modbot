@@ -20,11 +20,12 @@ export default class EventManager {
 
     /**
      * @param {EventListener} eventListener
+     * @param {*} args
      * @return {Promise<void>}
      */
-    async notifyEventListener(eventListener) {
+    async notifyEventListener(eventListener, ...args) {
         try {
-            await eventListener.execute();
+            await eventListener.execute(...args);
         }
         catch (e) {
             try {

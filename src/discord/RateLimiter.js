@@ -42,5 +42,3 @@ export default class RateLimiter {
     }
 
 }
-
-module.exports = RateLimiter;
