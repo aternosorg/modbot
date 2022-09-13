@@ -3,7 +3,10 @@ import {
     Partials,
     GatewayIntentBits,
     AllowedMentionsTypes,
-    ActivityType, RESTJSONErrorCodes, EmbedBuilder, escapeMarkdown
+    ActivityType,
+    RESTJSONErrorCodes,
+    EmbedBuilder,
+    escapeMarkdown
 } from 'discord.js';
 import {retry} from '../util/util.js';
 import Config from './Config.js';
@@ -17,6 +20,8 @@ export default class Bot {
      * @type {Client}
      */
     #client;
+
+    #deletedMessages = new Set();
 
     constructor() {
         this.#client = new Client({
@@ -50,6 +55,10 @@ export default class Bot {
         return this.#client;
     }
 
+    get deletedMessages() {
+        return this.#deletedMessages;
+    }
+
     async start(){
         await this.#client.login(Config.instance.data.authToken);
     }
@@ -73,7 +82,7 @@ export default class Bot {
             return null;
         }
 
-        // TODO: ignore message deletion
+        this.#deletedMessages.add(message.id);
         try {
             message = await retry(message.delete, message);
         } catch (e) {
