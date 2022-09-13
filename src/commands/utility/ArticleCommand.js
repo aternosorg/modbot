@@ -16,7 +16,9 @@ import {SELECT_MENU_TITLE_LIMIT, SELECT_MENU_VALUE_LIMIT} from '../../util/apiLi
  * @type {Map<String, Map<String, import('discord.js').ApplicationCommandOptionChoiceData[]>>}
  */
 const completionCache = new Map();
-const CACHE_DURATION = 60*60*1000;
+
+const CACHE_DURATION = 60 * 60 * 1000;
+const SELECT_MENU_TIMEOUT = 30 * 1000;
 
 function setCompletionCache(helpcenter, query, articles) {
     if (!completionCache.has(helpcenter)) {
@@ -77,7 +79,11 @@ export default class ArticleCommand extends Command {
             /** @type {import('discord.js').Message} */
             const answer = await interaction.reply(this.generateMessage(results, data.results[0].body));
 
-            const collector = await answer.createMessageComponentCollector({filter: interaction => interaction.customId === 'article', idle: 30_000});
+            const collector = await answer.createMessageComponentCollector({
+                filter: interaction => interaction.customId === 'article',
+                idle: SELECT_MENU_TIMEOUT,
+            });
+
             collector.on('collect', async (interaction) => {
                 const index = data.results.findIndex(result => result.html_url === interaction.values[0]);
                 await interaction.update(this.generateMessage(results, data.results[index].body, index));
