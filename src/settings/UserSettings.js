@@ -1,7 +1,6 @@
-const Config = require('./Settings.js');
-const {Snowflake} = require('discord.js');
+import Settings from './Settings.js';
 
-class UserSettings extends Settings {
+export default class UserSettings extends Settings {
 
     static tableName = 'users';
 
@@ -14,7 +13,7 @@ class UserSettings extends Settings {
     /**
      * Constructor - create a channel settings
      *
-     * @param {Snowflake} id user id
+     * @param {import('discord.js').Snowflake} id user id
      * @param {Object} [json] options
      * @param {boolean} [json.deleteCommands] should commands be deleted automatically
      * @return {UserSettings} the settings of the channel
@@ -32,5 +31,3 @@ class UserSettings extends Settings {
         return super.get(userid);
     }
 }
-
-module.exports = UserSettings;
