@@ -8,6 +8,7 @@ import {
 } from 'discord.js';
 import Turndown from 'turndown';
 import icons from '../../util/icons.js';
+import {SELECT_MENU_TITLE_LIMIT, SELECT_MENU_VALUE_LIMIT} from '../../util/apiLimits.js';
 
 /**
  * cache of zendesk autocompletions
@@ -65,7 +66,12 @@ export default class ArticleCommand extends Command {
         const data = await got.get(`https://${guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles/search.json?query=` + encodeURIComponent(query)).json();
         if (data.count) {
             const results = data.results.map(result => {
-                return { default: false, label: result.title.substring(0, 100), emoji: icons.article, value: result.html_url.substring(0, 100) };
+                return {
+                    default: false,
+                    label: result.title.substring(0, SELECT_MENU_TITLE_LIMIT),
+                    emoji: icons.article,
+                    value: result.html_url.substring(0, SELECT_MENU_VALUE_LIMIT)
+                };
             });
 
             /** @type {import('discord.js').Message} */
