@@ -1,5 +1,5 @@
 import Bot from '../bot/Bot.js';
-import {Routes} from 'discord.js';
+import {PermissionsBitField, Routes} from 'discord.js';
 import ArticleCommand from './utility/ArticleCommand.js';
 import AvatarCommand from './utility/AvatarCommand.js';
 
@@ -54,7 +54,8 @@ export default class CommandManager {
                 return false;
             }
         } else {
-            const missingUserPermissions = interaction.memberPermissions.missing(command.getRequiredUserPermissions());
+            const missingUserPermissions = interaction.memberPermissions
+                .missing(command.getRequiredUserPermissions() ?? new PermissionsBitField());
             if (missingUserPermissions.length) {
                 interaction.reply(`You're missing the following permissions to execute this command: ${missingUserPermissions}`);
                 return false;

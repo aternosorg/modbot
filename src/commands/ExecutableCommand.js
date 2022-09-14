@@ -19,10 +19,11 @@ export default class ExecutableCommand {
     }
 
     /**
-     * @return {import('discord.js').PermissionsBitField}
+     * required permissions. Null: no permissions required. Empty bitfield: disabled by default
+     * @return {?import('discord.js').PermissionsBitField}
      */
     getRequiredUserPermissions() {
-        return new PermissionsBitField();
+        return null;
     }
 
     /**

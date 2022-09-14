@@ -45,7 +45,7 @@ export default class Command extends ExecutableCommand {
         const builder = new SlashCommandBuilder()
             .setName(this.getName())
             .setDescription(this.getDescription())
-            .setDefaultMemberPermissions(this.getRequiredUserPermissions().bitfield)
+            .setDefaultMemberPermissions(this.getRequiredUserPermissions()?.bitfield)
             .setDMPermission(this.isAvailableInDMs());
 
         if (this.getChildren().length) {
