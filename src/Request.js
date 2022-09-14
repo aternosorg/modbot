@@ -1,6 +1,6 @@
-const got = require('got');
+import got from 'got';
 
-class Request {
+export default class Request {
 
     request;
 
@@ -26,7 +26,7 @@ class Request {
      */
     async get() {
         this.request = await got.get(this.url, this.options);
-        this.response = this.request.body.toString()
+        this.response = this.request.body.toString();
         return this;
     }
 
@@ -40,10 +40,8 @@ class Request {
             this.JSON = JSON.parse(this.response);
         }
         catch (e) {
-            throw `Failed to parse JSON response of ${this.url}`;
+            throw new Error(`Failed to parse JSON response of ${this.url}`);
         }
         return this;
     }
 }
-
-module.exports = Request;
