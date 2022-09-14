@@ -42,7 +42,7 @@ export default class CommandManager {
      * @return {Promise<boolean>}
      */
     async execute(interaction) {
-        const command = this.getCommands().find(c => c.getName() === interaction.commandName);
+        const command = this.getCommands().find(c => c.getName() === interaction.commandName.toLowerCase());
         if (!command) {
             return false;
         }

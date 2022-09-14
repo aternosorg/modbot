@@ -6,6 +6,7 @@ import {
 import SubCommandGroup from './SubCommandGroup.js';
 import SubCommand from './SubCommand.js';
 import ExecutableCommand from './ExecutableCommand.js';
+import {toTitleCase} from '../util/util.js';
 
 /**
  * @abstract
@@ -78,9 +79,8 @@ export default class Command extends ExecutableCommand {
      */
     buildUserCommand() {
         return new ContextMenuCommandBuilder()
-            .setName(this.getName())
+            .setName(toTitleCase(this.getName()))
             .setType(ApplicationCommandType.User)
-            .setDefaultMemberPermissions(this.getRequiredUserPermissions())
             .setDMPermission(this.isAvailableInDMs());
     }
 
@@ -98,7 +98,7 @@ export default class Command extends ExecutableCommand {
      */
     buildMessageCommand() {
         return new ContextMenuCommandBuilder()
-            .setName(this.getName())
+            .setName(toTitleCase(this.getName()))
             .setType(ApplicationCommandType.Message)
             .setDMPermission(this.isAvailableInDMs());
     }

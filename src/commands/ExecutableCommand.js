@@ -46,7 +46,7 @@ export default class ExecutableCommand {
 
     /**
      * @abstract
-     * @param {import('discord.js').CommandInteraction|import('discord.js').ContextMenuCommandInteraction} interaction
+     * @param {import('discord.js').BaseInteraction} interaction
      * @return {Promise<void>}
      */
     async execute(interaction) {
