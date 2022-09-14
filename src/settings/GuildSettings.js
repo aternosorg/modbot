@@ -3,6 +3,8 @@ import TypeChecker from './TypeChecker.js';
 import {Collection, EmbedBuilder} from 'discord.js';
 import Punishment from '../database/Punishment.js';
 import Zendesk from '../Zendesk.js';
+import colors from '../util/colors.js';
+import {formatTime} from '../util/timeutils.js';
 
 /**
  * @classdesc settings of a guild
@@ -12,7 +14,6 @@ export default class GuildSettings extends Settings {
     static tableName = 'guilds';
 
     #punishments = {};
-    #modRoles = [];
     #protectedRoles = [];
 
     /**
@@ -24,8 +25,8 @@ export default class GuildSettings extends Settings {
      * @param  {import('discord.js').Snowflake}   [json.messageLogChannel]  id of the message log channel
      * @param  {import('discord.js').Snowflake}   [json.joinLogChannel]     id of the join log channel
      * @param  {import('discord.js').Snowflake}   [json.mutedRole]          id of the muted role
-     * @param  {Snowflake[]}                      [json.modRoles]           role ids that can execute commands
-     * @param  {Snowflake[]}                      [json.protectedRoles]     role ids that can't be targeted by moderations
+     * @param  {import('discord.js').Snowflake[]} [json.modRoles]           role ids that can execute commands
+     * @param  {import('discord.js').Snowflake[]} [json.protectedRoles]     role ids that can't be targeted by moderations
      * @param  {Object}                           [json.punishments]        automatic punishments for strikes
      * @param  {String}                           [json.playlist]           id of YouTube playlist for tutorials
      * @param  {String}                           [json.helpcenter]         subdomain of the zendesk help center
@@ -45,10 +46,10 @@ export default class GuildSettings extends Settings {
         this.messageLogChannel = json.messageLogChannel;
         this.joinLogChannel = json.joinLogChannel;
         this.mutedRole = json.mutedRole;
-        if (json.modRoles instanceof Array)
-            this.#modRoles = json.modRoles;
         if (json.protectedRoles instanceof Array)
             this.#protectedRoles = json.protectedRoles;
+        if (json.modRoles instanceof Array)
+            this.#protectedRoles.push(...json.modRoles);
         if (json.punishments instanceof Object)
             this.#punishments = json.punishments;
         this.playlist = json.playlist;
@@ -108,7 +109,6 @@ export default class GuildSettings extends Settings {
      * @returns {EmbedBuilder}
      */
     getSettings() {
-        const util = require('../util');
         return new EmbedBuilder()
             .setTitle('Settings')
             .addFields([
@@ -116,7 +116,7 @@ export default class GuildSettings extends Settings {
                 {name: 'Automod', value: this.getAutomodSettings(), inline: false},
                 {name: 'Connections', value: this.getConnectionsSettings(), inline: false}
             ])
-            .setColor(util.color.red);
+            .setColor(colors.RED);
     }
 
     /**
@@ -127,7 +127,6 @@ export default class GuildSettings extends Settings {
         return `Log: ${this.logChannel ? `<#${this.logChannel}>` : 'disabled'}\n` +
             `Message Log: ${this.messageLogChannel ? `<#${this.messageLogChannel}>` : 'disabled'}\n` +
             `Muted role: ${this.mutedRole ? `<@&${this.mutedRole}>` : 'disabled'}\n` +
-            `Mod roles: ${this.listModRoles()}\n` +
             `Protected roles: ${this.listProtectedRoles()}\n`;
     }
 
@@ -146,67 +145,12 @@ export default class GuildSettings extends Settings {
      * @returns {String}
      */
     getAutomodSettings() {
-        const util = require('../util');
         return `Invites: ${this.invites ? 'allowed' : 'forbidden'}\n` +
-            `Link cooldown: ${this.linkCooldown !== -1 ? util.secToTime(this.linkCooldown) : 'disabled'}\n` +
+            `Link cooldown: ${this.linkCooldown !== -1 ? formatTime(this.linkCooldown) : 'disabled'}\n` +
             `Caps: ${this.caps ? 'forbidden' : 'allowed'}\n` +
             `Max mentions: ${this.maxMentions === -1 ? 'disabled' : this.maxMentions}\n` +
             `Spam protection: ${this.antiSpam === -1 ? 'disabled' : `${this.antiSpam} messages per minute`}\n` +
             `Repeated message protection: ${this.similarMessages === -1 ? 'disabled' : `${this.similarMessages} similar messages per minute`}\n`;
-    }
-
-    /**
-     * Is this a moderator role?
-     * @param  {import('discord.js').Snowflake} role role id
-     * @return {Boolean}
-     */
-    isModRole(role) {
-        return this.#modRoles.includes(role);
-    }
-
-    /**
-     * Is this member a mod
-     * @async
-     * @param {import('discord.js').GuildMember} member member object of the user in the specific guild
-     * @return {Boolean}
-     */
-    isMod(member) {
-        for (let [key] of member.roles.cache) {
-            if (this.isModRole(key))
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * Add this role to the moderator roles
-     * @param  {import('discord.js').Snowflake} role role id
-     */
-    addModRole(role) {
-        if (!this.isModRole(role)) {
-            this.#modRoles.push(role);
-        }
-    }
-
-    /**
-     * Remove this role from the moderator roles
-     * @param  {import('discord.js').Snowflake} role role id
-     */
-    removeModRole(role) {
-        const newRoles = [];
-        for (let modRole of this.#modRoles) {
-            if (modRole !== role)
-                newRoles.push(modRole);
-        }
-        this.#modRoles = newRoles;
-    }
-
-    /**
-     * list all modroles
-     * @return {String}
-     */
-    listModRoles() {
-        return this.#modRoles.map(role => `<@&${role}>`).join(', ') || 'none';
     }
 
     /**
@@ -225,7 +169,6 @@ export default class GuildSettings extends Settings {
      * @return {Boolean}
      */
     isProtected(member) {
-        if (this.isMod(member)) return true;
         for (let [key] of member.roles.cache) {
             if (this.isProtectedRole(key))
                 return true;
@@ -334,7 +277,6 @@ export default class GuildSettings extends Settings {
 
         //copy private properties
         cleanObject.punishments = this.#punishments;
-        cleanObject.modRoles = this.#modRoles;
         cleanObject.protectedRoles = this.#protectedRoles;
 
         return super.getDataObject(cleanObject);

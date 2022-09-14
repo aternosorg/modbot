@@ -6,7 +6,7 @@ import {gzipSync} from 'zlib';
 
 export default class ExportCommand extends Command {
 
-    getRequiredUserPermissions() {
+    getDefaultMemberPermissions() {
         return new PermissionsBitField()
             .add(PermissionFlagsBits.ManageGuild);
     }
