@@ -20,6 +20,10 @@ export default class AvatarCommand extends Command {
         return true;
     }
 
+    isAvailableInDMs() {
+        return true;
+    }
+
     buildOptions(builder) {
         builder
             .addUserOption(option =>
@@ -53,7 +57,7 @@ export default class AvatarCommand extends Command {
         const user = interaction.options.getUser('user') ?? interaction.user;
         let url = user.displayAvatarURL(IMAGE_OPTIONS);
 
-        if (interaction.options.getBoolean('use-server-profile') ?? true) {
+        if (interaction.guild && (interaction.options.getBoolean('use-server-profile') ?? true)) {
             const member = await (new MemberWrapper(user, new GuildWrapper(interaction.guild))).fetchMember();
             if (member) {
                 url = member.displayAvatarURL(IMAGE_OPTIONS);
