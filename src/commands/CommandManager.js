@@ -6,6 +6,7 @@ import ExportCommand from './utility/ExportCommand.js';
 import Cache from '../Cache.js';
 import {formatTime} from '../util/timeutils.js';
 import ImportCommand from './utility/ImportCommand.js';
+import InfoCommand from './utility/InfoCommand.js';
 
 const cooldowns = new Cache();
 
@@ -25,6 +26,7 @@ export default class CommandManager {
             new AvatarCommand(),
             new ExportCommand(),
             new ImportCommand(),
+            new InfoCommand(),
         ];
     }
 
@@ -48,7 +50,7 @@ export default class CommandManager {
     }
 
     /**
-     * @param {import('discord.js').BaseInteraction} interaction
+     * @param {import('discord.js').Interaction} interaction
      * @return {Promise<boolean>}
      */
     async execute(interaction) {
@@ -75,8 +77,7 @@ export default class CommandManager {
         }
 
         if (interaction.isContextMenuCommand()) {
-            interaction = await command.promptForOptions(
-                /** @type {import('discord.js').ContextMenuCommandInteraction} */ interaction);
+            interaction = await command.promptForOptions(interaction);
 
             if (!interaction) {
                 return false;

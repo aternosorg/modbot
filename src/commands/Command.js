@@ -105,8 +105,8 @@ export default class Command extends ExecutableCommand {
 
     /**
      * prompt for missing options using a modal
-     * @param {import('discord.js').ContextMenuCommandInteraction} interaction
-     * @return {Promise<import('discord.js').ContextMenuCommandInteraction|null>}
+     * @param {import('discord.js').Interaction} interaction
+     * @return {Promise<import('discord.js').Interaction|null>}
      */
     async promptForOptions(interaction) {
         return interaction;
