@@ -19,6 +19,14 @@ export default class ExecutableCommand {
     }
 
     /**
+     * get command cool down in seconds
+     * @return {number}
+     */
+    getCoolDown() {
+        return 0;
+    }
+
+    /**
      * required permissions. Null: no permissions required. Empty bitfield: disabled by default
      * @return {?import('discord.js').PermissionsBitField}
      */

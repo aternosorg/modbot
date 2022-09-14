@@ -36,7 +36,7 @@ export default class Cache {
      * set the value of this entry
      * @param {K} key
      * @param {V} value
-     * @param {number} ttl
+     * @param {number} ttl cache duration in ms
      */
     set(key, value, ttl) {
         this.#cache.set(key, new CacheEntry(value, ttl));
@@ -44,7 +44,7 @@ export default class Cache {
 
     checkCache() {
         for (const [key, entry] of this.#cache) {
-            if (entry.shouldBeCleared) {
+            if (entry.isCacheTimeOver) {
                 this.#cache.delete(key);
             }
         }
@@ -65,7 +65,7 @@ export class CacheEntry {
         this.until = Date.now() + ttl;
     }
 
-    get shouldBeCleared() {
+    get isCacheTimeOver() {
         return Date.now() > this.until;
     }
 }

@@ -11,6 +11,10 @@ export default class ExportCommand extends Command {
             .add(PermissionFlagsBits.ManageGuild);
     }
 
+    getCoolDown() {
+        return 60;
+    }
+
     async execute(interaction) {
         await interaction.deferReply({ephemeral: true});
         const exporter = new Exporter(interaction.guild.id);

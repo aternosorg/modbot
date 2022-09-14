@@ -3,6 +3,10 @@ import {PermissionsBitField, Routes} from 'discord.js';
 import ArticleCommand from './utility/ArticleCommand.js';
 import AvatarCommand from './utility/AvatarCommand.js';
 import ExportCommand from './utility/ExportCommand.js';
+import Cache from '../Cache.js';
+import {formatTime} from '../util/timeutils.js';
+
+const cooldowns = new Cache();
 
 export default class CommandManager {
     static #instance;
@@ -82,6 +86,24 @@ export default class CommandManager {
             if (!interaction) {
                 return false;
             }
+        }
+
+        if (command.getCoolDown()) {
+            const key = `${interaction.user.id}:${command.getName()}`;
+            const entry = cooldowns.getEntry(key);
+            if (entry && !entry.isCacheTimeOver) {
+                let remaining = entry.until - Date.now();
+                remaining = Math.ceil(remaining / 1000);
+                remaining = formatTime(remaining);
+
+                await interaction.reply({
+                    ephemeral: true,
+                    content: `You can use this command again in ${remaining}`,
+                });
+                return false;
+            }
+
+            cooldowns.set(key, null, command.getCoolDown() * 1000);
         }
 
         await command.execute(interaction);
