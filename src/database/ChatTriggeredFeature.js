@@ -248,7 +248,7 @@ export default class ChatTriggeredFeature {
             const values = ',?'.repeat(this.constructor.columns.length).slice(1);
             /** @property {Number} insertId*/
             const dbEntry = await Database.instance.queryAll(
-                `INSERT INTO ${this.constructor.escapedTableName} (${columns})VALUES (${values})`, this.serialize());
+                `INSERT INTO ${this.constructor.escapedTableName} (${columns}) VALUES (${values})`, ...this.serialize());
             this.id = dbEntry.insertId;
         }
 
@@ -272,7 +272,7 @@ export default class ChatTriggeredFeature {
      * @returns {Promise<void>}
      */
     async remove() {
-        await Database.instance.query(`DELETE FROM ${this.constructor.escapedTableName}WHERE id = ?`,[this.id]);
+        await Database.instance.query(`DELETE FROM ${this.constructor.escapedTableName} WHERE id = ?`,[this.id]);
 
         if (this.global) {
             if (this.constructor.getGuildCache().has(this.gid))
@@ -310,7 +310,7 @@ export default class ChatTriggeredFeature {
      * @returns {Promise<null|ChatTriggeredFeature>}
      */
     static async getByID(id) {
-        const result = await Database.instance.query(`SELECT *FROM ${this.escapedTableName}WHERE id = ?`, [id]);
+        const result = await Database.instance.query(`SELECT *FROM ${this.escapedTableName} WHERE id = ?`, [id]);
         if (!result) return null;
         return this.fromData(result);
     }
@@ -369,7 +369,7 @@ export default class ChatTriggeredFeature {
      */
     static async getAll(guildId) {
         const result = await Database.instance.queryAll(
-            `SELECT *FROM ${this.escapedTableName}WHERE guildid = ?`, [guildId]);
+            `SELECT *FROM ${this.escapedTableName} WHERE guildid = ?`, [guildId]);
 
         const collection = new Collection();
         for (const res of result) {
@@ -386,7 +386,7 @@ export default class ChatTriggeredFeature {
      */
     static async refreshGuild(guildId) {
         const result = await Database.instance.queryAll(
-            `SELECT *FROM ${this.escapedTableName}WHERE guildid = ?AND global = TRUE`, [guildId]);
+            `SELECT *FROM ${this.escapedTableName} WHERE guildid = ?AND global = TRUE`, [guildId]);
 
         const newItems = new Collection();
         for (const res of result) {
@@ -405,7 +405,7 @@ export default class ChatTriggeredFeature {
      */
     static async refreshChannel(channelId) {
         const result = await Database.instance.queryAll(
-            `SELECT *FROM ${this.escapedTableName}WHERE channels LIKE ?`, [`%${channelId}%`]);
+            `SELECT *FROM ${this.escapedTableName} WHERE channels LIKE ?`, [`%${channelId}%`]);
 
         const newItems = new Collection();
         for (const res of result) {

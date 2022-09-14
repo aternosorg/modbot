@@ -159,8 +159,15 @@ export default class Moderation {
         if(!Array.isArray(moderations) || !moderations.length) {
             return;
         }
-        const data = moderations.map(m => m.getParameters());
-        return Database.instance.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
-            `VALUES ${moderations.map(() => '(?,?,?,?,?,?,?,?,?)').join(', ')}`, ...data.flat());
+        let data = moderations.map(m => m.getParameters());
+
+        const queries = [];
+        while (data.length) {
+            const current = data.slice(0, 100);
+            data = data.slice(100);
+            queries.push(Database.instance.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
+                `VALUES ${'(?,?,?,?,?,?,?,?,?), '.repeat(current.length).slice(0, - 2)}`, ...current.flat()));
+        }
+        await Promise.all(queries);
     }
 }

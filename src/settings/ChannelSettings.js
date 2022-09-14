@@ -79,15 +79,14 @@ export default class ChannelSettings extends Settings {
     }
 
     /**
-     * @param {Client} bot
      * @param {import('discord.js').Snowflake} guildID
      * @param {Settings} data
      * @return {Promise<?ChannelSettings>}
      */
-    static async import(bot, guildID, data) {
+    static async import(guildID, data) {
         let channel;
         try {
-            channel = await bot.channels.fetch(data.id);
+            channel = await Bot.instance.client.channels.fetch(data.id);
         }
         catch (e) {
             return null;

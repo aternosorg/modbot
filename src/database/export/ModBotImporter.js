@@ -24,13 +24,11 @@ export default class ModBotImporter extends Importer {
     data;
     
     /**
-     * @param {Client} bot
      * @param {import('discord.js').Snowflake} guildID
      * @param {Exporter} data JSON exported data (modbot-1.0.0)
      */
-    constructor(bot, guildID, data) {
+    constructor(guildID, data) {
         super();
-        this.bot = bot;
         this.guildID = guildID;
         this.data = data;
     }
@@ -87,7 +85,7 @@ export default class ModBotImporter extends Importer {
 
     async _importChannelConfigs() {
         const channels = this.data.channels;
-        return this.data.channels = await Promise.all(channels.map(c => ChannelSettings.import(this.bot, this.guildID, c)));
+        return this.data.channels = await Promise.all(channels.map(c => ChannelSettings.import(this.guildID, c)));
     }
 
     _importModerations() {

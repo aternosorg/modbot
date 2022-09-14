@@ -136,7 +136,7 @@ export default class Settings {
      * @private
      */
     async _update() {
-        return this.constructor.database.query(
+        return Database.instance.query(
             `UPDATE ${this.constructor.escapedTableName} SET config = ? WHERE id = ?`, this.toJSONString(), this.id);
     }
 
@@ -147,8 +147,7 @@ export default class Settings {
      */
     async insert() {
         return Database.instance.query(
-            `INSERT INTO ${Database.instance.escapeId(this.constructor.escapedTableName)} (config,id) VALUES (?,?)`,
-            this.toJSONString(), this.id);
+            `INSERT INTO ${this.constructor.escapedTableName} (config,id) VALUES (?,?)`, this.toJSONString(), this.id);
     }
 
     /**

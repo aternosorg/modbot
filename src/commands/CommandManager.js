@@ -5,6 +5,7 @@ import AvatarCommand from './utility/AvatarCommand.js';
 import ExportCommand from './utility/ExportCommand.js';
 import Cache from '../Cache.js';
 import {formatTime} from '../util/timeutils.js';
+import ImportCommand from './utility/ImportCommand.js';
 
 const cooldowns = new Cache();
 
@@ -23,6 +24,7 @@ export default class CommandManager {
             new ArticleCommand(),
             new AvatarCommand(),
             new ExportCommand(),
+            new ImportCommand(),
         ];
     }
 

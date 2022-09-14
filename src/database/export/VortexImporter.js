@@ -2,6 +2,7 @@ import Importer from './Importer.js';
 import TypeChecker from '../../settings/TypeChecker.js';
 import Moderation from '../Moderation.js';
 import {EmbedBuilder} from 'discord.js';
+import Bot from '../../bot/Bot.js';
 
 /***
  * @typedef {Object} VortexModeration
@@ -32,16 +33,14 @@ export default class VortexImporter extends Importer {
     tempbans;
 
     /**
-     * @param {Client} bot
      * @param {import('discord.js').Snowflake} guildID
      * @param {Object} data JSON exported data from vortex
      * @param {Object} data.tempmutes
      * @param {Object} data.strikes
      * @param {Object} data.tempbans
      */
-    constructor(bot, guildID, data) {
+    constructor(guildID, data) {
         super();
-        this.bot = bot;
         this.guildID = guildID;
         this.tempmutes = data.tempmutes;
         this.strikes = data.strikes;
@@ -109,7 +108,7 @@ export default class VortexImporter extends Importer {
             action: type,
             expireTime: moderation.value,
             reason: /** @type {String} */'Imported from Vortex',
-            moderator: this.bot.user.id
+            moderator: Bot.instance.client.user.id
         });
     }
 
@@ -125,7 +124,7 @@ export default class VortexImporter extends Importer {
             value: moderation.value,
             action: 'strike',
             reason: 'Imported from Vortex',
-            moderator: this.bot.user.id
+            moderator: Bot.instance.client.user.id
         });
     }
 
