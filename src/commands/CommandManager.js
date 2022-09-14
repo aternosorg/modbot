@@ -1,6 +1,7 @@
 import Bot from '../bot/Bot.js';
 import {Routes} from 'discord.js';
 import ArticleCommand from './utility/ArticleCommand.js';
+import AvatarCommand from './utility/AvatarCommand.js';
 
 export default class CommandManager {
     static #instance;
@@ -15,6 +16,7 @@ export default class CommandManager {
     getCommands() {
         return [
             new ArticleCommand(),
+            new AvatarCommand(),
         ];
     }
 

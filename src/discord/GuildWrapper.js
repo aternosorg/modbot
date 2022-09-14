@@ -8,7 +8,7 @@ export default class GuildWrapper {
 
     /**
      * Guild Cache
-     * @type {Collection<Snowflake, GuildWrapper>}
+     * @type {Collection<import('discord.js').Snowflake, GuildWrapper>}
      */
     static #cache = new Collection();
 
@@ -42,10 +42,10 @@ export default class GuildWrapper {
     }
 
     /**
-     * get the guildconfig of this guild
+     * get the guild settings of this guild
      * @return {Promise<GuildSettings>}
      */
-    async getConfig() {
+    async getSettings() {
         return GuildSettings.get(this.guild.id);
     }
 
@@ -57,7 +57,7 @@ export default class GuildWrapper {
      */
     async fetchMember(id, force = false) {
         try {
-            return this.guild.members.fetch({user: id, force});
+            return await this.guild.members.fetch({user: id, force});
         }
         catch (e) {
             if ([RESTJSONErrorCodes.UnknownMember, RESTJSONErrorCodes.UnknownUser].includes(e.code)) {
@@ -150,7 +150,7 @@ export default class GuildWrapper {
     }
 
     /**
-     * send a message to the a channel
+     * send a message to a channel
      * @param {import('discord.js').Snowflake} channelId
      * @param {import('discord.js').MessagePayload|import('discord.js').MessageOptions} options
      * @return {Promise<?Message>} Discord message (if it was sent)
@@ -173,8 +173,8 @@ export default class GuildWrapper {
      * @return {Promise<?Message>} Discord message (if it was sent)
      */
     async log(options) {
-        const config = await this.getConfig();
-        return this.sendMessageToChannel(config.logChannel, options);
+        const settings = await this.getSettings();
+        return this.sendMessageToChannel(settings.logChannel, options);
     }
 
     /**
@@ -183,8 +183,8 @@ export default class GuildWrapper {
      * @return {Promise<?Message>} Discord message (if it was sent)
      */
     async logMessage(options) {
-        const config = await this.getConfig();
-        return this.sendMessageToChannel(config.messageLogChannel, options);
+        const settings = await this.getSettings();
+        return this.sendMessageToChannel(settings.messageLogChannel, options);
     }
 
     /**
@@ -193,8 +193,8 @@ export default class GuildWrapper {
      * @return {Promise<?Message>} Discord message (if it was sent)
      */
     async logJoin(options) {
-        const config = await this.getConfig();
-        return this.sendMessageToChannel(config.joinLogChannel, options);
+        const settings = await this.getSettings();
+        return this.sendMessageToChannel(settings.joinLogChannel, options);
     }
 
     /**
