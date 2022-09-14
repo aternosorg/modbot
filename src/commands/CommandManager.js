@@ -70,6 +70,15 @@ export default class CommandManager {
             return true;
         }
 
+        if (interaction.isContextMenuCommand()) {
+            interaction = await command.promptForOptions(
+                /** @type {import('discord.js').ContextMenuCommandInteraction} */ interaction);
+
+            if (!interaction) {
+                return false;
+            }
+        }
+
         await command.execute(interaction);
         return true;
     }

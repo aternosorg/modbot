@@ -3,7 +3,9 @@ import GuildSettings from '../../settings/GuildSettings.js';
 import {
     ActionRowBuilder,
     ButtonBuilder,
-    ButtonStyle, EmbedBuilder, SelectMenuBuilder,
+    ButtonStyle,
+    EmbedBuilder,
+    SelectMenuBuilder,
 } from 'discord.js';
 import Turndown from 'turndown';
 import icons from '../../util/icons.js';
@@ -53,8 +55,8 @@ export default class ArticleCommand extends Command {
                 };
             });
 
-            /** @type {import('discord.js').Message} */
-            const answer = await interaction.reply(this.generateMessage(results, data.results[0].body));
+            const answer = /** @type {import('discord.js').Message} */
+                await interaction.reply(this.generateMessage(results, data.results[0].body, 0));
 
             const collector = await answer.createMessageComponentCollector({
                 filter: interaction => interaction.customId === 'article',

@@ -1,4 +1,8 @@
-import {ApplicationCommandType, ContextMenuCommandBuilder, SlashCommandBuilder} from 'discord.js';
+import {
+    ApplicationCommandType,
+    ContextMenuCommandBuilder,
+    SlashCommandBuilder
+} from 'discord.js';
 import SubCommandGroup from './SubCommandGroup.js';
 import SubCommand from './SubCommand.js';
 import ExecutableCommand from './ExecutableCommand.js';
@@ -96,7 +100,15 @@ export default class Command extends ExecutableCommand {
         return new ContextMenuCommandBuilder()
             .setName(this.getName())
             .setType(ApplicationCommandType.Message)
-            .setDefaultMemberPermissions(this.getRequiredUserPermissions())
             .setDMPermission(this.isAvailableInDMs());
+    }
+
+    /**
+     * prompt for missing options using a modal
+     * @param {import('discord.js').ContextMenuCommandInteraction} interaction
+     * @return {Promise<import('discord.js').ContextMenuCommandInteraction|null>}
+     */
+    async promptForOptions(interaction) {
+        return interaction;
     }
 }
