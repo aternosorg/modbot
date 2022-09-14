@@ -2,6 +2,7 @@ import Settings from './Settings.js';
 import TypeChecker from './TypeChecker.js';
 import {Collection, EmbedBuilder} from 'discord.js';
 import Punishment from '../database/Punishment.js';
+import Zendesk from '../Zendesk.js';
 
 /**
  * @classdesc settings of a guild
@@ -312,6 +313,18 @@ export default class GuildSettings extends Settings {
         }
 
         return punishments;
+    }
+
+    /**
+     * get the zendesk instance for this guild
+     * @return {Zendesk}
+     */
+    getZendesk() {
+        if (!this.helpcenter) {
+            return null;
+        }
+
+        return new Zendesk(this.helpcenter);
     }
 
     getDataObject(o = this) {

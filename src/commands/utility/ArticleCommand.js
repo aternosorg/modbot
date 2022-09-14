@@ -1,6 +1,5 @@
 import Command from '../Command.js';
 import GuildSettings from '../../settings/GuildSettings.js';
-import got from 'got';
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -9,31 +8,12 @@ import {
 import Turndown from 'turndown';
 import icons from '../../util/icons.js';
 import {SELECT_MENU_TITLE_LIMIT, SELECT_MENU_VALUE_LIMIT} from '../../util/apiLimits.js';
+import Cache from '../../Cache.js';
 
-/**
- * cache of zendesk autocompletions
- * Helpcenter ID => Query => Completions
- * @type {Map<String, Map<String, import('discord.js').ApplicationCommandOptionChoiceData[]>>}
- */
-const completionCache = new Map();
-
+const completions = new Cache();
 const CACHE_DURATION = 60 * 60 * 1000;
 const SELECT_MENU_TIMEOUT = 30 * 1000;
-
-function setCompletionCache(helpcenter, query, articles) {
-    if (!completionCache.has(helpcenter)) {
-        completionCache.set(helpcenter, new Map());
-    }
-
-    completionCache.get(helpcenter).set(query, articles);
-    setTimeout(() => {
-        const hcCache = completionCache.get(helpcenter);
-        hcCache.delete(query);
-        if (!hcCache.size) {
-            completionCache.delete(helpcenter);
-        }
-    }, CACHE_DURATION);
-}
+const ARTICLE_EMBED_PREVIEW_LENGTH = 1000;
 
 export default class ArticleCommand extends Command {
 
@@ -56,16 +36,13 @@ export default class ArticleCommand extends Command {
     }
 
     async execute(interaction) {
-        const guildConfig = (await GuildSettings.get(interaction.guild.id));
-        if (!guildConfig.helpcenter) {
+        const zendesk = (await GuildSettings.get(interaction.guild.id)).getZendesk();
+        if (!zendesk) {
             await interaction.reply('No help center configured!');
             return;
         }
 
-        const query = interaction.options.getString('query');
-
-        /** @type {{count: number, results: {html_url: string, title: string, body: string}[]}} */
-        const data = await got.get(`https://${guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles/search.json?query=` + encodeURIComponent(query)).json();
+        const data = await zendesk.searchArticles(interaction.options.getString('query', true));
         if (data.count) {
             const results = data.results.map(result => {
                 return {
@@ -91,7 +68,7 @@ export default class ArticleCommand extends Command {
 
             await new Promise(resolve => collector.on('end', resolve));
             // Remove select menu
-            await answer.edit({embeds: answer.embeds, components: answer.components.slice(0, 1)});
+            await answer.edit({embeds: answer.embeds, components: answer.components.slice(1)});
         }
         else {
             await interaction.reply({
@@ -102,39 +79,25 @@ export default class ArticleCommand extends Command {
     }
 
     async complete(interaction) {
-        const guildConfig = (await GuildSettings.get(interaction.guild.id));
-        if (!guildConfig.helpcenter) {
+        const zendesk = (await GuildSettings.get(interaction.guild.id)).getZendesk();
+        if (!zendesk) {
             return [];
         }
 
         const query = interaction.options.getString('query') ?? '';
 
-        const cachedCompletions = completionCache.get(guildConfig.helpcenter)?.get(query);
+        const cachedCompletions = completions.get(`${zendesk.identifier}:${query}`);
         if (cachedCompletions) {
             return cachedCompletions;
         }
 
-        let articles = [];
-        if (query) {
-            const res = await got.get(`https://${guildConfig.helpcenter}.zendesk.com/hc/api/internal/instant_search.json?query=${encodeURIComponent(query)}`).json();
-            if (res && res.results) {
-                articles = res.results.map(r => {
-                    const title = r.title.replace(/<\/?[^>]+>/g, '');
-                    return { name: title, value: title };
-                });
-            }
-        }
-        else {
-            const res = await got.get(`https://${guildConfig.helpcenter}.zendesk.com/api/v2/help_center/articles?per_page=100`).json();
-            if (res && res.articles) {
-                articles = res.articles.filter(r => r.promoted).map(r => {
-                    const title = r.title.replace(/<\/?[^>]+>/g, '');
-                    return { name: title, value: title };
-                });
-            }
-        }
+        const articles = (query ? await zendesk.getArticleSuggestions(query) : await zendesk.getPromotedArticles())
+            .map(r => {
+                const title = r.title.replace(/<\/?[^>]+>/g, '');
+                return { name: title, value: title };
+            });
 
-        setCompletionCache(guildConfig.helpcenter, query, articles);
+        completions.set(`${zendesk.identifier}:${query}`, articles, CACHE_DURATION);
 
         return articles;
     }
@@ -156,17 +119,17 @@ export default class ArticleCommand extends Command {
             components: [
                 new ActionRowBuilder()
                     .addComponents(
+                        /** @type {any} */ new SelectMenuBuilder()
+                            .setOptions(/** @type {any} */ results)
+                            .setCustomId('article')
+                    ),
+                new ActionRowBuilder()
+                    .addComponents(
                         /** @type {any} */ new ButtonBuilder()
                             .setStyle(ButtonStyle.Link)
                             .setURL(results[index].value)
                             .setLabel('View Article')
                     ),
-                new ActionRowBuilder()
-                    .addComponents(
-                        /** @type {any} */ new SelectMenuBuilder()
-                            .setOptions(/** @type {any} */ results)
-                            .setCustomId('article')
-                    )
             ],
             fetchReply: true,
         };
@@ -227,8 +190,8 @@ export default class ArticleCommand extends Command {
             });
         //convert string
         let string = turndown.turndown(body);
-        if (string.length > 800) {
-            string = string.substring(0, 800);
+        if (string.length > ARTICLE_EMBED_PREVIEW_LENGTH) {
+            string = string.substring(0, ARTICLE_EMBED_PREVIEW_LENGTH);
             string = string.replace(/\.?\n+.*$/, '');
             embed.setFooter({
                 text: 'To read more, click \'View Article\' below.',
