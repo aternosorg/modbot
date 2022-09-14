@@ -84,5 +84,3 @@ export default class Exporter {
         this.badWords = Array.from((await BadWord.getAll(this.guildID)).values());
     }
 }
-
-module.exports = Exporter;

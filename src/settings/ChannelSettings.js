@@ -50,7 +50,7 @@ export default class ChannelSettings extends Settings {
      */
     static async getForGuild(guildID) {
         const result = [];
-        for (const {id, config} of await Database.instance.queryAll('SELECT id, settings FROM channels WHERE guildid = ?', [guildID])) {
+        for (const {id, config} of await Database.instance.queryAll('SELECT id, config FROM channels WHERE guildid = ?', [guildID])) {
             result.push(new ChannelSettings(id, JSON.parse(config)));
         }
         return result;
@@ -74,7 +74,7 @@ export default class ChannelSettings extends Settings {
     }
 
     async insert() {
-        return Database.instance.query('INSERT INTO channels (settings,id,guildid) VALUES (?,?,?)',
+        return Database.instance.query('INSERT INTO channels (config,id,guildid) VALUES (?,?,?)',
             this.toJSONString(), this.id, await this.getGuildID());
     }
 

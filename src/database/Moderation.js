@@ -144,7 +144,7 @@ export default class Moderation {
 
     /**
      * get all parameters of this moderation
-     * @return {(Snowflake|String|Number)[]}
+     * @return {(import('discord.js').Snowflake|String|Number)[]}
      */
     getParameters() {
         return [this.guildid, this.userid, this.action, this.created, this.expireTime, this.reason, this.moderator, this.value, this.active];
@@ -159,10 +159,8 @@ export default class Moderation {
         if(!Array.isArray(moderations) || !moderations.length) {
             return;
         }
-        moderations = moderations.map(m => m.getParameters());
+        const data = moderations.map(m => m.getParameters());
         return Database.instance.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
-            `VALUES ${moderations.map(() => '(?,?,?,?,?,?,?,?,?)').join(', ')}`, ...moderations.flat());
+            `VALUES ${moderations.map(() => '(?,?,?,?,?,?,?,?,?)').join(', ')}`, ...data.flat());
     }
 }
-
-module.exports = Moderation;
