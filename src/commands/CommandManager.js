@@ -2,6 +2,7 @@ import Bot from '../bot/Bot.js';
 import {PermissionsBitField, Routes} from 'discord.js';
 import ArticleCommand from './utility/ArticleCommand.js';
 import AvatarCommand from './utility/AvatarCommand.js';
+import ExportCommand from './utility/ExportCommand.js';
 
 export default class CommandManager {
     static #instance;
@@ -17,6 +18,7 @@ export default class CommandManager {
         return [
             new ArticleCommand(),
             new AvatarCommand(),
+            new ExportCommand(),
         ];
     }
 
