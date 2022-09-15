@@ -54,6 +54,10 @@ export default class CommandManager {
      * @return {Promise<boolean>}
      */
     async execute(interaction) {
+        if (!interaction.isCommand() && !interaction.isAutocomplete()) {
+            return false;
+        }
+
         const command = this.getCommands().find(c => c.getName() === interaction.commandName.toLowerCase());
         if (!command) {
             return false;
