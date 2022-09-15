@@ -44,7 +44,6 @@ export default class Bot {
             partials: [
                 Partials.GuildMember,
                 Partials.Channel,
-                Partials.Message,
             ],
         });
     }
