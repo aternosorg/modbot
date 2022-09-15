@@ -23,16 +23,6 @@ export default class UserWrapper {
 
     /**
      * fetch this user
-     * @return {Promise<UserWrapper>}
-     * @deprecated use this.fetchUser() instead
-     */
-    async fetch() {
-        await this.fetchUser();
-        return this;
-    }
-
-    /**
-     * fetch this user
      * @return {Promise<import('discord.js').User>}
      */
     async fetchUser() {
@@ -49,41 +39,4 @@ export default class UserWrapper {
         }
         return this.user;
     }
-
-    /**
-     * get an ID from a string. Supported formats:
-     * - 790967448111153153
-     * - <@790967448111153153>
-     * - <@!790967448111153153>
-     * @param {String} string
-     * @return {import('discord.js').Snowflake|null}
-     */
-    static getID(string) {
-        if (/^<@!?\d+>$/.test(string)) {
-            return /** @type {Snowflake|null} */ string.match(/^<@!?(\d+)>$/)[1];
-        }
-        else if(/^\d+$/.test(string)) {
-            return string;
-        }
-        else {
-            return null;
-        }
-    }
-
-    /**
-     *
-     * @param {String} string
-     * @return {Promise<null|UserWrapper>}
-     */
-    static async getMentionedUser(string) {
-        const userID = this.getID(string);
-        if (!userID) {
-            return null;
-        }
-
-        let user = new UserWrapper(userID);
-        return user.fetchUser();
-    }
 }
-
-module.exports = UserWrapper;

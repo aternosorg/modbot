@@ -6,6 +6,7 @@ import GuildWrapper from './GuildWrapper.js';
 import {resolveColor} from '../util/colors.js';
 import {toTitleCase} from '../util/util.js';
 import {TIMEOUT_LIMIT} from '../util/apiLimits.js';
+import Moderation from '../database/Moderation.js';
 
 export default class MemberWrapper {
 
@@ -23,11 +24,6 @@ export default class MemberWrapper {
      * @type {GuildMember|null}
      */
     member;
-
-    /**
-     * @type {import('discord.js').GuildBan}
-     */
-    banInfo;
 
     /**
      * @param {User} user
@@ -49,12 +45,116 @@ export default class MemberWrapper {
     }
 
     /**
-     * fetch a ban
-     * @returns {Promise<null|{reason: String|null}>}
+     * get all moderations for this member
+     * @return {Promise<Moderation[]>}
      */
-    async fetchBanInfo() {
-        this.banInfo = await this.guild.fetchBan(this.user.id);
-        return this.banInfo;
+    async getModerations() {
+        return await Moderation.getAll(this.guild.guild.id, this.user.id);
+    }
+
+    /**
+     * get the active moderation of this type
+     * @param {string} type
+     * @return {Promise<?Moderation>}
+     */
+    async getActiveModeration(type) {
+        const moderation = await Database.instance.query(
+            'SELECT * FROM moderations WHERE active = TRUE AND action = ? AND guildid = ? AND userid = ?',
+            type, this.guild.guild.id, this.user.id);
+
+        if (!moderation) {
+            return null;
+        }
+
+        return new Moderation(moderation);
+    }
+
+
+    /**
+     * get ban status, end timestamp and reason
+     * @return {Promise<{banned: boolean, end: ?number, reason: string}>}
+     */
+    async getBanInfo() {
+        const ban = await this.getActiveModeration('ban');
+        if (ban) {
+            return {
+                banned: true,
+                reason: ban.reason,
+                end: ban.expireTime ? ban.expireTime * 1000 : null,
+            };
+        }
+
+        const banInfo = await this.guild.fetchBan(this.user.id);
+        if (banInfo) {
+            return {
+                banned: true,
+                reason: banInfo.reason ?? 'Unknown',
+                end: null,
+            };
+        }
+
+        return {
+            banned: false,
+            reason: '',
+            end: null
+        };
+    }
+
+    /**
+     * is this member banned
+     * @returns {Promise<boolean>}
+     */
+    async isBanned() {
+        return (await this.getBanInfo()).banned;
+    }
+
+    /**
+     * get muted status, end timestamp and reason
+     * @return {Promise<{muted: boolean, end: ?number, reason: string}>}
+     */
+    async getMuteInfo() {
+        if (!this.member) await this.fetchMember(true);
+
+        const mute = await this.getActiveModeration('mute');
+        if (mute) {
+            return {
+                muted: true,
+                reason: mute.reason,
+                end: mute.expireTime ? mute.expireTime * 1000 : null,
+            };
+        }
+
+        const until = this.member?.communicationDisabledUntilTimestamp;
+        if (until && until > Date.now()) {
+            return {
+                muted: true,
+                reason: 'Unknown (time-out)',
+                end: until,
+            };
+        }
+
+        const {mutedRole} = await this._getGuildConfig();
+        if (mutedRole && this.member && this.member.roles.cache.get(mutedRole)) {
+            return {
+                muted: true,
+                reason: 'Unknown (muted-role)',
+                end: null
+            };
+        }
+
+        return {
+            muted: false,
+            reason: '',
+            end: null
+        };
+    }
+
+    /**
+     * is this member muted
+     * @returns {Promise<boolean>}
+     */
+    async isMuted() {
+        return (await this.getMuteInfo()).muted;
     }
 
     /**
@@ -200,17 +300,6 @@ export default class MemberWrapper {
     }
 
     /**
-     * is this member banned
-     * @returns {Promise<boolean>}
-     */
-    async isBanned() {
-        await this.fetchBanInfo();
-        return this.banInfo || await Database.instance.query(
-            'SELECT * FROM moderations WHERE active = TRUE AND action = \'ban\' AND guildid = ? AND userid = ?',
-            this.guild.guild.id, this.user.id);
-    }
-
-    /**
      * softban this user from this guild
      * @param {String}                              reason
      * @param {User|import('discord.js').ClientUser} moderator
@@ -288,26 +377,6 @@ export default class MemberWrapper {
             this.guild.guild.id, this.user.id);
         const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'unmute', reason, null, moderator.id);
         await this.#logModeration(moderator, reason, id, 'unmute');
-    }
-
-    /**
-     * is this member muted
-     * @returns {Promise<boolean>}
-     */
-    async isMuted() {
-        if (!this.member) await this.fetchMember(true);
-        if (this.member.communicationDisabledUntilTimestamp) {
-            return true;
-        }
-
-        const {mutedRole} = await this._getGuildConfig();
-        if (this.member && this.member.roles.cache.get(mutedRole)) {
-            return true;
-        }
-
-        return !!await Database.instance.query(
-            'SELECT * FROM moderations WHERE active = TRUE AND action = \'mute\' AND guildid = ? AND userid = ?',
-            this.guild.guild.id, this.user.id);
     }
 
     /**

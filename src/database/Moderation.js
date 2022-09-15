@@ -111,16 +111,25 @@ export default class Moderation {
     }
 
     /**
-     * get all moderations for a guild
-     * @param guildID
+     * get all moderations for a guild or member
+     * @param {import('discord.js').Snowflake} guildId
+     * @param {import('discord.js').Snowflake} [userId]
      * @return {Promise<*[]>}
      */
-    static async getAll(guildID) {
+    static async getAll(guildId, userId = null) {
         const result = [];
-        for (const moderation of await Database.instance.queryAll('SELECT id, userid, action, created, value, expireTime, reason, moderator, active ' +
-            'FROM moderations WHERE guildid = ?', [guildID])) {
+        let query = 'SELECT id, userid, action, created, value, expireTime, reason, moderator, active FROM moderations WHERE guildid = ?';
+        let values = [guildId];
+
+        if (userId) {
+            query += ' AND userid = ?';
+            values.push(userId);
+        }
+
+        for (const moderation of await Database.instance.queryAll(query, ...values)) {
             result.push(new Moderation(moderation));
         }
+
         return result;
     }
 

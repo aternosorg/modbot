@@ -7,6 +7,7 @@ import Cache from '../Cache.js';
 import {formatTime} from '../util/timeutils.js';
 import ImportCommand from './utility/ImportCommand.js';
 import InfoCommand from './utility/InfoCommand.js';
+import UserInfoCommand from './utility/UserInfoCommand.js';
 
 const cooldowns = new Cache();
 
@@ -27,6 +28,7 @@ export default class CommandManager {
             new ExportCommand(),
             new ImportCommand(),
             new InfoCommand(),
+            new UserInfoCommand(),
         ];
     }
 
@@ -54,11 +56,7 @@ export default class CommandManager {
      * @return {Promise<boolean>}
      */
     async execute(interaction) {
-        if (!interaction.isCommand() && !interaction.isAutocomplete()) {
-            return false;
-        }
-
-        const command = this.getCommands().find(c => c.getName() === interaction.commandName.toLowerCase());
+        const command = this.findCommand(interaction.commandName);
         if (!command) {
             return false;
         }
@@ -75,12 +73,7 @@ export default class CommandManager {
             }
         }
 
-        if (interaction.isAutocomplete()) {
-            await this.autocomplete(/** @type {import('discord.js').AutocompleteInteraction} */ interaction, command);
-            return true;
-        }
-
-        if (interaction.isContextMenuCommand()) {
+        if (interaction.isContextMenuCommand() || interaction.isButton()) {
             interaction = await command.promptForOptions(interaction);
 
             if (!interaction) {
@@ -112,10 +105,23 @@ export default class CommandManager {
 
     /**
      * @param {import('discord.js').AutocompleteInteraction} interaction
-     * @param {Command} command
      * @return {Promise<void>}
      */
-    async autocomplete(interaction, command) {
+    async autocomplete(interaction) {
+        const command = this.findCommand(interaction.commandName);
+        if (!command) {
+            return;
+        }
+
         await interaction.respond(await command.complete(interaction));
+    }
+
+    /**
+     * find a command with this name
+     * @param {string} name
+     * @return {Command}
+     */
+    findCommand(name) {
+        return this.getCommands().find(c => c.getName() === name.toLowerCase()) ?? null;
     }
 }
