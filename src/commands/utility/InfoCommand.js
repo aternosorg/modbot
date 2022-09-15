@@ -7,6 +7,7 @@ import {
     PermissionFlagsBits,
     PermissionsBitField
 } from 'discord.js';
+import Bot from '../../bot/Bot.js';
 
 const DISCORD_INVITE_LINK = 'https://discord.gg/zYYhgPtmxw';
 const GITHUB_REPOSITORY = 'https://github.com/aternosorg/modbot';
@@ -30,7 +31,7 @@ export default class InfoCommand extends Command {
         await interaction.reply({
             ephemeral: true,
             embeds: [new EmbedBuilder()
-                .setTitle('ModBot by Aternos')
+                .setAuthor({name: 'ModBot by Aternos', iconURL: Bot.instance.client.user.displayAvatarURL()})
                 .setDescription(
                     'ModBot is an open source moderation bot with advanced features developed by [Aternos](https://aternos.org/). ' +
                     'It uses modern Discord features like slash-commands, context-menus, timeouts, buttons, select-menus ' +
