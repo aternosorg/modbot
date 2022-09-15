@@ -81,7 +81,7 @@ export default class Command extends ExecutableCommand {
         return new ContextMenuCommandBuilder()
             .setName(toTitleCase(this.getName()))
             .setType(ApplicationCommandType.User)
-            .setDefaultMemberPermissions(this.getDefaultMemberPermissions())
+            .setDefaultMemberPermissions(this.getDefaultMemberPermissions()?.bitfield)
             .setDMPermission(this.isAvailableInDMs());
     }
 
@@ -101,7 +101,7 @@ export default class Command extends ExecutableCommand {
         return new ContextMenuCommandBuilder()
             .setName(toTitleCase(this.getName()))
             .setType(ApplicationCommandType.Message)
-            .setDefaultMemberPermissions(this.getDefaultMemberPermissions())
+            .setDefaultMemberPermissions(this.getDefaultMemberPermissions()?.bitfield)
             .setDMPermission(this.isAvailableInDMs());
     }
 

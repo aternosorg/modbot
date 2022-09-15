@@ -20,6 +20,10 @@ export default class UserInfoCommand extends Command {
             .add(PermissionFlagsBits.ViewAuditLog);
     }
 
+    supportsUserCommands() {
+        return true;
+    }
+
     async promptForOptions(interaction) {
         interaction.options = new CommandInteractionOptionResolver(Bot.instance.client, [{
             name: 'user',
