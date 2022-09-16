@@ -1,5 +1,9 @@
 import Bot from '../bot/Bot.js';
-import {Routes} from 'discord.js';
+import {
+    ApplicationCommandPermissionType,
+    ApplicationCommandType,
+    PermissionFlagsBits
+} from 'discord.js';
 import ArticleCommand from './utility/ArticleCommand.js';
 import AvatarCommand from './utility/AvatarCommand.js';
 import ExportCommand from './utility/ExportCommand.js';
@@ -8,11 +12,21 @@ import {formatTime} from '../util/timeutils.js';
 import ImportCommand from './utility/ImportCommand.js';
 import InfoCommand from './utility/InfoCommand.js';
 import UserInfoCommand from './utility/UserInfoCommand.js';
+import MemberWrapper from '../discord/MemberWrapper.js';
 
 const cooldowns = new Cache();
 
 export default class CommandManager {
     static #instance;
+
+    #commands = [
+        new ArticleCommand(),
+        new AvatarCommand(),
+        new ExportCommand(),
+        new ImportCommand(),
+        new InfoCommand(),
+        new UserInfoCommand(),
+    ];
 
     static get instance() {
         return this.#instance ??= new CommandManager();
@@ -22,14 +36,7 @@ export default class CommandManager {
      * @return {Command[]}
      */
     getCommands() {
-        return [
-            new ArticleCommand(),
-            new AvatarCommand(),
-            new ExportCommand(),
-            new ImportCommand(),
-            new InfoCommand(),
-            new UserInfoCommand(),
-        ];
+        return this.#commands;
     }
 
     /**
@@ -37,6 +44,7 @@ export default class CommandManager {
      * @return {Promise<void>}
      */
     async register() {
+        /** @type {import('discord.js').ApplicationCommandDataResolvable[]} */
         const commands = [];
         for (const command of this.getCommands()) {
             commands.push(command.buildSlashCommand());
@@ -48,37 +56,44 @@ export default class CommandManager {
             }
         }
 
-        await Bot.instance.client.rest.put(Routes.applicationCommands(Bot.instance.client.user.id), { body: commands });
+        for (const [id, command] of await Bot.instance.client.application.commands.set(commands)) {
+            if (command.type === ApplicationCommandType.ChatInput) {
+                this.findCommand(command.name).id = id;
+            }
+        }
     }
 
     /**
-     * @param {import('discord.js').Interaction} interaction
-     * @return {Promise<boolean>}
+     * find a command with this name
+     * @param {string} name
+     * @return {Command}
      */
-    async execute(interaction) {
-        const command = this.findCommand(interaction.commandName);
+    findCommand(name) {
+        return this.getCommands().find(c => c.getName() === name.toLowerCase()) ?? null;
+    }
+
+    /**
+     * check if this command can be executed in this context
+     * @param {?Command} command
+     * @param {import('discord.js').Interaction} interaction
+     * @return {Promise<boolean>} is command executable
+     */
+    async checkCommandAvailability(command, interaction) {
         if (!command) {
             return false;
         }
 
-        if (!interaction.inGuild()) {
-            if (!command.isAvailableInDMs()) {
-                return false;
-            }
-        } else {
+        if (interaction.inGuild()) {
             const missingBotPermissions = interaction.appPermissions.missing(command.getRequiredBotPermissions());
             if (missingBotPermissions.length) {
-                interaction.reply(`I'm missing the following permissions to execute this command: ${missingBotPermissions}`);
+                await interaction.reply({
+                    content: `I'm missing the following permissions to execute this command: ${missingBotPermissions}`,
+                    ephemeral:true
+                });
                 return false;
             }
-        }
-
-        if (interaction.isContextMenuCommand() || interaction.isButton()) {
-            interaction = await command.promptForOptions(interaction);
-
-            if (!interaction) {
-                return false;
-            }
+        } else if (!command.isAvailableInDMs()) {
+            return false;
         }
 
         if (command.getCoolDown()) {
@@ -95,12 +110,21 @@ export default class CommandManager {
                 });
                 return false;
             }
-
             cooldowns.set(key, null, command.getCoolDown() * 1000);
         }
-
-        await command.execute(interaction);
         return true;
+    }
+
+    /**
+     * @param {import('discord.js').ChatInputCommandInteraction} interaction
+     * @return {Promise<void>}
+     */
+    async execute(interaction) {
+        const command = this.findCommand(interaction.commandName);
+        if (!await this.checkCommandAvailability(command, interaction)) {
+            return;
+        }
+        await command.execute(interaction);
     }
 
     /**
@@ -117,11 +141,94 @@ export default class CommandManager {
     }
 
     /**
-     * find a command with this name
-     * @param {string} name
-     * @return {Command}
+     * @param {import('discord.js').UserContextMenuCommandInteraction} interaction
+     * @return {Promise<void>}
      */
-    findCommand(name) {
-        return this.getCommands().find(c => c.getName() === name.toLowerCase()) ?? null;
+    async executeUserMenu(interaction) {
+        const command = this.findCommand(interaction.commandName);
+        if (!await this.checkCommandAvailability(command, interaction)) {
+            return;
+        }
+        await command.executeUserMenu(interaction);
+    }
+
+    /**
+     * @param {import('discord.js').MessageContextMenuCommandInteraction} interaction
+     * @return {Promise<void>}
+     */
+    async executeMessageMenu(interaction) {
+        const command = this.findCommand(interaction.commandName);
+        if (!await this.checkCommandAvailability(command, interaction)) {
+            return;
+        }
+        await command.executeMessageMenu(interaction);
+    }
+
+    /**
+     * @param {import('discord.js').ButtonInteraction} interaction
+     * @return {Promise<void>}
+     */
+    async executeButton(interaction) {
+        if (!interaction.customId) {
+            return;
+        }
+        const match = interaction.customId.match(/^([^:]+):/);
+        if (!match || !match[1]) {
+            return;
+        }
+
+        const command = this.findCommand(match[1]);
+        if (!await this.checkCommandAvailability(command, interaction)) {
+            return;
+        }
+
+        if (!command.isAvailableInDMs() && !await this.checkMemberPermissions(interaction, command)) {
+            return;
+        }
+
+        await command.executeButton(interaction);
+    }
+
+    /**
+     * @param {import('discord.js').ButtonInteraction} interaction
+     * @param {Command} command
+     * @return {Promise<boolean>}
+     */
+    async checkMemberPermissions(interaction, command) {
+        const member = await (new MemberWrapper(interaction.user, interaction.guild)).fetchMember();
+        const overrides = await interaction.guild.commands.permissions.fetch({command: command.id});
+
+        if (member.permissions.has(PermissionFlagsBits.Administrator)) {
+            return true;
+        }
+
+        let permission;
+        if (interaction.memberPermissions.has(PermissionFlagsBits.UseApplicationCommands)) {
+            const everyOneOverride = overrides.find(override => override.type === ApplicationCommandPermissionType.Role
+                && override.id === interaction.guild.roles.everyone.id);
+            permission = everyOneOverride.permission && command.getDefaultMemberPermissions() === null;
+            const roleOverrides = overrides.filter(override => override.type === ApplicationCommandPermissionType.Role
+                && member.roles.resolve(override.id));
+            if (roleOverrides.some(override => override.permission === false)) {
+                permission = false;
+            }
+
+            if (roleOverrides.some(override => override.permission === true)) {
+                permission = true;
+            }
+
+            const memberOverride = overrides.find(override => override.type === ApplicationCommandPermissionType.User
+                && override.id === interaction.user.id);
+            if (memberOverride) {
+                permission = memberOverride.permission;
+            }
+        } else {
+            permission = false;
+        }
+
+        if (!permission) {
+            await interaction.reply({content: 'You\'re not allowed to execute this command!', ephemeral: true});
+        }
+        return permission;
     }
 }

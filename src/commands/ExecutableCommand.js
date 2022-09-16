@@ -57,8 +57,9 @@ export default class ExecutableCommand {
     }
 
     /**
+     * execute a slash command
      * @abstract
-     * @param {import('discord.js').Interaction} interaction
+     * @param {import('discord.js').ChatInputCommandInteraction} interaction
      * @return {Promise<void>}
      */
     async execute(interaction) {

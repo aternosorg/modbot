@@ -1,39 +1,15 @@
 import Command from '../Command.js';
-import {
-    ActionRowBuilder,
-    ApplicationCommandOptionType,
-    bold, ButtonBuilder, ButtonStyle,
-    Collection,
-    CommandInteractionOptionResolver,
-    EmbedBuilder, PermissionFlagsBits, PermissionsBitField,
-    time,
-    TimestampStyles
-} from 'discord.js';
-import Bot from '../../bot/Bot.js';
+import {ActionRowBuilder, bold, ButtonBuilder, ButtonStyle, EmbedBuilder, time, TimestampStyles} from 'discord.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
+import UserWrapper from '../../discord/UserWrapper.js';
 
 export default class UserInfoCommand extends Command {
 
     getDefaultMemberPermissions() {
-        return new PermissionsBitField()
-            .add(PermissionFlagsBits.ViewAuditLog);
-    }
-
-    supportsUserCommands() {
-        return true;
-    }
-
-    async promptForOptions(interaction) {
-        interaction.options = new CommandInteractionOptionResolver(Bot.instance.client, [{
-            name: 'user',
-            user: interaction.targetUser,
-            type: ApplicationCommandOptionType.User,
-        }], {
-            users: /** @type {Collection<import('discord.js').Snowflake, import('discord.js').User>} */
-                new Collection().set(interaction.targetUser.id, interaction.targetUser)
-        });
-        return interaction;
+        return null;
+        //return new PermissionsBitField()
+        //    .add(PermissionFlagsBits.ViewAuditLog);
     }
 
     buildOptions(builder) {
@@ -51,6 +27,32 @@ export default class UserInfoCommand extends Command {
         message.ephemeral = true;
 
         await interaction.reply(message);
+    }
+
+    supportsUserCommands() {
+        return true;
+    }
+
+    async executeUserMenu(interaction) {
+        const message = await this.generateUserMessage(interaction.targetUser, interaction);
+        message.ephemeral = true;
+
+        await interaction.reply(message);
+    }
+
+    async executeButton(interaction) {
+        const match = await interaction.customId.match(/^[^:]+:refresh:(\d+)$/);
+        if (!match) {
+            await interaction.reply('Unknown action!');
+            return;
+        }
+
+        const user = await (new UserWrapper(match[1])).fetchUser();
+        if (!user) {
+            await interaction.reply('Unknown user!');
+            return;
+        }
+        await interaction.update(await this.generateUserMessage(user, interaction));
     }
 
     /**
@@ -72,11 +74,11 @@ export default class UserInfoCommand extends Command {
             .addComponents(
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Refresh')
-                    .setCustomId(`userinfo:refresh:${user.id}`)
+                    .setCustomId(`user:refresh:${user.id}`)
                     .setStyle(ButtonStyle.Secondary),
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Strike')
-                    .setCustomId(`userinfo:strike:${user.id}`)
+                    .setCustomId(`strike:${user.id}`)
                     .setStyle(ButtonStyle.Danger),
             );
 
@@ -92,7 +94,7 @@ export default class UserInfoCommand extends Command {
                 actionRow.addComponents(
                     /** @type {*} */ new ButtonBuilder()
                         .setLabel('Pardon')
-                        .setCustomId(`userinfo:pardon:${user.id}`)
+                        .setCustomId(`pardon:${user.id}`)
                         .setStyle(ButtonStyle.Success)
                 );
             }
@@ -108,7 +110,7 @@ export default class UserInfoCommand extends Command {
                 actionRow.addComponents(
                     /** @type {*} */ new ButtonBuilder()
                         .setLabel('Unmute')
-                        .setCustomId(`userinfo:unmute:${user.id}`)
+                        .setCustomId(`unmute:${user.id}`)
                         .setStyle(ButtonStyle.Success)
                 );
             }
@@ -116,7 +118,7 @@ export default class UserInfoCommand extends Command {
                 actionRow.addComponents(
                     /** @type {*} */ new ButtonBuilder()
                         .setLabel('Mute')
-                        .setCustomId(`userinfo:mute:${user.id}`)
+                        .setCustomId(`mute:${user.id}`)
                         .setStyle(ButtonStyle.Danger)
                 );
             }
@@ -132,14 +134,14 @@ export default class UserInfoCommand extends Command {
                 actionRow.addComponents(
                     /** @type {*} */ new ButtonBuilder()
                         .setLabel('Unban')
-                        .setCustomId(`userinfo:unban:${user.id}`)
+                        .setCustomId(`unban:${user.id}`)
                         .setStyle(ButtonStyle.Success)
                 );
             }
             actionRow.addComponents(
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Ban')
-                    .setCustomId(`userinfo:ban:${user.id}`)
+                    .setCustomId(`ban:${user.id}`)
                     .setStyle(ButtonStyle.Danger)
             );
         }

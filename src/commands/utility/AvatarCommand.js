@@ -1,14 +1,7 @@
 import Command from '../Command.js';
-import {
-    ALLOWED_SIZES,
-    ApplicationCommandOptionType, Collection,
-    CommandInteractionOptionResolver,
-    EmbedBuilder,
-    escapeMarkdown
-} from 'discord.js';
+import {ALLOWED_SIZES, EmbedBuilder, escapeMarkdown} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
-import Bot from '../../bot/Bot.js';
 
 const IMAGE_OPTIONS = {
     size: ALLOWED_SIZES.at(-1),
@@ -41,37 +34,41 @@ export default class AvatarCommand extends Command {
         return super.buildOptions(builder);
     }
 
-    async promptForOptions(interaction) {
-        interaction.options = new CommandInteractionOptionResolver(Bot.instance.client, [{
-            name: 'user',
-            user: interaction.targetUser,
-            type: ApplicationCommandOptionType.User,
-        }], {
-            users: /** @type {Collection<import('discord.js').Snowflake, import('discord.js').User>} */
-                new Collection().set(interaction.targetUser.id, interaction.targetUser)
-        });
-        return interaction;
+    async executeUserMenu(interaction) {
+        await interaction.reply(await this.buildMessage(interaction.targetUser, interaction.guild));
     }
 
     async execute(interaction) {
         const user = interaction.options.getUser('user') ?? interaction.user;
+        const useServerProfile = interaction.options.getBoolean('use-server-profile') ?? true;
+        await interaction.reply(await this.buildMessage(user, interaction.guild, useServerProfile));
+    }
+
+    /**
+     * build the message
+     * @param {import('discord.js').User} user
+     * @param {import('discord.js').Guild|null} guild
+     * @param {boolean} useServerProfile
+     * @return {Promise<{ephemeral: boolean, embeds: EmbedBuilder[]}>}
+     */
+    async buildMessage(user, guild, useServerProfile = true) {
         let url = user.displayAvatarURL(IMAGE_OPTIONS);
 
-        if (interaction.guild && (interaction.options.getBoolean('use-server-profile') ?? true)) {
-            const member = await (new MemberWrapper(user, new GuildWrapper(interaction.guild))).fetchMember();
+        if (guild && useServerProfile) {
+            const member = await (new MemberWrapper(user, new GuildWrapper(guild))).fetchMember();
             if (member) {
                 url = member.displayAvatarURL(IMAGE_OPTIONS);
             }
         }
 
-        return interaction.reply({
+        return {
             embeds: [
                 new EmbedBuilder()
                     .setTitle(`Avatar of ${escapeMarkdown(user.tag)}`)
                     .setImage(url),
             ],
             ephemeral: true,
-        });
+        };
     }
 
     getDescription() {

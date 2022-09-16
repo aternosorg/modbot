@@ -37,7 +37,7 @@ export default class MemberWrapper {
     /**
      * fetch this member
      * @param {boolean} [force] bypass cache
-     * @returns {Promise<?GuildMember>}
+     * @returns {Promise<?import('discord.js').GuildMember>}
      */
     async fetchMember(force) {
         this.member = await this.guild.fetchMember(this.user.id, force);

@@ -1,8 +1,4 @@
-import {
-    ApplicationCommandType,
-    ContextMenuCommandBuilder,
-    SlashCommandBuilder
-} from 'discord.js';
+import {ApplicationCommandType, ContextMenuCommandBuilder, SlashCommandBuilder} from 'discord.js';
 import SubCommandGroup from './SubCommandGroup.js';
 import SubCommand from './SubCommand.js';
 import ExecutableCommand from './ExecutableCommand.js';
@@ -12,6 +8,12 @@ import {toTitleCase} from '../util/util.js';
  * @abstract
  */
 export default class Command extends ExecutableCommand {
+
+    /**
+     * discord slash command id
+     * @type {import('discord.js').Snowflake}
+     */
+    id = '';
 
     /**
      * add options to slash command builder
@@ -86,6 +88,15 @@ export default class Command extends ExecutableCommand {
     }
 
     /**
+     * execute a user context menu
+     * @param {import('discord.js').UserContextMenuCommandInteraction} interaction
+     * @return {Promise<void>}
+     */
+    async executeUserMenu(interaction) {
+
+    }
+
+    /**
      * does this command support message context menus
      * @return {boolean}
      */
@@ -106,11 +117,20 @@ export default class Command extends ExecutableCommand {
     }
 
     /**
-     * prompt for missing options using a modal
-     * @param {import('discord.js').Interaction} interaction
-     * @return {Promise<import('discord.js').Interaction|null>}
+     * execute a message context menu
+     * @param {import('discord.js').MessageContextMenuCommandInteraction} interaction
+     * @return {Promise<void>}
      */
-    async promptForOptions(interaction) {
-        return interaction;
+    async executeMessageMenu(interaction) {
+
+    }
+
+    /**
+     * execute a button
+     * @param {import('discord.js').ButtonInteraction} interaction
+     * @return {Promise<void>}
+     */
+    async executeButton(interaction) {
+
     }
 }
