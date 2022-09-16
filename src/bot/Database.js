@@ -144,6 +144,7 @@ export default class Database {
 
     /**
      * add a moderation
+     * @deprecated
      * @param {import('discord.js').Snowflake}          guildId       id of the guild
      * @param {import('discord.js').Snowflake}          userId        id of the moderated user
      * @param {String}                                  action        moderation type (e.g. 'ban')
@@ -155,7 +156,7 @@ export default class Database {
      */
     async addModeration(guildId, userId, action, reason, duration, moderatorId, value= 0) {
         //disable old moderations
-        await this.query('UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = ?', [guildId, userId, action]);
+        await this.query('UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = ?', guildId, userId, action);
 
         const now = Math.floor(Date.now()/1000);
         /** @property {Number} insertId*/
