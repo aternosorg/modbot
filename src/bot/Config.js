@@ -9,6 +9,7 @@ import {exists, readJSON} from '../util/fsutils.js';
  * @property {?MonitoringConfig} monitoring
  * @property {{enabled: boolean, guild: string}} debug
  * @property {string[]} featureWhitelist
+ * @property {Emojis} emoji emoji ids
  */
 
 /**
@@ -27,6 +28,14 @@ import {exists, readJSON} from '../util/fsutils.js';
  * @typedef {Object} MonitoringCredentials
  * @property {string} client_email
  * @property {string} private_key
+ */
+
+/**
+ * @typedef {Object} Emojis
+ * @property {?string} source
+ * @property {?string} privacy
+ * @property {?string} invite
+ * @property {?string} discord
  */
 
 export default class Config {
@@ -74,7 +83,13 @@ export default class Config {
                     enabled: !['0', 'false'].includes(process.env.MODBOT_DEBUG_ENABLED),
                     guild: process.env.MODBOT_DEBUG_GUILD
                 },
-                featureWhitelist: process.env.MODBOT_DEBUG_GUILD.split(/ *, */),
+                featureWhitelist: process.env.MODBOT_FEATURE_WHITELIST.split(/ *, */),
+                emoji: {
+                    source: process.env.MODBOT_EMOJI_SOURCE,
+                    privacy: process.env.MODBOT_EMOJI_PRIVACY,
+                    invite: process.env.MODBOT_EMOJI_INVITE,
+                    discord: process.env.MODBOT_EMOJI_DISCORD,
+                }
             };
         }
         else {
@@ -96,6 +111,7 @@ export default class Config {
                     private_key: '',
                 },
             };
+            this.data.emoji ??= {};
         }
     }
 }

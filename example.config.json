@@ -21,5 +21,11 @@
     "enabled": false,
     "guild": ""
   },
-  "featureWhitelist": ["guild-id of guild that should have additional features"]
+  "featureWhitelist": ["guild-id of guild that should have additional features"],
+  "emoji": {
+    "source": null,
+    "privacy": null,
+    "invite": null,
+    "discord": null
+  }
 }

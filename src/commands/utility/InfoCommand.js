@@ -8,6 +8,7 @@ import {
     PermissionsBitField
 } from 'discord.js';
 import Bot from '../../bot/Bot.js';
+import Config from '../../bot/Config.js';
 
 const DISCORD_INVITE_LINK = 'https://discord.gg/zYYhgPtmxw';
 const GITHUB_REPOSITORY = 'https://github.com/aternosorg/modbot';
@@ -28,6 +29,13 @@ const INVITE_LINK = `https://discordapp.com/oauth2/authorize?client_id=${CLIENT_
 export default class InfoCommand extends Command {
 
     async execute(interaction) {
+        const buttons = [
+            { name: 'Source', url: GITHUB_REPOSITORY, emoji: 'source' },
+            { name: 'Privacy', url: PRIVACY_POLICY, emoji: 'privacy' },
+            { name: 'Invite', url: INVITE_LINK, emoji: 'invite' },
+            { name: 'Discord', url: DISCORD_INVITE_LINK, emoji: 'discord' },
+        ];
+
         await interaction.reply({
             ephemeral: true,
             embeds: [new EmbedBuilder()
@@ -44,22 +52,12 @@ export default class InfoCommand extends Command {
             components: [
                 new ActionRowBuilder()
                     .addComponents(
-                        /** @type {any} */ new ButtonBuilder()
-                            .setLabel('Source')
-                            .setStyle(ButtonStyle.Link)
-                            .setURL(GITHUB_REPOSITORY),
-                        /** @type {any} */ new ButtonBuilder()
-                            .setLabel('Privacy')
-                            .setStyle(ButtonStyle.Link)
-                            .setURL(PRIVACY_POLICY),
-                        /** @type {any} */ new ButtonBuilder()
-                            .setLabel('Invite')
-                            .setStyle(ButtonStyle.Link)
-                            .setURL(INVITE_LINK),
-                        /** @type {any} */ new ButtonBuilder()
-                            .setLabel('Discord')
-                            .setStyle(ButtonStyle.Link)
-                            .setURL(DISCORD_INVITE_LINK),
+                        /** @type {*} */ buttons.map(data =>
+                            new ButtonBuilder()
+                                .setLabel(data.name)
+                                .setStyle(ButtonStyle.Link)
+                                .setURL(data.url)
+                                .setEmoji(Config.instance.data.emoji[data.emoji] ?? {}))
                     )
             ]
         });
