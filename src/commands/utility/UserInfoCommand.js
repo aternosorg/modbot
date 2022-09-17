@@ -3,6 +3,7 @@ import {ActionRowBuilder, bold, ButtonBuilder, ButtonStyle, EmbedBuilder, time, 
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import UserWrapper from '../../discord/UserWrapper.js';
+import colors from '../../util/colors.js';
 
 export default class UserInfoCommand extends Command {
 
@@ -64,6 +65,7 @@ export default class UserInfoCommand extends Command {
     async generateUserMessage(user, interaction) {
         const memberWrapper = new MemberWrapper(user, new GuildWrapper(interaction.guild));
         const member = await memberWrapper.fetchMember();
+        let color = colors.GREEN;
 
         /** @type {Map<string, string|number>} */
         const data = new Map()
@@ -113,6 +115,7 @@ export default class UserInfoCommand extends Command {
                         .setCustomId(`unmute:${user.id}`)
                         .setStyle(ButtonStyle.Success)
                 );
+                color = colors.ORANGE;
             }
             else {
                 actionRow.addComponents(
@@ -137,13 +140,16 @@ export default class UserInfoCommand extends Command {
                         .setCustomId(`unban:${user.id}`)
                         .setStyle(ButtonStyle.Success)
                 );
+                color = colors.RED;
             }
-            actionRow.addComponents(
-                /** @type {*} */ new ButtonBuilder()
-                    .setLabel('Ban')
-                    .setCustomId(`ban:${user.id}`)
-                    .setStyle(ButtonStyle.Danger)
-            );
+            else {
+                actionRow.addComponents(
+                    /** @type {*} */ new ButtonBuilder()
+                        .setLabel('Ban')
+                        .setCustomId(`ban:${user.id}`)
+                        .setStyle(ButtonStyle.Danger)
+                );
+            }
         }
 
         return {
@@ -152,6 +158,7 @@ export default class UserInfoCommand extends Command {
                 .setDescription(Array.from(data.entries())
                     .map(([name, value]) => bold(name) + ': ' + value)
                     .join('\n'))
+                .setColor(color)
             ],
             components: [actionRow],
         };
