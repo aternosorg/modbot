@@ -227,23 +227,24 @@ export default class CommandManager {
             }
         }
 
-        if (member.permissions.has(PermissionFlagsBits.Administrator)) {
+        if (interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
             return true;
         }
 
         if (!overrides) {
-            return command.getDefaultMemberPermissions() === null;
+            return interaction.memberPermissions.has(command.getDefaultMemberPermissions());
         }
 
-        const everyOneOverride = overrides.find(override => override.type === ApplicationCommandPermissionType.Role
-            && override.id === interaction.guild.roles.everyone.id);
-        let permission = everyOneOverride.permission && command.getDefaultMemberPermissions() === null;
+        const everyoneRoleId = interaction.guild.roles.everyone.id;
+        const everyoneOverride = overrides.find(override => override.type === ApplicationCommandPermissionType.Role
+            && override.id === everyoneRoleId);
+        let permission = everyoneOverride.permission && interaction.memberPermissions.has(command.getDefaultMemberPermissions());
+
         const roleOverrides = overrides.filter(override => override.type === ApplicationCommandPermissionType.Role
-            && member.roles.resolve(override.id));
+            && override.id !== everyoneRoleId && member.roles.resolve(override.id));
         if (roleOverrides.some(override => override.permission === false)) {
             permission = false;
         }
-
         if (roleOverrides.some(override => override.permission === true)) {
             permission = true;
         }
