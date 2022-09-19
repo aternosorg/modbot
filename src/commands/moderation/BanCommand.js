@@ -39,6 +39,11 @@ export default class BanCommand extends Command {
             .add(PermissionFlagsBits.BanMembers);
     }
 
+    getRequiredBotPermissions() {
+        return new PermissionsBitField()
+            .add(PermissionFlagsBits.BanMembers);
+    }
+
     supportsUserCommands() {
         return true;
     }
