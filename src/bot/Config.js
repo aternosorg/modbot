@@ -83,7 +83,7 @@ export default class Config {
                     enabled: !['0', 'false'].includes(process.env.MODBOT_DEBUG_ENABLED),
                     guild: process.env.MODBOT_DEBUG_GUILD
                 },
-                featureWhitelist: process.env.MODBOT_FEATURE_WHITELIST.split(/ *, */),
+                featureWhitelist: (process.env.MODBOT_FEATURE_WHITELIST ?? '').split(/ *, */),
                 emoji: {
                     source: process.env.MODBOT_EMOJI_SOURCE,
                     privacy: process.env.MODBOT_EMOJI_PRIVACY,
@@ -111,7 +111,7 @@ export default class Config {
                     private_key: '',
                 },
             };
-            this.data.emoji ??= {};
+            this.#data.emoji ??= {};
         }
     }
 }

@@ -15,6 +15,8 @@ import UserInfoCommand from './utility/UserInfoCommand.js';
 import MemberWrapper from '../discord/MemberWrapper.js';
 import BanCommand from './moderation/BanCommand.js';
 import UnbanCommand from './moderation/UnbanCommand.js';
+import VideoCommand from './utility/VideoCommand.js';
+import {AUTOCOMPLETE_OPTIONS_LIMIT} from '../util/apiLimits.js';
 
 const cooldowns = new Cache();
 
@@ -26,6 +28,7 @@ export default class CommandManager {
      */
     #commands = [
         new ArticleCommand(),
+        new VideoCommand(),
         new AvatarCommand(),
         new ExportCommand(),
         new ImportCommand(),
@@ -33,7 +36,7 @@ export default class CommandManager {
 
         new UserInfoCommand(),
         new BanCommand(),
-        new UnbanCommand()
+        new UnbanCommand(),
     ];
 
     static get instance() {
@@ -145,7 +148,9 @@ export default class CommandManager {
             return;
         }
 
-        await interaction.respond(await command.complete(interaction));
+        const options = await command.complete(interaction);
+
+        await interaction.respond(options.slice(0, AUTOCOMPLETE_OPTIONS_LIMIT));
     }
 
     /**

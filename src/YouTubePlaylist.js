@@ -1,0 +1,99 @@
+import Cache from './Cache.js';
+import Config from './bot/Config.js';
+import {youtube as youtube_fn} from '@googleapis/youtube';
+import Fuse from 'fuse.js';
+const youtube = youtube_fn('v3');
+
+const CACHE_DURATION = 10 * 60 * 1000;
+/** @type {Cache<string, YouTubeVideo[]>} */
+const cache = new Cache();
+
+/**
+ * @typedef {Object} PlaylistResponse
+ * @property {PlaylistResponseData} data
+ * @property {string} etag
+ * @property {string} nextPageToken
+ */
+
+/**
+ * @typedef {Object} PlaylistResponseData
+ * @property {PageInfo} pageInfo
+ * @property {YouTubeVideo[]} items
+ */
+
+/**
+ * @typedef {Object} PageInfo
+ * @property {number} totalResults
+ * @property {number} resultsPerPage
+ */
+
+/**
+ * @typedef {Object} YouTubeVideo
+ * @property {string} etag
+ * @property {YouTubeVideoSnippet} snippet
+ */
+
+/**
+ * @typedef {Object} YouTubeVideoSnippet
+ * @property {string} title
+ * @property {string} description
+ * @property {SnippetResourceId} resourceId
+ */
+
+/**
+ * @typedef {Object} SnippetResourceId
+ * @property {string} videoId
+ */
+
+export default class YouTubePlaylist {
+    #id;
+
+    constructor(id) {
+        this.#id = id;
+    }
+
+    /**
+     * get all videos in this playlist
+     * @return {Promise<YouTubeVideo[]>}
+     */
+    async getVideos() {
+        const cacheEntry = cache.getEntry(this.#id);
+        if (cacheEntry) {
+            return cacheEntry.value;
+        }
+
+        /** @type {YouTubeVideo[]} */
+        const videos = [];
+        let totalVideos = 0, nextPageToken = null;
+        do {
+            const response = /** @type {PlaylistResponse} */ await youtube.playlistItems.list({
+                auth: Config.instance.data.googleApiKey,
+                part: 'snippet,contentDetails,id',
+                playlistId: this.#id,
+                maxResults: 50,
+                pageToken: nextPageToken
+            });
+            totalVideos = response.data.pageInfo.totalResults;
+            videos.push(...response.data.items);
+            nextPageToken = response.data.nextPageToken;
+        } while (videos.length < totalVideos);
+
+        cache.set(this.#id, videos, CACHE_DURATION);
+        return videos;
+    }
+
+    /**
+     * search for videos in this playlist
+     * searches in title and description
+     * @param {string} query
+     * @return {Promise<(import('fuse.js').Fuse.FuseResult<YouTubeVideo>)[]>}
+     */
+    async searchVideos(query) {
+        const videos = await this.getVideos();
+        const fuse = new Fuse(videos, {
+            keys: ['snippet.title', 'snippet.description'],
+            includeScore: true
+        });
+        return fuse.search(query);
+    }
+}

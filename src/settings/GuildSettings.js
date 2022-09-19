@@ -5,6 +5,7 @@ import Punishment from '../database/Punishment.js';
 import Zendesk from '../Zendesk.js';
 import colors from '../util/colors.js';
 import {formatTime} from '../util/timeutils.js';
+import YouTubePlaylist from '../YouTubePlaylist.js';
 
 /**
  * @classdesc settings of a guild
@@ -268,6 +269,18 @@ export default class GuildSettings extends Settings {
         }
 
         return new Zendesk(this.helpcenter);
+    }
+
+    /**
+     * get the YouTube playlist for this guild
+     * @return {YouTubePlaylist}
+     */
+    getPlaylist() {
+        if (!this.playlist) {
+            return null;
+        }
+
+        return new YouTubePlaylist(this.playlist);
     }
 
     getDataObject(o = this) {

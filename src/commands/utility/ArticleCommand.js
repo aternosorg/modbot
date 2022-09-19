@@ -9,7 +9,7 @@ import {
 } from 'discord.js';
 import Turndown from 'turndown';
 import icons from '../../util/icons.js';
-import {SELECT_MENU_TITLE_LIMIT, SELECT_MENU_VALUE_LIMIT} from '../../util/apiLimits.js';
+import {SELECT_MENU_OPTIONS_LIMIT, SELECT_MENU_TITLE_LIMIT, SELECT_MENU_VALUE_LIMIT} from '../../util/apiLimits.js';
 import Cache from '../../Cache.js';
 
 const completions = new Cache();
@@ -45,39 +45,39 @@ export default class ArticleCommand extends Command {
         }
 
         const data = await zendesk.searchArticles(interaction.options.getString('query', true));
-        if (data.count) {
-            const results = data.results.map(result => {
-                return {
-                    default: false,
-                    label: result.title.substring(0, SELECT_MENU_TITLE_LIMIT),
-                    emoji: icons.article,
-                    value: result.html_url.substring(0, SELECT_MENU_VALUE_LIMIT)
-                };
-            });
-
-            const answer = /** @type {import('discord.js').Message} */
-                await interaction.reply(this.generateMessage(results, data.results[0].body, 0));
-
-            const collector = await answer.createMessageComponentCollector({
-                filter: interaction => interaction.customId === 'article',
-                idle: SELECT_MENU_TIMEOUT,
-            });
-
-            collector.on('collect', async (interaction) => {
-                const index = data.results.findIndex(result => result.html_url === interaction.values[0]);
-                await interaction.update(this.generateMessage(results, data.results[index].body, index));
-            });
-
-            await new Promise(resolve => collector.on('end', resolve));
-            // Remove select menu
-            await answer.edit({embeds: answer.embeds, components: answer.components.slice(1)});
-        }
-        else {
+        if (!data.count) {
             await interaction.reply({
                 ephemeral: true,
                 content: 'No article found!'
             });
+            return;
         }
+
+        const results = data.results.map(result => {
+            return {
+                default: false,
+                label: result.title.substring(0, SELECT_MENU_TITLE_LIMIT),
+                emoji: icons.article,
+                value: result.html_url.substring(0, SELECT_MENU_VALUE_LIMIT)
+            };
+        }).slice(0, SELECT_MENU_OPTIONS_LIMIT);
+
+        const answer = /** @type {import('discord.js').Message} */
+            await interaction.reply(this.generateMessage(results, data.results[0].body, 0));
+
+        const collector = await answer.createMessageComponentCollector({
+            filter: interaction => interaction.customId === 'article',
+            idle: SELECT_MENU_TIMEOUT,
+        });
+
+        collector.on('collect', async (interaction) => {
+            const index = data.results.findIndex(result => result.html_url === interaction.values[0]);
+            await interaction.update(this.generateMessage(results, data.results[index].body, index));
+        });
+
+        await new Promise(resolve => collector.on('end', resolve));
+        // Remove select menu
+        await answer.edit({embeds: answer.embeds, components: answer.components.slice(1)});
     }
 
     async complete(interaction) {
