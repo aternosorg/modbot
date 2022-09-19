@@ -2,7 +2,7 @@ import Bot from '../bot/Bot.js';
 import {
     ApplicationCommandPermissionType,
     ApplicationCommandType,
-    PermissionFlagsBits
+    PermissionFlagsBits, RESTJSONErrorCodes
 } from 'discord.js';
 import ArticleCommand from './utility/ArticleCommand.js';
 import AvatarCommand from './utility/AvatarCommand.js';
@@ -13,6 +13,7 @@ import ImportCommand from './utility/ImportCommand.js';
 import InfoCommand from './utility/InfoCommand.js';
 import UserInfoCommand from './utility/UserInfoCommand.js';
 import MemberWrapper from '../discord/MemberWrapper.js';
+import BanCommand from './moderation/BanCommand.js';
 
 const cooldowns = new Cache();
 
@@ -26,6 +27,8 @@ export default class CommandManager {
         new ImportCommand(),
         new InfoCommand(),
         new UserInfoCommand(),
+
+        new BanCommand(),
     ];
 
     static get instance() {
@@ -195,39 +198,60 @@ export default class CommandManager {
      * @return {Promise<boolean>}
      */
     async checkMemberPermissions(interaction, command) {
+        const permission = await this.hasPermission(interaction, command);
+        if (!permission) {
+            await interaction.reply({content: 'You\'re not allowed to execute this command!', ephemeral: true});
+        }
+        return permission;
+    }
+
+    /**
+     * @param {import('discord.js').ButtonInteraction} interaction
+     * @param {Command} command
+     * @return {Promise<boolean>}
+     */
+    async hasPermission(interaction, command) {
         const member = await (new MemberWrapper(interaction.user, interaction.guild)).fetchMember();
-        const overrides = await interaction.guild.commands.permissions.fetch({command: command.id});
+
+        if (!interaction.memberPermissions.has(PermissionFlagsBits.UseApplicationCommands)) {
+            return false;
+        }
+
+        let overrides = null;
+        try {
+            overrides = await interaction.guild.commands.permissions.fetch({command: command.id});
+        }
+        catch (e) {
+            if (e.code !== RESTJSONErrorCodes.UnknownApplicationCommandPermissions) {
+                throw e;
+            }
+        }
 
         if (member.permissions.has(PermissionFlagsBits.Administrator)) {
             return true;
         }
 
-        let permission;
-        if (interaction.memberPermissions.has(PermissionFlagsBits.UseApplicationCommands)) {
-            const everyOneOverride = overrides.find(override => override.type === ApplicationCommandPermissionType.Role
-                && override.id === interaction.guild.roles.everyone.id);
-            permission = everyOneOverride.permission && command.getDefaultMemberPermissions() === null;
-            const roleOverrides = overrides.filter(override => override.type === ApplicationCommandPermissionType.Role
-                && member.roles.resolve(override.id));
-            if (roleOverrides.some(override => override.permission === false)) {
-                permission = false;
-            }
+        if (!overrides) {
+            return command.getDefaultMemberPermissions() === null;
+        }
 
-            if (roleOverrides.some(override => override.permission === true)) {
-                permission = true;
-            }
-
-            const memberOverride = overrides.find(override => override.type === ApplicationCommandPermissionType.User
-                && override.id === interaction.user.id);
-            if (memberOverride) {
-                permission = memberOverride.permission;
-            }
-        } else {
+        const everyOneOverride = overrides.find(override => override.type === ApplicationCommandPermissionType.Role
+            && override.id === interaction.guild.roles.everyone.id);
+        let permission = everyOneOverride.permission && command.getDefaultMemberPermissions() === null;
+        const roleOverrides = overrides.filter(override => override.type === ApplicationCommandPermissionType.Role
+            && member.roles.resolve(override.id));
+        if (roleOverrides.some(override => override.permission === false)) {
             permission = false;
         }
 
-        if (!permission) {
-            await interaction.reply({content: 'You\'re not allowed to execute this command!', ephemeral: true});
+        if (roleOverrides.some(override => override.permission === true)) {
+            permission = true;
+        }
+
+        const memberOverride = overrides.find(override => override.type === ApplicationCommandPermissionType.User
+            && override.id === interaction.user.id);
+        if (memberOverride) {
+            permission = memberOverride.permission;
         }
         return permission;
     }

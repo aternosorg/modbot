@@ -428,7 +428,7 @@ export default class MemberWrapper {
      */
     async dmPunishedUser(verb, reason, duration, preposition = 'from') {
         return this.guild.sendDM(this.user,
-            `You have been ${verb} ${preposition} \`${this.guild.guild.name}\` ${duration ? `for ${formatTime(duration)}` : ''} | ${reason}`
+            `You have been ${verb} ${preposition} \`${this.guild.guild.name}\` ${duration ? `for ${formatTime(duration)}` : ''}: ${reason}`
         );
     }
 

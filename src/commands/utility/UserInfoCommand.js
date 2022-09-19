@@ -1,5 +1,5 @@
 import Command from '../Command.js';
-import {ActionRowBuilder, bold, ButtonBuilder, ButtonStyle, EmbedBuilder, time, TimestampStyles} from 'discord.js';
+import {ActionRowBuilder, bold, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits, PermissionsBitField, time, TimestampStyles} from 'discord.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import UserWrapper from '../../discord/UserWrapper.js';
@@ -8,9 +8,8 @@ import colors from '../../util/colors.js';
 export default class UserInfoCommand extends Command {
 
     getDefaultMemberPermissions() {
-        return null;
-        //return new PermissionsBitField()
-        //    .add(PermissionFlagsBits.ViewAuditLog);
+        return new PermissionsBitField()
+            .add(PermissionFlagsBits.ViewAuditLog);
     }
 
     buildOptions(builder) {
@@ -44,13 +43,13 @@ export default class UserInfoCommand extends Command {
     async executeButton(interaction) {
         const match = await interaction.customId.match(/^[^:]+:refresh:(\d+)$/);
         if (!match) {
-            await interaction.reply('Unknown action!');
+            await interaction.reply({ephemeral: true, content:'Unknown action!'});
             return;
         }
 
         const user = await (new UserWrapper(match[1])).fetchUser();
         if (!user) {
-            await interaction.reply('Unknown user!');
+            await interaction.reply({ephemeral: true, content:'Unknown user!'});
             return;
         }
         await interaction.update(await this.generateUserMessage(user, interaction));

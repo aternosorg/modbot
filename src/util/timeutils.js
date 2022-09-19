@@ -1,9 +1,13 @@
 /**
  * parse this time string to a duration in seconds
- * @param {string} string
+ * @param {?string} string
  * @return {?number} null if no time was included in the string
  */
 export function parseTime(string) {
+    if (!string) {
+        return null;
+    }
+
     let total = null;
 
     const regex = /(?<value>\d*\.?\d+)\s*(?<unit>years?|yrs?|y|months?|M|weeks?|w|days?|d|hours?|hrs?|h|minutes?|mins?|m|seconds?|secs?|s)/i;
@@ -52,16 +56,19 @@ export function parseTime(string) {
  */
 export function formatTime(duration) {
     let output = '';
-    for (const [name, factor] of [
-        ['years', 365 * 24 * 60 * 60],
-        ['months', 30 * 24 * 60 * 60],
-        ['days', 24 * 60 * 60],
-        ['hours', 60 * 60],
-        ['minutes', 60],
-        ['seconds', 1]]) {
+    for (let [name, factor] of [
+        ['year', 365 * 24 * 60 * 60],
+        ['month', 30 * 24 * 60 * 60],
+        ['day', 24 * 60 * 60],
+        ['hour', 60 * 60],
+        ['minute', 60],
+        ['second', 1]]) {
 
         const value = Math.floor(duration / factor);
         if (value) {
+            if (value !== 1) {
+                name = name + 's';
+            }
             output += `${value} ${name} `;
         }
         duration = duration % factor;

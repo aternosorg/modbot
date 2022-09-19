@@ -114,7 +114,7 @@ export default class Database {
      * Execute query and return all results
      *
      * @param {string} sql
-     * @param {*} values
+     * @param {string|number|null} values
      * @returns {Promise<Object[]>}
      */
     async queryAll(sql, ...values) {
@@ -144,7 +144,6 @@ export default class Database {
 
     /**
      * add a moderation
-     * @deprecated
      * @param {import('discord.js').Snowflake}          guildId       id of the guild
      * @param {import('discord.js').Snowflake}          userId        id of the moderated user
      * @param {String}                                  action        moderation type (e.g. 'ban')
@@ -160,7 +159,7 @@ export default class Database {
 
         const now = Math.floor(Date.now()/1000);
         /** @property {Number} insertId*/
-        const insert = await this.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value) VALUES (?,?,?,?,?,?,?,?)',[guildId, userId, action, now, duration ? now + duration : null, reason, moderatorId, value]);
+        const insert = await this.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value) VALUES (?,?,?,?,?,?,?,?)',guildId, userId, action, now, duration ? now + duration : null, reason, moderatorId, value);
         return insert.insertId;
     }
 }
