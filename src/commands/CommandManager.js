@@ -14,21 +14,26 @@ import InfoCommand from './utility/InfoCommand.js';
 import UserInfoCommand from './utility/UserInfoCommand.js';
 import MemberWrapper from '../discord/MemberWrapper.js';
 import BanCommand from './moderation/BanCommand.js';
+import UnbanCommand from './moderation/UnbanCommand.js';
 
 const cooldowns = new Cache();
 
 export default class CommandManager {
     static #instance;
 
+    /**
+     * @type {Command[]}
+     */
     #commands = [
         new ArticleCommand(),
         new AvatarCommand(),
         new ExportCommand(),
         new ImportCommand(),
         new InfoCommand(),
-        new UserInfoCommand(),
 
+        new UserInfoCommand(),
         new BanCommand(),
+        new UnbanCommand()
     ];
 
     static get instance() {

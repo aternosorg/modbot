@@ -133,7 +133,7 @@ export default class MemberWrapper {
             };
         }
 
-        const {mutedRole} = await this._getGuildConfig();
+        const {mutedRole} = await this._getGuildSettings();
         if (mutedRole && this.member && this.member.roles.cache.get(mutedRole)) {
             return {
                 muted: true,
@@ -162,8 +162,37 @@ export default class MemberWrapper {
      * @return {Promise<GuildSettings>}
      * @private
      */
-    async _getGuildConfig() {
+    async _getGuildSettings() {
         return GuildSettings.get(this.guild.guild.id);
+    }
+
+    /**
+     * is this member protected
+     * @return {Promise<Boolean>}
+     */
+    async isProtected() {
+        if (!await this.fetchMember()) {
+            return false;
+        }
+
+        const guildSettings = await this._getGuildSettings();
+        return guildSettings.isProtected(this.member);
+    }
+
+    /**
+     * can the bot moderate this member
+     * @return {Promise<boolean>}
+     */
+    async isModerateable() {
+        if (await this.isProtected()) {
+            return false;
+        }
+
+        if (!this.member) {
+            return true;
+        }
+
+        return this.guild.guild.members.me.roles.highest.comparePositionTo(this.member.roles.highest) > 0;
     }
 
     /**
@@ -189,7 +218,7 @@ export default class MemberWrapper {
         const total = await this.getStrikeSum();
         await Promise.all([
             this.#logModeration(moderator, reason, id, 'strike', null, amount, total),
-            this.executePunishment((await this._getGuildConfig()).findPunishment(total), `Reaching ${total} strikes`, true)
+            this.executePunishment((await this._getGuildSettings()).findPunishment(total), `Reaching ${total} strikes`, true)
         ]);
     }
 
@@ -264,14 +293,17 @@ export default class MemberWrapper {
      * ban this user from this guild
      * @param {String}                              reason
      * @param {User|import('discord.js').ClientUser} moderator
-     * @param {Number}                              [duration]
+     * @param {?number}                              [duration]
+     * @param {?number}                              [deleteMessageDays]
      * @return {Promise<void>}
      */
-    async ban(reason, moderator, duration){
+    async ban(reason, moderator, duration, deleteMessageDays){
+        deleteMessageDays ??= 7;
         await this.dmPunishedUser('banned', reason, duration, 'from');
         await this.guild.guild.members.ban(this.user.id, {
             deleteMessageDays: 1,
-            reason: this._shortenReason(`${moderator.tag} ${duration ? `(${formatTime(duration)}) ` : ''}| ${reason}`)
+            reason: this._shortenReason(`${moderator.tag} ${duration ? `(${formatTime(duration)}) ` : ''}| ${reason}`),
+            deleteMessageSeconds: deleteMessageDays * 24 * 60 * 60,
         });
         const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'ban', reason, duration, moderator.id);
         await this.#logModeration(moderator, reason, id, 'ban', formatTime(duration));
@@ -338,7 +370,7 @@ export default class MemberWrapper {
         const timeout = duration && duration <= TIMEOUT_LIMIT;
         let mutedRole;
         if (!timeout) {
-            mutedRole = (await this._getGuildConfig()).mutedRole;
+            mutedRole = (await this._getGuildSettings()).mutedRole;
             if (!mutedRole) {
                 return this.guild.log({content: 'Can\'t mute user because no muted role is specified'});
             }
@@ -366,7 +398,7 @@ export default class MemberWrapper {
     async unmute(reason, moderator){
         if (!this.member) await this.fetchMember();
         if (this.member) {
-            const {mutedRole} = await this._getGuildConfig();
+            const {mutedRole} = await this._getGuildSettings();
             if(this.member.roles.cache.has(mutedRole)) {
                 await this.member.roles.remove(mutedRole, this._shortenReason(`${moderator.tag} | ${reason}`));
             }
