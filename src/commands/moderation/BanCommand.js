@@ -103,7 +103,7 @@ export default class BanCommand extends Command {
     async promptForData(interaction, member) {
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Ban ${member.user.tag}`)
-            .setCustomId('ban')
+            .setCustomId(`ban:${member.user.id}`)
             .addComponents(
                 /** @type {*} */
                 new ActionRowBuilder()

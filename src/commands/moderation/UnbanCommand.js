@@ -77,7 +77,7 @@ export default class UnbanCommand extends Command {
     async promptAndUnban(interaction, member) {
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Unban ${member.user.tag}`)
-            .setCustomId('unban')
+            .setCustomId(`unban:${member.user.id}`)
             .addComponents(
                 /** @type {*} */
                 new ActionRowBuilder()

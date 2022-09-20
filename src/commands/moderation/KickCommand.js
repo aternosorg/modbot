@@ -85,7 +85,7 @@ export default class KickCommand extends Command {
     async promptAndKick(interaction, member) {
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Kick ${member.user.tag}`)
-            .setCustomId('kick')
+            .setCustomId(`kick:${member.user.id}`)
             .addComponents(
                 /** @type {*} */
                 new ActionRowBuilder()
