@@ -2,7 +2,6 @@ import Command from '../Command.js';
 import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, PermissionFlagsBits, PermissionsBitField, TextInputBuilder, TextInputStyle} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
-import UserWrapper from '../../discord/UserWrapper.js';
 
 export default class UnbanCommand extends Command {
 
@@ -62,19 +61,7 @@ export default class UnbanCommand extends Command {
     }
 
     async executeButton(interaction) {
-        const match = await interaction.customId.match(/^[^:]+:(\d+)$/);
-        if (!match) {
-            await interaction.reply({ephemeral: true, content: 'Unknown action!'});
-            return;
-        }
-
-        const user = await (new UserWrapper(match[1])).fetchUser();
-        if (!user) {
-            await interaction.reply({ephemeral: true, content:'Unknown user!'});
-            return;
-        }
-        const member = new MemberWrapper(user, interaction.guild);
-        await this.promptAndUnban(interaction, member);
+        await this.promptAndUnban(interaction, MemberWrapper.getMemberFromCustomId(interaction));
     }
 
     async executeUserMenu(interaction) {
@@ -101,27 +88,13 @@ export default class UnbanCommand extends Command {
                         .setStyle(TextInputStyle.Paragraph)
                         .setPlaceholder('No reason provided')),
             ));
+    }
 
-        /** @type {import('discord.js').ModalSubmitInteraction}*/
-        let modal = null;
-        try {
-            modal = await interaction.awaitModalSubmit({
-                time: 5 * 60 * 1000
-            });
-        }
-        catch (e) {
-            if (e.code === 'InteractionCollectorError') {
-                return;
-            }
-            else {
-                throw e;
-            }
-        }
-
-        const reason = modal.components[0].components.find(component => component.customId === 'reason').value
+    async executeModal(interaction) {
+        const reason = interaction.components[0].components.find(component => component.customId === 'reason').value
             || 'No reason provided';
 
-        await this.unban(modal, member, reason, interaction.user);
+        await this.unban(interaction, MemberWrapper.getMemberFromCustomId(interaction), reason, interaction.user);
     }
 
     getDescription() {

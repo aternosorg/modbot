@@ -51,3 +51,9 @@ export const AUTOCOMPLETE_OPTIONS_LIMIT = 25;
  * @type {number}
  */
 export const SELECT_MENU_OPTIONS_LIMIT = 25;
+
+/**
+ * maximum seconds of messages you can delete with a ban
+ * @type {number}
+ */
+export const BAN_MESSAGE_DELETE_LIMIT = 7 * 24 * 60 * 60;

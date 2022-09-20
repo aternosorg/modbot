@@ -5,8 +5,9 @@ import Database from '../bot/Database.js';
 import GuildWrapper from './GuildWrapper.js';
 import {resolveColor} from '../util/colors.js';
 import {toTitleCase} from '../util/util.js';
-import {TIMEOUT_LIMIT} from '../util/apiLimits.js';
+import {BAN_MESSAGE_DELETE_LIMIT, TIMEOUT_LIMIT} from '../util/apiLimits.js';
 import Moderation from '../database/Moderation.js';
+import UserWrapper from './UserWrapper.js';
 
 export default class MemberWrapper {
 
@@ -32,6 +33,28 @@ export default class MemberWrapper {
     constructor(user, guild) {
         this.user = user;
         this.guild = guild instanceof Guild ? new GuildWrapper(guild) : guild;
+    }
+
+    /**
+     * get member from the custom id of a moderation
+     * must follow the format 'action:id' or 'action:id:other-data'
+     * @param {import('discord.js').Interaction} interaction
+     * @return {MemberWrapper}
+     */
+    static async getMemberFromCustomId(interaction) {
+        const match = await interaction.customId.match(/^[^:]+:(\d+)(:|$)/);
+        if (!match) {
+            await interaction.reply({ephemeral: true, content: 'Unknown action!'});
+            return;
+        }
+
+        const user = await (new UserWrapper(match[1])).fetchUser();
+        if (!user) {
+            await interaction.reply({ephemeral: true, content:'Unknown user!'});
+            return;
+        }
+
+        return new MemberWrapper(user, interaction.guild);
     }
 
     /**
@@ -294,16 +317,19 @@ export default class MemberWrapper {
      * @param {String}                              reason
      * @param {User|import('discord.js').ClientUser} moderator
      * @param {?number}                              [duration]
-     * @param {?number}                              [deleteMessageDays]
+     * @param {?number}                              [deleteMessageSeconds]
      * @return {Promise<void>}
      */
-    async ban(reason, moderator, duration, deleteMessageDays){
-        deleteMessageDays ??= 7;
+    async ban(reason, moderator, duration, deleteMessageSeconds){
+        deleteMessageSeconds ??= 60 * 60;
+        if (deleteMessageSeconds > BAN_MESSAGE_DELETE_LIMIT) {
+            deleteMessageSeconds = BAN_MESSAGE_DELETE_LIMIT;
+        }
+
         await this.dmPunishedUser('banned', reason, duration, 'from');
         await this.guild.guild.members.ban(this.user.id, {
-            deleteMessageDays: 1,
             reason: this._shortenReason(`${moderator.tag} ${duration ? `(${formatTime(duration)}) ` : ''}| ${reason}`),
-            deleteMessageSeconds: deleteMessageDays * 24 * 60 * 60,
+            deleteMessageSeconds,
         });
         const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'ban', reason, duration, moderator.id);
         await this.#logModeration(moderator, reason, id, 'ban', formatTime(duration));

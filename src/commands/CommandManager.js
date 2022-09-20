@@ -17,6 +17,7 @@ import BanCommand from './moderation/BanCommand.js';
 import UnbanCommand from './moderation/UnbanCommand.js';
 import VideoCommand from './utility/VideoCommand.js';
 import {AUTOCOMPLETE_OPTIONS_LIMIT} from '../util/apiLimits.js';
+import KickCommand from './moderation/KickCommand.js';
 
 const cooldowns = new Cache();
 
@@ -37,6 +38,7 @@ export default class CommandManager {
         new UserInfoCommand(),
         new BanCommand(),
         new UnbanCommand(),
+        new KickCommand(),
     ];
 
     static get instance() {
@@ -203,7 +205,40 @@ export default class CommandManager {
     }
 
     /**
-     * @param {import('discord.js').ButtonInteraction} interaction
+     * @param {import('discord.js').ModalSubmitInteraction} interaction
+     * @return {Promise<void>}
+     */
+    async executeModal(interaction) {
+        const command = this.findCommandByCustomId(interaction.customId);
+        if (!await this.checkCommandAvailability(command, interaction)) {
+            return;
+        }
+
+        if (!command.isAvailableInDMs() && !await this.checkMemberPermissions(interaction, command)) {
+            return;
+        }
+
+        await command.executeModal(interaction);
+    }
+
+    /**
+     * @param {?string} id
+     * @return {?Command}
+     */
+    findCommandByCustomId(id) {
+        if (!id) {
+            return null;
+        }
+        const match = id.match(/^([^:]+)(:|$)/);
+        if (!match || !match[1]) {
+            return null;
+        }
+
+        return this.findCommand(match[1]);
+    }
+
+    /**
+     * @param {import('discord.js').Interaction} interaction
      * @param {Command} command
      * @return {Promise<boolean>}
      */
@@ -216,7 +251,7 @@ export default class CommandManager {
     }
 
     /**
-     * @param {import('discord.js').ButtonInteraction} interaction
+     * @param {import('discord.js').Interaction} interaction
      * @param {Command} command
      * @return {Promise<boolean>}
      */

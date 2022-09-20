@@ -126,11 +126,20 @@ export default class Command extends ExecutableCommand {
     }
 
     /**
-     * execute a button
+     * handle a button press
      * @param {import('discord.js').ButtonInteraction} interaction
      * @return {Promise<void>}
      */
     async executeButton(interaction) {
+
+    }
+
+    /**
+     * handle data submitted from a modal
+     * @param {import('discord.js').ModalSubmitInteraction} interaction
+     * @return {Promise<void>}
+     */
+    async executeModal(interaction) {
 
     }
 }

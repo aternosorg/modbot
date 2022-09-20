@@ -85,6 +85,12 @@ export default class UserInfoCommand extends Command {
 
         if (member) {
             data.set('Joined', time(member.joinedAt, TimestampStyles.LongDate));
+            actionRow.addComponents(
+                /** @type {*} */ new ButtonBuilder()
+                    .setLabel('Kick')
+                    .setCustomId(`kick:${user.id}`)
+                    .setStyle(ButtonStyle.Danger)
+            );
         }
 
         {

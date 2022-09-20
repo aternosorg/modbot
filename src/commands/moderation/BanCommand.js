@@ -3,7 +3,6 @@ import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, Permission
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import {formatTime, parseTime} from '../../util/timeutils.js';
 import colors from '../../util/colors.js';
-import UserWrapper from '../../discord/UserWrapper.js';
 
 export default class BanCommand extends Command {
 
@@ -65,10 +64,10 @@ export default class BanCommand extends Command {
      * @param {?string} reason
      * @param {import('discord.js').User} moderator
      * @param {?number} duration
-     * @param {?number} deleteMessageDays
+     * @param {?number} deleteMessageTime
      * @return {Promise<void>}
      */
-    async ban(interaction, member, reason, moderator, duration, deleteMessageDays) {
+    async ban(interaction, member, reason, moderator, duration, deleteMessageTime) {
         reason = reason || 'No reason provided';
 
         if (!await member.isModerateable()) {
@@ -76,7 +75,7 @@ export default class BanCommand extends Command {
             return;
         }
 
-        await member.ban(reason, moderator, duration, deleteMessageDays);
+        await member.ban(reason, moderator, duration, deleteMessageTime);
         await interaction.reply({
             ephemeral: true,
             embeds: [new EmbedBuilder()
@@ -87,32 +86,21 @@ export default class BanCommand extends Command {
     }
 
     async executeButton(interaction) {
-        const match = await interaction.customId.match(/^[^:]+:(\d+)$/);
-        if (!match) {
-            await interaction.reply({ephemeral: true, content: 'Unknown action!'});
-            return;
-        }
-
-        const user = await (new UserWrapper(match[1])).fetchUser();
-        if (!user) {
-            await interaction.reply({ephemeral: true, content:'Unknown user!'});
-            return;
-        }
-        const member = new MemberWrapper(user, interaction.guild);
-        await this.promptAndBan(interaction, member);
+        await this.promptForData(interaction, await MemberWrapper.getMemberFromCustomId(interaction));
     }
 
     async executeUserMenu(interaction) {
         const member = new MemberWrapper(interaction.targetUser, interaction.guild);
-        await this.promptAndBan(interaction, member);
+        await this.promptForData(interaction, member);
     }
 
     /**
+     * prompt user for ban reason, duration and more
      * @param {import('discord.js').Interaction} interaction
      * @param {MemberWrapper} member
      * @return {Promise<void>}
      */
-    async promptAndBan(interaction, member) {
+    async promptForData(interaction, member) {
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Ban ${member.user.tag}`)
             .setCustomId('ban')
@@ -136,29 +124,16 @@ export default class BanCommand extends Command {
                 new ActionRowBuilder()
                     .addComponents(/** @type {*} */ new TextInputBuilder()
                         .setRequired(false)
-                        .setLabel('Delete messages from the last x days')
+                        .setLabel('Delete message history')
                         .setCustomId('delete')
                         .setStyle(TextInputStyle.Short)
-                        .setValue('7')),
+                        .setValue('1 hour')),
             ));
-        let modal = null;
+    }
 
-        try {
-            modal = await interaction.awaitModalSubmit({
-                time: 5 * 60 * 1000
-            });
-        }
-        catch (e) {
-            if (e.code === 'InteractionCollectorError') {
-                return;
-            }
-            else {
-                throw e;
-            }
-        }
-
-        let reason, duration, deleteMessageDays;
-        for (const row of modal.components) {
+    async executeModal(interaction) {
+        let reason, duration, deleteMessageTime;
+        for (const row of interaction.components) {
             for (const component of row.components) {
                 if (component.customId === 'reason') {
                     reason = component.value || 'No reason provided';
@@ -167,12 +142,18 @@ export default class BanCommand extends Command {
                     duration = parseTime(component.value);
                 }
                 else if (component.customId === 'delete') {
-                    deleteMessageDays = parseInt(component.value);
+                    deleteMessageTime = parseTime(component.value);
                 }
             }
         }
 
-        await this.ban(modal, member, reason, interaction.user, duration, deleteMessageDays);
+        await this.ban(
+            interaction,
+            await MemberWrapper.getMemberFromCustomId(interaction),
+            reason, interaction.user,
+            duration,
+            deleteMessageTime
+        );
     }
 
     getDescription() {
