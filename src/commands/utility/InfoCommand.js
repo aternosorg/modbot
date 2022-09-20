@@ -22,6 +22,7 @@ const PERMISSIONS = new PermissionsBitField()
     .add(PermissionFlagsBits.ManageRoles)
     .add(PermissionFlagsBits.KickMembers)
     .add(PermissionFlagsBits.BanMembers)
+    .add(PermissionFlagsBits.ModerateMembers)
     .add(PermissionFlagsBits.ManageMessages)
     .add(PermissionFlagsBits.SendMessages);
 const INVITE_LINK = `https://discordapp.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=${SCOPES.join('%20')}&permissions=${PERMISSIONS.bitfield}`;
