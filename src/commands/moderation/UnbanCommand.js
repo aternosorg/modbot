@@ -30,10 +30,6 @@ export default class UnbanCommand extends Command {
             .add(PermissionFlagsBits.BanMembers);
     }
 
-    supportsUserCommands() {
-        return true;
-    }
-
     async execute(interaction) {
         const member = new MemberWrapper(interaction.options.getUser('user', true), interaction.guild);
         const reason = interaction.options.getString('reason');
@@ -62,11 +58,6 @@ export default class UnbanCommand extends Command {
 
     async executeButton(interaction) {
         await this.promptAndUnban(interaction, MemberWrapper.getMemberFromCustomId(interaction));
-    }
-
-    async executeUserMenu(interaction) {
-        const member = new MemberWrapper(interaction.targetUser, interaction.guild);
-        await this.promptAndUnban(interaction, member);
     }
 
     /**

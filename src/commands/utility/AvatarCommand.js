@@ -8,11 +8,6 @@ const IMAGE_OPTIONS = {
 };
 
 export default class AvatarCommand extends Command {
-
-    supportsUserCommands() {
-        return true;
-    }
-
     isAvailableInDMs() {
         return true;
     }
@@ -32,10 +27,6 @@ export default class AvatarCommand extends Command {
                     .setDescription('Show avatar from server profile if it exists (default: true)')
             );
         return super.buildOptions(builder);
-    }
-
-    async executeUserMenu(interaction) {
-        await interaction.reply(await this.buildMessage(interaction.targetUser, interaction.guild));
     }
 
     async execute(interaction) {
