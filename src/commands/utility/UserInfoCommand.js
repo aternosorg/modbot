@@ -82,6 +82,7 @@ export default class UserInfoCommand extends Command {
                     .setCustomId(`strike:${user.id}`)
                     .setStyle(ButtonStyle.Danger),
             );
+        // TODO buttons for: avatar, moderations, softban (?)
 
         if (member) {
             data.set('Joined', time(member.joinedAt, TimestampStyles.LongDate));
