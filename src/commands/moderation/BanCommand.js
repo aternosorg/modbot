@@ -23,12 +23,10 @@ export default class BanCommand extends Command {
                 .setDescription('Ban duration')
                 .setRequired(false)
         );
-        builder.addIntegerOption(option =>
+        builder.addStringOption(option =>
             option.setName('delete')
-                .setDescription('Delete messages for the last x days')
+                .setDescription('Delete message history for this time frame')
                 .setRequired(false)
-                .setMinValue(0)
-                .setMaxValue(7)
         );
         return super.buildOptions(builder);
     }
@@ -53,7 +51,7 @@ export default class BanCommand extends Command {
             interaction.options.getString('reason'),
             interaction.user,
             parseTime(interaction.options.getString('duration')),
-            interaction.options.getInteger('delete', true)
+            parseTime(interaction.options.getString('delete'))
         );
     }
 
