@@ -18,6 +18,7 @@ import UnbanCommand from './moderation/UnbanCommand.js';
 import VideoCommand from './utility/VideoCommand.js';
 import {AUTOCOMPLETE_OPTIONS_LIMIT} from '../util/apiLimits.js';
 import KickCommand from './moderation/KickCommand.js';
+import MuteCommand from './moderation/MuteCommand.js';
 
 const cooldowns = new Cache();
 
@@ -39,6 +40,7 @@ export default class CommandManager {
         new BanCommand(),
         new UnbanCommand(),
         new KickCommand(),
+        new MuteCommand(),
     ];
 
     static get instance() {

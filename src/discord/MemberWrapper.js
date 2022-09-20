@@ -156,7 +156,7 @@ export default class MemberWrapper {
             };
         }
 
-        const {mutedRole} = await this._getGuildSettings();
+        const {mutedRole} = await this.getGuildSettings();
         if (mutedRole && this.member && this.member.roles.cache.get(mutedRole)) {
             return {
                 muted: true,
@@ -183,9 +183,8 @@ export default class MemberWrapper {
     /**
      * get the guild settings
      * @return {Promise<GuildSettings>}
-     * @private
      */
-    async _getGuildSettings() {
+    async getGuildSettings() {
         return GuildSettings.get(this.guild.guild.id);
     }
 
@@ -198,7 +197,7 @@ export default class MemberWrapper {
             return false;
         }
 
-        const guildSettings = await this._getGuildSettings();
+        const guildSettings = await this.getGuildSettings();
         return guildSettings.isProtected(this.member);
     }
 
@@ -241,7 +240,7 @@ export default class MemberWrapper {
         const total = await this.getStrikeSum();
         await Promise.all([
             this.#logModeration(moderator, reason, id, 'strike', null, amount, total),
-            this.executePunishment((await this._getGuildSettings()).findPunishment(total), `Reaching ${total} strikes`, true)
+            this.executePunishment((await this.getGuildSettings()).findPunishment(total), `Reaching ${total} strikes`, true)
         ]);
     }
 
@@ -396,7 +395,7 @@ export default class MemberWrapper {
         const timeout = duration && duration <= TIMEOUT_LIMIT;
         let mutedRole;
         if (!timeout) {
-            mutedRole = (await this._getGuildSettings()).mutedRole;
+            mutedRole = (await this.getGuildSettings()).mutedRole;
             if (!mutedRole) {
                 return this.guild.log({content: 'Can\'t mute user because no muted role is specified'});
             }
@@ -424,7 +423,7 @@ export default class MemberWrapper {
     async unmute(reason, moderator){
         if (!this.member) await this.fetchMember();
         if (this.member) {
-            const {mutedRole} = await this._getGuildSettings();
+            const {mutedRole} = await this.getGuildSettings();
             if(this.member.roles.cache.has(mutedRole)) {
                 await this.member.roles.remove(mutedRole, this._shortenReason(`${moderator.tag} | ${reason}`));
             }

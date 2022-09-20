@@ -57,3 +57,9 @@ export const SELECT_MENU_OPTIONS_LIMIT = 25;
  * @type {number}
  */
 export const BAN_MESSAGE_DELETE_LIMIT = 7 * 24 * 60 * 60;
+
+/**
+ * maximum duration of a timeout
+ * @type {number}
+ */
+export const TIMEOUT_DURATION_LIMIT = 28 * 24 * 60 * 60;
