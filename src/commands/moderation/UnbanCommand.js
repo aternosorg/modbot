@@ -39,12 +39,16 @@ export default class UnbanCommand extends Command {
     /**
      *
      * @param {import('discord.js').Interaction} interaction
-     * @param {MemberWrapper} member
+     * @param {?MemberWrapper} member
      * @param {?string} reason
      * @param {import('discord.js').User} moderator
      * @return {Promise<void>}
      */
     async unban(interaction, member, reason, moderator) {
+        if (!member) {
+            return;
+        }
+
         reason = reason || 'No reason provided';
         await member.unban(reason, moderator);
         await interaction.reply({
@@ -57,15 +61,19 @@ export default class UnbanCommand extends Command {
     }
 
     async executeButton(interaction) {
-        await this.promptAndUnban(interaction, await MemberWrapper.getMemberFromCustomId(interaction));
+        await this.promptForData(interaction, await MemberWrapper.getMemberFromCustomId(interaction));
     }
 
     /**
      * @param {import('discord.js').Interaction} interaction
-     * @param {MemberWrapper} member
+     * @param {?MemberWrapper} member
      * @return {Promise<void>}
      */
-    async promptAndUnban(interaction, member) {
+    async promptForData(interaction, member) {
+        if (!member) {
+            return;
+        }
+
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Unban ${member.user.tag}`)
             .setCustomId(`unban:${member.user.id}`)

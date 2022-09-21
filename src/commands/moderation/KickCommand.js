@@ -45,13 +45,17 @@ export default class KickCommand extends Command {
     /**
      *
      * @param {import('discord.js').Interaction} interaction
-     * @param {MemberWrapper} member
+     * @param {?MemberWrapper} member
      * @param {?string} reason
      * @param {import('discord.js').User} moderator
      * @return {Promise<void>}
      */
     async kick(interaction, member, reason, moderator) {
         reason = reason || 'No reason provided';
+
+        if (!member) {
+            return;
+        }
 
         if (!await member.isModerateable()) {
             await interaction.reply({ephemeral: true, content: 'I can\'t moderate this member!'});
@@ -69,20 +73,24 @@ export default class KickCommand extends Command {
     }
 
     async executeButton(interaction) {
-        await this.promptAndKick(interaction, await MemberWrapper.getMemberFromCustomId(interaction));
+        await this.promptForData(interaction, await MemberWrapper.getMemberFromCustomId(interaction));
     }
 
     async executeUserMenu(interaction) {
         const member = new MemberWrapper(interaction.targetUser, interaction.guild);
-        await this.promptAndKick(interaction, member);
+        await this.promptForData(interaction, member);
     }
 
     /**
      * @param {import('discord.js').Interaction} interaction
-     * @param {MemberWrapper} member
+     * @param {?MemberWrapper} member
      * @return {Promise<void>}
      */
-    async promptAndKick(interaction, member) {
+    async promptForData(interaction, member) {
+        if (!member) {
+            return;
+        }
+
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Kick ${member.user.tag}`)
             .setCustomId(`kick:${member.user.id}`)

@@ -52,13 +52,17 @@ export default class StrikeCommand extends Command {
     /**
      *
      * @param {import('discord.js').Interaction} interaction
-     * @param {MemberWrapper} member
+     * @param {?MemberWrapper} member
      * @param {?string} reason
      * @param {import('discord.js').User} moderator
      * @param {?number} count
      * @return {Promise<void>}
      */
     async strike(interaction, member, reason, moderator, count) {
+        if (!member) {
+            return;
+        }
+
         reason = reason || 'No reason provided';
 
         if (!count || count < 1) {
@@ -92,10 +96,14 @@ export default class StrikeCommand extends Command {
     /**
      * prompt user for ban reason, duration and more
      * @param {import('discord.js').Interaction} interaction
-     * @param {MemberWrapper} member
+     * @param {?MemberWrapper} member
      * @return {Promise<void>}
      */
     async promptForData(interaction, member) {
+        if (!member) {
+            return;
+        }
+
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Strike ${member.user.tag}`)
             .setCustomId(`strike:${member.user.id}`)

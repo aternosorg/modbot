@@ -35,6 +35,15 @@ export default class AvatarCommand extends Command {
         await interaction.reply(await this.buildMessage(user, interaction.guild, useServerProfile));
     }
 
+    async executeButton(interaction) {
+        const member = await MemberWrapper.getMemberFromCustomId(interaction);
+        if (!member) {
+            return;
+        }
+
+        await interaction.reply(await this.buildMessage(member.user, interaction.guild, true));
+    }
+
     /**
      * build the message
      * @param {import('discord.js').User} user

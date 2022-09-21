@@ -62,13 +62,17 @@ export default class MuteCommand extends Command {
     /**
      *
      * @param {import('discord.js').Interaction} interaction
-     * @param {MemberWrapper} member
+     * @param {?MemberWrapper} member
      * @param {?string} reason
      * @param {import('discord.js').User} moderator
      * @param {?number} duration
      * @return {Promise<void>}
      */
     async mute(interaction, member, reason, moderator, duration) {
+        if (!member) {
+            return;
+        }
+
         reason = reason || 'No reason provided';
 
         if (!await member.isModerateable()) {
@@ -119,10 +123,14 @@ export default class MuteCommand extends Command {
     /**
      * prompt user for mute reason and duration
      * @param {import('discord.js').Interaction} interaction
-     * @param {MemberWrapper} member
+     * @param {?MemberWrapper} member
      * @return {Promise<void>}
      */
     async promptForData(interaction, member) {
+        if (!member) {
+            return;
+        }
+
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Mute ${member.user.tag}`)
             .setCustomId(`mute:${member.user.id}`)

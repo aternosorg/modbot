@@ -39,12 +39,16 @@ export default class UnmuteCommand extends Command {
     /**
      *
      * @param {import('discord.js').Interaction} interaction
-     * @param {MemberWrapper} member
+     * @param {?MemberWrapper} member
      * @param {?string} reason
      * @param {import('discord.js').User} moderator
      * @return {Promise<void>}
      */
     async unmute(interaction, member, reason, moderator) {
+        if (!member) {
+            return;
+        }
+
         reason = reason || 'No reason provided';
         await member.unmute(reason, moderator);
         await interaction.reply({
@@ -57,15 +61,19 @@ export default class UnmuteCommand extends Command {
     }
 
     async executeButton(interaction) {
-        await this.prompt(interaction, await MemberWrapper.getMemberFromCustomId(interaction));
+        await this.promptForData(interaction, await MemberWrapper.getMemberFromCustomId(interaction));
     }
 
     /**
      * @param {import('discord.js').Interaction} interaction
-     * @param {MemberWrapper} member
+     * @param {?MemberWrapper} member
      * @return {Promise<void>}
      */
-    async prompt(interaction, member) {
+    async promptForData(interaction, member) {
+        if (!member) {
+            return;
+        }
+
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Unmute ${member.user.tag}`)
             .setCustomId(`unmute:${member.user.id}`)

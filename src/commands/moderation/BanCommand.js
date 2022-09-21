@@ -58,7 +58,7 @@ export default class BanCommand extends Command {
     /**
      *
      * @param {import('discord.js').Interaction} interaction
-     * @param {MemberWrapper} member
+     * @param {?MemberWrapper} member
      * @param {?string} reason
      * @param {import('discord.js').User} moderator
      * @param {?number} duration
@@ -67,6 +67,10 @@ export default class BanCommand extends Command {
      */
     async ban(interaction, member, reason, moderator, duration, deleteMessageTime) {
         reason = reason || 'No reason provided';
+
+        if (!member) {
+            return;
+        }
 
         if (!await member.isModerateable()) {
             await interaction.reply({ephemeral: true, content: 'I can\'t moderate this member!'});
@@ -95,10 +99,14 @@ export default class BanCommand extends Command {
     /**
      * prompt user for ban reason, duration and more
      * @param {import('discord.js').Interaction} interaction
-     * @param {MemberWrapper} member
+     * @param {?MemberWrapper} member
      * @return {Promise<void>}
      */
     async promptForData(interaction, member) {
+        if (!member) {
+            return;
+        }
+
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Ban ${member.user.tag}`)
             .setCustomId(`ban:${member.user.id}`)
