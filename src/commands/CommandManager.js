@@ -8,21 +8,21 @@ import {AUTOCOMPLETE_OPTIONS_LIMIT} from '../util/apiLimits.js';
 import Cache from '../Cache.js';
 import {formatTime} from '../util/timeutils.js';
 
-import ArticleCommand from './utility/ArticleCommand.js';
-import AvatarCommand from './utility/AvatarCommand.js';
-import ExportCommand from './utility/ExportCommand.js';
-import ImportCommand from './utility/ImportCommand.js';
-import InfoCommand from './utility/InfoCommand.js';
-import UserInfoCommand from './utility/UserInfoCommand.js';
+import ArticleCommand from './external/ArticleCommand.js';
+import AvatarCommand from './user/AvatarCommand.js';
+import ExportCommand from './bot/ExportCommand.js';
+import ImportCommand from './bot/ImportCommand.js';
+import InfoCommand from './bot/InfoCommand.js';
+import UserInfoCommand from './user/UserInfoCommand.js';
 import MemberWrapper from '../discord/MemberWrapper.js';
-import BanCommand from './moderation/BanCommand.js';
-import UnbanCommand from './moderation/UnbanCommand.js';
-import VideoCommand from './utility/VideoCommand.js';
-import KickCommand from './moderation/KickCommand.js';
-import MuteCommand from './moderation/MuteCommand.js';
-import UnmuteCommand from './moderation/UnmuteCommand.js';
-import StrikeCommand from './moderation/StrikeCommand.js';
-import PardonCommand from './moderation/PardonCommand.js';
+import BanCommand from './user/BanCommand.js';
+import UnbanCommand from './user/UnbanCommand.js';
+import VideoCommand from './external/VideoCommand.js';
+import KickCommand from './user/KickCommand.js';
+import MuteCommand from './user/MuteCommand.js';
+import UnmuteCommand from './user/UnmuteCommand.js';
+import StrikeCommand from './user/StrikeCommand.js';
+import PardonCommand from './user/PardonCommand.js';
 
 const cooldowns = new Cache();
 
@@ -33,13 +33,17 @@ export default class CommandManager {
      * @type {Command[]}
      */
     #commands = [
-        new ArticleCommand(),
-        new VideoCommand(),
-        new AvatarCommand(),
+        // BOT
         new ExportCommand(),
         new ImportCommand(),
         new InfoCommand(),
 
+        // EXTERNAL
+        new ArticleCommand(),
+        new VideoCommand(),
+
+        // USER
+        new AvatarCommand(),
         new UserInfoCommand(),
         new BanCommand(),
         new UnbanCommand(),
