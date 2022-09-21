@@ -211,9 +211,13 @@ export default class GuildSettings extends Settings {
     /**
      * get a specific punishment
      * @param {Number} strikes
-     * @return {Punishment}
+     * @return {?Punishment}
      */
     getPunishment(strikes) {
+        if (!this.#punishments[strikes]) {
+            return null;
+        }
+
         return new Punishment(this.#punishments[strikes]);
     }
 
