@@ -1,9 +1,10 @@
 import Command from '../Command.js';
-import {ActionRowBuilder, bold, ButtonBuilder, ButtonStyle, EmbedBuilder, PermissionFlagsBits, PermissionsBitField, time, TimestampStyles} from 'discord.js';
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, PermissionsBitField, time, TimestampStyles} from 'discord.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import UserWrapper from '../../discord/UserWrapper.js';
 import colors from '../../util/colors.js';
+import UserEmbed from '../../embeds/UserEmbed.js';
 
 export default class UserInfoCommand extends Command {
 
@@ -64,28 +65,37 @@ export default class UserInfoCommand extends Command {
     async generateUserMessage(user, interaction) {
         const memberWrapper = new MemberWrapper(user, new GuildWrapper(interaction.guild));
         const member = await memberWrapper.fetchMember();
-        let color = colors.GREEN;
+        const embed = new UserEmbed(user)
+            .setColor(colors.GREEN)
+            .addLine('Discord ID', user.id)
+            .addLine('Created', time(user.createdAt, TimestampStyles.LongDate));
 
-        /** @type {Map<string, string|number>} */
-        const data = new Map()
-            .set('Discord ID', user.id)
-            .set('Created', time(user.createdAt, TimestampStyles.LongDate));
         /** @type {ActionRowBuilder<ButtonBuilder>} */
         const actionRow = new ActionRowBuilder()
+            .addComponents(
+                /** @type {*} */ new ButtonBuilder()
+                    .setLabel('Strike')
+                    .setCustomId(`strike:${user.id}`)
+                    .setStyle(ButtonStyle.Danger),
+            );
+        const informationRow = new ActionRowBuilder()
             .addComponents(
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Refresh')
                     .setCustomId(`user:refresh:${user.id}`)
                     .setStyle(ButtonStyle.Secondary),
                 /** @type {*} */ new ButtonBuilder()
-                    .setLabel('Strike')
-                    .setCustomId(`strike:${user.id}`)
-                    .setStyle(ButtonStyle.Danger),
+                    .setLabel('Avatar')
+                    .setCustomId(`avatar:${user.id}`)
+                    .setStyle(ButtonStyle.Secondary),
+                /** @type {*} */ new ButtonBuilder()
+                    .setLabel('Moderations')
+                    .setCustomId(`moderations:${user.id}`)
+                    .setStyle(ButtonStyle.Secondary),
             );
-        // TODO buttons for: avatar, moderations, softban (?)
 
         if (member) {
-            data.set('Joined', time(member.joinedAt, TimestampStyles.LongDate));
+            embed.addLine('Joined', time(member.joinedAt, TimestampStyles.LongDate));
             actionRow.addComponents(
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Kick')
@@ -96,8 +106,8 @@ export default class UserInfoCommand extends Command {
 
         {
             const strikeCount = await memberWrapper.getStrikeSum();
-            data.set('Moderations', (await memberWrapper.getModerations()).length)
-                .set('Strike count', strikeCount);
+            embed.addLine('Moderations', (await memberWrapper.getModerations()).length)
+                .addLine('Strike count', strikeCount);
             if (strikeCount) {
                 actionRow.addComponents(
                     /** @type {*} */ new ButtonBuilder()
@@ -111,9 +121,10 @@ export default class UserInfoCommand extends Command {
         {
             const mute = await memberWrapper.getMuteInfo();
             if (mute.muted) {
-                data.set('\nMuted', mute.reason);
+                embed.newLine()
+                    .addLine('Muted', mute.reason);
                 if (mute.end) {
-                    data.set('Muted until', time(Math.floor(mute.end / 1_000)));
+                    embed.addLine('Muted until', time(Math.floor(mute.end / 1_000)));
                 }
                 actionRow.addComponents(
                     /** @type {*} */ new ButtonBuilder()
@@ -121,7 +132,7 @@ export default class UserInfoCommand extends Command {
                         .setCustomId(`unmute:${user.id}`)
                         .setStyle(ButtonStyle.Success)
                 );
-                color = colors.ORANGE;
+                embed.setColor(colors.ORANGE);
             }
             else {
                 actionRow.addComponents(
@@ -136,9 +147,10 @@ export default class UserInfoCommand extends Command {
         {
             const ban = await memberWrapper.getBanInfo();
             if (ban.banned) {
-                data.set('\nBanned', ban.reason);
+                embed.newLine()
+                    .addLine('Banned', ban.reason);
                 if (ban.end) {
-                    data.set('Banned until', time(Math.floor(ban.end / 1_000)));
+                    embed.addLine('Banned until', time(Math.floor(ban.end / 1_000)));
                 }
                 actionRow.addComponents(
                     /** @type {*} */ new ButtonBuilder()
@@ -146,7 +158,7 @@ export default class UserInfoCommand extends Command {
                         .setCustomId(`unban:${user.id}`)
                         .setStyle(ButtonStyle.Success)
                 );
-                color = colors.RED;
+                embed.setColor(colors.RED);
             }
             else {
                 actionRow.addComponents(
@@ -159,14 +171,8 @@ export default class UserInfoCommand extends Command {
         }
 
         return {
-            embeds: [new EmbedBuilder()
-                .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
-                .setDescription(Array.from(data.entries())
-                    .map(([name, value]) => bold(name) + ': ' + value)
-                    .join('\n'))
-                .setColor(color)
-            ],
-            components: [actionRow],
+            embeds: [embed],
+            components: [actionRow, informationRow],
         };
     }
 
