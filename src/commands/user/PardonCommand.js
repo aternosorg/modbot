@@ -17,7 +17,7 @@ export default class PardonCommand extends Command {
                 .setDescription('Pardon reason')
                 .setRequired(false)
         );
-        builder.addNumberOption(option =>
+        builder.addIntegerOption(option =>
             option.setName('count')
                 .setDescription('Strike count')
                 .setRequired(false)

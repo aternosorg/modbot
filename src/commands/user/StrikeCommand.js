@@ -17,7 +17,7 @@ export default class StrikeCommand extends Command {
                 .setDescription('Strike reason')
                 .setRequired(false)
         );
-        builder.addNumberOption(option =>
+        builder.addIntegerOption(option =>
             option.setName('count')
                 .setDescription('Strike count')
                 .setRequired(false)
