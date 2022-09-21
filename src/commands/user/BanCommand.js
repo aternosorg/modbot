@@ -3,6 +3,7 @@ import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, Permission
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import {formatTime, parseTime} from '../../util/timeutils.js';
 import colors from '../../util/colors.js';
+import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 
 export default class BanCommand extends Command {
 
@@ -108,7 +109,7 @@ export default class BanCommand extends Command {
         }
 
         await interaction.showModal(new ModalBuilder()
-            .setTitle(`Ban ${member.user.tag}`)
+            .setTitle(`Ban ${member.user.tag}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`ban:${member.user.id}`)
             .addComponents(
                 /** @type {*} */

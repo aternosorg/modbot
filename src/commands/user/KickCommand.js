@@ -2,6 +2,7 @@ import Command from '../Command.js';
 import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, PermissionFlagsBits, PermissionsBitField, TextInputBuilder, TextInputStyle} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
+import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 
 export default class KickCommand extends Command {
 
@@ -92,7 +93,7 @@ export default class KickCommand extends Command {
         }
 
         await interaction.showModal(new ModalBuilder()
-            .setTitle(`Kick ${member.user.tag}`)
+            .setTitle(`Kick ${member.user.tag}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`kick:${member.user.id}`)
             .addComponents(
                 /** @type {*} */

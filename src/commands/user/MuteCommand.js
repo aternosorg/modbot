@@ -10,7 +10,7 @@ import {
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import {formatTime, parseTime} from '../../util/timeutils.js';
 import colors from '../../util/colors.js';
-import {TIMEOUT_DURATION_LIMIT} from '../../util/apiLimits.js';
+import {MODAL_TITLE_LIMIT, TIMEOUT_DURATION_LIMIT} from '../../util/apiLimits.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 
 export default class MuteCommand extends Command {
@@ -132,7 +132,7 @@ export default class MuteCommand extends Command {
         }
 
         await interaction.showModal(new ModalBuilder()
-            .setTitle(`Mute ${member.user.tag}`)
+            .setTitle(`Mute ${member.user.tag}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`mute:${member.user.id}`)
             .addComponents(
                 /** @type {*} */

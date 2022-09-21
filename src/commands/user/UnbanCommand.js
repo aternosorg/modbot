@@ -2,6 +2,7 @@ import Command from '../Command.js';
 import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, PermissionFlagsBits, PermissionsBitField, TextInputBuilder, TextInputStyle} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
+import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 
 export default class UnbanCommand extends Command {
 
@@ -75,7 +76,7 @@ export default class UnbanCommand extends Command {
         }
 
         await interaction.showModal(new ModalBuilder()
-            .setTitle(`Unban ${member.user.tag}`)
+            .setTitle(`Unban ${member.user.tag}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`unban:${member.user.id}`)
             .addComponents(
                 /** @type {*} */

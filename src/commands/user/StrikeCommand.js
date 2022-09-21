@@ -2,6 +2,7 @@ import Command from '../Command.js';
 import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, PermissionFlagsBits, PermissionsBitField, TextInputBuilder, TextInputStyle} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
+import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 
 export default class StrikeCommand extends Command {
 
@@ -105,7 +106,7 @@ export default class StrikeCommand extends Command {
         }
 
         await interaction.showModal(new ModalBuilder()
-            .setTitle(`Strike ${member.user.tag}`)
+            .setTitle(`Strike ${member.user.tag}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`strike:${member.user.id}`)
             .addComponents(
                 /** @type {*} */
