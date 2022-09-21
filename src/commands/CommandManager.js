@@ -22,6 +22,7 @@ import KickCommand from './moderation/KickCommand.js';
 import MuteCommand from './moderation/MuteCommand.js';
 import UnmuteCommand from './moderation/UnmuteCommand.js';
 import StrikeCommand from './moderation/StrikeCommand.js';
+import PardonCommand from './moderation/PardonCommand.js';
 
 const cooldowns = new Cache();
 
@@ -46,6 +47,7 @@ export default class CommandManager {
         new MuteCommand(),
         new UnmuteCommand(),
         new StrikeCommand(),
+        new PardonCommand(),
     ];
 
     static get instance() {
