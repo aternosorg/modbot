@@ -4,11 +4,13 @@ import {
     ApplicationCommandType,
     PermissionFlagsBits, RESTJSONErrorCodes
 } from 'discord.js';
+import {AUTOCOMPLETE_OPTIONS_LIMIT} from '../util/apiLimits.js';
+import Cache from '../Cache.js';
+import {formatTime} from '../util/timeutils.js';
+
 import ArticleCommand from './utility/ArticleCommand.js';
 import AvatarCommand from './utility/AvatarCommand.js';
 import ExportCommand from './utility/ExportCommand.js';
-import Cache from '../Cache.js';
-import {formatTime} from '../util/timeutils.js';
 import ImportCommand from './utility/ImportCommand.js';
 import InfoCommand from './utility/InfoCommand.js';
 import UserInfoCommand from './utility/UserInfoCommand.js';
@@ -16,9 +18,9 @@ import MemberWrapper from '../discord/MemberWrapper.js';
 import BanCommand from './moderation/BanCommand.js';
 import UnbanCommand from './moderation/UnbanCommand.js';
 import VideoCommand from './utility/VideoCommand.js';
-import {AUTOCOMPLETE_OPTIONS_LIMIT} from '../util/apiLimits.js';
 import KickCommand from './moderation/KickCommand.js';
 import MuteCommand from './moderation/MuteCommand.js';
+import UnmuteCommand from './moderation/UnmuteCommand.js';
 
 const cooldowns = new Cache();
 
@@ -41,6 +43,7 @@ export default class CommandManager {
         new UnbanCommand(),
         new KickCommand(),
         new MuteCommand(),
+        new UnmuteCommand(),
     ];
 
     static get instance() {

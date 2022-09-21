@@ -97,7 +97,7 @@ export default class Config {
             if (!await exists('./config.json')) {
                 await Logger.instance.error('No settings file found.\n' +
                     'Create a config.json or use environment variables as described in the README.md');
-                // TODO
+                // TODO write documentation
                 process.exit(1);
             }
 
