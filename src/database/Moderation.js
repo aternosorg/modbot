@@ -190,6 +190,14 @@ export default class Moderation {
     }
 
     /**
+     * Delete this moderation from the database
+     * @return {Promise}
+     */
+    async delete() {
+        return Database.instance.query('DELETE FROM moderations WHERE id = ?', this.id);
+    }
+
+    /**
      * get all parameters of this moderation
      * @return {(import('discord.js').Snowflake|String|Number)[]}
      */
