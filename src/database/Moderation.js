@@ -1,5 +1,6 @@
 import TypeChecker from '../settings/TypeChecker.js';
 import Database from '../bot/Database.js';
+import UserWrapper from '../discord/UserWrapper.js';
 
 export default class Moderation {
 
@@ -71,10 +72,10 @@ export default class Moderation {
      * @param {import('discord.js').Snowflake} data.guildid
      * @param {import('discord.js').Snowflake} data.userid
      * @param {String} data.action
-     * @param {Number} [data.created]
+     * @param {?string|number} [data.created]
      * @param {Number} [data.value]
      * @param {String} [data.reason]
-     * @param {Number} [data.expireTime]
+     * @param {?string|number} [data.expireTime]
      * @param {import('discord.js').Snowflake} data.moderator
      * @param {boolean} [data.active]
      */
@@ -83,10 +84,10 @@ export default class Moderation {
         this.guildid = data.guildid;
         this.userid = data.userid;
         this.action = data.action;
-        this.created = data.created || Math.floor(Date.now()/1000);
+        this.created = parseInt(data.created) || Math.floor(Date.now()/1000);
         this.value = data.value;
         this.reason = data.reason || 'No reason provided.';
-        this.expireTime = data.expireTime;
+        this.expireTime = parseInt(data.expireTime);
         this.moderator = data.moderator;
         this.active = !!data.active;
     }
@@ -114,7 +115,7 @@ export default class Moderation {
      * get all moderations for a guild or member
      * @param {import('discord.js').Snowflake} guildId
      * @param {import('discord.js').Snowflake} [userId]
-     * @return {Promise<*[]>}
+     * @return {Promise<Moderation[]>}
      */
     static async getAll(guildId, userId = null) {
         const result = [];
@@ -131,6 +132,43 @@ export default class Moderation {
         }
 
         return result;
+    }
+
+    /**
+     * get a moderation
+     * @param {import('discord.js').Snowflake} guildId
+     * @param {number} id
+     * @return {Promise<?Moderation>}
+     */
+    static async get(guildId, id) {
+        const data = await Database.instance.query('SELECT * FROM moderations WHERE guildid = ? AND id = ?', guildId, id);
+
+        if (!data) {
+            return null;
+        }
+
+        return new Moderation(data);
+    }
+
+    /**
+     * insert multiple moderations at once
+     * @param {Moderation[]} moderations
+     * @return {Promise}
+     */
+    static async bulkSave(moderations) {
+        if(!Array.isArray(moderations) || !moderations.length) {
+            return;
+        }
+        let data = moderations.map(m => m.getParameters());
+
+        const queries = [];
+        while (data.length) {
+            const current = data.slice(0, 100);
+            data = data.slice(100);
+            queries.push(Database.instance.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
+                `VALUES ${'(?,?,?,?,?,?,?,?,?), '.repeat(current.length).slice(0, - 2)}`, ...current.flat()));
+        }
+        await Promise.all(queries);
     }
 
     /**
@@ -160,23 +198,10 @@ export default class Moderation {
     }
 
     /**
-     * insert multiple moderations at once
-     * @param {Moderation[]} moderations
-     * @return {Promise}
+     * fetch the user targeted by this moderation.
+     * @return {Promise<import('discord.js').User>}
      */
-    static async bulkSave(moderations) {
-        if(!Array.isArray(moderations) || !moderations.length) {
-            return;
-        }
-        let data = moderations.map(m => m.getParameters());
-
-        const queries = [];
-        while (data.length) {
-            const current = data.slice(0, 100);
-            data = data.slice(100);
-            queries.push(Database.instance.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
-                `VALUES ${'(?,?,?,?,?,?,?,?,?), '.repeat(current.length).slice(0, - 2)}`, ...current.flat()));
-        }
-        await Promise.all(queries);
+    async getUser() {
+        return await (new UserWrapper(this.userid)).fetchUser();
     }
 }

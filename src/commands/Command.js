@@ -1,6 +1,4 @@
 import {ApplicationCommandType, ContextMenuCommandBuilder, SlashCommandBuilder} from 'discord.js';
-import SubCommandGroup from './SubCommandGroup.js';
-import SubCommand from './SubCommand.js';
 import ExecutableCommand from './ExecutableCommand.js';
 import {toTitleCase} from '../util/util.js';
 
@@ -25,13 +23,6 @@ export default class Command extends ExecutableCommand {
     }
 
     /**
-     * @return {SubCommand|SubCommandGroup[]}
-     */
-    getChildren() {
-        return [];
-    }
-
-    /**
      * is this command available in direct messages
      * @return {boolean}
      */
@@ -50,20 +41,7 @@ export default class Command extends ExecutableCommand {
             .setDefaultMemberPermissions(this.getDefaultMemberPermissions()?.bitfield)
             .setDMPermission(this.isAvailableInDMs());
 
-        if (this.getChildren().length) {
-            for (const child of this.getChildren()) {
-                if (child instanceof SubCommandGroup) {
-                    builder.addSubcommandGroup(child.buildSubCommandGroup);
-                }
-                else if (child instanceof SubCommand) {
-                    builder.addSubcommand(child.buildSubCommand);
-                }
-            }
-        }
-        else {
-            this.buildOptions(builder);
-        }
-
+        this.buildOptions(builder);
         return builder;
     }
 
@@ -122,24 +100,6 @@ export default class Command extends ExecutableCommand {
      * @return {Promise<void>}
      */
     async executeMessageMenu(interaction) {
-
-    }
-
-    /**
-     * handle a button press
-     * @param {import('discord.js').ButtonInteraction} interaction
-     * @return {Promise<void>}
-     */
-    async executeButton(interaction) {
-
-    }
-
-    /**
-     * handle data submitted from a modal
-     * @param {import('discord.js').ModalSubmitInteraction} interaction
-     * @return {Promise<void>}
-     */
-    async executeModal(interaction) {
 
     }
 }

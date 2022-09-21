@@ -49,7 +49,7 @@ export default class ExecutableCommand {
     }
 
     /**
-     * @param {import('discord.js').BaseInteraction} interaction
+     * @param {import('discord.js').ChatInputCommandInteraction} interaction
      * @return {Promise<import('discord.js').ApplicationCommandOptionChoiceData[]>}
      */
     async complete(interaction) {
@@ -63,6 +63,24 @@ export default class ExecutableCommand {
      * @return {Promise<void>}
      */
     async execute(interaction) {
+
+    }
+
+    /**
+     * handle a button press
+     * @param {import('discord.js').ButtonInteraction} interaction
+     * @return {Promise<void>}
+     */
+    async executeButton(interaction) {
+
+    }
+
+    /**
+     * handle data submitted from a modal
+     * @param {import('discord.js').ModalSubmitInteraction} interaction
+     * @return {Promise<void>}
+     */
+    async executeModal(interaction) {
 
     }
 }
