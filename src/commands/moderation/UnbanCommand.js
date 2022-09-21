@@ -57,7 +57,7 @@ export default class UnbanCommand extends Command {
     }
 
     async executeButton(interaction) {
-        await this.promptAndUnban(interaction, MemberWrapper.getMemberFromCustomId(interaction));
+        await this.promptAndUnban(interaction, await MemberWrapper.getMemberFromCustomId(interaction));
     }
 
     /**
@@ -85,7 +85,7 @@ export default class UnbanCommand extends Command {
         const reason = interaction.components[0].components.find(component => component.customId === 'reason').value
             || 'No reason provided';
 
-        await this.unban(interaction, MemberWrapper.getMemberFromCustomId(interaction), reason, interaction.user);
+        await this.unban(interaction, await MemberWrapper.getMemberFromCustomId(interaction), reason, interaction.user);
     }
 
     getDescription() {

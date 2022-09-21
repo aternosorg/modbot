@@ -39,19 +39,19 @@ export default class MemberWrapper {
      * get member from the custom id of a moderation
      * must follow the format 'action:id' or 'action:id:other-data'
      * @param {import('discord.js').Interaction} interaction
-     * @return {MemberWrapper}
+     * @return {Promise<?MemberWrapper>}
      */
     static async getMemberFromCustomId(interaction) {
-        const match = await interaction.customId.match(/^[^:]+:(\d+)(:|$)/);
+        const match = interaction.customId.match(/^[^:]+:(\d+)(:|$)/);
         if (!match) {
             await interaction.reply({ephemeral: true, content: 'Unknown action!'});
-            return;
+            return null;
         }
 
         const user = await (new UserWrapper(match[1])).fetchUser();
         if (!user) {
             await interaction.reply({ephemeral: true, content:'Unknown user!'});
-            return;
+            return null;
         }
 
         return new MemberWrapper(user, interaction.guild);
@@ -424,7 +424,7 @@ export default class MemberWrapper {
         if (!this.member) await this.fetchMember();
         if (this.member) {
             const {mutedRole} = await this.getGuildSettings();
-            if(this.member.roles.cache.has(mutedRole)) {
+            if (this.member.roles.cache.has(mutedRole)) {
                 await this.member.roles.remove(mutedRole, this._shortenReason(`${moderator.tag} | ${reason}`));
             }
             await this.member.timeout(null);
