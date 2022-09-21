@@ -90,7 +90,7 @@ export default class UserInfoCommand extends Command {
                     .setStyle(ButtonStyle.Secondary),
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Moderations')
-                    .setCustomId(`moderations:${user.id}`)
+                    .setCustomId(`moderation:list:${user.id}`)
                     .setStyle(ButtonStyle.Secondary),
             );
 

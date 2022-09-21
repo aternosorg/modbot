@@ -19,6 +19,18 @@ export const MESSAGE_EMBED_LIMIT = 10;
 export const EMBED_DESCRIPTION_LIMIT = 4096;
 
 /**
+ * total length limit for the entire embed
+ * @type {number}
+ */
+export const EMBED_TOTAL_LIMIT = 6000;
+
+/**
+ * limit for the length of an embed field
+ * @type {number}
+ */
+export const EMBED_FIELD_LIMIT = 1024;
+
+/**
  * maximum length of the title for a select menu
  * @type {number}
  */

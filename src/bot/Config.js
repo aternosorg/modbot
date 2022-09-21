@@ -36,6 +36,10 @@ import {exists, readJSON} from '../util/fsutils.js';
  * @property {?string} privacy
  * @property {?string} invite
  * @property {?string} discord
+ * @property {?string} first-page
+ * @property {?string} previous-page
+ * @property {?string} next-page
+ * @property {?string} last-page
  */
 
 export default class Config {
@@ -89,6 +93,10 @@ export default class Config {
                     privacy: process.env.MODBOT_EMOJI_PRIVACY,
                     invite: process.env.MODBOT_EMOJI_INVITE,
                     discord: process.env.MODBOT_EMOJI_DISCORD,
+                    'first-page': process.env.MODBOT_EMOJI_FIRST_PAGE,
+                    'previous-page': process.env.MODBOT_EMOJI_PREVIOUS_PAGE,
+                    'next-page': process.env.MODBOT_EMOJI_NEXT_PAGE,
+                    'last-page': process.env.MODBOT_EMOJI_LAST_PAGE
                 }
             };
         }
