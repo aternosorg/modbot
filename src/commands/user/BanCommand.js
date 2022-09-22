@@ -78,6 +78,11 @@ export default class BanCommand extends Command {
             return;
         }
 
+        if (!await member.isModerateableBy(await new MemberWrapper(moderator, interaction.guild).fetchMember())) {
+            await interaction.reply({ephemeral: true, content: 'You can\'t moderate this member!'});
+            return;
+        }
+
         await member.ban(reason, moderator, duration, deleteMessageTime);
         await interaction.reply({
             ephemeral: true,

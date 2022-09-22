@@ -80,6 +80,11 @@ export default class MuteCommand extends Command {
             return;
         }
 
+        if (!await member.isModerateableBy(await new MemberWrapper(moderator, interaction.guild).fetchMember())) {
+            await interaction.reply({ephemeral: true, content: 'You can\'t moderate this member!'});
+            return;
+        }
+
         const guildSettings = await member.getGuildSettings();
         if (!duration || duration > TIMEOUT_DURATION_LIMIT) {
             if (!guildSettings.mutedRole) {

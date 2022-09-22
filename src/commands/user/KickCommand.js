@@ -63,6 +63,11 @@ export default class KickCommand extends Command {
             return;
         }
 
+        if (!await member.isModerateableBy(await new MemberWrapper(moderator, interaction.guild).fetchMember())) {
+            await interaction.reply({ephemeral: true, content: 'You can\'t moderate this member!'});
+            return;
+        }
+
         await member.kick(reason, moderator);
         await interaction.reply({
             ephemeral: true,

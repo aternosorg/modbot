@@ -208,6 +208,15 @@ export default class MemberWrapper {
      * @return {Promise<boolean>}
      */
     async isModerateable() {
+        return this.isModerateableBy(this.guild.guild.members.me);
+    }
+
+    /**
+     * can this member be moderated by this moderator
+     * @param {import('discord.js').GuildMember} moderator
+     * @return {Promise<boolean>}
+     */
+    async isModerateableBy(moderator) {
         if (await this.isProtected()) {
             return false;
         }
@@ -216,7 +225,7 @@ export default class MemberWrapper {
             return true;
         }
 
-        return this.guild.guild.members.me.roles.highest.comparePositionTo(this.member.roles.highest) > 0;
+        return moderator.roles.highest.comparePositionTo(this.member.roles.highest) > 0;
     }
 
     /**
