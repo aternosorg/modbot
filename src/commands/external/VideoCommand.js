@@ -53,9 +53,17 @@ export default class VideoCommand extends Command {
             idle: SELECT_MENU_TIMEOUT,
         });
 
-        collector.on('collect', async (interaction) => {
-            const index = videos.findIndex(video => video.item.etag === interaction.values[0]);
-            await interaction.update(this.generateMessage(results, videos[index].item.snippet.resourceId.videoId, index));
+        collector.on('collect', async (selectInteraction) => {
+            if (selectInteraction.user.id !== interaction.user.id) {
+                await selectInteraction.reply({
+                    ephemeral: true,
+                    content: 'Only the person who executed this command can select a different result'
+                });
+                return;
+            }
+
+            const index = videos.findIndex(video => video.item.etag === selectInteraction.values[0]);
+            await selectInteraction.update(this.generateMessage(results, videos[index].item.snippet.resourceId.videoId, index));
         });
 
         await new Promise(resolve => collector.on('end', resolve));

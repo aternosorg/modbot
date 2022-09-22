@@ -70,9 +70,17 @@ export default class ArticleCommand extends Command {
             idle: SELECT_MENU_TIMEOUT,
         });
 
-        collector.on('collect', async (interaction) => {
-            const index = data.results.findIndex(result => result.html_url === interaction.values[0]);
-            await interaction.update(this.generateMessage(results, data.results[index].body, index));
+        collector.on('collect', async (selectInteraction) => {
+            if (selectInteraction.user.id !== interaction.user.id) {
+                await selectInteraction.reply({
+                    ephemeral: true,
+                    content: 'Only the person who executed this command can select a different result'
+                });
+                return;
+            }
+
+            const index = data.results.findIndex(result => result.html_url === selectInteraction.values[0]);
+            await selectInteraction.update(this.generateMessage(results, data.results[index].body, index));
         });
 
         await new Promise(resolve => collector.on('end', resolve));
