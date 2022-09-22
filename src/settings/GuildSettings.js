@@ -123,6 +123,7 @@ export default class GuildSettings extends Settings {
     getModerationSettings() {
         return `Log: ${this.logChannel ? `<#${this.logChannel}>` : 'disabled'}\n` +
             `Message Log: ${this.messageLogChannel ? `<#${this.messageLogChannel}>` : 'disabled'}\n` +
+            `Join Log: ${this.joinLogChannel ? `<#${this.joinLogChannel}>` : 'disabled'}\n` +
             `Muted role: ${this.mutedRole ? `<@&${this.mutedRole}>` : 'disabled'}\n` +
             `Protected roles: ${this.listProtectedRoles()}\n`;
     }

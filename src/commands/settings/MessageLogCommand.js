@@ -3,12 +3,12 @@ import GuildSettings from '../../settings/GuildSettings.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import {PermissionFlagsBits} from 'discord.js';
 
-export default class LogChannelCommand extends SubCommand {
+export default class MessageLogCommand extends SubCommand {
 
     buildOptions(builder) {
         builder.addChannelOption(option => option
             .setName('channel')
-            .setDescription('Log channel')
+            .setDescription('Message log channel')
             .setRequired(false)
         );
         return super.buildOptions(builder);
@@ -38,19 +38,19 @@ export default class LogChannelCommand extends SubCommand {
         }
 
         const guildSettings = await GuildSettings.get(interaction.guildId);
-        guildSettings.logChannel = channelId;
+        guildSettings.messageLogChannel = channelId;
         await guildSettings.save();
         await interaction.reply({
             ephemeral: true,
-            content: channelId ? `Set log channel to <#${channelId}>.` : 'Disabled log channel.'
+            content: channelId ? `Set message log to <#${channelId}>.` : 'Disabled message log.'
         });
     }
 
     getDescription() {
-        return 'Set the log channel';
+        return 'Set the channel where deleted/edited messages are logged';
     }
 
     getName() {
-        return 'log-channel';
+        return 'message-log';
     }
 }
