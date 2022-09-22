@@ -17,6 +17,19 @@ export default class LineEmbed extends EmbedBuilder {
     }
 
     /**
+     * @param {*} condition
+     * @param {string} name
+     * @param {string|number} value
+     * @return {this}
+     */
+    addLineIf(condition, name, value) {
+        if (condition) {
+            this.addLine(name, value);
+        }
+        return this;
+    }
+
+    /**
      * add an empty line
      * @return {this}
      */

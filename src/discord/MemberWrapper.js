@@ -1,5 +1,5 @@
 import GuildSettings from '../settings/GuildSettings.js';
-import {EmbedBuilder, Guild, RESTJSONErrorCodes} from 'discord.js';
+import {Guild, RESTJSONErrorCodes} from 'discord.js';
 import {formatTime, parseTime} from '../util/timeutils.js';
 import Database from '../bot/Database.js';
 import GuildWrapper from './GuildWrapper.js';
@@ -8,6 +8,7 @@ import {toTitleCase} from '../util/util.js';
 import {BAN_MESSAGE_DELETE_LIMIT, TIMEOUT_LIMIT} from '../util/apiLimits.js';
 import Moderation from '../database/Moderation.js';
 import UserWrapper from './UserWrapper.js';
+import LineEmbed from '../embeds/LineEmbed.js';
 
 export default class MemberWrapper {
 
@@ -459,31 +460,23 @@ export default class MemberWrapper {
      * @return {Promise<?Message>}
      */
     async #logModeration(moderator, reason, id, type, time = null, amount = null, total = null) {
-        const embedColor = resolveColor(type);
-        const embed = new EmbedBuilder()
-            .setColor(embedColor)
-            .setAuthor({
-                name: `Case ${id} | ${toTitleCase(type)} | ${this.user.tag}`,
-                iconURL: this.user.avatarURL()
-            })
-            .setFooter({text: this.user.id})
-            .setTimestamp()
-            .addFields(
-                /** @type {any} */ { name: 'User', value: `<@${this.user.id}>`, inline: true},
-                /** @type {any} */ { name: 'Moderator', value: `<@${moderator.id}>`, inline: true},
-                /** @type {any} */ { name: 'Reason', value: reason.substring(0, 1024), inline: true}
-            );
-        if (time) {
-            embed.addFields(/** @type {any} */ {name: 'Duration', value: time, inline: true});
-        }
-        if (amount) {
-            embed.addFields(
-                /** @type {any} */ {name: 'Amount', value: amount.toString(), inline: true},
-                /** @type {any} */ {name: 'Total Strikes', value: total.toString(), inline: true},
-            );
-        }
-
-        return this.guild.log({embeds: [embed]});
+        return this.guild.log({
+            embeds: [
+                new LineEmbed()
+                    .setColor(resolveColor(type))
+                    .setAuthor({
+                        name: `Case ${id} | ${toTitleCase(type)} | ${this.user.tag}`,
+                        iconURL: this.user.avatarURL()
+                    })
+                    .setFooter({text: this.user.id})
+                    .addLine('User', `<@${this.user.id}>`)
+                    .addLine('Moderator', `<@${moderator.id}>`)
+                    .addLineIf(time, 'Duration', time)
+                    .addLineIf(amount, 'Amount', amount)
+                    .addLineIf(amount, 'Total Strikes', total)
+                    .addLine('Reason', reason.substring(0, 1024))
+            ]
+        });
     }
 
     /**
