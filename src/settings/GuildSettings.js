@@ -33,7 +33,6 @@ export default class GuildSettings extends Settings {
      * @param  {String}                           [json.helpcenter]         subdomain of the zendesk help center
      * @param  {Boolean}                          [json.invites]            allow invites (can be overwritten per channel)
      * @param  {Number}                           [json.linkCooldown]       cooldown on links in s (user based)
-     * @param  {Number}                           [json.maxMentions]        maximum amount of mentions allowed
      * @param  {Boolean}                          [json.caps]               should caps be automatically deleted
      * @param  {Boolean}                          [json.raidMode]           is anti-raid-mode enabled
      * @param  {Number}                           [json.antiSpam]           should message spam detection be enabled
@@ -58,7 +57,6 @@ export default class GuildSettings extends Settings {
         this.invites = json.invites ?? true;
         this.linkCooldown = json.linkCooldown || -1;
         this.caps = json.caps || false;
-        this.maxMentions = json.maxMentions || 5;
         this.raidMode = json.raidMode || false;
         this.antiSpam = typeof(json.antiSpam) === 'number' ? json.antiSpam : -1;
         this.similarMessages = json.similarMessages || -1;
@@ -92,7 +90,6 @@ export default class GuildSettings extends Settings {
         TypeChecker.assertStringUndefinedOrNull(json.helpcenter, 'Help center');
         TypeChecker.assertOfTypes(json.invites, ['boolean', 'undefined'], 'Invites');
         TypeChecker.assertNumberUndefinedOrNull(json.linkCooldown, 'Link cooldown');
-        TypeChecker.assertNumberUndefinedOrNull(json.maxMentions, 'Max mentions');
         TypeChecker.assertNumberUndefinedOrNull(json.antiSpam, 'Anti Spam');
         TypeChecker.assertNumberUndefinedOrNull(json.similarMessages, 'Similar Messages');
     }
@@ -149,7 +146,6 @@ export default class GuildSettings extends Settings {
         return `Invites: ${this.invites ? 'allowed' : 'forbidden'}\n` +
             `Link cooldown: ${this.linkCooldown !== -1 ? formatTime(this.linkCooldown) : 'disabled'}\n` +
             `Caps: ${this.caps ? 'forbidden' : 'allowed'}\n` +
-            `Max mentions: ${this.maxMentions === -1 ? 'disabled' : this.maxMentions}\n` +
             `Spam protection: ${this.antiSpam === -1 ? 'disabled' : `${this.antiSpam} messages per minute`}\n` +
             `Repeated message protection: ${this.similarMessages === -1 ? 'disabled' : `${this.similarMessages} similar messages per minute`}\n`;
     }

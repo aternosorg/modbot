@@ -6,7 +6,6 @@ import GuildSettings from '../../../settings/GuildSettings.js';
 import Bot from '../../../bot/Bot.js';
 import ChannelSettings from '../../../settings/ChannelSettings.js';
 import {formatTime} from '../../../util/timeutils.js';
-import Punishment from '../../../database/Punishment.js';
 import RepeatedMessage from './RepeatedMessage.js';
 
 export default class AutoModEventListener extends MessageCreateEventListener {
@@ -36,7 +35,7 @@ export default class AutoModEventListener extends MessageCreateEventListener {
             return;
         }
 
-        for (const fn of [this.badWords, this.caps, this.invites, this.linkCoolDown, this.maxMentions, this.spam]) {
+        for (const fn of [this.badWords, this.caps, this.invites, this.linkCoolDown, this.spam]) {
             if (await fn.bind(this)(message)) {
                 return;
             }
@@ -155,26 +154,6 @@ export default class AutoModEventListener extends MessageCreateEventListener {
         const response = await message.channel.send(
             `<@!${message.author.id}> You can post a link again in ${formatTime(coolDownEnd - now) || '1s'}!`);
         await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
-        return true;
-    }
-
-    /**
-     * @param {import('discord.js').Message} message
-     * @return {Promise<boolean>} has the message been deleted
-     */
-    async maxMentions(message) {
-        /** @type {GuildSettings} */
-        const guildConfig = await GuildSettings.get(message.guild.id);
-        if (guildConfig.maxMentions === -1 || message.mentions.users.size <= guildConfig.maxMentions) {
-            return false;
-        }
-
-        const reason = `Mentioning ${message.mentions.users.size} users`;
-        await Bot.instance.delete(message, reason);
-        const response = await message.channel.send(`<@!${message.author.id}> You're not allowed to mention more than ${guildConfig.maxMentions} users!`);
-        await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
-        await (new Member(message.author, message.guild))
-            .executePunishment(new Punishment({ action: 'strike' }), reason);
         return true;
     }
 
