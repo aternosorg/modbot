@@ -108,8 +108,7 @@ export default class GuildSettings extends Settings {
      */
     getSettings() {
         return new EmbedBuilder()
-            .setTitle('Settings')
-            .addFields([
+            .addFields(/** @type {*} */ [
                 {name: 'Moderation', value: this.getModerationSettings(), inline: false},
                 {name: 'Automod', value: this.getAutomodSettings(), inline: false},
                 {name: 'Connections', value: this.getConnectionsSettings(), inline: false}
