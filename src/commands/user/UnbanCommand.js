@@ -50,6 +50,14 @@ export default class UnbanCommand extends Command {
             return;
         }
 
+        if (!await member.isBanned()) {
+            await interaction.reply({
+                ephemeral: true,
+                content: 'This member isn\'t banned!',
+            });
+            return;
+        }
+
         reason = reason || 'No reason provided';
         await member.unban(reason, moderator);
         await interaction.reply({

@@ -50,6 +50,14 @@ export default class UnmuteCommand extends Command {
             return;
         }
 
+        if (!await member.isMuted()) {
+            await interaction.reply({
+                ephemeral: true,
+                content: 'This member isn\'t muted!',
+            });
+            return;
+        }
+
         reason = reason || 'No reason provided';
         await member.unmute(reason, moderator);
         await interaction.reply({
