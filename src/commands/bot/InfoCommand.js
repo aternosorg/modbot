@@ -29,6 +29,10 @@ const INVITE_LINK = `https://discordapp.com/oauth2/authorize?client_id=${CLIENT_
 
 export default class InfoCommand extends Command {
 
+    isAvailableInDMs() {
+        return true;
+    }
+
     async execute(interaction) {
         const buttons = [
             { name: 'Source', url: GITHUB_REPOSITORY, emoji: 'source' },
