@@ -54,8 +54,8 @@ export default class ParentCommand extends Command {
     }
 
     async execute(interaction) {
-        const name = interaction.options.getSubcommand()
-            ?? interaction.options.getSubcommandGroup();
+        const name = interaction.options.getSubcommandGroup()
+            ?? interaction.options.getSubcommand();
         const command = this.getChildren().find(child => child.getName() === name) ?? null;
         if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
             return;
