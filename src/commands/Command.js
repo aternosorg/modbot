@@ -23,14 +23,6 @@ export default class Command extends ExecutableCommand {
     }
 
     /**
-     * is this command available in direct messages
-     * @return {boolean}
-     */
-    isAvailableInDMs() {
-        return false;
-    }
-
-    /**
      * build this slash command
      * @return {SlashCommandBuilder}
      */

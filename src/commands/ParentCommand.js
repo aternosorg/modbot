@@ -2,6 +2,7 @@ import Command from './Command.js';
 import {SlashCommandBuilder} from 'discord.js';
 import SubCommandGroup from './SubCommandGroup.js';
 import SubCommand from './SubCommand.js';
+import CommandManager from './CommandManager.js';
 
 /**
  * @abstract
@@ -53,14 +54,14 @@ export default class ParentCommand extends Command {
     }
 
     async execute(interaction) {
-        const subCommand = interaction.options.getSubcommand()
+        const name = interaction.options.getSubcommand()
             ?? interaction.options.getSubcommandGroup();
-        const child = this.getChildren().find(child => child.getName() === subCommand) ?? null;
-        if (!child) {
+        const command = this.getChildren().find(child => child.getName() === name) ?? null;
+        if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
             return;
         }
 
-        await child.execute(interaction);
+        await command.execute(interaction);
     }
 
     async executeModal(interaction) {

@@ -22,6 +22,10 @@ export default class ImportCommand extends Command {
         return builder;
     }
 
+    getCoolDown() {
+        return 60;
+    }
+
     async execute(interaction) {
         await interaction.deferReply({ephemeral: true});
         const file = interaction.options.getAttachment('data', true);

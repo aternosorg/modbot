@@ -27,6 +27,14 @@ export default class ExecutableCommand {
     }
 
     /**
+     * is this command available in direct messages
+     * @return {boolean}
+     */
+    isAvailableInDMs() {
+        return false;
+    }
+
+    /**
      * Permissions that members need to execute this command by default.
      * Null: no permissions required. Empty bitfield: disabled by default
      *

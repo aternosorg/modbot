@@ -104,7 +104,7 @@ export default class CommandManager {
 
     /**
      * check if this command can be executed in this context
-     * @param {?Command} command
+     * @param {?ExecutableCommand} command
      * @param {import('discord.js').Interaction} interaction
      * @return {Promise<boolean>} is command executable
      */
