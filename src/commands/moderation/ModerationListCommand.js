@@ -40,8 +40,8 @@ export default class ModerationListCommand extends SubCommand {
         const moderations = await Moderation.getAll(interaction.guildId, member.user.id);
 
         const match = interaction.customId.match(/^[^:]+:[^:]+:[^:]+:(\d+|last|first)$/);
-        let page = 1;
         if (match) {
+            let page;
             if (match[1] === 'last') {
                 page = Math.ceil(moderations.length / MODERATIONS_PER_PAGE);
             }
@@ -51,8 +51,11 @@ export default class ModerationListCommand extends SubCommand {
             else {
                 page = parseInt(match[1]);
             }
+            await interaction.update(await this.generateMessage(member.user, moderations, page));
         }
-        await interaction.update(await this.generateMessage(member.user, moderations, page));
+        else {
+            await interaction.reply(await this.generateMessage(member.user, moderations));
+        }
     }
 
     /**
