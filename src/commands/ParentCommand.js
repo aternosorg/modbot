@@ -45,7 +45,7 @@ export default class ParentCommand extends Command {
      * @return {Promise<SubCommand|SubCommandGroup|null>}
      */
     async #findChild(interaction) {
-        const match = interaction.customId.match(/^[^:]+:([^:]+):/);
+        const match = interaction.customId.match(/^[^:]+:([^:]+)(:|$)/);
         if (!match || !match[1]) {
             return null;
         }
@@ -65,20 +65,20 @@ export default class ParentCommand extends Command {
     }
 
     async executeModal(interaction) {
-        const child = await this.#findChild(interaction);
-        if (!child) {
+        const command = await this.#findChild(interaction);
+        if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
             return;
         }
 
-        await child.executeModal(interaction);
+        await command.executeModal(interaction);
     }
 
     async executeButton(interaction) {
-        const child = await this.#findChild(interaction);
-        if (!child) {
+        const command = await this.#findChild(interaction);
+        if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
             return;
         }
 
-        await child.executeButton(interaction);
+        await command.executeButton(interaction);
     }
 }
