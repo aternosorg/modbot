@@ -9,6 +9,7 @@ import {
 } from 'discord.js';
 import Bot from '../../bot/Bot.js';
 import Config from '../../bot/Config.js';
+import {readFileSync} from 'fs';
 
 const DISCORD_INVITE_LINK = 'https://discord.gg/zYYhgPtmxw';
 const GITHUB_REPOSITORY = 'https://github.com/aternosorg/modbot';
@@ -26,6 +27,13 @@ const PERMISSIONS = new PermissionsBitField()
     .add(PermissionFlagsBits.ManageMessages)
     .add(PermissionFlagsBits.SendMessages);
 const INVITE_LINK = `https://discordapp.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=${SCOPES.join('%20')}&permissions=${PERMISSIONS.bitfield}`;
+let VERSION = 'unknown';
+try {
+    const pkgJson = JSON.parse(readFileSync('package.json').toString());
+    if (pkgJson.version) {
+        VERSION = pkgJson.version;
+    }
+} catch { /* ignore */ }
 
 export default class InfoCommand extends Command {
 
@@ -53,8 +61,10 @@ export default class InfoCommand extends Command {
                     'and various other forms of automatic moderation filters.\n\n' +
                     `If you want to suggest something or need help you can join our [Discord](${DISCORD_INVITE_LINK}) or ` +
                     ` create an issue on our [Github](${GITHUB_REPOSITORY}) repository.`
-                )],
+                )
+                .addFields(/** @type {*} */ {name: 'Version', value: VERSION})],
             components: [
+                /** @type {ActionRowBuilder} */
                 new ActionRowBuilder()
                     .addComponents(
                         /** @type {*} */ buttons.map(data =>
