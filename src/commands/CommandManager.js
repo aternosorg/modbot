@@ -290,13 +290,32 @@ export default class CommandManager {
         }
 
         if (!overrides) {
-            return interaction.memberPermissions.has(command.getDefaultMemberPermissions());
+            switch (command.getDefaultMemberPermissions()) {
+                case null:
+                    return true;
+                case 0:
+                    return false;
+                default:
+                    return interaction.memberPermissions.has(command.getDefaultMemberPermissions());
+            }
         }
 
         const everyoneRoleId = interaction.guild.roles.everyone.id;
         const everyoneOverride = overrides.find(override => override.type === ApplicationCommandPermissionType.Role
             && override.id === everyoneRoleId);
-        let permission = everyoneOverride.permission && interaction.memberPermissions.has(command.getDefaultMemberPermissions());
+        let permission = false;
+        if (everyoneOverride.permission) {
+            switch (command.getDefaultMemberPermissions()) {
+                case null:
+                    permission = true;
+                    break;
+                case 0:
+                    permission = false;
+                    break;
+                default:
+                    permission = interaction.memberPermissions.has(command.getDefaultMemberPermissions());
+            }
+        }
 
         const roleOverrides = overrides.filter(override => override.type === ApplicationCommandPermissionType.Role
             && override.id !== everyoneRoleId && member.roles.resolve(override.id));
