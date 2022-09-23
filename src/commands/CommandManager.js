@@ -25,6 +25,7 @@ import StrikeCommand from './user/StrikeCommand.js';
 import PardonCommand from './user/PardonCommand.js';
 import ModerationCommand from './moderation/ModerationCommand.js';
 import SettingsCommand from './settings/SettingsCommand.js';
+import LockCommand from './guild/LockCommand.js';
 
 const cooldowns = new Cache();
 
@@ -60,6 +61,9 @@ export default class CommandManager {
 
         // SETTINGS
         new SettingsCommand(),
+
+        // GUILD
+        new LockCommand(),
     ];
 
     static get instance() {
