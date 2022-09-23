@@ -9,12 +9,11 @@ import {
 } from 'discord.js';
 import Turndown from 'turndown';
 import icons from '../../util/icons.js';
-import {SELECT_MENU_OPTIONS_LIMIT, SELECT_MENU_TITLE_LIMIT, SELECT_MENU_VALUE_LIMIT} from '../../util/apiLimits.js';
+import {SELECT_MENU_OPTIONS_LIMIT, SELECT_MENU_TITLE_LIMIT} from '../../util/apiLimits.js';
 import Cache from '../../Cache.js';
 
 const completions = new Cache();
 const CACHE_DURATION = 60 * 60 * 1000;
-const SELECT_MENU_TIMEOUT = 30 * 1000;
 const ARTICLE_EMBED_PREVIEW_LENGTH = 1000;
 
 export default class ArticleCommand extends Command {
@@ -58,34 +57,29 @@ export default class ArticleCommand extends Command {
                 default: false,
                 label: result.title.substring(0, SELECT_MENU_TITLE_LIMIT),
                 emoji: icons.article,
-                value: result.html_url.substring(0, SELECT_MENU_VALUE_LIMIT)
+                value: result.id.toString()
             };
         }).slice(0, SELECT_MENU_OPTIONS_LIMIT);
 
-        const answer = /** @type {import('discord.js').Message} */
-            await interaction.reply(this.generateMessage(results, data.results[0].body, 0));
+        await interaction.reply(this.generateMessage(results, data.results[0], interaction.user.id));
+    }
 
-        const collector = await answer.createMessageComponentCollector({
-            filter: interaction => interaction.customId === 'article',
-            idle: SELECT_MENU_TIMEOUT,
-        });
+    async executeSelectMenu(interaction) {
+        if (interaction.user.id !== interaction.customId.split(':')[1]) {
+            await interaction.reply({
+                ephemeral: true,
+                content: 'Only the person who executed this command can select a different result'
+            });
+            return;
+        }
 
-        collector.on('collect', async (selectInteraction) => {
-            if (selectInteraction.user.id !== interaction.user.id) {
-                await selectInteraction.reply({
-                    ephemeral: true,
-                    content: 'Only the person who executed this command can select a different result'
-                });
-                return;
-            }
-
-            const index = data.results.findIndex(result => result.html_url === selectInteraction.values[0]);
-            await selectInteraction.update(this.generateMessage(results, data.results[index].body, index));
-        });
-
-        await new Promise(resolve => collector.on('end', resolve));
-        // Remove select menu
-        await answer.edit({embeds: answer.embeds, components: answer.components.slice(1)});
+        const selectMenu = /** @type {import('discord.js').SelectMenuComponent} */
+            interaction.message.components[0].components[0];
+        const index = selectMenu.options
+            .findIndex(option => option.value === interaction.values[0]);
+        const article = await (await GuildSettings.get(interaction.guildId)).getZendesk()
+            .getArticle(selectMenu.options[index].value);
+        await interaction.update(this.generateMessage(selectMenu.options, article, interaction.user.id, index));
     }
 
     async complete(interaction) {
@@ -114,30 +108,31 @@ export default class ArticleCommand extends Command {
 
     /**
      * @param {import('discord.js').APISelectMenuOption[]} results
-     * @param {string} body
+     * @param {ZendeskArticle} article
+     * @param {import('discord.js').Snowflake} userId
      * @param {number} [index]
-     * @return {import('discord.js').MessagePayload}
+     * @return {{embeds: EmbedBuilder[], components: ActionRowBuilder[], fetchReply: boolean}}
      */
-    generateMessage(results, body, index = 0) {
+    generateMessage(results, article, userId, index = 0) {
         for (const result of results) {
             result.default = false;
         }
         results[index].default = true;
 
         return {
-            embeds: [this.createEmbed(results[index], body)],
+            embeds: [this.createEmbed(results[index], article.body)],
             components: [
                 new ActionRowBuilder()
                     .addComponents(
                         /** @type {any} */ new SelectMenuBuilder()
                             .setOptions(/** @type {any} */ results)
-                            .setCustomId('article')
+                            .setCustomId(`article:${userId}`)
                     ),
                 new ActionRowBuilder()
                     .addComponents(
                         /** @type {any} */ new ButtonBuilder()
                             .setStyle(ButtonStyle.Link)
-                            .setURL(results[index].value)
+                            .setURL(article.html_url)
                             .setLabel('View Article')
                     ),
             ],

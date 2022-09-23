@@ -46,6 +46,17 @@ export default class Zendesk {
     }
 
     /**
+     * get a single article
+     * @param {string|number} id
+     * @return {Promise<?ZendeskArticle>}
+     */
+    async getArticle(id) {
+        /** @type {{article: ZendeskArticle}} */
+        const article = await this.#request(`/api/v2/help_center/articles/${id}`);
+        return article?.article;
+    }
+
+    /**
      * @param {number} [results] maximum number of articles that will be returned
      * @return {Promise<ZendeskArticle[]>}
      */

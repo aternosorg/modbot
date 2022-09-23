@@ -91,4 +91,13 @@ export default class ExecutableCommand {
     async executeModal(interaction) {
 
     }
+
+    /**
+     * handle data submitted from a modal
+     * @param {import('discord.js').SelectMenuInteraction} interaction
+     * @return {Promise<void>}
+     */
+    async executeSelectMenu(interaction) {
+
+    }
 }

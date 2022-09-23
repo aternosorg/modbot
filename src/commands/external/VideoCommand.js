@@ -4,8 +4,6 @@ import {SELECT_MENU_TITLE_LIMIT} from '../../util/apiLimits.js';
 import icons from '../../util/icons.js';
 import {ActionRowBuilder, SelectMenuBuilder} from 'discord.js';
 
-const SELECT_MENU_TIMEOUT = 30 * 1000;
-
 export default class VideoCommand extends Command {
 
     buildOptions(builder) {
@@ -41,56 +39,57 @@ export default class VideoCommand extends Command {
                 default: false,
                 label: video.item.snippet.title.substring(0, SELECT_MENU_TITLE_LIMIT),
                 emoji: icons.article,
-                value: video.item.etag,
+                value: video.item.snippet.resourceId.videoId,
             };
         }).slice(0, 5);
 
-        const answer = /** @type {import('discord.js').Message} */
-            await interaction.reply(this.generateMessage(results, videos[0].item.snippet.resourceId.videoId, 0));
+        await interaction.reply(this.generateMessage(
+            results,
+            interaction.user.id,
+            0
+        ));
+    }
 
-        const collector = await answer.createMessageComponentCollector({
-            filter: interaction => interaction.customId === 'video',
-            idle: SELECT_MENU_TIMEOUT,
-        });
+    async executeSelectMenu(interaction) {
+        if (interaction.user.id !== interaction.customId.split(':')[1]) {
+            await interaction.reply({
+                ephemeral: true,
+                content: 'Only the person who executed this command can select a different result'
+            });
+            return;
+        }
 
-        collector.on('collect', async (selectInteraction) => {
-            if (selectInteraction.user.id !== interaction.user.id) {
-                await selectInteraction.reply({
-                    ephemeral: true,
-                    content: 'Only the person who executed this command can select a different result'
-                });
-                return;
-            }
-
-            const index = videos.findIndex(video => video.item.etag === selectInteraction.values[0]);
-            await selectInteraction.update(this.generateMessage(results, videos[index].item.snippet.resourceId.videoId, index));
-        });
-
-        await new Promise(resolve => collector.on('end', resolve));
-        // Remove select menu
-        await answer.edit({content: answer.content, components: []});
+        const selectMenu = /** @type {import('discord.js').SelectMenuComponent} */
+            interaction.message.components[0].components[0];
+        const index = selectMenu.options
+            .findIndex(option => option.value === interaction.values[0]);
+        await interaction.update(this.generateMessage(
+            selectMenu.options,
+            interaction.user.id,
+            index
+        ));
     }
 
     /**
      * @param {import('discord.js').APISelectMenuOption[]} videos
-     * @param {string} videoId
+     * @param {import('discord.js').Snowflake} userId
      * @param {number} [index]
-     * @return {import('discord.js').MessagePayload}
+     * @return {{content: string, components: ActionRowBuilder[], fetchReply: boolean}}
      */
-    generateMessage(videos, videoId, index = 0) {
+    generateMessage(videos, userId, index = 0) {
         for (const result of videos) {
             result.default = false;
         }
         videos[index].default = true;
 
         return {
-            content: `https://youtu.be/${videoId}`,
+            content: `https://youtu.be/${videos[index].value}`,
             components: [
                 new ActionRowBuilder()
                     .addComponents(
                         /** @type {any} */ new SelectMenuBuilder()
                             .setOptions(/** @type {any} */ videos)
-                            .setCustomId('video')
+                            .setCustomId(`video:${userId}`)
                     ),
             ],
             fetchReply: true,

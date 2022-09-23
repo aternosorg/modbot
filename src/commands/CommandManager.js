@@ -239,6 +239,23 @@ export default class CommandManager {
     }
 
     /**
+     * @param {import('discord.js').SelectMenuInteraction} interaction
+     * @return {Promise<void>}
+     */
+    async executeSelectMenu(interaction) {
+        const command = this.findCommandByCustomId(interaction.customId);
+        if (!await this.checkCommandAvailability(command, interaction)) {
+            return;
+        }
+
+        if (!command.isAvailableInDMs() && !await this.checkMemberPermissions(interaction, command)) {
+            return;
+        }
+
+        await command.executeSelectMenu(interaction);
+    }
+
+    /**
      * @param {?string} id
      * @return {?Command}
      */

@@ -4,7 +4,9 @@ import {
     AutocompleteInteraction,
     ButtonInteraction,
     ChatInputCommandInteraction,
-    MessageContextMenuCommandInteraction, ModalSubmitInteraction,
+    MessageContextMenuCommandInteraction,
+    ModalSubmitInteraction,
+    SelectMenuInteraction,
     UserContextMenuCommandInteraction
 } from 'discord.js';
 
@@ -35,6 +37,9 @@ export default class InteractionCreateEventListener extends EventListener {
         }
         else if (interaction instanceof ModalSubmitInteraction) {
             await CommandManager.instance.executeModal(interaction);
+        }
+        else if (interaction instanceof SelectMenuInteraction) {
+            await CommandManager.instance.executeSelectMenu(interaction);
         }
     }
 }
