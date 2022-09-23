@@ -60,23 +60,13 @@ export default class StrikeCommand extends Command {
      * @return {Promise<void>}
      */
     async strike(interaction, member, reason, moderator, count) {
-        if (!member) {
-            return;
-        }
-
         reason = reason || 'No reason provided';
 
         if (!count || count < 1) {
             count = 1;
         }
 
-        if (!await member.isModerateable()) {
-            await interaction.reply({ephemeral: true, content: 'I can\'t moderate this member!'});
-            return;
-        }
-
-        if (!await member.isModerateableBy(await new MemberWrapper(moderator, interaction.guild).fetchMember())) {
-            await interaction.reply({ephemeral: true, content: 'You can\'t moderate this member!'});
+        if (!await this.checkPermissions(interaction, member, moderator)) {
             return;
         }
 

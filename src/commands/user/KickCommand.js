@@ -1,10 +1,10 @@
-import Command from '../Command.js';
 import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, PermissionFlagsBits, PermissionsBitField, TextInputBuilder, TextInputStyle} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
+import ModerationCommand from './ModerationCommand.js';
 
-export default class KickCommand extends Command {
+export default class KickCommand extends ModerationCommand {
 
     buildOptions(builder) {
         builder.addUserOption(option =>
@@ -54,17 +54,7 @@ export default class KickCommand extends Command {
     async kick(interaction, member, reason, moderator) {
         reason = reason || 'No reason provided';
 
-        if (!member) {
-            return;
-        }
-
-        if (!await member.isModerateable()) {
-            await interaction.reply({ephemeral: true, content: 'I can\'t moderate this member!'});
-            return;
-        }
-
-        if (!await member.isModerateableBy(await new MemberWrapper(moderator, interaction.guild).fetchMember())) {
-            await interaction.reply({ephemeral: true, content: 'You can\'t moderate this member!'});
+        if (!await this.checkPermissions(interaction, member, moderator)) {
             return;
         }
 

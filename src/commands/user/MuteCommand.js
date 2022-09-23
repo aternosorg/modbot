@@ -1,4 +1,3 @@
-import Command from '../Command.js';
 import {
     ActionRowBuilder,
     EmbedBuilder,
@@ -12,8 +11,9 @@ import {formatTime, parseTime} from '../../util/timeutils.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT, TIMEOUT_DURATION_LIMIT} from '../../util/apiLimits.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
+import ModerationCommand from './ModerationCommand.js';
 
-export default class MuteCommand extends Command {
+export default class MuteCommand extends ModerationCommand {
 
 
     buildOptions(builder) {
@@ -69,19 +69,9 @@ export default class MuteCommand extends Command {
      * @return {Promise<void>}
      */
     async mute(interaction, member, reason, moderator, duration) {
-        if (!member) {
-            return;
-        }
-
         reason = reason || 'No reason provided';
 
-        if (!await member.isModerateable()) {
-            await interaction.reply({ephemeral: true, content: 'I can\'t moderate this member!'});
-            return;
-        }
-
-        if (!await member.isModerateableBy(await new MemberWrapper(moderator, interaction.guild).fetchMember())) {
-            await interaction.reply({ephemeral: true, content: 'You can\'t moderate this member!'});
+        if (!await this.checkPermissions(interaction, member, moderator)) {
             return;
         }
 
