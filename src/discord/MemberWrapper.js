@@ -40,18 +40,12 @@ export default class MemberWrapper {
      * get member from the custom id of a moderation
      * must follow the format 'action:id' or 'action:id:other-data'
      * @param {import('discord.js').Interaction} interaction
-     * @param {number} commandDepth allows multiple actions e.g. 2 for 'command:subcommand:id' or 3 for 'command:group:subcommand:id'
+     * @param {number} position which position the user id is at. E.g. 2 for 'command:subcommand:id' or 3 for 'command:group:subcommand:id'
      * @return {Promise<?MemberWrapper>}
      */
-    static async getMemberFromCustomId(interaction, commandDepth = 1) {
-        const regex = new RegExp('^' + '[^:]+:'.repeat(commandDepth) + '(\\d+)(:|$)');
-        const match = interaction.customId.match(regex);
-        if (!match) {
-            await interaction.reply({ephemeral: true, content: 'Unknown action!'});
-            return null;
-        }
-
-        const user = await (new UserWrapper(match[1])).fetchUser();
+    static async getMemberFromCustomId(interaction, position = 1) {
+        const id = interaction.customId.split(':').at(position);
+        const user = id ? await (new UserWrapper(id)).fetchUser() : null;
         if (!user) {
             await interaction.reply({ephemeral: true, content:'Unknown user!'});
             return null;

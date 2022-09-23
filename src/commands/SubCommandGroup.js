@@ -49,12 +49,9 @@ export default class SubCommandGroup extends ExecutableCommand {
      * @return {Promise<SubCommand|SubCommandGroup|null>}
      */
     async #findChild(interaction) {
-        const match = interaction.customId.match(/^[^:]+:[^:]+:([^:]+)(:|$)/);
-        if (!match || !match[1]) {
-            return null;
-        }
+        const name = interaction.customId.split(':')[2];
 
-        return this.getChildren().find(child => child.getName() === match[1]) ?? null;
+        return this.getChildren().find(child => child.getName() === name) ?? null;
     }
 
     async execute(interaction) {

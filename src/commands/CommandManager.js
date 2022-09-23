@@ -208,12 +208,8 @@ export default class CommandManager {
         if (!interaction.customId) {
             return;
         }
-        const match = interaction.customId.match(/^([^:]+):/);
-        if (!match || !match[1]) {
-            return;
-        }
 
-        const command = this.findCommand(match[1]);
+        const command = this.findCommand(interaction.customId.split(':')[0]);
         if (!await this.checkCommandAvailability(command, interaction)) {
             return;
         }
@@ -250,12 +246,8 @@ export default class CommandManager {
         if (!id) {
             return null;
         }
-        const match = id.match(/^([^:]+)(:|$)/);
-        if (!match || !match[1]) {
-            return null;
-        }
 
-        return this.findCommand(match[1]);
+        return this.findCommand(id.split(':')[0]);
     }
 
     /**

@@ -39,23 +39,20 @@ export default class ModerationListCommand extends SubCommand {
         }
         const moderations = await Moderation.getAll(interaction.guildId, member.user.id);
 
-        const match = interaction.customId.match(/^[^:]+:[^:]+:[^:]+:(\d+|last|first)$/);
-        if (match) {
-            let page;
-            if (match[1] === 'last') {
-                page = Math.ceil(moderations.length / MODERATIONS_PER_PAGE);
-            }
-            else if (match[1] === 'first') {
-                page = 1;
-            }
-            else {
-                page = parseInt(match[1]);
-            }
-            await interaction.update(await this.generateMessage(member.user, moderations, page));
-        }
-        else {
+        let page = interaction.customId.split(':')[3];
+        if (page === null) {
             await interaction.reply(await this.generateMessage(member.user, moderations));
+            return;
         }
+
+        if (page === 'last') {
+            page = Math.ceil(moderations.length / MODERATIONS_PER_PAGE);
+        } else if (page === 'first') {
+            page = 1;
+        } else {
+            page = parseInt(page);
+        }
+        await interaction.update(await this.generateMessage(member.user, moderations, page));
     }
 
     /**
