@@ -1,6 +1,7 @@
 import TypeChecker from '../settings/TypeChecker.js';
 import Database from '../bot/Database.js';
 import UserWrapper from '../discord/UserWrapper.js';
+import WhereParameter from './WhereParameter.js';
 
 export default class Moderation {
 
@@ -112,26 +113,42 @@ export default class Moderation {
     }
 
     /**
+     * escaped database fields
+     * @return {string}
+     */
+    static getFields() {
+        return ['id', 'userid', 'action', 'created', 'value', 'expireTime', 'reason', 'moderator', 'active']
+            .map(field => Database.instance.escapeId(field)).join(', ');
+    }
+
+    /**
+     *
+     * @param {WhereParameter[]} params
+     * @return {Promise<Moderation[]>}
+     */
+    static async select(params) {
+        const where = params.join(' AND ');
+        const values = params.map(p => p.value);
+        const fields = this.getFields();
+
+        return (await Database.instance.queryAll(`SELECT ${fields} FROM moderations WHERE ${where} ORDER BY created ASC`, ...values))
+            .map(data => new Moderation(data));
+    }
+
+    /**
      * get all moderations for a guild or member
      * @param {import('discord.js').Snowflake} guildId
      * @param {import('discord.js').Snowflake} [userId]
      * @return {Promise<Moderation[]>}
      */
     static async getAll(guildId, userId = null) {
-        const result = [];
-        let query = 'SELECT id, userid, action, created, value, expireTime, reason, moderator, active FROM moderations WHERE guildid = ?';
-        let values = [guildId];
+        const params = [new WhereParameter('guildid', guildId)];
 
         if (userId) {
-            query += ' AND userid = ?';
-            values.push(userId);
+            params.push(new WhereParameter('userid', userId));
         }
 
-        for (const moderation of await Database.instance.queryAll(query, ...values)) {
-            result.push(new Moderation(moderation));
-        }
-
-        return result;
+        return await this.select(params);
     }
 
     /**
@@ -141,13 +158,10 @@ export default class Moderation {
      * @return {Promise<?Moderation>}
      */
     static async get(guildId, id) {
-        const data = await Database.instance.query('SELECT * FROM moderations WHERE guildid = ? AND id = ?', guildId, id);
-
-        if (!data) {
-            return null;
-        }
-
-        return new Moderation(data);
+        return (await this.select([
+            new WhereParameter('guilid', guildId),
+            new WhereParameter('id', id),
+        ]))[0] ?? null;
     }
 
     /**

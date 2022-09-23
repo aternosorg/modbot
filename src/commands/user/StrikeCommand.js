@@ -1,10 +1,11 @@
-import Command from '../Command.js';
 import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, PermissionFlagsBits, PermissionsBitField, TextInputBuilder, TextInputStyle} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
+import ModerationCommand from './ModerationCommand.js';
+import {decode64, encode64} from '../../util/base64.js';
 
-export default class StrikeCommand extends Command {
+export default class StrikeCommand extends ModerationCommand {
 
     buildOptions(builder) {
         builder.addUserOption(option =>
@@ -45,7 +46,6 @@ export default class StrikeCommand extends Command {
         await this.strike(interaction,
             new MemberWrapper(interaction.options.getUser('user', true), interaction.guild),
             interaction.options.getString('reason'),
-            interaction.user,
             interaction.options.getNumber('count'),
         );
     }
@@ -55,22 +55,22 @@ export default class StrikeCommand extends Command {
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
      * @param {?string} reason
-     * @param {import('discord.js').User} moderator
      * @param {?number} count
      * @return {Promise<void>}
      */
-    async strike(interaction, member, reason, moderator, count) {
+    async strike(interaction, member, reason, count) {
         reason = reason || 'No reason provided';
 
         if (!count || count < 1) {
             count = 1;
         }
 
-        if (!await this.checkPermissions(interaction, member, moderator)) {
+        if (!await this.checkPermissions(interaction, member) ||
+            !await this.preventDuplicateModeration(interaction, member, [encode64(reason), count])) {
             return;
         }
 
-        await member.strike(reason, moderator, count);
+        await member.strike(reason, interaction.user, count);
         await interaction.reply({
             ephemeral: true,
             embeds: [new EmbedBuilder()
@@ -81,6 +81,17 @@ export default class StrikeCommand extends Command {
     }
 
     async executeButton(interaction) {
+        if (interaction.customId.endsWith(':confirm')) {
+            const data = interaction.customId.split(':');
+            await this.strike(
+                interaction,
+                await MemberWrapper.getMemberFromCustomId(interaction, 1),
+                decode64(data[2]),
+                parseInt(data[3]) || 1,
+            );
+            return;
+        }
+
         await this.promptForData(interaction, await MemberWrapper.getMemberFromCustomId(interaction));
     }
 
@@ -139,7 +150,7 @@ export default class StrikeCommand extends Command {
         await this.strike(
             interaction,
             await MemberWrapper.getMemberFromCustomId(interaction),
-            reason, interaction.user,
+            reason,
             count
         );
     }

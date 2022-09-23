@@ -12,6 +12,7 @@ import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT, TIMEOUT_DURATION_LIMIT} from '../../util/apiLimits.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import ModerationCommand from './ModerationCommand.js';
+import {decode64, encode64} from '../../util/base64.js';
 
 export default class MuteCommand extends ModerationCommand {
 
@@ -54,7 +55,6 @@ export default class MuteCommand extends ModerationCommand {
         await this.mute(interaction,
             new MemberWrapper(interaction.options.getUser('user', true), interaction.guild),
             interaction.options.getString('reason'),
-            interaction.user,
             parseTime(interaction.options.getString('duration')),
         );
     }
@@ -64,14 +64,14 @@ export default class MuteCommand extends ModerationCommand {
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
      * @param {?string} reason
-     * @param {import('discord.js').User} moderator
      * @param {?number} duration
      * @return {Promise<void>}
      */
-    async mute(interaction, member, reason, moderator, duration) {
+    async mute(interaction, member, reason, duration) {
         reason = reason || 'No reason provided';
 
-        if (!await this.checkPermissions(interaction, member, moderator)) {
+        if (!await this.checkPermissions(interaction, member) ||
+            !await this.preventDuplicateModeration(interaction, member, [encode64(reason), duration])) {
             return;
         }
 
@@ -96,7 +96,7 @@ export default class MuteCommand extends ModerationCommand {
             }
         }
 
-        await member.mute(reason, moderator, duration);
+        await member.mute(reason, interaction.user, duration);
         await interaction.reply({
             ephemeral: true,
             embeds: [new EmbedBuilder()
@@ -107,6 +107,17 @@ export default class MuteCommand extends ModerationCommand {
     }
 
     async executeButton(interaction) {
+        if (interaction.customId.endsWith(':confirm')) {
+            const data = interaction.customId.split(':');
+            await this.mute(
+                interaction,
+                await MemberWrapper.getMemberFromCustomId(interaction, 1),
+                decode64(data[2]),
+                parseInt(data[3]) || null,
+            );
+            return;
+        }
+
         await this.promptForData(interaction, await MemberWrapper.getMemberFromCustomId(interaction));
     }
 
@@ -164,7 +175,7 @@ export default class MuteCommand extends ModerationCommand {
         await this.mute(
             interaction,
             await MemberWrapper.getMemberFromCustomId(interaction),
-            reason, interaction.user,
+            reason,
             duration
         );
     }

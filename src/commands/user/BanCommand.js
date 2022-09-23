@@ -4,6 +4,7 @@ import {formatTime, parseTime} from '../../util/timeutils.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import ModerationCommand from './ModerationCommand.js';
+import {decode64, encode64} from '../../util/base64.js';
 
 export default class BanCommand extends ModerationCommand {
 
@@ -50,7 +51,6 @@ export default class BanCommand extends ModerationCommand {
         await this.ban(interaction,
             new MemberWrapper(interaction.options.getUser('user', true), interaction.guild),
             interaction.options.getString('reason'),
-            interaction.user,
             parseTime(interaction.options.getString('duration')),
             parseTime(interaction.options.getString('delete'))
         );
@@ -61,19 +61,19 @@ export default class BanCommand extends ModerationCommand {
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
      * @param {?string} reason
-     * @param {import('discord.js').User} moderator
      * @param {?number} duration
      * @param {?number} deleteMessageTime
      * @return {Promise<void>}
      */
-    async ban(interaction, member, reason, moderator, duration, deleteMessageTime) {
+    async ban(interaction, member, reason, duration, deleteMessageTime) {
         reason = reason || 'No reason provided';
 
-        if (!await this.checkPermissions(interaction, member, moderator)) {
+        if (!await this.checkPermissions(interaction, member) ||
+            !await this.preventDuplicateModeration(interaction, member, [encode64(reason), duration, deleteMessageTime])) {
             return;
         }
 
-        await member.ban(reason, moderator, duration, deleteMessageTime);
+        await member.ban(reason, interaction.user, duration, deleteMessageTime);
         await interaction.reply({
             ephemeral: true,
             embeds: [new EmbedBuilder()
@@ -84,6 +84,18 @@ export default class BanCommand extends ModerationCommand {
     }
 
     async executeButton(interaction) {
+        if (interaction.customId.endsWith(':confirm')) {
+            const data = interaction.customId.split(':');
+            await this.ban(
+                interaction,
+                await MemberWrapper.getMemberFromCustomId(interaction, 1),
+                decode64(data[2]),
+                parseInt(data[3]) || null,
+                parseInt(data[3]) || null,
+            );
+            return;
+        }
+
         await this.promptForData(interaction, await MemberWrapper.getMemberFromCustomId(interaction));
     }
 
@@ -152,7 +164,7 @@ export default class BanCommand extends ModerationCommand {
         await this.ban(
             interaction,
             await MemberWrapper.getMemberFromCustomId(interaction),
-            reason, interaction.user,
+            reason,
             duration,
             deleteMessageTime
         );

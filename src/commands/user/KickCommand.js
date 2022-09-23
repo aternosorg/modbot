@@ -3,6 +3,7 @@ import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import ModerationCommand from './ModerationCommand.js';
+import {decode64, encode64} from '../../util/base64.js';
 
 export default class KickCommand extends ModerationCommand {
 
@@ -39,7 +40,6 @@ export default class KickCommand extends ModerationCommand {
         await this.kick(interaction,
             new MemberWrapper(interaction.options.getUser('user', true), interaction.guild),
             interaction.options.getString('reason'),
-            interaction.user
         );
     }
 
@@ -48,17 +48,17 @@ export default class KickCommand extends ModerationCommand {
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
      * @param {?string} reason
-     * @param {import('discord.js').User} moderator
      * @return {Promise<void>}
      */
-    async kick(interaction, member, reason, moderator) {
+    async kick(interaction, member, reason) {
         reason = reason || 'No reason provided';
 
-        if (!await this.checkPermissions(interaction, member, moderator)) {
+        if (!await this.checkPermissions(interaction, member) ||
+            !await this.preventDuplicateModeration(interaction, member, [encode64(reason)])) {
             return;
         }
 
-        await member.kick(reason, moderator);
+        await member.kick(reason, interaction.user);
         await interaction.reply({
             ephemeral: true,
             embeds: [new EmbedBuilder()
@@ -69,6 +69,16 @@ export default class KickCommand extends ModerationCommand {
     }
 
     async executeButton(interaction) {
+        if (interaction.customId.endsWith(':confirm')) {
+            const data = interaction.customId.split(':');
+            await this.kick(
+                interaction,
+                await MemberWrapper.getMemberFromCustomId(interaction, 1),
+                decode64(data[2]),
+            );
+            return;
+        }
+
         await this.promptForData(interaction, await MemberWrapper.getMemberFromCustomId(interaction));
     }
 
@@ -106,7 +116,7 @@ export default class KickCommand extends ModerationCommand {
         const reason = interaction.components[0].components.find(component => component.customId === 'reason').value
             || 'No reason provided';
 
-        await this.kick(interaction, await MemberWrapper.getMemberFromCustomId(interaction), reason, interaction.user);
+        await this.kick(interaction, await MemberWrapper.getMemberFromCustomId(interaction), reason);
     }
 
     getDescription() {
