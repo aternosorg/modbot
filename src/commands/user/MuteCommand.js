@@ -11,10 +11,10 @@ import {formatTime, parseTime} from '../../util/timeutils.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT, TIMEOUT_DURATION_LIMIT} from '../../util/apiLimits.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
-import ModerationCommand from './ModerationCommand.js';
-import {decode64, encode64} from '../../util/base64.js';
+import UserCommand from './UserCommand.js';
+import Confirmation from '../../database/Confirmation.js';
 
-export default class MuteCommand extends ModerationCommand {
+export default class MuteCommand extends UserCommand {
 
 
     buildOptions(builder) {
@@ -71,7 +71,7 @@ export default class MuteCommand extends ModerationCommand {
         reason = reason || 'No reason provided';
 
         if (!await this.checkPermissions(interaction, member) ||
-            !await this.preventDuplicateModeration(interaction, member, [encode64(reason), duration])) {
+            !await this.preventDuplicateModeration(interaction, member, {reason, duration})) {
             return;
         }
 
@@ -108,12 +108,19 @@ export default class MuteCommand extends ModerationCommand {
 
     async executeButton(interaction) {
         if (interaction.customId.endsWith(':confirm')) {
-            const data = interaction.customId.split(':');
+            const confirmationId = parseInt(interaction.customId.split(':').at(-2));
+            /** @type {Confirmation<{reason: ?string, duration: ?number}>}*/
+            const data = await Confirmation.get(confirmationId);
+            if (!data) {
+                await interaction.reply({ephemeral: true, content: 'This confirmation has expired.'});
+                return;
+            }
+
             await this.mute(
                 interaction,
                 await MemberWrapper.getMemberFromCustomId(interaction, 1),
-                decode64(data[2]),
-                parseInt(data[3]) || null,
+                data.data.reason,
+                data.data.duration,
             );
             return;
         }

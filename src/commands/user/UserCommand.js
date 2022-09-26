@@ -12,6 +12,7 @@ import {toTitleCase} from '../../util/util.js';
 import {formatTime} from '../../util/timeutils.js';
 import UserWrapper from '../../discord/UserWrapper.js';
 import LineEmbed from '../../embeds/LineEmbed.js';
+import Confirmation from '../../database/Confirmation.js';
 
 /**
  * warn a user if this member has been moderated in the last x seconds
@@ -20,9 +21,15 @@ import LineEmbed from '../../embeds/LineEmbed.js';
 const MODERATION_WARN_DURATION = 5 * 60;
 
 /**
+ * how long a confirmation should be available for
+ * @type {number}
+ */
+const CONFIRMATION_DURATION = 15 * 60;
+
+/**
  * @abstract
  */
-export default class ModerationCommand extends Command {
+export default class UserCommand extends Command {
     /**
      * check if this member can be moderated by this moderator
      * @param {import('discord.js').Interaction} interaction
@@ -51,10 +58,10 @@ export default class ModerationCommand extends Command {
     /**
      * @param {import('discord.js').Interaction} interaction
      * @param {MemberWrapper} member
-     * @param {[]} data data that will be added in the custom id (command:user:data:confirm)
+     * @param {Object} data data that will be saved for the confirmation
      * @return {Promise<boolean>} should the punishment be executed now
      */
-    async preventDuplicateModeration(interaction, member, data = []) {
+    async preventDuplicateModeration(interaction, member, data = null) {
         if (interaction.customId && interaction.customId.endsWith(':confirm')) {
             return true;
         }
@@ -88,10 +95,9 @@ export default class ModerationCommand extends Command {
                 .newLine();
         }
 
+        const confirmation = new Confirmation(data, Math.floor(Date.now() / 1000) + CONFIRMATION_DURATION);
+        const confirmationId = await confirmation.save();
 
-        data.unshift(this.getName(), member.user.id);
-        data.push('confirm');
-        console.log(data.join(':'));
         await interaction.reply({
             ephemeral: true,
             embeds: [embed],
@@ -103,7 +109,7 @@ export default class ModerationCommand extends Command {
                         new ButtonBuilder()
                             .setLabel(`${toTitleCase(this.getName())}`)
                             .setStyle(ButtonStyle.Success)
-                            .setCustomId(data.join(':'))
+                            .setCustomId(`${this.getName()}:${member.user.id}:${confirmationId}:confirm`)
                     )
             ]
         });

@@ -2,10 +2,10 @@ import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, Permission
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
-import ModerationCommand from './ModerationCommand.js';
-import {decode64, encode64} from '../../util/base64.js';
+import UserCommand from './UserCommand.js';
+import Confirmation from '../../database/Confirmation.js';
 
-export default class StrikeCommand extends ModerationCommand {
+export default class StrikeCommand extends UserCommand {
 
     buildOptions(builder) {
         builder.addUserOption(option =>
@@ -66,7 +66,7 @@ export default class StrikeCommand extends ModerationCommand {
         }
 
         if (!await this.checkPermissions(interaction, member) ||
-            !await this.preventDuplicateModeration(interaction, member, [encode64(reason), count])) {
+            !await this.preventDuplicateModeration(interaction, member, {reason, count})) {
             return;
         }
 
@@ -82,12 +82,19 @@ export default class StrikeCommand extends ModerationCommand {
 
     async executeButton(interaction) {
         if (interaction.customId.endsWith(':confirm')) {
-            const data = interaction.customId.split(':');
+            const confirmationId = parseInt(interaction.customId.split(':').at(-2));
+            /** @type {Confirmation<{reason: ?string, count: number}>}*/
+            const data = await Confirmation.get(confirmationId);
+            if (!data) {
+                await interaction.reply({ephemeral: true, content: 'This confirmation has expired.'});
+                return;
+            }
+
             await this.strike(
                 interaction,
                 await MemberWrapper.getMemberFromCustomId(interaction, 1),
-                decode64(data[2]),
-                parseInt(data[3]) || 1,
+                data.data.reason,
+                data.data.count,
             );
             return;
         }

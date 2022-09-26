@@ -2,6 +2,7 @@ import UnbanInterval from './UnbanInterval.js';
 import Logger from '../Logger.js';
 import UnmuteInterval from './UnmuteInterval.js';
 import TransferMuteToTimeoutInterval from './TransferMuteToTimeoutInterval.js';
+import CleanupConfirmationInterval from './CleanupConfirmationInterval.js';
 
 export default class IntervalManager {
     /**
@@ -11,6 +12,7 @@ export default class IntervalManager {
         new UnbanInterval(),
         new UnmuteInterval(),
         new TransferMuteToTimeoutInterval(),
+        new CleanupConfirmationInterval(),
     ];
 
     schedule() {
