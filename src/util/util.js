@@ -13,7 +13,7 @@ export async function retry(fn, thisArg, args = [], maxRetries = 5, returnValMat
     for (let i = 0; i < maxRetries; i++) {
         let res;
         try {
-            res = await Promise.resolve(fn.apply(thisArg, args));
+            res = await fn.apply(thisArg, args);
         } catch (e) {
             err = e;
             continue;

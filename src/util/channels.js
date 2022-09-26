@@ -23,10 +23,6 @@ export function isLockable(channel) {
     return LOCK_PERMISSIONS.some(permission => everyonePermissions.has(permission));
 }
 
-export async function isLocked() {
-
-}
-
 /**
  * @param {import('discord.js').GuildChannel[]} channels
  * @return {SelectMenuBuilder}
