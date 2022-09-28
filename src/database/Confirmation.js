@@ -19,10 +19,14 @@ export default class Confirmation {
 
     /**
      * @template T
-     * @param {number} id
+     * @param {number|string} id
      * @return {Promise<Confirmation<T>|null>}
      */
     static async get(id) {
+        if (typeof id === 'string') {
+            id = parseInt(id);
+        }
+
         const data = await Database.instance.query('SELECT id, data, expires FROM confirmations WHERE id = ?', id);
         if (!data) {
             return null;

@@ -10,6 +10,9 @@ import {
 import {channelSelectMenu} from '../../util/channels.js';
 import colors from '../../util/colors.js';
 import ChannelSettings from '../../settings/ChannelSettings.js';
+import ChannelWrapper from '../../discord/ChannelWrapper.js';
+import Confirmation from '../../database/Confirmation.js';
+import {timeAfter} from '../../util/timeutils.js';
 
 export default class UnlockCommand extends Command {
 
@@ -25,12 +28,13 @@ export default class UnlockCommand extends Command {
     }
 
     async execute(interaction) {
+        /** @type {ChannelWrapper[]} */
         const channels = [];
 
         for (const [id, channel] of (await interaction.guild.channels.fetch()).entries()) {
             const channelSettings = await ChannelSettings.get(id);
             if (Object.keys(channelSettings.lock).length) {
-                channels.push(channel);
+                channels.push(new ChannelWrapper(channel));
             }
         }
 
@@ -56,9 +60,10 @@ export default class UnlockCommand extends Command {
     }
 
     async executeSelectMenu(interaction) {
+        const confirmation = new Confirmation({channels: interaction.values}, timeAfter('15 minutes'));
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Unlock ${interaction.values.length} channels`)
-            .setCustomId(`unlock:${interaction.values.join(':')}`)
+            .setCustomId(`unlock:${await confirmation.save()}`)
             .addComponents(
                 /** @type {*} */
                 new ActionRowBuilder().addComponents(
@@ -74,7 +79,15 @@ export default class UnlockCommand extends Command {
     }
 
     async executeModal(interaction) {
-        const channels = interaction.customId.split(':').slice(1);
+        const confirmationId = interaction.customId.split(':')[1];
+        const confirmation = await Confirmation.get(confirmationId);
+
+        if (!confirmation) {
+            await interaction.reply({ephemeral: true, content: 'This confirmation has expired.'});
+            return;
+        }
+
+        const channels = confirmation.data.channels;
         const message = interaction.components[0].components[0].value;
         const everyone = interaction.guild.roles.everyone.id;
 
@@ -87,13 +100,14 @@ export default class UnlockCommand extends Command {
         for (const channelId of channels) {
             const channel = /** @type {import('discord.js').TextChannel} */
                 await interaction.guild.channels.fetch(channelId);
+            const wrapper = new ChannelWrapper(channel);
 
             const channelSettings = await ChannelSettings.get(channelId);
-            await channel.permissionOverwrites.edit(everyone, channelSettings.lock);
+            await channel.permissionOverwrites.edit(everyone, channelSettings.lock ?? {});
             channelSettings.lock = {};
             await channelSettings.save();
 
-            await channel.send({embeds: [embed]});
+            await wrapper.tryToSend({embeds: [embed]});
         }
 
         await interaction.editReply({

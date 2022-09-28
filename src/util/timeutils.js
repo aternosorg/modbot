@@ -76,3 +76,20 @@ export function formatTime(duration) {
 
     return output.trimEnd();
 }
+
+/**
+ * current time as a unix timestamp (seconds)
+ * @return {number}
+ */
+export function timeNow() {
+    return Math.floor(Date.now() / 1000);
+}
+
+/**
+ * return time after duration has expired as unix timestamp (seconds)
+ * @param {string} duration
+ * @return {number}
+ */
+export function timeAfter(duration) {
+    return timeNow() + (parseTime(duration) ?? 0);
+}

@@ -11,6 +11,8 @@ import {channelSelectMenu} from '../../util/channels.js';
 import colors from '../../util/colors.js';
 import ChannelSettings from '../../settings/ChannelSettings.js';
 import ChannelWrapper, {CHANNEL_LOCK_PERMISSIONS} from '../../discord/ChannelWrapper.js';
+import Confirmation from '../../database/Confirmation.js';
+import {timeAfter} from '../../util/timeutils.js';
 
 export default class LockCommand extends Command {
 
@@ -30,7 +32,7 @@ export default class LockCommand extends Command {
             .map(channel => new ChannelWrapper(channel))
             .filter(channel => channel.isLockable());
 
-        if (!channels.size) {
+        if (!channels.length) {
             await interaction.reply({
                 ephemeral: true,
                 content: 'There are no channels to lock.'
@@ -45,16 +47,17 @@ export default class LockCommand extends Command {
                 /** @type {ActionRowBuilder} */
                 new ActionRowBuilder()
                     .addComponents(/** @type {*} */
-                        channelSelectMenu(Array.from(channels.values())).setCustomId('lock')
+                        channelSelectMenu(channels).setCustomId('lock')
                     )
             ]
         });
     }
 
     async executeSelectMenu(interaction) {
+        const confirmation = new Confirmation({channels: interaction.values}, timeAfter('15 minutes'));
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Lock ${interaction.values.length} channels`)
-            .setCustomId(`lock:${interaction.values.join(':')}`)
+            .setCustomId(`lock:${await confirmation.save()}`)
             .addComponents(
                 /** @type {*} */
                 new ActionRowBuilder().addComponents(
@@ -70,7 +73,15 @@ export default class LockCommand extends Command {
     }
 
     async executeModal(interaction) {
-        const channels = interaction.customId.split(':').slice(1);
+        const confirmationId = interaction.customId.split(':')[1];
+        const confirmation = await Confirmation.get(confirmationId);
+
+        if (!confirmation) {
+            await interaction.reply({ephemeral: true, content: 'This confirmation has expired.'});
+            return;
+        }
+
+        const channels = confirmation.data.channels;
         const message = interaction.components[0].components[0].value;
         const everyone = interaction.guild.roles.everyone.id;
 
@@ -82,11 +93,14 @@ export default class LockCommand extends Command {
 
         await interaction.deferReply({ephemeral: true});
         for (const channelId of channels) {
-            const channel = /** @type {import('discord.js').TextChannel} */
+            const channel = /** @type {import('discord.js').TextChannel|import('discord.js').GuildChannel} */
                 await interaction.guild.channels.fetch(channelId);
+            const wrapper = new ChannelWrapper(channel);
+            if (!wrapper.isLockable())
+                continue;
             const channelSettings = await ChannelSettings.get(channelId);
 
-            await channel.send({embeds: [embed]});
+            await wrapper.tryToSend({embeds: [embed]});
 
             const permissionEditOptions = {};
             for (const permisson of CHANNEL_LOCK_PERMISSIONS) {

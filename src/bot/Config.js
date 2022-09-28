@@ -40,6 +40,12 @@ import {exists, readJSON} from '../util/fsutils.js';
  * @property {?string} previous-page
  * @property {?string} next-page
  * @property {?string} last-page
+ * @property {?string} announcement
+ * @property {?string} channel
+ * @property {?string} forum
+ * @property {?string} stage
+ * @property {?string} thread
+ * @property {?string} voice
  */
 
 export default class Config {
