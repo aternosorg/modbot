@@ -27,6 +27,7 @@ import ModerationCommand from './moderation/ModerationCommand.js';
 import SettingsCommand from './settings/SettingsCommand.js';
 import LockCommand from './guild/LockCommand.js';
 import UnlockCommand from './guild/UnlockCommand.js';
+import PurgeCommand from './guild/PurgeCommand.js';
 
 const cooldowns = new Cache();
 
@@ -66,6 +67,7 @@ export default class CommandManager {
         // GUILD
         new LockCommand(),
         new UnlockCommand(),
+        new PurgeCommand(),
     ];
 
     static get instance() {

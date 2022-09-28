@@ -7,9 +7,10 @@ import {
     TextInputBuilder,
     TextInputStyle
 } from 'discord.js';
-import {channelSelectMenu, isLockable, LOCK_PERMISSIONS} from '../../util/channels.js';
+import {channelSelectMenu} from '../../util/channels.js';
 import colors from '../../util/colors.js';
 import ChannelSettings from '../../settings/ChannelSettings.js';
+import ChannelWrapper, {CHANNEL_LOCK_PERMISSIONS} from '../../discord/ChannelWrapper.js';
 
 export default class LockCommand extends Command {
 
@@ -26,7 +27,8 @@ export default class LockCommand extends Command {
 
     async execute(interaction) {
         const channels = (await interaction.guild.channels.fetch())
-            .filter((channel) => isLockable(channel));
+            .map(channel => new ChannelWrapper(channel))
+            .filter(channel => channel.isLockable());
 
         if (!channels.size) {
             await interaction.reply({
@@ -87,7 +89,7 @@ export default class LockCommand extends Command {
             await channel.send({embeds: [embed]});
 
             const permissionEditOptions = {};
-            for (const permisson of LOCK_PERMISSIONS) {
+            for (const permisson of CHANNEL_LOCK_PERMISSIONS) {
                 if (!channel.permissionsFor(everyone).has(permisson))
                     continue;
 

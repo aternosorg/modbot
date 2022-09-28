@@ -79,3 +79,9 @@ export const TIMEOUT_DURATION_LIMIT = 28 * 24 * 60 * 60;
 export const MODAL_TITLE_LIMIT = 45;
 
 export const TEXT_INPUT_LABEL_LIMIT = 45;
+
+export const FETCH_MESSAGES_LIMIT = 100;
+
+export const BULK_DELETE_LIMIT = 100;
+
+export const BULK_DELETE_MAX_AGE = 14 * 24 * 60 * 60 * 1000;
