@@ -102,7 +102,13 @@ export default class Config {
                     'first-page': process.env.MODBOT_EMOJI_FIRST_PAGE,
                     'previous-page': process.env.MODBOT_EMOJI_PREVIOUS_PAGE,
                     'next-page': process.env.MODBOT_EMOJI_NEXT_PAGE,
-                    'last-page': process.env.MODBOT_EMOJI_LAST_PAGE
+                    'last-page': process.env.MODBOT_EMOJI_LAST_PAGE,
+                    announcement: process.env.MODBOT_EMOJI_ANNOUNCEMENT,
+                    channel: process.env.MODBOT_EMOJI_CHANNEL,
+                    forum: process.env.MODBOT_EMOJI_FORUM,
+                    stage: process.env.MODBOT_EMOJI_STAGE,
+                    thread: process.env.MODBOT_EMOJI_THREAD,
+                    voice: process.env.MODBOT_EMOJI_VOICE
                 }
             };
         }
