@@ -4,6 +4,7 @@ import ModerationClearCommand from './ModerationClearCommand.js';
 import ModerationDeleteCommand from './ModerationDeleteCommand.js';
 import ModerationListCommand from './ModerationListCommand.js';
 import {PermissionFlagsBits, PermissionsBitField} from 'discord.js';
+import ModerationEditCommand from './ModerationEditCommand.js';
 
 export default class ModerationCommand extends ParentCommand {
 
@@ -15,6 +16,7 @@ export default class ModerationCommand extends ParentCommand {
     getChildren() {
         return [
             new ModerationShowCommand(),
+            new ModerationEditCommand(),
             new ModerationDeleteCommand(),
             new ModerationListCommand(),
             new ModerationClearCommand(),

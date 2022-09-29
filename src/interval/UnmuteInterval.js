@@ -38,6 +38,10 @@ export default class UnmuteInterval extends Interval {
                     }
                     await guild.sendDM(member.user, `You have been unmuted in \`${guild.guild.name}\` | ${reason}`);
                 }
+                else if (member.communicationDisabledUntilTimestamp) {
+                    await member.disableCommunicationUntil(null);
+                    await guild.sendDM(member.user, `You have been unmuted in \`${guild.guild.name}\` | ${reason}`);
+                }
             }
 
             const user = await client.users.fetch(result.userid);

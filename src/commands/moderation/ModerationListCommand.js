@@ -39,7 +39,7 @@ export default class ModerationListCommand extends SubCommand {
         }
         const moderations = await Moderation.getAll(interaction.guildId, member.user.id);
 
-        let page = interaction.customId.split(':')[3];
+        let page = interaction.customId.split(':')[3] ?? null;
         if (page === null) {
             await interaction.reply(await this.generateMessage(member.user, moderations));
             return;

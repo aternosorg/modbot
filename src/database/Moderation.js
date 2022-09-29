@@ -88,7 +88,7 @@ export default class Moderation {
         this.created = parseInt(data.created) || Math.floor(Date.now()/1000);
         this.value = data.value;
         this.reason = data.reason || 'No reason provided.';
-        this.expireTime = parseInt(data.expireTime);
+        this.expireTime = parseInt(data.expireTime) || null;
         this.moderator = data.moderator;
         this.active = !!data.active;
     }
@@ -114,11 +114,11 @@ export default class Moderation {
 
     /**
      * escaped database fields
-     * @return {string}
+     * @return {string[]}
      */
     static getFields() {
-        return ['id', 'userid', 'action', 'created', 'value', 'expireTime', 'reason', 'moderator', 'active']
-            .map(field => Database.instance.escapeId(field)).join(', ');
+        return ['id', 'guildid', 'userid', 'action', 'created', 'value', 'expireTime', 'reason', 'moderator', 'active']
+            .map(field => Database.instance.escapeId(field));
     }
 
     /**
@@ -129,7 +129,7 @@ export default class Moderation {
     static async select(params) {
         const where = params.join(' AND ');
         const values = params.map(p => p.value);
-        const fields = this.getFields();
+        const fields = this.getFields().join(', ');
 
         return (await Database.instance.queryAll(`SELECT ${fields} FROM moderations WHERE ${where} ORDER BY created ASC`, ...values))
             .map(data => new Moderation(data));
@@ -159,7 +159,7 @@ export default class Moderation {
      */
     static async get(guildId, id) {
         return (await this.select([
-            new WhereParameter('guilid', guildId),
+            new WhereParameter('guildid', guildId),
             new WhereParameter('id', id),
         ]))[0] ?? null;
     }
@@ -196,11 +196,22 @@ export default class Moderation {
 
     /**
      * add this moderation to the database
-     * @return {Promise}
+     * @return {Promise<number>}
      */
     async save() {
-        return Database.instance.query('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
-            'VALUES (?,?,?,?,?,?,?,?,?)', ...this.getParameters());
+        const fields = this.constructor.getFields().slice(1);
+        if (this.id) {
+            await Database.instance.query(
+                `UPDATE moderations SET ${fields.map(field => `${field} = ?`).join(', ')} WHERE id = ?`,
+                ...this.getParameters(), this.id);
+        }
+        else {
+            const result = await Database.instance.query(
+                `INSERT INTO moderations (${fields.join(', ')}) VALUES ${'?'.repeat(fields.length)}`,
+                ...this.getParameters());
+            this.id = result.insertId;
+        }
+        return this.id;
     }
 
     /**
@@ -216,7 +227,7 @@ export default class Moderation {
      * @return {(import('discord.js').Snowflake|String|Number)[]}
      */
     getParameters() {
-        return [this.guildid, this.userid, this.action, this.created, this.expireTime, this.reason, this.moderator, this.value, this.active];
+        return [this.guildid, this.userid, this.action, this.created, this.value, this.expireTime, this.reason, this.moderator, this.active];
     }
 
     /**
