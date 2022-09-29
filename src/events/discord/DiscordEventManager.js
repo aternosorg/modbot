@@ -3,7 +3,6 @@ import ErrorEventListener from './ErrorEventListener.js';
 import BanRemoveEventListener from './BanRemoveEventListener.js';
 import GuildDeleteEventListener from './GuildDeleteEventListener.js';
 import LogJoinEventListener from './guildMemberAdd/LogJoinEventListener.js';
-import RaidModeEventListener from './guildMemberAdd/RaidModeEventListener.js';
 import RestoreMutedRoleEventListener from './guildMemberAdd/RestoreMutedRoleEventListener.js';
 import GuildMemberRemoveEventListener from './GuildMemberRemoveEventListener.js';
 import AutoModEventListener from './messageCreate/AutoModEventListener.js';
@@ -36,7 +35,6 @@ export default class DiscordEventManager extends EventManager {
             // members
             // join
             new LogJoinEventListener(),
-            new RaidModeEventListener(),
             new RestoreMutedRoleEventListener(),
 
             // messages
