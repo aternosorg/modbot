@@ -28,6 +28,7 @@ import SettingsCommand from './settings/SettingsCommand.js';
 import LockCommand from './guild/LockCommand.js';
 import UnlockCommand from './guild/UnlockCommand.js';
 import PurgeCommand from './guild/PurgeCommand.js';
+import SoftBanCommand from './user/SoftBanCommand.js';
 
 const cooldowns = new Cache();
 
@@ -52,6 +53,7 @@ export default class CommandManager {
         new UserInfoCommand(),
         new BanCommand(),
         new UnbanCommand(),
+        new SoftBanCommand(),
         new KickCommand(),
         new MuteCommand(),
         new UnmuteCommand(),

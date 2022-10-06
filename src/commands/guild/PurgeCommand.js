@@ -1,10 +1,9 @@
 import Command from '../Command.js';
-import {channelMention, codeBlock, PermissionFlagsBits, PermissionsBitField, userMention} from 'discord.js';
+import {PermissionFlagsBits, PermissionsBitField} from 'discord.js';
 import ChannelWrapper from '../../discord/ChannelWrapper.js';
-import LineEmbed from '../../embeds/LineEmbed.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
-import colors from '../../util/colors.js';
 import {BULK_DELETE_MAX_AGE} from '../../util/apiLimits.js';
+import PurgeLogEmbed from '../../embeds/PurgeLogEmbed.js';
 
 const REGEX_REGEX = /^\/(.*)\/([gimsuy]*)$/;
 
@@ -85,16 +84,14 @@ export default class PurgeCommand extends Command {
 
         await channel.bulkDelete(Array.from(messages.keys()));
 
-        const embed = new LineEmbed()
-            .setColor(colors.RED)
-            .setAuthor({name: `${interaction.user.tag} purged ${messages.size} messages`})
-            .addLine('Channel', channelMention(interaction.channel.id))
-            .addLineIf(user, 'User', userMention(user))
-            .addLineIf(regex, 'Regex', codeBlock(regex))
-            .addLine('Tested messages', limit)
-            .setFooter({text: interaction.user.id.toString()});
-
-        await (new GuildWrapper(interaction.guild)).log({embeds: [embed]});
+        await (new GuildWrapper(interaction.guild))
+            .log(new PurgeLogEmbed(
+                interaction,
+                messages.size,
+                limit,
+                user,
+                regex,
+            ).toMessage());
 
         await interaction.editReply({
             content: `Deleted ${messages.size} messages!`

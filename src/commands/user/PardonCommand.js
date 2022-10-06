@@ -40,7 +40,7 @@ export default class PardonCommand extends Command {
     async execute(interaction) {
         const member = new MemberWrapper(interaction.options.getUser('user', true), interaction.guild);
         const reason = interaction.options.getString('reason');
-        await this.pardon(interaction, member, reason, interaction.user, interaction.options.getNumber('count'));
+        await this.pardon(interaction, member, reason, interaction.user, interaction.options.getInteger('count'));
     }
 
     /**

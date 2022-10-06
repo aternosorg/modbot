@@ -37,4 +37,12 @@ export default class LineEmbed extends EmbedBuilder {
         this.#lines.push('');
         return this;
     }
+
+    /**
+     * convert to discord message
+     * @return {{embeds: LineEmbed[]}}
+     */
+    toMessage() {
+        return {embeds: [this]};
+    }
 }

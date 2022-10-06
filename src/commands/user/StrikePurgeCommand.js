@@ -1,57 +1,49 @@
-import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, PermissionFlagsBits, PermissionsBitField, TextInputBuilder, TextInputStyle} from 'discord.js';
+import StrikeCommand from './StrikeCommand.js';
+import {
+    ActionRowBuilder,
+    ModalBuilder,
+    PermissionFlagsBits,
+    TextInputBuilder, TextInputStyle
+} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
-import colors from '../../util/colors.js';
-import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
-import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
+import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
+import ChannelWrapper from '../../discord/ChannelWrapper.js';
+import GuildWrapper from '../../discord/GuildWrapper.js';
+import PurgeLogEmbed from '../../embeds/PurgeLogEmbed.js';
 
-export default class StrikeCommand extends UserCommand {
-
-    /**
-     * add options to slash command builder
-     * @param {import('discord.js').SlashCommandBuilder} builder
-     * @return {import('discord.js').SlashCommandBuilder}
-     */
+export default class StrikePurgeCommand extends StrikeCommand {
     buildOptions(builder) {
-        builder.addUserOption(option =>
-            option
-                .setName('user')
-                .setDescription('The user you want to strike')
-                .setRequired(true)
-        );
-        builder.addStringOption(option =>
-            option.setName('reason')
-                .setDescription('Strike reason')
-                .setRequired(false)
-        );
-        builder.addIntegerOption(option =>
-            option.setName('count')
-                .setDescription('Strike count')
-                .setRequired(false)
-                .setMinValue(1)
-        );
-        return super.buildOptions(builder);
+        super.buildOptions(builder);
+        builder.addIntegerOption(option => option
+            .setName('limit')
+            .setDescription('Delete messages sent by this user in the last x messages (default: 100)')
+            .setRequired(false)
+            .setMinValue(1)
+            .setMaxValue(1000));
+        return builder;
     }
 
     getDefaultMemberPermissions() {
-        return new PermissionsBitField()
-            .add(PermissionFlagsBits.ModerateMembers);
+        return super.getDefaultMemberPermissions()
+            .add(PermissionFlagsBits.ManageMessages);
     }
 
     getRequiredBotPermissions() {
-        return new PermissionsBitField()
-            .add(PermissionFlagsBits.ModerateMembers);
+        return super.getDefaultMemberPermissions()
+            .add(PermissionFlagsBits.ManageMessages);
     }
 
     supportsUserCommands() {
-        return true;
+        return false;
     }
 
     async execute(interaction) {
-        await this.strike(interaction,
+        await this.strikePurge(interaction,
             new MemberWrapper(interaction.options.getUser('user', true), interaction.guild),
             interaction.options.getString('reason'),
             interaction.options.getInteger('count'),
+            interaction.options.getInteger('limit'),
         );
     }
 
@@ -61,45 +53,61 @@ export default class StrikeCommand extends UserCommand {
      * @param {?MemberWrapper} member
      * @param {?string} reason
      * @param {?number} count
+     * @param {?number} limit
      * @return {Promise<void>}
      */
-    async strike(interaction, member, reason, count) {
+    async strikePurge(interaction, member, reason, count, limit) {
         reason = reason || 'No reason provided';
 
         if (!count || count < 1) {
             count = 1;
         }
 
-        if (!await this.checkPermissions(interaction, member) ||
-            !await this.preventDuplicateModeration(interaction, member, {reason, count})) {
-            return;
+        limit ??= 100;
+        if (limit > 1000) {
+            limit = 1000;
         }
 
-        await member.strike(reason, interaction.user, count);
-        await interaction.reply({
-            ephemeral: true,
-            embeds: [new EmbedBuilder()
-                .setDescription(`${escapeMarkdown(member.user.tag)} has been striked: ${reason}`)
-                .setColor(colors.RED)
-            ]}
-        );
+        if (!await this.checkPermissions(interaction, member) ||
+            !await this.preventDuplicateModeration(interaction, member, {reason, count, limit})) {
+            return;
+        }
+        await super.strike(interaction, member, reason, count);
+
+
+        const channel = new ChannelWrapper(/** @type {import('discord.js').GuildChannel}*/ interaction.channel);
+        const messages = (await channel.getMessages(limit))
+            .filter(message => message.author.id === member.user.id);
+
+        if (messages.size) {
+            await channel.bulkDelete(Array.from(messages.keys()));
+        }
+
+        await (new GuildWrapper(interaction.guild))
+            .log(new PurgeLogEmbed(
+                interaction,
+                messages.size,
+                limit,
+                member.user
+            ).toMessage());
     }
 
     async executeButton(interaction) {
         if (interaction.customId.endsWith(':confirm')) {
             const confirmationId = parseInt(interaction.customId.split(':').at(-2));
-            /** @type {Confirmation<{reason: ?string, count: number}>}*/
+            /** @type {Confirmation<{reason: ?string, count: number, limit: number}>}*/
             const data = await Confirmation.get(confirmationId);
             if (!data) {
                 await interaction.reply({ephemeral: true, content: 'This confirmation has expired.'});
                 return;
             }
 
-            await this.strike(
+            await this.strikePurge(
                 interaction,
                 await MemberWrapper.getMemberFromCustomId(interaction, 1),
                 data.data.reason,
                 data.data.count,
+                data.data.limit,
             );
             return;
         }
@@ -107,13 +115,8 @@ export default class StrikeCommand extends UserCommand {
         await this.promptForData(interaction, await MemberWrapper.getMemberFromCustomId(interaction));
     }
 
-    async executeUserMenu(interaction) {
-        const member = new MemberWrapper(interaction.targetUser, interaction.guild);
-        await this.promptForData(interaction, member);
-    }
-
     /**
-     * prompt user for strike reason and count
+     * prompt user for strike reason, count and message test limit
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
      * @return {Promise<void>}
@@ -124,8 +127,8 @@ export default class StrikeCommand extends UserCommand {
         }
 
         await interaction.showModal(new ModalBuilder()
-            .setTitle(`Strike ${member.user.tag}`.substring(0, MODAL_TITLE_LIMIT))
-            .setCustomId(`strike:${member.user.id}`)
+            .setTitle(`Strike-purge ${member.user.tag}`.substring(0, MODAL_TITLE_LIMIT))
+            .setCustomId(`strike-purge:${member.user.id}`)
             .addComponents(
                 /** @type {*} */
                 new ActionRowBuilder()
@@ -143,11 +146,19 @@ export default class StrikeCommand extends UserCommand {
                         .setCustomId('count')
                         .setStyle(TextInputStyle.Short)
                         .setPlaceholder('1')),
+                /** @type {*} */
+                new ActionRowBuilder()
+                    .addComponents(/** @type {*} */ new TextInputBuilder()
+                        .setRequired(false)
+                        .setLabel('Message deletion limit')
+                        .setCustomId('limit')
+                        .setStyle(TextInputStyle.Short)
+                        .setPlaceholder('100')),
             ));
     }
 
     async executeModal(interaction) {
-        let reason, count;
+        let reason, count, limit;
         for (const row of interaction.components) {
             for (const component of row.components) {
                 if (component.customId === 'reason') {
@@ -156,22 +167,26 @@ export default class StrikeCommand extends UserCommand {
                 else if (component.customId === 'count') {
                     count = parseInt(component.value);
                 }
+                else if (component.customId === 'limit') {
+                    limit = parseInt(component.value);
+                }
             }
         }
 
-        await this.strike(
+        await this.strikePurge(
             interaction,
             await MemberWrapper.getMemberFromCustomId(interaction),
             reason,
-            count
+            count,
+            limit
         );
     }
 
     getDescription() {
-        return 'Strike a user and execute a punishment based on the amount of strikes the user currently has.';
+        return 'Strike a user and delete their messages in this channel';
     }
 
     getName() {
-        return 'strike';
+        return 'strike-purge';
     }
 }

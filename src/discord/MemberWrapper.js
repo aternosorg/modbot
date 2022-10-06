@@ -364,13 +364,22 @@ export default class MemberWrapper {
 
     /**
      * softban this user from this guild
-     * @param {String}                              reason
-     * @param {User|import('discord.js').ClientUser} moderator
+     * @param {String}                                  reason
+     * @param {import('discord.js').User}    moderator
+     * @param {?number}                                 [deleteMessageSeconds]
      * @return {Promise<void>}
      */
-    async softban(reason, moderator){
+    async softban(reason, moderator, deleteMessageSeconds){
+        deleteMessageSeconds ??= 60 * 60;
+        if (deleteMessageSeconds > BAN_MESSAGE_DELETE_LIMIT) {
+            deleteMessageSeconds = BAN_MESSAGE_DELETE_LIMIT;
+        }
+
         await this.dmPunishedUser('softbanned', reason, null, 'from');
-        await this.guild.guild.members.ban(this.user.id, {deleteMessageDays: 1, reason: this._shortenReason(`${moderator.tag} | ${reason}`)});
+        await this.guild.guild.members.ban(this.user.id, {
+            deleteMessageSeconds,
+            reason: this._shortenReason(`${moderator.tag} | ${reason}`)
+        });
         await this.guild.guild.members.unban(this.user.id, 'softban');
         const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'softban', reason, null, moderator.id);
         await this.#logModeration(moderator, reason, id, 'softban');
