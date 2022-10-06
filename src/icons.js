@@ -9,4 +9,5 @@ module.exports = {
     left: String.fromCodePoint(11013),
     right: String.fromCodePoint(10145),
     eyes: String.fromCodePoint(128064),
+    ghost: String.fromCodePoint(128123)
 };

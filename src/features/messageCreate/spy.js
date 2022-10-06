@@ -13,3 +13,18 @@ exports.event = async (options, message) => {
         }
     }
 };
+
+exports.event = async (options, message) => {
+    if(message.createdAt.getMonth() === 9 &&
+        !message.author.bot &&
+        message.content.toLowerCase().includes('spookbot') ||
+        message.content.toLowerCase().includes('boo')) {
+        try {
+            await message.react(icons.ghost);
+        } catch(e) {
+            if(e.code !== APIErrors.UNKNOWN_MESSAGE) {
+                throw e;
+            }
+        }
+    }
+};
