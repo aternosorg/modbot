@@ -1,31 +1,28 @@
-import {bold, EmbedBuilder} from 'discord.js';
+import EmbedWrapper from './EmbedWrapper.js';
 import {EMBED_DESCRIPTION_LIMIT} from '../util/apiLimits.js';
 
-export default class LineEmbed extends EmbedBuilder {
+export default class LineEmbed extends EmbedWrapper {
     #lines = [];
 
-    /**
-     * add a line
-     * @param {string} name
-     * @param {string|number} value
-     * @return {this}
-     */
-    addLine(name, value) {
-        this.#lines.push(bold(name) + ': ' + value);
-        this.setDescription(this.#lines.join('\n').substring(0, EMBED_DESCRIPTION_LIMIT));
-        return this;
+
+    #buildLines() {
+        const lastLine = this.#lines.findIndex((_, index, array) =>
+            array.slice(0, index + 1).join('\n').length > EMBED_DESCRIPTION_LIMIT);
+
+        this.setDescription(this.#lines
+            .slice(0, Math.max(lastLine, 1))
+            .join('\n')
+            .substring(0, EMBED_DESCRIPTION_LIMIT));
     }
 
     /**
-     * @param {*} condition
-     * @param {string} name
-     * @param {string|number} value
+     * add a line
+     * @param {string} content
      * @return {this}
      */
-    addLineIf(condition, name, value) {
-        if (condition) {
-            this.addLine(name, value);
-        }
+    addLine(content) {
+        this.#lines.push(content);
+        this.#buildLines();
         return this;
     }
 
@@ -38,11 +35,7 @@ export default class LineEmbed extends EmbedBuilder {
         return this;
     }
 
-    /**
-     * convert to discord message
-     * @return {{embeds: LineEmbed[]}}
-     */
-    toMessage() {
-        return {embeds: [this]};
+    getLineCount() {
+        return this.#lines.length;
     }
 }
