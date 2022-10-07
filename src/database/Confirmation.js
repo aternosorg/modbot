@@ -50,4 +50,14 @@ export default class Confirmation {
             return this.id = insert.insertId;
         }
     }
+
+    /**
+     * delete this confirmation
+     * @return {Promise<void>}
+     */
+    async delete() {
+        if (this.id) {
+            await Database.instance.query('DELETE FROM confirmations WHERE id = ?', this.id);
+        }
+    }
 }

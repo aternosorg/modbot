@@ -55,6 +55,22 @@ export default class MemberWrapper {
     }
 
     /**
+     * get member by guild and user id
+     * @param {import('discord.js').Interaction} interaction
+     * @param {import('discord.js').Snowflake} id user id
+     * @return {Promise<?MemberWrapper>}
+     */
+    static async getMember(interaction, id) {
+        const user = await (new UserWrapper(id)).fetchUser();
+        if (!user) {
+            await interaction.reply({ephemeral: true, content:'Unknown user!'});
+            return null;
+        }
+
+        return new MemberWrapper(user, interaction.guild);
+    }
+
+    /**
      * fetch this member
      * @param {boolean} [force] bypass cache
      * @returns {Promise<?import('discord.js').GuildMember>}

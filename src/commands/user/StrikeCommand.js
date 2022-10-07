@@ -86,18 +86,18 @@ export default class StrikeCommand extends UserCommand {
     }
 
     async executeButton(interaction) {
-        if (interaction.customId.endsWith(':confirm')) {
-            const confirmationId = parseInt(interaction.customId.split(':').at(-2));
-            /** @type {Confirmation<{reason: ?string, count: number}>}*/
-            const data = await Confirmation.get(confirmationId);
+        const parts = interaction.customId.split(':');
+        if (parts[1] === 'confirm') {
+            /** @type {Confirmation<{reason: ?string, count: number, user: import('discord.js').Snowflake}>}*/
+            const data = await Confirmation.get(parts[2]);
             if (!data) {
-                await interaction.reply({ephemeral: true, content: 'This confirmation has expired.'});
+                await interaction.update({content: 'This confirmation has expired.', embeds: [], components: []});
                 return;
             }
 
             await this.strike(
                 interaction,
-                await MemberWrapper.getMemberFromCustomId(interaction, 1),
+                await MemberWrapper.getMember(interaction, data.data.user),
                 data.data.reason,
                 data.data.count,
             );

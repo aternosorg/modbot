@@ -2,17 +2,12 @@ import Command from '../Command.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import Moderation from '../../database/Moderation.js';
 import WhereParameter from '../../database/WhereParameter.js';
-import {
-    ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-    time, TimestampStyles
-} from 'discord.js';
+import {bold, time, TimestampStyles} from 'discord.js';
 import {toTitleCase} from '../../util/util.js';
 import {formatTime} from '../../util/timeutils.js';
 import UserWrapper from '../../discord/UserWrapper.js';
-import KeyValueEmbed from '../../embeds/KeyValueEmbed.js';
 import Confirmation from '../../database/Confirmation.js';
+import ConfirmationEmbed from '../../embeds/ConfirmationEmbed.js';
 
 /**
  * warn a user if this member has been moderated in the last x seconds
@@ -61,8 +56,11 @@ export default class UserCommand extends Command {
      * @param {Object} data data that will be saved for the confirmation
      * @return {Promise<boolean>} should the punishment be executed now
      */
-    async preventDuplicateModeration(interaction, member, data = null) {
-        if (interaction.customId && interaction.customId.endsWith(':confirm')) {
+    async preventDuplicateModeration(interaction, member, data = {}) {
+        const customIdParts = interaction.customId.split(':');
+        if (customIdParts[1] === 'confirm') {
+            const confirmationId = parseInt(customIdParts[2]);
+            await new Confirmation(null, 0, confirmationId).delete();
             return true;
         }
 
@@ -78,15 +76,18 @@ export default class UserCommand extends Command {
             return true;
         }
 
-        const embed = new KeyValueEmbed()
+        data.user = member.user.id;
+        const confirmation = new Confirmation(data, Math.floor(Date.now() / 1000) + CONFIRMATION_DURATION);
+        const embed = new ConfirmationEmbed(this.getName(), await confirmation.save())
             .setAuthor({
-                name: `${member.user.tag} has already been moderated in the last ${formatTime(MODERATION_WARN_DURATION)}`,
+                name: `${member.user.tag} has already been moderated in the last ${formatTime(MODERATION_WARN_DURATION)}.`,
                 iconURL: member.user.avatarURL()
             });
 
         for (const result of results.slice(-3)) {
             const moderator = await new UserWrapper(result.moderator).fetchUser();
-            embed.addPairIf(moderator, 'Moderator', moderator.tag)
+            embed
+                .addPairIf(moderator, 'Moderator', moderator.tag)
                 .addPair('Type', toTitleCase(result.action))
                 .addPair('Timestamp', time(result.created, TimestampStyles.ShortTime))
                 .addPairIf(result.expireTime, 'Duration', formatTime(result.getDuration()))
@@ -95,24 +96,9 @@ export default class UserCommand extends Command {
                 .newLine();
         }
 
-        const confirmation = new Confirmation(data, Math.floor(Date.now() / 1000) + CONFIRMATION_DURATION);
-        const confirmationId = await confirmation.save();
+        embed.addLine(bold(`Are you sure you want to ${this.getName()} them?`));
 
-        await interaction.reply({
-            ephemeral: true,
-            embeds: [embed],
-            components: [
-                /** @type {ActionRowBuilder} */
-                new ActionRowBuilder()
-                    .addComponents(
-                        /** @type {*} */
-                        new ButtonBuilder()
-                            .setLabel(`${toTitleCase(this.getName())}`)
-                            .setStyle(ButtonStyle.Success)
-                            .setCustomId(`${this.getName()}:${member.user.id}:${confirmationId}:confirm`)
-                    )
-            ]
-        });
+        await interaction.reply(embed.toMessage());
         return false;
     }
 }

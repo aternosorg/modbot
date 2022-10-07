@@ -12,7 +12,8 @@ import MessageDeleteEventListener from './MessageDeleteEventListener.js';
 import MessageDeleteBulkEventListener from './MessageDeleteBulkEventListener.js';
 import MessageUpdateEventListener from './MessageUpdateEventListener.js';
 import WarnEventListener from './WarnEventListener.js';
-import InteractionCreateEventListener from './interactionCreate/InteractionCreateEventListener.js';
+import CommandEventListener from './interactionCreate/CommandEventListener.js';
+import DeleteConfirmationEventListener from './interactionCreate/DeleteConfirmationEventListener.js';
 
 export default class DiscordEventManager extends EventManager {
 
@@ -28,14 +29,14 @@ export default class DiscordEventManager extends EventManager {
             new ErrorEventListener(),
             new BanRemoveEventListener(),
             new GuildDeleteEventListener(),
-            new GuildMemberRemoveEventListener(),
             new WarnEventListener(),
-            new InteractionCreateEventListener(),
 
             // members
             // join
             new LogJoinEventListener(),
             new RestoreMutedRoleEventListener(),
+            // leave
+            new GuildMemberRemoveEventListener(),
 
             // messages
             new AutoModEventListener(),
@@ -43,6 +44,10 @@ export default class DiscordEventManager extends EventManager {
             new MessageDeleteEventListener(),
             new MessageDeleteBulkEventListener(),
             new MessageUpdateEventListener(),
+
+            // interactions
+            new CommandEventListener(),
+            new DeleteConfirmationEventListener(),
         ];
     }
 }
