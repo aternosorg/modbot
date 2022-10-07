@@ -11,7 +11,7 @@ import {
 import {toTitleCase} from '../../util/util.js';
 import {formatTime} from '../../util/timeutils.js';
 import UserWrapper from '../../discord/UserWrapper.js';
-import LineEmbed from '../../embeds/LineEmbed.js';
+import KeyValueEmbed from '../../embeds/KeyValueEmbed.js';
 import Confirmation from '../../database/Confirmation.js';
 
 /**
@@ -78,7 +78,7 @@ export default class UserCommand extends Command {
             return true;
         }
 
-        const embed = new LineEmbed()
+        const embed = new KeyValueEmbed()
             .setAuthor({
                 name: `${member.user.tag} has already been moderated in the last ${formatTime(MODERATION_WARN_DURATION)}`,
                 iconURL: member.user.avatarURL()
@@ -86,12 +86,12 @@ export default class UserCommand extends Command {
 
         for (const result of results.slice(-3)) {
             const moderator = await new UserWrapper(result.moderator).fetchUser();
-            embed.addLineIf(moderator, 'Moderator', moderator.tag)
-                .addLine('Type', toTitleCase(result.action))
-                .addLine('Timestamp', time(result.created, TimestampStyles.ShortTime))
-                .addLineIf(result.expireTime, 'Duration', formatTime(result.getDuration()))
-                .addLineIf(result.value, 'Strikes', result.value)
-                .addLine('Reason', result.reason.slice(0, 200))
+            embed.addPairIf(moderator, 'Moderator', moderator.tag)
+                .addPair('Type', toTitleCase(result.action))
+                .addPair('Timestamp', time(result.created, TimestampStyles.ShortTime))
+                .addPairIf(result.expireTime, 'Duration', formatTime(result.getDuration()))
+                .addPairIf(result.value, 'Strikes', result.value)
+                .addPair('Reason', result.reason.slice(0, 200))
                 .newLine();
         }
 

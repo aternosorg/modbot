@@ -85,3 +85,9 @@ export const FETCH_MESSAGES_LIMIT = 100;
 export const BULK_DELETE_LIMIT = 100;
 
 export const BULK_DELETE_MAX_AGE = 14 * 24 * 60 * 60 * 1000;
+
+/**
+ * maximum number of bans that can be fetched per page
+ * @type {number}
+ */
+export const FETCH_BAN_PAGE_SIZE = 1000;

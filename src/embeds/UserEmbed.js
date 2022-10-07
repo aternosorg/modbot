@@ -1,6 +1,6 @@
-import LineEmbed from './LineEmbed.js';
+import KeyValueEmbed from './KeyValueEmbed.js';
 
-export default class UserEmbed extends LineEmbed {
+export default class UserEmbed extends KeyValueEmbed {
     /**
      *
      * @param {import('discord.js').User} user

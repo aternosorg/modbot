@@ -8,7 +8,7 @@ import {toTitleCase} from '../util/util.js';
 import {BAN_MESSAGE_DELETE_LIMIT, TIMEOUT_LIMIT} from '../util/apiLimits.js';
 import Moderation from '../database/Moderation.js';
 import UserWrapper from './UserWrapper.js';
-import LineEmbed from '../embeds/LineEmbed.js';
+import KeyValueEmbed from '../embeds/KeyValueEmbed.js';
 
 export default class MemberWrapper {
 
@@ -465,19 +465,19 @@ export default class MemberWrapper {
     async #logModeration(moderator, reason, id, type, time = null, amount = null, total = null) {
         return this.guild.log({
             embeds: [
-                new LineEmbed()
+                new KeyValueEmbed()
                     .setColor(resolveColor(type))
                     .setAuthor({
                         name: `Case ${id} | ${toTitleCase(type)} | ${this.user.tag}`,
                         iconURL: this.user.avatarURL()
                     })
                     .setFooter({text: this.user.id})
-                    .addLine('User', `<@${this.user.id}>`)
-                    .addLine('Moderator', `<@${moderator.id}>`)
-                    .addLineIf(time, 'Duration', time)
-                    .addLineIf(amount, 'Amount', amount)
-                    .addLineIf(amount, 'Total Strikes', total)
-                    .addLine('Reason', reason.substring(0, 1024))
+                    .addPair('User', `<@${this.user.id}>`)
+                    .addPair('Moderator', `<@${moderator.id}>`)
+                    .addPairIf(time, 'Duration', time)
+                    .addPairIf(amount, 'Amount', amount)
+                    .addPairIf(amount, 'Total Strikes', total)
+                    .addPair('Reason', reason.substring(0, 1024))
             ]
         });
     }

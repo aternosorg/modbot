@@ -1,7 +1,7 @@
 import colors from '../util/colors.js';
-import LineEmbed from './LineEmbed.js';
+import KeyValueEmbed from './KeyValueEmbed.js';
 
-export default class ModerationListEmbed extends LineEmbed {
+export default class ModerationListEmbed extends KeyValueEmbed {
     /**
      * @param {import('discord.js').User} user
      */

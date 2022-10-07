@@ -1,9 +1,9 @@
 import {time, TimestampStyles} from 'discord.js';
 import {resolveColor} from '../util/colors.js';
 import {formatTime} from '../util/timeutils.js';
-import LineEmbed from './LineEmbed.js';
+import KeyValueEmbed from './KeyValueEmbed.js';
 
-export default class ModerationEmbed extends LineEmbed {
+export default class ModerationEmbed extends KeyValueEmbed {
 
     /**
      * @param {Moderation} moderation
@@ -15,22 +15,22 @@ export default class ModerationEmbed extends LineEmbed {
             .setColor(resolveColor(moderation.action))
             .setFooter({text: `${user.tag} - ${moderation.userid}`, iconURL: user.avatarURL()});
 
-        this.addLine('Created at',  time(moderation.created, TimestampStyles.LongDate));
+        this.addPair('Created at',  time(moderation.created, TimestampStyles.LongDate));
         if (moderation.action === 'strike') {
-            this.addLine('Strikes', moderation.value);
+            this.addPair('Strikes', moderation.value);
         } else if (moderation.action === 'pardon') {
-            this.addLine('Pardoned Strikes', -moderation.value);
+            this.addPair('Pardoned Strikes', -moderation.value);
         }
 
         if (moderation.expireTime) {
-            this.addLine('Duration', formatTime(moderation.expireTime - moderation.created));
-            this.addLine('Expires', time(moderation.expireTime, TimestampStyles.LongDate));
+            this.addPair('Duration', formatTime(moderation.expireTime - moderation.created));
+            this.addPair('Expires', time(moderation.expireTime, TimestampStyles.LongDate));
         }
 
         if (moderation.moderator) {
-            this.addLine('Moderator', `<@!${moderation.moderator}>`);
+            this.addPair('Moderator', `<@!${moderation.moderator}>`);
         }
 
-        this.addLine('Reason', moderation.reason);
+        this.addPair('Reason', moderation.reason);
     }
 }

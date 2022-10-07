@@ -1,8 +1,8 @@
-import LineEmbed from './LineEmbed.js';
+import KeyValueEmbed from './KeyValueEmbed.js';
 import colors from '../util/colors.js';
 import {channelMention, codeBlock, userMention} from 'discord.js';
 
-export default class PurgeLogEmbed extends LineEmbed {
+export default class PurgeLogEmbed extends KeyValueEmbed {
     /**
      * @param {import('discord.js').Interaction} interaction
      * @param {number} count successfully deleted messages
@@ -14,10 +14,10 @@ export default class PurgeLogEmbed extends LineEmbed {
         super();
         this.setColor(colors.RED)
             .setAuthor({name: `${interaction.user.tag} purged ${count} messages`})
-            .addLine('Channel', channelMention(interaction.channel.id))
-            .addLineIf(user, 'User', userMention(user.id))
-            .addLineIf(regex, 'Regex', codeBlock(regex))
-            .addLine('Tested messages', limit)
+            .addPair('Channel', channelMention(interaction.channel.id))
+            .addPairIf(user, 'User', userMention(user.id))
+            .addPairIf(regex, 'Regex', codeBlock(regex))
+            .addPair('Tested messages', limit)
             .setFooter({text: interaction.user.id.toString()});
     }
 }

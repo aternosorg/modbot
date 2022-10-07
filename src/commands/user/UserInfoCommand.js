@@ -67,8 +67,8 @@ export default class UserInfoCommand extends Command {
         const member = await memberWrapper.fetchMember();
         const embed = new UserEmbed(user)
             .setColor(colors.GREEN)
-            .addLine('Discord ID', user.id)
-            .addLine('Created', time(user.createdAt, TimestampStyles.LongDate));
+            .addPair('Discord ID', user.id)
+            .addPair('Created', time(user.createdAt, TimestampStyles.LongDate));
 
         /** @type {ActionRowBuilder<ButtonBuilder>} */
         const actionRow = new ActionRowBuilder()
@@ -95,7 +95,7 @@ export default class UserInfoCommand extends Command {
             );
 
         if (member) {
-            embed.addLine('Joined', time(member.joinedAt, TimestampStyles.LongDate));
+            embed.addPair('Joined', time(member.joinedAt, TimestampStyles.LongDate));
             actionRow.addComponents(
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Kick')
@@ -106,8 +106,8 @@ export default class UserInfoCommand extends Command {
 
         {
             const strikeCount = await memberWrapper.getStrikeSum();
-            embed.addLine('Moderations', (await memberWrapper.getModerations()).length)
-                .addLine('Strike count', strikeCount);
+            embed.addPair('Moderations', (await memberWrapper.getModerations()).length)
+                .addPair('Strike count', strikeCount);
             if (strikeCount) {
                 actionRow.addComponents(
                     /** @type {*} */ new ButtonBuilder()
@@ -122,9 +122,9 @@ export default class UserInfoCommand extends Command {
             const mute = await memberWrapper.getMuteInfo();
             if (mute.muted) {
                 embed.newLine()
-                    .addLine('Muted', mute.reason);
+                    .addPair('Muted', mute.reason);
                 if (mute.end) {
-                    embed.addLine('Muted until', time(Math.floor(mute.end / 1_000)));
+                    embed.addPair('Muted until', time(Math.floor(mute.end / 1_000)));
                 }
                 actionRow.addComponents(
                     /** @type {*} */ new ButtonBuilder()
@@ -148,9 +148,9 @@ export default class UserInfoCommand extends Command {
             const ban = await memberWrapper.getBanInfo();
             if (ban.banned) {
                 embed.newLine()
-                    .addLine('Banned', ban.reason);
+                    .addPair('Banned', ban.reason);
                 if (ban.end) {
-                    embed.addLine('Banned until', time(Math.floor(ban.end / 1_000)));
+                    embed.addPair('Banned until', time(Math.floor(ban.end / 1_000)));
                 }
                 actionRow.addComponents(
                     /** @type {*} */ new ButtonBuilder()
