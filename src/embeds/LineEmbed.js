@@ -6,13 +6,19 @@ export default class LineEmbed extends EmbedWrapper {
 
 
     #buildLines() {
-        const lastLine = this.#lines.findIndex((_, index, array) =>
-            array.slice(0, index + 1).join('\n').length > EMBED_DESCRIPTION_LIMIT);
+        let content = '';
 
-        this.setDescription(this.#lines
-            .slice(0, Math.max(lastLine, 1))
-            .join('\n')
-            .substring(0, EMBED_DESCRIPTION_LIMIT));
+        for (const line of this.#lines) {
+            let newContent = content + line + '\n';
+            if (newContent.length <= EMBED_DESCRIPTION_LIMIT) {
+                content = newContent;
+            }
+            else {
+                break;
+            }
+        }
+
+        this.setDescription(content);
     }
 
     /**

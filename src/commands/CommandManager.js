@@ -30,6 +30,7 @@ import UnlockCommand from './guild/UnlockCommand.js';
 import PurgeCommand from './guild/PurgeCommand.js';
 import SoftBanCommand from './user/SoftBanCommand.js';
 import IDCommand from './guild/IDCommand.js';
+import RoleInfoCommand from './guild/RoleInfoCommand.js';
 
 const cooldowns = new Cache();
 
@@ -72,6 +73,7 @@ export default class CommandManager {
         new UnlockCommand(),
         new PurgeCommand(),
         new IDCommand(),
+        new RoleInfoCommand(),
     ];
 
     static get instance() {
