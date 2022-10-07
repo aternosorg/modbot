@@ -6,11 +6,13 @@ export default class ConfirmationEmbed extends KeyValueEmbed {
     /**
      * @param {string} command command name
      * @param {number} confirmation confirmation id
+     * @param {import('discord.js').ButtonStyle} [confirmButtonStyle]
      */
-    constructor(command, confirmation) {
+    constructor(command, confirmation, confirmButtonStyle = ButtonStyle.Success) {
         super();
         this.command = command;
         this.confirmation = confirmation;
+        this.confirmButtonStyle = confirmButtonStyle;
         this.setColor(colors.RED);
     }
 
@@ -21,7 +23,7 @@ export default class ConfirmationEmbed extends KeyValueEmbed {
             components: [new ActionRowBuilder()
                 .addComponents(/** @type {*} */ new ButtonBuilder()
                     .setCustomId(`${this.command}:confirm:${this.confirmation}`)
-                    .setStyle(ButtonStyle.Success)
+                    .setStyle(this.confirmButtonStyle)
                     .setLabel('Confirm'),
                 )
                 .addComponents(/** @type {*} */ new ButtonBuilder()

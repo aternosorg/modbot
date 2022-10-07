@@ -32,6 +32,9 @@ import SoftBanCommand from './user/SoftBanCommand.js';
 import IDCommand from './guild/IDCommand.js';
 import RoleInfoCommand from './guild/RoleInfoCommand.js';
 import GuildInfoCommand from './guild/GuildInfoCommand.js';
+import Config from '../bot/Config.js';
+import GuildWrapper from '../discord/GuildWrapper.js';
+import PurgeInvitesCommand from './guild/PurgeInvitesCommand.js';
 
 const cooldowns = new Cache();
 
@@ -78,6 +81,10 @@ export default class CommandManager {
         new GuildInfoCommand(),
     ];
 
+    #privateCommands = [
+        new PurgeInvitesCommand()
+    ];
+
     static get instance() {
         return this.#instance ??= new CommandManager();
     }
@@ -86,7 +93,7 @@ export default class CommandManager {
      * @return {Command[]}
      */
     getCommands() {
-        return this.#commands;
+        return this.#commands.concat(this.#privateCommands);
     }
 
     /**
@@ -94,23 +101,38 @@ export default class CommandManager {
      * @return {Promise<void>}
      */
     async register() {
-        /** @type {import('discord.js').ApplicationCommandDataResolvable[]} */
-        const commands = [];
-        for (const command of this.getCommands()) {
-            commands.push(command.buildSlashCommand());
-            if (command.supportsMessageCommands()) {
-                commands.push(command.buildMessageCommand());
-            }
-            if (command.supportsUserCommands()) {
-                commands.push(command.buildUserCommand());
-            }
-        }
-
-        for (const [id, command] of await Bot.instance.client.application.commands.set(commands)) {
+        for (const [id, command] of await Bot.instance.client.application.commands.set(this.buildCommands())) {
             if (command.type === ApplicationCommandType.ChatInput) {
                 this.findCommand(command.name).id = id;
             }
         }
+
+        const privateCommands = this.buildCommands(this.#privateCommands);
+        for (const guildId of Config.instance.data.featureWhitelist) {
+            const guild = await GuildWrapper.fetch(guildId);
+            if (guild) {
+                await guild.guild.commands.set(privateCommands);
+            }
+        }
+    }
+
+    /**
+     *
+     * @param {Command[]} commands
+     * @return {import('discord.js').ApplicationCommandDataResolvable[]}
+     */
+    buildCommands(commands = this.#commands) {
+        const result = [];
+        for (const command of commands) {
+            result.push(command.buildSlashCommand());
+            if (command.supportsMessageCommands()) {
+                result.push(command.buildMessageCommand());
+            }
+            if (command.supportsUserCommands()) {
+                result.push(command.buildUserCommand());
+            }
+        }
+        return result;
     }
 
     /**
