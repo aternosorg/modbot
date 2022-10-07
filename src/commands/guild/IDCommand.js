@@ -14,11 +14,13 @@ export default class IDCommand extends Command {
     buildOptions(builder) {
         builder.addStringOption(option => option
             .setName('username')
+            .setDescription('(partial) username to search for')
             .setRequired(true)
             .setMinLength(2)
             .setMaxLength(32));
         builder.addIntegerOption(option => option
             .setName('discriminator')
+            .setDescription('Full discriminator to search for')
             .setRequired(false)
             .setMinValue(1)
             .setMaxValue(9999));
