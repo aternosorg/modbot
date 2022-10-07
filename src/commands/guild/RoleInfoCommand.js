@@ -16,19 +16,27 @@ export default class RoleInfoCommand extends Command {
         const role = /** @type {import('discord.js').Role} */
             interaction.options.getRole('role', true);
 
-        const permissions = role.permissions.has(PermissionFlagsBits.Administrator) ?
-            'Administrator' : role.permissions.toArray().map(p => `\n- ${p}`).join('') || 'None';
-
         const embed = new KeyValueEmbed()
             .setTitle(`Role ${role.name}`)
             .setColor(role.color)
             .setImage(role.iconURL())
             .addPair('Name', role.name)
-            .addPair('Created', time(role.created, TimestampStyles.ShortTime))
+            .addPair('Created', time(role.created, TimestampStyles.LongDateTime))
             .addPair('Managed', role.managed ? 'Yes' : 'No')
             .addPair('Hoisted', role.hoist ? 'Yes' : 'No')
-            .addPair('Color', `${role.hexColor}`)
-            .addPair('Permissions', permissions);
+            .addPair('Color', `${role.hexColor}`);
+
+        if (role.permissions.has(PermissionFlagsBits.Administrator)) {
+            embed.addPair('Permissions', 'Administrator');
+        } else {
+            const permissions = role.permissions.toArray();
+            if (permissions.length) {
+                embed.addListOrShortList('Permissions', permissions);
+            }
+            else {
+                embed.addPair('Permissions', 'None');
+            }
+        }
 
 
         await interaction.reply(embed.toMessage());

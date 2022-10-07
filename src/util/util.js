@@ -35,3 +35,11 @@ export async function retry(fn, thisArg, args = [], maxRetries = 5, returnValMat
 export function toTitleCase(s) {
     return s.toLowerCase().replace(/^(\w)|\s(\w)/g, c => c.toUpperCase());
 }
+
+/**
+ * @param {*} bool
+ * @return {string}
+ */
+export function yesNo(bool) {
+    return bool ? 'Yes' : 'No';
+}
