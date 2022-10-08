@@ -4,6 +4,7 @@ import SettingsOverviewCommand from './SettingsOverviewCommand.js';
 import LogChannelCommand from './LogChannelCommand.js';
 import MessageLogCommand from './MessageLogCommand.js';
 import JoinLogCommand from './JoinLogCommand.js';
+import SpamCommand from './SpamCommand.js';
 
 export default class SettingsCommand extends ParentCommand {
 
@@ -18,6 +19,7 @@ export default class SettingsCommand extends ParentCommand {
             new LogChannelCommand(),
             new MessageLogCommand(),
             new JoinLogCommand(),
+            new SpamCommand(),
         ];
     }
 
