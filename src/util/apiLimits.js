@@ -58,6 +58,8 @@ export const FILE_UPLOAD_LIMITS = new Map()
  */
 export const AUTOCOMPLETE_OPTIONS_LIMIT = 25;
 
+export const CHOICE_NAME_LIMIT = 100;
+
 /**
  * maximum select menu options
  * @type {number}

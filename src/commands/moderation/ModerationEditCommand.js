@@ -1,17 +1,18 @@
-import SubCommand from '../SubCommand.js';
 import Moderation from '../../database/Moderation.js';
 import {parseTime} from '../../util/timeutils.js';
 import ModerationEmbed from '../../embeds/ModerationEmbed.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
+import CompletingModerationCommand from './CompletingModerationCommand.js';
 
-export default class ModerationEditCommand extends SubCommand {
+export default class ModerationEditCommand extends CompletingModerationCommand {
 
     buildOptions(builder) {
         builder.addIntegerOption(option =>
             option.setName('id')
                 .setDescription('Moderation id')
                 .setRequired(true)
-                .setMinValue(1)
+                .setMinValue(0)
+                .setAutocomplete(true)
         );
         builder.addStringOption(option =>
             option.setName('reason')

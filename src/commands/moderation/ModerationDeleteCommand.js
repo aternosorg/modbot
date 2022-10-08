@@ -1,10 +1,10 @@
-import SubCommand from '../SubCommand.js';
 import Moderation from '../../database/Moderation.js';
 import ModerationEmbed from '../../embeds/ModerationEmbed.js';
 import colors from '../../util/colors.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
+import CompletingModerationCommand from './CompletingModerationCommand.js';
 
-export default class ModerationDeleteCommand extends SubCommand {
+export default class ModerationDeleteCommand extends CompletingModerationCommand {
 
     buildOptions(builder) {
         builder.addIntegerOption(option => option
@@ -12,6 +12,7 @@ export default class ModerationDeleteCommand extends SubCommand {
             .setDescription('The id of the moderation you want to view')
             .setMinValue(0)
             .setRequired(true)
+            .setAutocomplete(true)
         );
         return super.buildOptions(builder);
     }

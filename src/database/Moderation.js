@@ -124,14 +124,22 @@ export default class Moderation {
     /**
      *
      * @param {WhereParameter[]} params
+     * @param {?number} limit
+     * @param {boolean} sortAscending
      * @return {Promise<Moderation[]>}
      */
-    static async select(params) {
+    static async select(params, limit = null, sortAscending = true) {
         const where = params.join(' AND ');
         const values = params.map(p => p.value);
         const fields = this.getFields().join(', ');
 
-        return (await Database.instance.queryAll(`SELECT ${fields} FROM moderations WHERE ${where} ORDER BY created ASC`, ...values))
+        let query = `SELECT ${fields} FROM moderations WHERE ${where} ORDER BY created ${sortAscending ? 'ASC' : 'DESC'}`;
+        if (limit) {
+            query += ' LIMIT ?';
+            values.push(limit);
+        }
+
+        return (await Database.instance.queryAll(query, ...values))
             .map(data => new Moderation(data));
     }
 
@@ -236,5 +244,17 @@ export default class Moderation {
      */
     async getUser() {
         return await (new UserWrapper(this.userid)).fetchUser();
+    }
+
+    /**
+     * fetch the moderator who executed this moderation.
+     * @return {Promise<?import('discord.js').User>}
+     */
+    async getModerator() {
+        if (!this.moderator) {
+            return null;
+        }
+
+        return await (new UserWrapper(this.moderator)).fetchUser();
     }
 }
