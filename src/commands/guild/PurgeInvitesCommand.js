@@ -51,9 +51,8 @@ export default class PurgeInvitesCommand extends Command {
     async executeButton(interaction) {
         const parts = interaction.customId.split(':');
         if (parts[1] === 'confirm') {
-            const confirmationId = parts[2];
             /** @type {Confirmation<{invites: string[]}>} */
-            const confirmation = await Confirmation.get(confirmationId);
+            const confirmation = await Confirmation.get(parts[2]);
 
             if (!confirmation) {
                 await interaction.update({content: 'This confirmation has expired.', embeds: [], components: []});

@@ -1,9 +1,14 @@
 import SubCommand from '../SubCommand.js';
 import Moderation from '../../database/Moderation.js';
-import {ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle} from 'discord.js';
+import {
+    ButtonStyle,
+    escapeMarkdown,
+} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import Database from '../../bot/Database.js';
-import {MODAL_TITLE_LIMIT, TEXT_INPUT_LABEL_LIMIT} from '../../util/apiLimits.js';
+import Confirmation from '../../database/Confirmation.js';
+import {timeAfter} from '../../util/timeutils.js';
+import ConfirmationEmbed from '../../embeds/ConfirmationEmbed.js';
 
 export default class ModerationClearCommand extends SubCommand {
 
@@ -18,45 +23,40 @@ export default class ModerationClearCommand extends SubCommand {
 
     async execute(interaction) {
         const user = interaction.options.getUser('user', true);
+        await interaction.deferReply({ephemeral: true});
         const moderationCount = (await Moderation.getAll(interaction.guildId, user.id)).length;
         if (moderationCount === 0) {
             await interaction.reply({ephemeral: true, content: 'This user has no moderations.'});
             return;
         }
 
-        await interaction.showModal(new ModalBuilder()
-            .setTitle(`Delete ${moderationCount} Moderations`.substring(0, MODAL_TITLE_LIMIT))
-            .setCustomId(`moderation:clear:${user.id}`)
-            .addComponents(/** @type {*} */ new ActionRowBuilder()
-                .addComponents(/** @type {*} */ new TextInputBuilder()
-                    .setLabel(`Delete moderations for ${user.tag}`.substring(0, TEXT_INPUT_LABEL_LIMIT))
-                    .setPlaceholder('Yes')
-                    .setCustomId('confirmation')
-                    .setStyle(TextInputStyle.Short)
-                    .setRequired(true)
-                )
-            )
-        );
+        const confirmation = new Confirmation({user: user.id}, timeAfter('15 minutes'));
+        await interaction.editReply(new ConfirmationEmbed('moderation:clear', await confirmation.save(), ButtonStyle.Danger)
+            .setDescription(`Delete ${moderationCount} Moderations for ${escapeMarkdown(user.tag)}`)
+            .toMessage());
     }
 
-    async executeModal(interaction) {
-        const member = await MemberWrapper.getMemberFromCustomId(interaction, 2);
-        const value = interaction.components[0].components[0].value;
-        if (value.toLowerCase() !== 'yes') {
-            await interaction.reply({
-                ephemeral: true,
-                content: 'No moderations have been deleted',
-            });
-            return;
-        }
+    async executeButton(interaction) {
+        const parts = interaction.customId.split(':');
+        if (parts[2] === 'confirm') {
+            /** @type {Confirmation<{user: import('discord.js').Snowflake}>} */
+            const confirmation = await Confirmation.get(parts[3]);
 
-        /** @property {Number} affectedRows */
-        const deletion = await Database.instance.queryAll('DELETE FROM moderations WHERE guildid = ? AND userid = ?',
-            interaction.guildId, member.user.id);
-        await interaction.reply({
-            ephemeral: true,
-            content: `Deleted ${deletion.affectedRows} ${deletion.affectedRows === 1 ? 'moderation' : 'moderations'}!`
-        });
+            const member = await MemberWrapper.getMember(interaction, confirmation.data.user);
+
+            if (!confirmation) {
+                await interaction.update({content: 'This confirmation has expired.', embeds: [], components: []});
+                return;
+            }
+
+            /** @property {Number} affectedRows */
+            const deletion = await Database.instance.queryAll('DELETE FROM moderations WHERE guildid = ? AND userid = ?',
+                interaction.guildId, member.user.id);
+            await interaction.update({
+                content: `Deleted ${deletion.affectedRows} ${deletion.affectedRows === 1 ? 'moderation' : 'moderations'}!`,
+                embeds: [], components: []
+            });
+        }
     }
 
     getDescription() {
