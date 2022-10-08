@@ -8,6 +8,7 @@ import {formatTime} from '../../util/timeutils.js';
 import UserWrapper from '../../discord/UserWrapper.js';
 import Confirmation from '../../database/Confirmation.js';
 import ConfirmationEmbed from '../../embeds/ConfirmationEmbed.js';
+import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
 /**
  * warn a user if this member has been moderated in the last x seconds
@@ -37,13 +38,13 @@ export default class UserCommand extends Command {
         }
 
         if (!await member.isModerateable()) {
-            await interaction.reply({ephemeral: true, content: 'I can\'t moderate this member!'});
+            await interaction.reply(ErrorEmbed.message('I can\'t moderate this member!'));
             return false;
         }
 
         const moderator =  await new MemberWrapper(interaction.user, interaction.guild).fetchMember();
         if (!await member.isModerateableBy(moderator)) {
-            await interaction.reply({ephemeral: true, content: 'You can\'t moderate this member!'});
+            await interaction.reply(ErrorEmbed.message('You can\'t moderate this member!'));
             return false;
         }
 

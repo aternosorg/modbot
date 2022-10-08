@@ -35,6 +35,7 @@ import GuildInfoCommand from './guild/GuildInfoCommand.js';
 import Config from '../bot/Config.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
 import PurgeInvitesCommand from './guild/PurgeInvitesCommand.js';
+import ErrorEmbed from '../embeds/ErrorEmbed.js';
 
 const cooldowns = new Cache();
 
@@ -158,10 +159,8 @@ export default class CommandManager {
         if (interaction.inGuild()) {
             const missingBotPermissions = interaction.appPermissions.missing(command.getRequiredBotPermissions());
             if (missingBotPermissions.length) {
-                await interaction.reply({
-                    content: `I'm missing the following permissions to execute this command: ${missingBotPermissions}`,
-                    ephemeral:true
-                });
+                await interaction.reply(ErrorEmbed
+                    .message(`I'm missing the following permissions to execute this command: ${missingBotPermissions}`));
                 return false;
             }
         } else if (!command.isAvailableInDMs()) {
@@ -176,10 +175,7 @@ export default class CommandManager {
                 remaining = Math.ceil(remaining / 1000);
                 remaining = formatTime(remaining);
 
-                await interaction.reply({
-                    ephemeral: true,
-                    content: `You can use this command again in ${remaining}`,
-                });
+                await interaction.reply(ErrorEmbed.message(`You can use this command again in ${remaining}`));
                 return false;
             }
             cooldowns.set(key, null, command.getCoolDown() * 1000);
@@ -313,7 +309,7 @@ export default class CommandManager {
     async checkMemberPermissions(interaction, command) {
         const permission = await this.hasPermission(interaction, command);
         if (!permission) {
-            await interaction.reply({content: 'You\'re not allowed to execute this command!', ephemeral: true});
+            await interaction.reply(ErrorEmbed.message('You\'re not allowed to execute this command!'));
         }
         return permission;
     }

@@ -59,7 +59,7 @@ export default class ModerationListCommand extends SubCommand {
      * @param {import('discord.js').User} user
      * @param {Moderation[]} moderations
      * @param {number} page
-     * @return {Promise<{ephemeral: boolean, embeds: ModerationListEmbed[]}>}
+     * @return {Promise<{ephemeral: boolean, embeds: EmbedWrapper[]}>}
      */
     async generateMessage(user, moderations, page = 1) {
         const lastPage = Math.ceil(moderations.length / MODERATIONS_PER_PAGE);
@@ -71,13 +71,9 @@ export default class ModerationListCommand extends SubCommand {
         }
 
         if (!moderations.length) {
-            return {
-                ephemeral: true,
-                embeds: [
-                    new ModerationListEmbed(user)
-                        .setDescription('This user has no moderations.')
-                ]
-            };
+            return new ModerationListEmbed(user)
+                .setDescription('This user has no moderations.')
+                .toMessage();
         }
         const embed = new ModerationListEmbed(user);
 

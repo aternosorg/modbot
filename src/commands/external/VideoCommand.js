@@ -3,6 +3,7 @@ import GuildSettings from '../../settings/GuildSettings.js';
 import {SELECT_MENU_TITLE_LIMIT} from '../../util/apiLimits.js';
 import icons from '../../util/icons.js';
 import {ActionRowBuilder, SelectMenuBuilder} from 'discord.js';
+import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
 export default class VideoCommand extends Command {
 
@@ -19,17 +20,14 @@ export default class VideoCommand extends Command {
         const playlist = (await GuildSettings.get(interaction.guild.id)).getPlaylist();
 
         if (!playlist) {
-            await interaction.reply('No playlist configured!');
+            await interaction.reply(ErrorEmbed.message('No playlist configured!'));
             return;
         }
 
         const videos = await playlist.searchVideos(interaction.options.getString('query', true));
 
         if (!videos.length) {
-            await interaction.reply({
-                ephemeral: true,
-                content: 'No video found!'
-            });
+            await interaction.reply(ErrorEmbed.message('No video found!'));
             return;
         }
 
@@ -52,10 +50,7 @@ export default class VideoCommand extends Command {
 
     async executeSelectMenu(interaction) {
         if (interaction.user.id !== interaction.customId.split(':')[1]) {
-            await interaction.reply({
-                ephemeral: true,
-                content: 'Only the person who executed this command can select a different result'
-            });
+            await interaction.reply(ErrorEmbed.message('Only the person who executed this command can select a different result'));
             return;
         }
 
@@ -100,7 +95,7 @@ export default class VideoCommand extends Command {
         const playlist = (await GuildSettings.get(interaction.guild.id)).getPlaylist();
 
         if (!playlist) {
-            await interaction.reply('No playlist configured!');
+            await interaction.reply(ErrorEmbed.message('No playlist configured!'));
             return [];
         }
 

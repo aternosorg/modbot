@@ -9,6 +9,7 @@ import {BAN_MESSAGE_DELETE_LIMIT, TIMEOUT_LIMIT} from '../util/apiLimits.js';
 import Moderation from '../database/Moderation.js';
 import UserWrapper from './UserWrapper.js';
 import KeyValueEmbed from '../embeds/KeyValueEmbed.js';
+import ErrorEmbed from '../embeds/ErrorEmbed.js';
 
 export default class MemberWrapper {
 
@@ -47,7 +48,7 @@ export default class MemberWrapper {
         const id = interaction.customId.split(':').at(position);
         const user = id ? await (new UserWrapper(id)).fetchUser() : null;
         if (!user) {
-            await interaction.reply({ephemeral: true, content:'Unknown user!'});
+            await interaction.reply(ErrorEmbed.message('Unknown user!'));
             return null;
         }
 
@@ -63,7 +64,7 @@ export default class MemberWrapper {
     static async getMember(interaction, id) {
         const user = await (new UserWrapper(id)).fetchUser();
         if (!user) {
-            await interaction.reply({ephemeral: true, content:'Unknown user!'});
+            await interaction.reply(ErrorEmbed.message('Unknown user!'));
             return null;
         }
 

@@ -11,6 +11,7 @@ import Turndown from 'turndown';
 import icons from '../../util/icons.js';
 import {SELECT_MENU_OPTIONS_LIMIT, SELECT_MENU_TITLE_LIMIT} from '../../util/apiLimits.js';
 import Cache from '../../Cache.js';
+import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
 const completions = new Cache();
 const CACHE_DURATION = 60 * 60 * 1000;
@@ -39,16 +40,13 @@ export default class ArticleCommand extends Command {
     async execute(interaction) {
         const zendesk = (await GuildSettings.get(interaction.guild.id)).getZendesk();
         if (!zendesk) {
-            await interaction.reply('No help center configured!');
+            await interaction.reply(ErrorEmbed.message('No help center configured!'));
             return;
         }
 
         const data = await zendesk.searchArticles(interaction.options.getString('query', true));
         if (!data.count) {
-            await interaction.reply({
-                ephemeral: true,
-                content: 'No article found!'
-            });
+            await interaction.reply(ErrorEmbed.message('No article found!'));
             return;
         }
 
@@ -66,10 +64,7 @@ export default class ArticleCommand extends Command {
 
     async executeSelectMenu(interaction) {
         if (interaction.user.id !== interaction.customId.split(':')[1]) {
-            await interaction.reply({
-                ephemeral: true,
-                content: 'Only the person who executed this command can select a different result'
-            });
+            await interaction.reply(ErrorEmbed.message('Only the person who executed this command can select a different result'));
             return;
         }
 

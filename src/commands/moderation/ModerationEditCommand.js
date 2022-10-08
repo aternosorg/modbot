@@ -2,6 +2,7 @@ import SubCommand from '../SubCommand.js';
 import Moderation from '../../database/Moderation.js';
 import {parseTime} from '../../util/timeutils.js';
 import ModerationEmbed from '../../embeds/ModerationEmbed.js';
+import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
 export default class ModerationEditCommand extends SubCommand {
 
@@ -35,7 +36,7 @@ export default class ModerationEditCommand extends SubCommand {
         const id = interaction.options.getInteger('id', true);
         const moderation = await Moderation.get(interaction.guildId, id);
         if (!moderation) {
-            await interaction.reply({ephemeral: true, content: 'Unknown moderation'});
+            await interaction.reply(ErrorEmbed.message('Unknown moderation'));
             return;
         }
 
@@ -44,7 +45,7 @@ export default class ModerationEditCommand extends SubCommand {
             count = interaction.options.getInteger('count');
 
         if (!reason && !duration && !count) {
-            await interaction.reply({ephemeral: true, content: 'You need to provide at least one option you want to change'});
+            await interaction.reply(ErrorEmbed.message('You need to provide at least one option you want to change'));
             return;
         }
 
@@ -54,7 +55,7 @@ export default class ModerationEditCommand extends SubCommand {
 
         if (duration) {
             if (!moderation.active) {
-                await interaction.reply({ephemeral: true, content: 'You can\'t update the duration of inactive moderations!'});
+                await interaction.reply(ErrorEmbed.message('You can\'t update the duration of inactive moderations!'));
                 return;
             }
             moderation.expireTime = moderation.created + parseTime(duration);
@@ -68,17 +69,14 @@ export default class ModerationEditCommand extends SubCommand {
                     count = -count;
                     break;
                 default:
-                    await interaction.reply({ephemeral: true, content: 'You can only update the count for strikes and pardons!'});
+                    await interaction.reply(ErrorEmbed.message('You can only update the count for strikes and pardons!'));
                     return;
             }
             moderation.value = count;
         }
 
         await moderation.save();
-        await interaction.reply({
-            ephemeral:true,
-            embeds: [new ModerationEmbed(moderation, await moderation.getUser())]
-        });
+        await interaction.reply(new ModerationEmbed(moderation, await moderation.getUser()).toMessage());
     }
 
     getDescription() {

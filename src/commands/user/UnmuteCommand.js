@@ -3,6 +3,7 @@ import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, Permission
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
+import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
 export default class UnmuteCommand extends Command {
 
@@ -51,10 +52,7 @@ export default class UnmuteCommand extends Command {
         }
 
         if (!await member.isMuted()) {
-            await interaction.reply({
-                ephemeral: true,
-                content: 'This member isn\'t muted!',
-            });
+            await interaction.reply(ErrorEmbed.message('This member isn\'t muted!'));
             return;
         }
 

@@ -2,6 +2,7 @@ import SubCommand from '../SubCommand.js';
 import Moderation from '../../database/Moderation.js';
 import ModerationEmbed from '../../embeds/ModerationEmbed.js';
 import colors from '../../util/colors.js';
+import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
 export default class ModerationDeleteCommand extends SubCommand {
 
@@ -19,10 +20,7 @@ export default class ModerationDeleteCommand extends SubCommand {
         const id = interaction.options.getInteger('id');
         const moderation = await Moderation.get(interaction.guild.id, id);
         if (!moderation) {
-            await interaction.reply({
-                ephemeral: true,
-                content: 'Unknown Moderation!'
-            });
+            await interaction.reply(ErrorEmbed.message('Unknown Moderation!'));
             return;
         }
 

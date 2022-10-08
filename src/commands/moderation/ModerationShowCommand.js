@@ -1,6 +1,7 @@
 import SubCommand from '../SubCommand.js';
 import Moderation from '../../database/Moderation.js';
 import ModerationEmbed from '../../embeds/ModerationEmbed.js';
+import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
 export default class ModerationShowCommand extends SubCommand {
 
@@ -18,17 +19,11 @@ export default class ModerationShowCommand extends SubCommand {
         const id = interaction.options.getInteger('id');
         const moderation = await Moderation.get(interaction.guild.id, id);
         if (!moderation) {
-            await interaction.reply({
-                ephemeral: true,
-                content: 'Unknown Moderation!'
-            });
+            await interaction.reply(ErrorEmbed.message('Unknown Moderation!'));
             return;
         }
 
-        await interaction.reply({
-            ephemeral: true,
-            embeds: [new ModerationEmbed(moderation, await moderation.getUser())]
-        });
+        await interaction.reply(new ModerationEmbed(moderation, await moderation.getUser()).toMessage());
     }
 
     getDescription() {

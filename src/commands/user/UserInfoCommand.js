@@ -6,6 +6,7 @@ import UserWrapper from '../../discord/UserWrapper.js';
 import colors from '../../util/colors.js';
 import UserEmbed from '../../embeds/UserEmbed.js';
 import Config from '../../bot/Config.js';
+import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
 export default class UserInfoCommand extends Command {
 
@@ -45,13 +46,13 @@ export default class UserInfoCommand extends Command {
     async executeButton(interaction) {
         const match = await interaction.customId.match(/^[^:]+:refresh:(\d+)$/);
         if (!match) {
-            await interaction.reply({ephemeral: true, content:'Unknown action!'});
+            await interaction.reply(ErrorEmbed.message('Unknown action!'));
             return;
         }
 
         const user = await (new UserWrapper(match[1])).fetchUser();
         if (!user) {
-            await interaction.reply({ephemeral: true, content:'Unknown user!'});
+            await interaction.reply(ErrorEmbed.message('Unknown user!'));
             return;
         }
         await interaction.update(await this.generateUserMessage(user, interaction));

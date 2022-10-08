@@ -13,6 +13,7 @@ import ChannelSettings from '../../settings/ChannelSettings.js';
 import ChannelWrapper, {CHANNEL_LOCK_PERMISSIONS} from '../../discord/ChannelWrapper.js';
 import Confirmation from '../../database/Confirmation.js';
 import {timeAfter} from '../../util/timeutils.js';
+import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
 export default class LockCommand extends Command {
 
@@ -33,10 +34,7 @@ export default class LockCommand extends Command {
             .filter(channel => channel.isLockable());
 
         if (!channels.length) {
-            await interaction.reply({
-                ephemeral: true,
-                content: 'There are no channels to lock.'
-            });
+            await interaction.reply(ErrorEmbed.message('There are no channels to lock.'));
             return;
         }
 
@@ -77,7 +75,7 @@ export default class LockCommand extends Command {
         const confirmation = await Confirmation.get(confirmationId);
 
         if (!confirmation) {
-            await interaction.reply({ephemeral: true, content: 'This confirmation has expired.'});
+            await interaction.reply(ErrorEmbed.message('This confirmation has expired.'));
             return;
         }
 

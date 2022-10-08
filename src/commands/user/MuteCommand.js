@@ -13,6 +13,7 @@ import {MODAL_TITLE_LIMIT, TIMEOUT_DURATION_LIMIT} from '../../util/apiLimits.js
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
+import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
 export default class MuteCommand extends UserCommand {
 
@@ -78,20 +79,15 @@ export default class MuteCommand extends UserCommand {
         const guildSettings = await member.getGuildSettings();
         if (!duration || duration > TIMEOUT_DURATION_LIMIT) {
             if (!guildSettings.mutedRole) {
-                await interaction.reply({
-                    ephemeral: true,
-                    content: `Timeouts longer than ${formatTime(TIMEOUT_DURATION_LIMIT)} require a muted role! Use /muted-role to configure it.`
-                });
+                await interaction.reply(ErrorEmbed
+                    .message(`Timeouts longer than ${formatTime(TIMEOUT_DURATION_LIMIT)} require a muted role! Use /muted-role to configure it.`));
                 return;
             }
 
 
             const role = await (await GuildWrapper.fetch(interaction.guild.id)).fetchRole(guildSettings.mutedRole);
             if (interaction.guild.members.me.roles.highest.comparePositionTo(role) <= 0) {
-                await interaction.reply({
-                    ephemeral: true,
-                    content: 'I can\'t manage the muted role. Please move my highest role above it.'
-                });
+                await interaction.reply(ErrorEmbed.message('I can\'t manage the muted role. Please move my highest role above it.'));
                 return;
             }
         }
