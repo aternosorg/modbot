@@ -38,6 +38,7 @@ import {exists, readJSON} from '../util/fsutils.js';
  * @property {?string} discord
  * @property {?string} first-page
  * @property {?string} previous-page
+ * @property {?string} refresh
  * @property {?string} next-page
  * @property {?string} last-page
  * @property {?string} announcement
@@ -46,6 +47,13 @@ import {exists, readJSON} from '../util/fsutils.js';
  * @property {?string} stage
  * @property {?string} thread
  * @property {?string} voice
+ * @property {?string} avatar
+ * @property {?string} ban
+ * @property {?string} moderations
+ * @property {?string} mute
+ * @property {?string} pardon
+ * @property {?string} strike
+ * @property {?string} kick
  */
 
 export default class Config {
@@ -101,6 +109,7 @@ export default class Config {
                     discord: process.env.MODBOT_EMOJI_DISCORD,
                     'first-page': process.env.MODBOT_EMOJI_FIRST_PAGE,
                     'previous-page': process.env.MODBOT_EMOJI_PREVIOUS_PAGE,
+                    refresh: process.env.MODBOT_EMOJI_REFRESH,
                     'next-page': process.env.MODBOT_EMOJI_NEXT_PAGE,
                     'last-page': process.env.MODBOT_EMOJI_LAST_PAGE,
                     announcement: process.env.MODBOT_EMOJI_ANNOUNCEMENT,
@@ -108,7 +117,14 @@ export default class Config {
                     forum: process.env.MODBOT_EMOJI_FORUM,
                     stage: process.env.MODBOT_EMOJI_STAGE,
                     thread: process.env.MODBOT_EMOJI_THREAD,
-                    voice: process.env.MODBOT_EMOJI_VOICE
+                    voice: process.env.MODBOT_EMOJI_VOICE,
+                    avatar: process.env.MODBOT_EMOJI_avatar,
+                    ban: process.env.MODBOT_EMOJI_ban,
+                    moderations: process.env.MODBOT_EMOJI_moderations,
+                    mute: process.env.MODBOT_EMOJI_mute,
+                    pardon: process.env.MODBOT_EMOJI_pardon,
+                    strike: process.env.MODBOT_EMOJI_strike,
+                    kick: process.env.MODBOT_EMOJI_kick,
                 }
             };
         }

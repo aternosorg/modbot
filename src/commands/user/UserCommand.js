@@ -57,7 +57,7 @@ export default class UserCommand extends Command {
      * @return {Promise<boolean>} should the punishment be executed now
      */
     async preventDuplicateModeration(interaction, member, data = {}) {
-        const customIdParts = interaction.customId.split(':');
+        const customIdParts = (interaction.customId ?? '').split(':');
         if (customIdParts[1] === 'confirm') {
             const confirmationId = parseInt(customIdParts[2]);
             await new Confirmation(null, 0, confirmationId).delete();

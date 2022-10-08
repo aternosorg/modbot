@@ -5,6 +5,7 @@ export default {
     yes: String.fromCodePoint(9989),
     first: String.fromCodePoint(9198),
     left: String.fromCodePoint(11013),
+    refresh: String.fromCodePoint(128260),
     right: String.fromCodePoint(10145),
     last: String.fromCodePoint(9197),
     eyes: String.fromCodePoint(128064),

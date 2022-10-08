@@ -5,6 +5,7 @@ import MemberWrapper from '../../discord/MemberWrapper.js';
 import UserWrapper from '../../discord/UserWrapper.js';
 import colors from '../../util/colors.js';
 import UserEmbed from '../../embeds/UserEmbed.js';
+import Config from '../../bot/Config.js';
 
 export default class UserInfoCommand extends Command {
 
@@ -76,22 +77,26 @@ export default class UserInfoCommand extends Command {
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Strike')
                     .setCustomId(`strike:${user.id}`)
-                    .setStyle(ButtonStyle.Danger),
+                    .setStyle(ButtonStyle.Danger)
+                    .setEmoji(Config.instance.data.emoji.strike ?? {}),
             );
         const informationRow = new ActionRowBuilder()
             .addComponents(
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Refresh')
                     .setCustomId(`user:refresh:${user.id}`)
-                    .setStyle(ButtonStyle.Secondary),
+                    .setStyle(ButtonStyle.Secondary)
+                    .setEmoji(Config.instance.data.emoji.refresh ?? {}),
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Avatar')
                     .setCustomId(`avatar:${user.id}`)
-                    .setStyle(ButtonStyle.Secondary),
+                    .setStyle(ButtonStyle.Secondary)
+                    .setEmoji(Config.instance.data.emoji.avatar ?? {}),
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Moderations')
                     .setCustomId(`moderation:list:${user.id}`)
-                    .setStyle(ButtonStyle.Secondary),
+                    .setStyle(ButtonStyle.Secondary)
+                    .setEmoji(Config.instance.data.emoji.moderations ?? {}),
             );
 
         if (member) {
@@ -101,6 +106,7 @@ export default class UserInfoCommand extends Command {
                     .setLabel('Kick')
                     .setCustomId(`kick:${user.id}`)
                     .setStyle(ButtonStyle.Danger)
+                    .setEmoji(Config.instance.data.emoji.kick ?? {})
             );
         }
 
@@ -114,6 +120,7 @@ export default class UserInfoCommand extends Command {
                         .setLabel('Pardon')
                         .setCustomId(`pardon:${user.id}`)
                         .setStyle(ButtonStyle.Success)
+                        .setEmoji(Config.instance.data.emoji.pardon ?? {})
                 );
             }
         }
@@ -131,6 +138,7 @@ export default class UserInfoCommand extends Command {
                         .setLabel('Unmute')
                         .setCustomId(`unmute:${user.id}`)
                         .setStyle(ButtonStyle.Success)
+                        .setEmoji(Config.instance.data.emoji.mute ?? {})
                 );
                 embed.setColor(colors.ORANGE);
             }
@@ -140,6 +148,7 @@ export default class UserInfoCommand extends Command {
                         .setLabel('Mute')
                         .setCustomId(`mute:${user.id}`)
                         .setStyle(ButtonStyle.Danger)
+                        .setEmoji(Config.instance.data.emoji.mute ?? {})
                 );
             }
         }
@@ -157,6 +166,7 @@ export default class UserInfoCommand extends Command {
                         .setLabel('Unban')
                         .setCustomId(`unban:${user.id}`)
                         .setStyle(ButtonStyle.Success)
+                        .setEmoji(Config.instance.data.emoji.ban ?? {})
                 );
                 embed.setColor(colors.RED);
             }
@@ -166,6 +176,7 @@ export default class UserInfoCommand extends Command {
                         .setLabel('Ban')
                         .setCustomId(`ban:${user.id}`)
                         .setStyle(ButtonStyle.Danger)
+                        .setEmoji(Config.instance.data.emoji.ban ?? {})
                 );
             }
         }

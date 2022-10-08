@@ -121,6 +121,7 @@ export default class ModerationListCommand extends SubCommand {
         for (const data of [
             { id: `moderation:list:${user.id}:first`, emoji: 'first-page', label: icons.first, disabled: page === 1 },
             { id: `moderation:list:${user.id}:${page - 1}`, emoji: 'previous-page', label: icons.left, disabled: page === 1 },
+            { id: `moderation:list:${user.id}:${page}`, emoji: 'refresh', label: icons.refresh },
             { id: `moderation:list:${user.id}:${page + 1}`, emoji: 'next-page', label: icons.right, disabled: page === lastPage },
             { id: `moderation:list:${user.id}:last`, emoji: 'last-page', label: icons.last, disabled: page === lastPage },
         ]) {
