@@ -31,11 +31,13 @@ export default class MuteCommand extends UserCommand {
             option.setName('reason')
                 .setDescription('Mute reason')
                 .setRequired(false)
+                .setAutocomplete(true)
         );
         builder.addStringOption(option =>
             option.setName('duration')
                 .setDescription('Mute duration')
                 .setRequired(false)
+                .setAutocomplete(true)
         );
         return super.buildOptions(builder);
     }

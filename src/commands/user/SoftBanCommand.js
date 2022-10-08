@@ -28,6 +28,7 @@ export default class SoftBanCommand extends UserCommand {
             option.setName('reason')
                 .setDescription('Soft-ban reason')
                 .setRequired(false)
+                .setAutocomplete(true)
         );
         builder.addStringOption(option =>
             option.setName('delete')

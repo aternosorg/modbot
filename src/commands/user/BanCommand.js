@@ -28,11 +28,13 @@ export default class BanCommand extends UserCommand {
             option.setName('reason')
                 .setDescription('Ban reason')
                 .setRequired(false)
+                .setAutocomplete(true)
         );
         builder.addStringOption(option =>
             option.setName('duration')
                 .setDescription('Ban duration')
                 .setRequired(false)
+                .setAutocomplete(true)
         );
         builder.addStringOption(option =>
             option.setName('delete')

@@ -32,6 +32,7 @@ export default class StrikeCommand extends UserCommand {
             option.setName('reason')
                 .setDescription('Strike reason')
                 .setRequired(false)
+                .setAutocomplete(true)
         );
         builder.addIntegerOption(option =>
             option.setName('count')

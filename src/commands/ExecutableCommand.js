@@ -57,7 +57,7 @@ export default class ExecutableCommand {
     }
 
     /**
-     * @param {import('discord.js').ChatInputCommandInteraction} interaction
+     * @param {import('discord.js').AutocompleteInteraction} interaction
      * @return {Promise<import('discord.js').ApplicationCommandOptionChoiceData[]>}
      */
     async complete(interaction) {

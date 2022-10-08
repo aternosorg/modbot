@@ -9,6 +9,7 @@ import UserWrapper from '../../discord/UserWrapper.js';
 import Confirmation from '../../database/Confirmation.js';
 import ConfirmationEmbed from '../../embeds/ConfirmationEmbed.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
+import Database from '../../bot/Database.js';
 
 /**
  * warn a user if this member has been moderated in the last x seconds
@@ -101,5 +102,36 @@ export default class UserCommand extends Command {
 
         await interaction.reply(embed.toMessage());
         return false;
+    }
+
+    async complete(interaction) {
+        const focussed = interaction.options.getFocused(true);
+        switch (focussed.name) {
+            case 'reason': {
+                const options = await Database.instance.queryAll(
+                    'SELECT reason, COUNT(*) AS count FROM (SELECT reason FROM moderations WHERE moderator = ? AND guildid = ? AND action = ? LIMIT 500) AS reasons WHERE reason LIKE CONCAT(\'%\', ?, \'%\') GROUP BY reason ORDER BY count DESC LIMIT 5;',
+                    interaction.user.id, interaction.guild.id, this.getName(), focussed.value);
+                if (focussed.value) {
+                    options.unshift({reason: focussed.value});
+                }
+                return options.map(data => ({name: data.reason, value: data.reason}));
+            }
+
+            case 'duration':{
+                let options = await Database.instance.queryAll(
+                    'SELECT duration, COUNT(*) AS count FROM (SELECT expireTime - created AS duration FROM moderations WHERE moderator = ? AND guildid = ? AND action = ? AND expireTime IS NOT NULL LIMIT 250) AS durations GROUP BY duration ORDER BY count DESC LIMIT 5;',
+                    interaction.user.id, interaction.guild.id, this.getName());
+                options = options.map(data => {
+                    const duration = formatTime(data.duration);
+                    return {name: duration, value: duration};
+                });
+                if (focussed.value) {
+                    options.unshift({name: focussed.value, value: focussed.value});
+                }
+                return options;
+            }
+        }
+
+        return super.complete(interaction);
     }
 }

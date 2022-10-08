@@ -27,6 +27,7 @@ export default class KickCommand extends UserCommand {
             option.setName('reason')
                 .setDescription('Kick reason')
                 .setRequired(false)
+                .setAutocomplete(true)
         );
         return super.buildOptions(builder);
     }
