@@ -1,9 +1,9 @@
-import SubCommand from '../SubCommand.js';
 import GuildSettings from '../../settings/GuildSettings.js';
-import GuildWrapper from '../../discord/GuildWrapper.js';
-import {PermissionFlagsBits} from 'discord.js';
+import EmbedWrapper from '../../embeds/EmbedWrapper.js';
+import colors from '../../util/colors.js';
+import AbstractChannelCommand from './AbstractChannelCommand.js';
 
-export default class LogChannelCommand extends SubCommand {
+export default class LogChannelCommand extends AbstractChannelCommand {
 
     buildOptions(builder) {
         builder.addChannelOption(option => option
@@ -15,35 +15,25 @@ export default class LogChannelCommand extends SubCommand {
     }
 
     async execute(interaction) {
-        const channelId = interaction.options.getChannel('channel')?.id;
-        if (channelId) {
-            const channel = await new GuildWrapper(interaction.guild).fetchChannel(channelId);
+        const channel = await this.getChannel(interaction);
 
-            if (!channel) {
-                await interaction.reply({
-                    ephemeral: true,
-                    content: 'I can\'t access that channel!'
-                });
-                return;
-            }
-
-            if (!channel.permissionsFor(interaction.guild.members.me)
-                .has(PermissionFlagsBits.SendMessages)) {
-                await interaction.reply({
-                    ephemeral: true,
-                    content: 'I can\'t send messages to that channel!'
-                });
-                return;
-            }
+        if (channel === false) {
+            return;
         }
 
         const guildSettings = await GuildSettings.get(interaction.guildId);
-        guildSettings.logChannel = channelId;
+        guildSettings.logChannel = channel ? channel.id : channel;
         await guildSettings.save();
-        await interaction.reply({
-            ephemeral: true,
-            content: channelId ? `Set log channel to <#${channelId}>.` : 'Disabled log channel.'
-        });
+        const embed = new EmbedWrapper();
+        if (channel) {
+            embed.setDescription(`Set log channel to <#${channel.id}>.`)
+                .setColor(colors.GREEN);
+        }
+        else {
+            embed.setDescription('Disabled log channel.')
+                .setColor(colors.RED);
+        }
+        await interaction.reply(embed.toMessage());
     }
 
     getDescription() {

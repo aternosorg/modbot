@@ -113,7 +113,7 @@ export default class GuildSettings extends Settings {
                 {name: 'Automod', value: this.getAutomodSettings(), inline: false},
                 {name: 'Connections', value: this.getConnectionsSettings(), inline: false}
             ])
-            .setColor(colors.RED);
+            .setColor(colors.GREEN);
     }
 
     /**
