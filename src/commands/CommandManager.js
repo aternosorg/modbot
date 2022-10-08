@@ -2,7 +2,8 @@ import Bot from '../bot/Bot.js';
 import {
     ApplicationCommandPermissionType,
     ApplicationCommandType,
-    PermissionFlagsBits, RESTJSONErrorCodes
+    PermissionFlagsBits,
+    RESTJSONErrorCodes
 } from 'discord.js';
 import {AUTOCOMPLETE_OPTIONS_LIMIT} from '../util/apiLimits.js';
 import Cache from '../Cache.js';
@@ -36,6 +37,7 @@ import Config from '../bot/Config.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
 import PurgeInvitesCommand from './guild/PurgeInvitesCommand.js';
 import ErrorEmbed from '../embeds/ErrorEmbed.js';
+import StrikePurgeCommand from './user/StrikePurgeCommand.js';
 
 const cooldowns = new Cache();
 
@@ -66,6 +68,7 @@ export default class CommandManager {
         new UnmuteCommand(),
         new StrikeCommand(),
         new PardonCommand(),
+        new StrikePurgeCommand(),
 
         // MODERATION
         new ModerationCommand(),

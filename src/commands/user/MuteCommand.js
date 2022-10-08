@@ -1,10 +1,10 @@
 import {
     ActionRowBuilder,
-    EmbedBuilder,
-    escapeMarkdown,
     ModalBuilder,
     PermissionFlagsBits,
-    PermissionsBitField, TextInputBuilder, TextInputStyle
+    PermissionsBitField,
+    TextInputBuilder,
+    TextInputStyle
 } from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import {formatTime, parseTime} from '../../util/timeutils.js';
@@ -14,6 +14,8 @@ import GuildWrapper from '../../discord/GuildWrapper.js';
 import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
+import UserActionEmbed from '../../embeds/UserActionEmbed.js';
+import Config from '../../bot/Config.js';
 
 export default class MuteCommand extends UserCommand {
 
@@ -93,13 +95,9 @@ export default class MuteCommand extends UserCommand {
         }
 
         await member.mute(reason, interaction.user, duration);
-        await interaction.reply({
-            ephemeral: true,
-            embeds: [new EmbedBuilder()
-                .setDescription(`${escapeMarkdown(member.user.tag)} has been muted${duration ? ` for ${formatTime(duration)}` : ''}: ${reason}`)
-                .setColor(colors.RED)
-            ]}
-        );
+        await interaction.reply(
+            new UserActionEmbed(member.user, reason, 'muted', colors.ORANGE, Config.instance.data.emoji.mute, duration)
+                .toMessage());
     }
 
     async executeButton(interaction) {

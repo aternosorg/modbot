@@ -1,9 +1,18 @@
-import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, PermissionFlagsBits, PermissionsBitField, TextInputBuilder, TextInputStyle} from 'discord.js';
+import {
+    ActionRowBuilder,
+    ModalBuilder,
+    PermissionFlagsBits,
+    PermissionsBitField,
+    TextInputBuilder,
+    TextInputStyle
+} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
+import UserActionEmbed from '../../embeds/UserActionEmbed.js';
+import Config from '../../bot/Config.js';
 
 export default class StrikeCommand extends UserCommand {
 
@@ -76,13 +85,9 @@ export default class StrikeCommand extends UserCommand {
         }
 
         await member.strike(reason, interaction.user, count);
-        await interaction.reply({
-            ephemeral: true,
-            embeds: [new EmbedBuilder()
-                .setDescription(`${escapeMarkdown(member.user.tag)} has been striked: ${reason}`)
-                .setColor(colors.RED)
-            ]}
-        );
+        await interaction.reply(
+            new UserActionEmbed(member.user, reason, 'striked', colors.RED, Config.instance.data.emoji.strike)
+                .toMessage());
     }
 
     async executeButton(interaction) {

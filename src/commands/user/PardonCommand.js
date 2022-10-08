@@ -1,8 +1,17 @@
 import Command from '../Command.js';
-import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, PermissionFlagsBits, PermissionsBitField, TextInputBuilder, TextInputStyle} from 'discord.js';
+import {
+    ActionRowBuilder,
+    ModalBuilder,
+    PermissionFlagsBits,
+    PermissionsBitField,
+    TextInputBuilder,
+    TextInputStyle
+} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
+import UserActionEmbed from '../../embeds/UserActionEmbed.js';
+import Config from '../../bot/Config.js';
 
 export default class PardonCommand extends Command {
 
@@ -63,13 +72,9 @@ export default class PardonCommand extends Command {
 
         reason = reason || 'No reason provided';
         await member.pardon(reason, moderator, count);
-        await interaction.reply({
-            ephemeral: true,
-            embeds: [new EmbedBuilder()
-                .setDescription(`${escapeMarkdown(member.user.tag)} has been pardoned: ${reason}`)
-                .setColor(colors.GREEN)
-            ]}
-        );
+        await interaction.reply(
+            new UserActionEmbed(member.user, reason, 'pardoned', colors.GREEN, Config.instance.data.emoji.pardon)
+                .toMessage());
     }
 
     async executeButton(interaction) {

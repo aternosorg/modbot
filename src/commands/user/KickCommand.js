@@ -1,9 +1,18 @@
-import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, PermissionFlagsBits, PermissionsBitField, TextInputBuilder, TextInputStyle} from 'discord.js';
+import {
+    ActionRowBuilder,
+    ModalBuilder,
+    PermissionFlagsBits,
+    PermissionsBitField,
+    TextInputBuilder,
+    TextInputStyle
+} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
+import UserActionEmbed from '../../embeds/UserActionEmbed.js';
+import Config from '../../bot/Config.js';
 
 export default class KickCommand extends UserCommand {
 
@@ -59,13 +68,9 @@ export default class KickCommand extends UserCommand {
         }
 
         await member.kick(reason, interaction.user);
-        await interaction.reply({
-            ephemeral: true,
-            embeds: [new EmbedBuilder()
-                .setDescription(`${escapeMarkdown(member.user.tag)} has been kicked: ${reason}`)
-                .setColor(colors.ORANGE)
-            ]}
-        );
+        await interaction.reply(
+            new UserActionEmbed(member.user, reason, 'kicked', colors.ORANGE, Config.instance.data.emoji.kick)
+                .toMessage());
     }
 
     async executeButton(interaction) {

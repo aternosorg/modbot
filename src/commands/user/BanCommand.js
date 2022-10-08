@@ -1,10 +1,19 @@
-import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, PermissionFlagsBits, PermissionsBitField, TextInputBuilder, TextInputStyle} from 'discord.js';
+import {
+    ActionRowBuilder,
+    ModalBuilder,
+    PermissionFlagsBits,
+    PermissionsBitField,
+    TextInputBuilder,
+    TextInputStyle
+} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
-import {formatTime, parseTime} from '../../util/timeutils.js';
+import {parseTime} from '../../util/timeutils.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
+import UserActionEmbed from '../../embeds/UserActionEmbed.js';
+import Config from '../../bot/Config.js';
 
 export default class BanCommand extends UserCommand {
 
@@ -74,13 +83,9 @@ export default class BanCommand extends UserCommand {
         }
 
         await member.ban(reason, interaction.user, duration, deleteMessageTime);
-        await interaction.reply({
-            ephemeral: true,
-            embeds: [new EmbedBuilder()
-                .setDescription(`${escapeMarkdown(member.user.tag)} has been banned${duration ? ` for ${formatTime(duration)}` : ''}: ${reason}`)
-                .setColor(colors.RED)
-            ]}
-        );
+        await interaction.reply(
+            new UserActionEmbed(member.user, reason, 'banned', colors.RED, Config.instance.data.emoji.ban, duration)
+                .toMessage());
     }
 
     async executeButton(interaction) {

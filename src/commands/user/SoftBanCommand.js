@@ -1,10 +1,19 @@
-import {ActionRowBuilder, EmbedBuilder, escapeMarkdown, ModalBuilder, PermissionFlagsBits, PermissionsBitField, TextInputBuilder, TextInputStyle} from 'discord.js';
+import {
+    ActionRowBuilder,
+    ModalBuilder,
+    PermissionFlagsBits,
+    PermissionsBitField,
+    TextInputBuilder,
+    TextInputStyle
+} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import {parseTime} from '../../util/timeutils.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
+import UserActionEmbed from '../../embeds/UserActionEmbed.js';
+import Config from '../../bot/Config.js';
 
 export default class SoftBanCommand extends UserCommand {
 
@@ -63,13 +72,9 @@ export default class SoftBanCommand extends UserCommand {
         }
 
         await member.softban(reason, interaction.user, deleteMessageTime);
-        await interaction.reply({
-            ephemeral: true,
-            embeds: [new EmbedBuilder()
-                .setDescription(`${escapeMarkdown(member.user.tag)} has been soft-banned: ${reason}`)
-                .setColor(colors.RED)
-            ]}
-        );
+        await interaction.reply(
+            new UserActionEmbed(member.user, reason, 'softbanned', colors.ORANGE, Config.instance.data.emoji.kick)
+                .toMessage());
     }
 
     async executeButton(interaction) {
