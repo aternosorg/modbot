@@ -28,6 +28,14 @@ export default class LockCommand extends Command {
             .add(PermissionFlagsBits.ManageRoles);
     }
 
+    buildOptions(builder) {
+        builder.addBooleanOption(option => option
+            .setName('global')
+            .setDescription('Lock all lockable channels')
+            .setRequired(false));
+        return super.buildOptions(builder);
+    }
+
     async execute(interaction) {
         const channels = (await interaction.guild.channels.fetch())
             .map(channel => new ChannelWrapper(channel))
@@ -38,17 +46,23 @@ export default class LockCommand extends Command {
             return;
         }
 
-        await interaction.reply({
-            ephemeral: true,
-            content: 'Select which channels you want to lock',
-            components: [
-                /** @type {ActionRowBuilder} */
-                new ActionRowBuilder()
-                    .addComponents(/** @type {*} */
-                        channelSelectMenu(channels).setCustomId('lock')
-                    )
-            ]
-        });
+        if (interaction.options.getBoolean('global')) {
+            interaction.values = channels.map(c => c.channel.id);
+            await this.executeSelectMenu(interaction);
+        }
+        else {
+            await interaction.reply({
+                ephemeral: true,
+                content: 'Select which channels you want to lock',
+                components: [
+                    /** @type {ActionRowBuilder} */
+                    new ActionRowBuilder()
+                        .addComponents(/** @type {*} */
+                            channelSelectMenu(channels).setCustomId('lock')
+                        )
+                ]
+            });
+        }
     }
 
     async executeSelectMenu(interaction) {
