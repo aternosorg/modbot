@@ -16,6 +16,15 @@ export default class VideoCommand extends Command {
         return super.buildOptions(builder);
     }
 
+    isAvailableInAllGuilds() {
+        return false;
+    }
+
+    async isAvailableIn(guild) {
+        const guildSettings = await GuildSettings.get(guild.id);
+        return !!guildSettings.playlist;
+    }
+
     async execute(interaction) {
         const playlist = (await GuildSettings.get(interaction.guild.id)).getPlaylist();
 

@@ -43,3 +43,21 @@ export function toTitleCase(s) {
 export function yesNo(bool) {
     return bool ? 'Yes' : 'No';
 }
+
+/**
+ *
+ * @template T, Z
+ * @param {T[]} array
+ * @param {Function} filter
+ * @param args
+ * @return {Promise<T[]>}
+ */
+export async function asyncFilter(array, filter, ...args) {
+    const results = [];
+    for (const element of array) {
+        if (await filter(element, ...args)) {
+            results.push(element);
+        }
+    }
+    return results;
+}

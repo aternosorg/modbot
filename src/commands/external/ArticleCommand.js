@@ -37,6 +37,15 @@ export default class ArticleCommand extends Command {
         return builder;
     }
 
+    isAvailableInAllGuilds() {
+        return false;
+    }
+
+    async isAvailableIn(guild) {
+        const guildSettings = await GuildSettings.get(guild.id);
+        return !!guildSettings.helpcenter;
+    }
+
     async execute(interaction) {
         const zendesk = (await GuildSettings.get(interaction.guild.id)).getZendesk();
         if (!zendesk) {

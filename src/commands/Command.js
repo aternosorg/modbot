@@ -94,4 +94,22 @@ export default class Command extends ExecutableCommand {
     async executeMessageMenu(interaction) {
 
     }
+
+    /**
+     * is this command available in all guilds?
+     * if not this command will manually be registered in all guilds where
+     * @return {boolean}
+     */
+    isAvailableInAllGuilds() {
+        return true;
+    }
+
+    /**
+     * is this command available in this guild?
+     * @param {import('discord.js').Guild} guild
+     * @return {Promise<boolean>}
+     */
+    async isAvailableIn(guild) {
+        return false;
+    }
 }

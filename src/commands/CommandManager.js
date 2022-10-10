@@ -33,11 +33,10 @@ import SoftBanCommand from './user/SoftBanCommand.js';
 import IDCommand from './guild/IDCommand.js';
 import RoleInfoCommand from './guild/RoleInfoCommand.js';
 import GuildInfoCommand from './guild/GuildInfoCommand.js';
-import Config from '../bot/Config.js';
-import GuildWrapper from '../discord/GuildWrapper.js';
 import PurgeInvitesCommand from './guild/PurgeInvitesCommand.js';
 import ErrorEmbed from '../embeds/ErrorEmbed.js';
 import StrikePurgeCommand from './user/StrikePurgeCommand.js';
+import {asyncFilter} from '../util/util.js';
 
 const cooldowns = new Cache();
 
@@ -83,10 +82,7 @@ export default class CommandManager {
         new IDCommand(),
         new RoleInfoCommand(),
         new GuildInfoCommand(),
-    ];
-
-    #privateCommands = [
-        new PurgeInvitesCommand()
+        new PurgeInvitesCommand(),
     ];
 
     static get instance() {
@@ -97,7 +93,7 @@ export default class CommandManager {
      * @return {Command[]}
      */
     getCommands() {
-        return this.#commands.concat(this.#privateCommands);
+        return this.#commands;
     }
 
     /**
@@ -105,19 +101,25 @@ export default class CommandManager {
      * @return {Promise<void>}
      */
     async register() {
-        for (const [id, command] of await Bot.instance.client.application.commands.set(this.buildCommands())) {
+        const globalCommands = this.#commands.filter(command => command.isAvailableInAllGuilds());
+        for (const [id, command] of await Bot.instance.client.application.commands.set(this.buildCommands(globalCommands))) {
             if (command.type === ApplicationCommandType.ChatInput) {
                 this.findCommand(command.name).id = id;
             }
         }
 
-        const privateCommands = this.buildCommands(this.#privateCommands);
-        for (const guildId of Config.instance.data.featureWhitelist) {
-            const guild = await GuildWrapper.fetch(guildId);
-            if (guild) {
-                await guild.guild.commands.set(privateCommands);
-            }
+        for (const guild of Bot.instance.client.guilds.cache.values()) {
+            await this.updateCommandsForGuild(guild);
         }
+    }
+
+    async updateCommandsForGuild(guild) {
+        const commands = this.buildCommands(await asyncFilter(
+            this.#commands.filter(command => !command.isAvailableInAllGuilds()),
+            (command, guild) => command.isAvailableIn(guild), guild
+        ));
+
+        await guild.commands.set(commands);
     }
 
     /**
@@ -125,7 +127,7 @@ export default class CommandManager {
      * @param {Command[]} commands
      * @return {import('discord.js').ApplicationCommandDataResolvable[]}
      */
-    buildCommands(commands = this.#commands) {
+    buildCommands(commands) {
         const result = [];
         for (const command of commands) {
             result.push(command.buildSlashCommand());

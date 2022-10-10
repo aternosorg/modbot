@@ -6,6 +6,7 @@ import GuildSettings from '../../settings/GuildSettings.js';
 import Request from '../../Request.js';
 import EmbedWrapper from '../../embeds/EmbedWrapper.js';
 import colors from '../../util/colors.js';
+import CommandManager from '../CommandManager.js';
 
 const ZENDESK_REGEX = /^([\w.]+)\.zendesk\.com$/i;
 
@@ -27,6 +28,7 @@ export default class HelpCenterCommand extends SubCommand {
         if (!option) {
             guildSettings.helpcenter = null;
             await guildSettings.save();
+            await CommandManager.instance.updateCommandsForGuild(interaction.guild);
             return await interaction.reply(new EmbedWrapper()
                 .setDescription('Disabled help-center')
                 .setColor(colors.RED)
@@ -58,6 +60,7 @@ export default class HelpCenterCommand extends SubCommand {
 
         guildSettings.helpcenter = name;
         await guildSettings.save();
+        await CommandManager.instance.updateCommandsForGuild(interaction.guild);
         await interaction.reply(new EmbedWrapper()
             .setDescription(`Set help-center to https://${name}.zendesk.com/hc/`)
             .setColor(colors.GREEN)

@@ -3,6 +3,7 @@ import {formatTime, parseTime, timeAfter} from '../../util/timeutils.js';
 import Confirmation from '../../database/Confirmation.js';
 import ConfirmationEmbed from '../../embeds/ConfirmationEmbed.js';
 import {ButtonStyle, PermissionFlagsBits, PermissionsBitField, RESTJSONErrorCodes} from 'discord.js';
+import Config from '../../bot/Config.js';
 
 export default class PurgeInvitesCommand extends Command {
 
@@ -77,6 +78,14 @@ export default class PurgeInvitesCommand extends Command {
 
             await interaction.editReply(`Deleted ${confirmation.data.invites.length} invites!`);
         }
+    }
+
+    isAvailableInAllGuilds() {
+        return false;
+    }
+
+    async isAvailableIn(guild) {
+        return Config.instance.data.featureWhitelist.includes(guild.id);
     }
 
     getDescription() {
