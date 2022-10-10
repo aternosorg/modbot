@@ -1,7 +1,10 @@
 import ChatTriggeredFeature from './ChatTriggeredFeature.js';
 import TypeChecker from '../settings/TypeChecker.js';
-import {EmbedBuilder} from 'discord.js';
-import * as util from 'util';
+import {channelMention} from 'discord.js';
+import KeyValueEmbed from '../embeds/KeyValueEmbed.js';
+import {yesNo} from '../util/util.js';
+import {EMBED_FIELD_LIMIT} from '../util/apiLimits.js';
+import colors from '../util/colors.js';
 
 /**
  * Class representing an auto response
@@ -71,24 +74,22 @@ export default class AutoResponse extends ChatTriggeredFeature {
      * generate an Embed displaying the info of this response
      * @param {String}        title
      * @param {Number}        color
-     * @returns {EmbedBuilder}
+     * @returns {EmbedWrapper}
      */
-    embed(title, color) {
-        return new EmbedBuilder()
+    embed(title = 'Auto-response', color = colors.GREEN) {
+        return new KeyValueEmbed()
             .setTitle(title + ` [${this.id}]`)
             .setColor(color)
+            .addPair('Trigger', this.trigger.asString())
+            .addPair('Global', yesNo(this.global))
+            .addPairIf(!this.global, 'Channels', this.channels.map(channelMention).join(', '))
             .addFields(
-                /** @type {any} */[
-                    {
-                        name: 'Trigger',
-                        value: `${this.trigger.type}: \`${this.trigger.type === 'regex' ? '/' + this.trigger.content + '/' + this.trigger.flags : this.trigger.content}\``.substring(0, 1000)
-                    },
-                    {name: 'Response', value: this.response.substring(0, 1000)},
-                    {
-                        name: 'Channels',
-                        value: this.global ? 'global' : this.channels.map(c => `<#${c}>`).join(', ').substring(0, 1000)
-                    }
-                ]);
+                /** @type {any} */
+                {
+                    name: 'Response',
+                    value: this.response.substring(0, EMBED_FIELD_LIMIT)
+                },
+            );
     }
 
     /**
@@ -116,56 +117,7 @@ export default class AutoResponse extends ChatTriggeredFeature {
         return {success: true, response: response, message: null};
     }
 
-    /**
-     * edit this auto-response
-     * @param {String} option option to change
-     * @param {String[]} args
-     * @param {Guild} guild
-     * @returns {Promise<{success: boolean, message: String}>} response message
-     */
-    async edit(option, args, guild) {
-        switch (option) {
-            case 'trigger': {
-                let trigger = this.constructor.getTrigger(args.shift(), args.join(' '));
-                if (!trigger.success) return {success: false, message:trigger.message};
-                this.trigger = trigger.trigger;
-                await this.save();
-                return {success: true, message:'Successfully changed trigger'};
-            }
-
-            case 'response': {
-                let response = args.join(' ');
-                if (!response) return {success: false, message: 'Invalid response'};
-
-                this.response = response;
-                await this.save();
-                return {success: true, message:`Successfully ${response === 'disabled' ? 'disabled' : 'changed'} response`};
-            }
-
-            case 'channels': {
-                if (args[0].toLowerCase() === 'global') {
-                    this.global = true;
-                    this.channels = [];
-                }
-                else {
-                    // TODO: update
-                    let channels = util.channelMentions(guild, args);
-                    if (!channels) return {success: false, message:'No valid channels specified'};
-                    this.global = false;
-                    this.channels = channels;
-                }
-                await this.save();
-                return {success: true, message: global ? 'Successfully made this auto-response global' : 'Successfully changed channels'};
-            }
-
-            default: {
-                return {success: false, message:'Unknown option'};
-            }
-        }
-    }
-
     getOverview() {
-        return `[${this.id}] ${this.global ? 'global' : this.channels.map(c => `<#${c}>`).join(', ')} ` +
-            '`' + this.trigger.asString() + '`\n';
+        return `[${this.id}] ${this.global ? 'global' : this.channels.map(c => `<#${c}>`).join(', ')} ${this.trigger.asString()}`;
     }
 }

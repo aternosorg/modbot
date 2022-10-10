@@ -2,6 +2,7 @@ import Moderation from '../../database/Moderation.js';
 import ModerationEmbed from '../../embeds/ModerationEmbed.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 import CompletingModerationCommand from './CompletingModerationCommand.js';
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js';
 
 export default class ModerationShowCommand extends CompletingModerationCommand {
 
@@ -24,7 +25,20 @@ export default class ModerationShowCommand extends CompletingModerationCommand {
             return;
         }
 
-        await interaction.reply(new ModerationEmbed(moderation, await moderation.getUser()).toMessage());
+        await interaction.reply({
+            ephemeral: true,
+            embeds: [new ModerationEmbed(moderation, await moderation.getUser())],
+            components: [
+                new ActionRowBuilder()
+                    .addComponents(
+                        /** @type {*} */
+                        new ButtonBuilder()
+                            .setLabel('Delete')
+                            .setStyle(ButtonStyle.Danger)
+                            .setCustomId(`moderation:delete:${id}`)
+                    )
+            ]
+        });
     }
 
     getDescription() {

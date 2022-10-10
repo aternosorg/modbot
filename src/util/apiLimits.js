@@ -37,7 +37,7 @@ export const EMBED_FIELD_LIMIT = 1024;
 export const SELECT_MENU_TITLE_LIMIT = 100;
 
 /**
- * maximum length of the title for a select menu
+ * maximum length of the value for a select menu
  * @type {number}
  */
 export const SELECT_MENU_VALUE_LIMIT = 100;
@@ -57,6 +57,8 @@ export const FILE_UPLOAD_LIMITS = new Map()
  * @type {number}
  */
 export const AUTOCOMPLETE_OPTIONS_LIMIT = 25;
+
+export const AUTOCOMPLETE_NAME_LIMIT = 100;
 
 export const CHOICE_NAME_LIMIT = 100;
 

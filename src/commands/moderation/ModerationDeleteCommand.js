@@ -35,6 +35,28 @@ export default class ModerationDeleteCommand extends CompletingModerationCommand
         });
     }
 
+    async executeButton(interaction) {
+        const parts = interaction.customId.split(':');
+        const id = parts[2];
+        const moderation = await Moderation.get(interaction.guild.id, id);
+        if (!moderation) {
+            await interaction.update({
+                embeds: [new ErrorEmbed('Unknown Moderation!')],
+                components: []
+            });
+            return;
+        }
+
+        await moderation.delete();
+        const embed = new ModerationEmbed(moderation, await moderation.getUser())
+            .setTitle(`Deleted Moderation #${moderation.id} | ${moderation.action.toUpperCase()}`)
+            .setColor(colors.RED);
+        await interaction.update({
+            embeds: [embed],
+            components: []
+        });
+    }
+
     getDescription() {
         return 'Delete a single moderation';
     }

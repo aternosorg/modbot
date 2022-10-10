@@ -31,7 +31,7 @@ export default class UnlockCommand extends Command {
     buildOptions(builder) {
         builder.addBooleanOption(option => option
             .setName('global')
-            .setDescription('Lock all lockable channels')
+            .setDescription('Unlock all locked channels')
             .setRequired(false));
         return super.buildOptions(builder);
     }

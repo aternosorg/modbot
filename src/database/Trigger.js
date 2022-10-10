@@ -1,3 +1,5 @@
+import {inlineCode} from 'discord.js';
+
 export default class Trigger {
     /**
      * @type {String}
@@ -30,6 +32,17 @@ export default class Trigger {
      * @returns {string}
      */
     asString() {
-        return `(${this.type}): ${this.type === 'regex' ? `/${this.content}/` : this.content}`;
+        return `${this.type}: ${inlineCode(this.asContentString())}`;
+    }
+
+    /**
+     * @return {string}
+     */
+    asContentString() {
+        if (this.type === 'regex') {
+            return `/${this.content}/${this.flags ?? ''}`;
+        } else {
+            return this.content;
+        }
     }
 }

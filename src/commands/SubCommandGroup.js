@@ -43,20 +43,29 @@ export default class SubCommandGroup extends ExecutableCommand {
     }
 
     /**
+     * find a child by the sub command name
+     * @param {import('discord.js').Interaction} interaction
+     * @return {SubCommand|null}
+     */
+    #findChildByName(interaction) {
+        const name = interaction.options.getSubcommand();
+        return  this.getChildren().find(child => child.getName() === name) ?? null;
+    }
+
+    /**
      * find a child by the custom id of the moderation
      * must use syntax 'command:subcommand:other-data'
      * @param {import('discord.js').Interaction} interaction
-     * @return {Promise<SubCommand|SubCommandGroup|null>}
+     * @return {Promise<SubCommand|null>}
      */
-    async #findChild(interaction) {
+    async #findChildByCustomId(interaction) {
         const name = interaction.customId.split(':')[2];
 
         return this.getChildren().find(child => child.getName() === name) ?? null;
     }
 
     async execute(interaction) {
-        const name = interaction.options.getSubcommand();
-        const command = this.getChildren().find(child => child.getName() === name) ?? null;
+        const command = this.#findChildByName(interaction);
         if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
             return;
         }
@@ -65,7 +74,7 @@ export default class SubCommandGroup extends ExecutableCommand {
     }
 
     async executeModal(interaction) {
-        const command = await this.#findChild(interaction);
+        const command = await this.#findChildByCustomId(interaction);
         if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
             return;
         }
@@ -74,11 +83,29 @@ export default class SubCommandGroup extends ExecutableCommand {
     }
 
     async executeButton(interaction) {
-        const command = await this.#findChild(interaction);
+        const command = await this.#findChildByCustomId(interaction);
         if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
             return;
         }
 
         await command.executeButton(interaction);
+    }
+
+    async executeSelectMenu(interaction) {
+        const command = await this.#findChildByCustomId(interaction);
+        if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
+            return;
+        }
+
+        await command.executeSelectMenu(interaction);
+    }
+
+    async complete(interaction) {
+        const command = await this.#findChildByName(interaction);
+        if (!command) {
+            return [];
+        }
+
+        return await command.complete(interaction);
     }
 }

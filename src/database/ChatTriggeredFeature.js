@@ -2,6 +2,9 @@ import Trigger from './Trigger.js';
 import {Collection} from 'discord.js';
 import stringSimilarity from 'string-similarity';
 import Database from '../bot/Database.js';
+import LineEmbed from '../embeds/LineEmbed.js';
+import {EMBED_DESCRIPTION_LIMIT} from '../util/apiLimits.js';
+import colors from '../util/colors.js';
 
 /**
  * Config cache time (ms)
@@ -41,10 +44,7 @@ export default class ChatTriggeredFeature {
     static columns;
 
     /**
-     * @type {Object}
-     * @property {String} type
-     * @property {String} content
-     * @property {String} [flags]
+     * @type {Trigger}
      */
     trigger;
 
@@ -99,6 +99,24 @@ export default class ChatTriggeredFeature {
 
     static getGuildCache() {
         return this.getCache().guilds;
+    }
+
+    /**
+     * get the placeholder text for this trigger type
+     * @param {string} type
+     * @return {string}
+     */
+    static getTriggerPlaceholder(type) {
+        switch (type) {
+            case 'regex':
+                return '/regex/flags';
+
+            case 'phising':
+                return 'domain.com(other,tlds):similarity';
+
+            default:
+                return 'trigger';
+        }
     }
 
     /**
@@ -199,31 +217,41 @@ export default class ChatTriggeredFeature {
 
     /**
      * get an overview of all objects of this type for this guild
-     * returns an array of strings shorter than 2000 characters or null if no objects exist
-     * @param {import('discord.js').Snowflake} guildId
-     * @return {Promise<string[]|null>} null if empty
+     * @param {import('discord.js').Guild} guild
+     * @param {string} name feature name (e.g. Auto-responses or Bad-words).
+     * @return {Promise<LineEmbed[]>}
      */
-    static async getGuildOverview(guildId) {
-        const objects = await this.getAll(guildId);
+    static async getGuildOverview(guild, name ) {
+        const objects = await this.getAll(guild.id);
         if (!objects || !objects.size) {
-            return null;
+            return [new LineEmbed()
+                .setAuthor({name: `${name} for ${guild.name}`, iconURL: guild.iconURL()})
+                .setColor(colors.GREEN)
+                .setDescription(`There are no ${name} on this server.`)
+            ];
         }
 
-        const res = [];
-        let text = '';
+        let embed = new LineEmbed();
+        const embeds = [embed];
         for (const object of objects.values()) {
             const info = object.getOverview();
 
-            if (text.length + info.length < 2000) {
-                text += info;
-            } else {
-                res.push(text);
-                text = info;
+            if (embed.data.description?.length + info.length > EMBED_DESCRIPTION_LIMIT) {
+                embed = new LineEmbed();
+                embeds.push(embed);
             }
+            embed.addLine(info);
         }
-        if (text) res.push(text);
 
-        return res;
+        for (const [page, embed] of embeds.entries()) {
+            embed.setColor(colors.GREEN)
+                .setAuthor({
+                    name: `${name} for ${guild.name} | ${page + 1}/${embeds.length}`,
+                    iconURL: guild.iconURL(),
+                });
+        }
+
+        return embeds;
     }
 
     /**
@@ -241,7 +269,7 @@ export default class ChatTriggeredFeature {
             }
             if (data.length !== columns.length) throw 'Unable to update, lengths differ!';
             data.push(this.id);
-            await Database.instance.queryAll(`UPDATE ${this.constructor.escapedTableName}SET ${assignments.join(', ')}WHERE id = ?`, data);
+            await Database.instance.queryAll(`UPDATE ${this.constructor.escapedTableName} SET ${assignments.join(', ')} WHERE id = ?`, ...data);
         }
         else {
             const columns = Database.instance.escapeId(this.constructor.columns);
@@ -271,7 +299,7 @@ export default class ChatTriggeredFeature {
      * @async
      * @returns {Promise<void>}
      */
-    async remove() {
+    async delete() {
         await Database.instance.query(`DELETE FROM ${this.constructor.escapedTableName} WHERE id = ?`,[this.id]);
 
         if (this.global) {
@@ -307,10 +335,11 @@ export default class ChatTriggeredFeature {
     /**
      * Get a single bad word / auto response
      * @param {String|Number} id
-     * @returns {Promise<null|ChatTriggeredFeature>}
+     * @param {import('discord.js').Snowflake} guildid
+     * @returns {Promise<?this>}
      */
-    static async getByID(id) {
-        const result = await Database.instance.query(`SELECT *FROM ${this.escapedTableName} WHERE id = ?`, [id]);
+    static async getByID(id, guildid) {
+        const result = await Database.instance.query(`SELECT *FROM ${this.escapedTableName} WHERE id = ? AND guildid = ?`, id, guildid);
         if (!result) return null;
         return this.fromData(result);
     }
@@ -322,7 +351,7 @@ export default class ChatTriggeredFeature {
      * @returns {{trigger: ?Trigger, success: boolean, message: ?string}}
      */
     static getTrigger(type, value) {
-        if (!this.triggerTypes.includes(type)) return {success: false, message: 'Usage: <type> <trigger>', trigger: null};
+        if (!this.triggerTypes.includes(type)) return {success: false, message: `Invalid trigger type ${type}`, trigger: null};
         if (!value) return  {success: false, message:'Empty triggers are not allowed', trigger: null};
 
         let content = value, flags;
@@ -365,7 +394,7 @@ export default class ChatTriggeredFeature {
      * Get all items for a guild
      * @async
      * @param {import('discord.js').Snowflake} guildId
-     * @return {Collection<Number, this>}
+     * @return {Promise<Collection<Number, this.prototype>>}
      */
     static async getAll(guildId) {
         const result = await Database.instance.queryAll(

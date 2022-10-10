@@ -88,6 +88,15 @@ export default class ParentCommand extends Command {
         await command.executeButton(interaction);
     }
 
+    async executeSelectMenu(interaction) {
+        const command = await this.#findChildByCustomId(interaction);
+        if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
+            return;
+        }
+
+        await command.executeSelectMenu(interaction);
+    }
+
     async complete(interaction) {
         const command = await this.#findChildByName(interaction);
         if (!command) {

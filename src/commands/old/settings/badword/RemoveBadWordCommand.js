@@ -21,7 +21,7 @@ class RemoveBadWordCommand extends SubCommand {
         if (!badWord) {
             return this.sendUsage();
         }
-        await badWord.remove();
+        await badWord.delete();
         await this.reply(badWord.embed(`Removed bad-word ${badWord.id}`, util.color.red));
     }
 

@@ -131,7 +131,7 @@ export default class BadWord extends ChatTriggeredFeature {
      * create a new bad word
      * @param {import('discord.js').Snowflake} guildID
      * @param {boolean} global
-     * @param {Snowflake[]|null} channels
+     * @param {import('discord.js').Snowflake[]|null} channels
      * @param {String} triggerType
      * @param {String} triggerContent
      * @param {String} [response] response to bad-word
@@ -219,8 +219,7 @@ export default class BadWord extends ChatTriggeredFeature {
     }
 
     getOverview() {
-        return `[${this.id}] ${this.global ? 'global' : this.channels.map(c => `<#${c}>`).join(', ')} ` +
-            '`' + this.trigger.asString() + '`\n';
+        return `[${this.id}] ${this.global ? 'global' : this.channels.map(c => `<#${c}>`).join(', ')} ${this.trigger.asString()}`;
     }
 
     getResponse() {
