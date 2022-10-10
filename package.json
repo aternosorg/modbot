@@ -22,26 +22,24 @@
     "node": ">=16.6.0"
   },
   "dependencies": {
-    "@discordjs/rest": "^1.1.0",
-    "@google-cloud/logging": "^9.1.1",
-    "@googleapis/youtube": "^2.0.0",
-    "diff": "^4.0.2",
-    "discord-api-types": "^0.37.5",
-    "discord.js": "^14.4.0",
-    "fuse.js": "^6.4.6",
-    "got": "^12.4.1",
+    "@google-cloud/logging": "^10.1.10",
+    "@googleapis/youtube": "^6.0.0",
+    "diff": "^5.1.0",
+    "discord-api-types": "^0.37.12",
+    "discord.js": "^14.6.0",
+    "fuse.js": "^6.6.2",
+    "got": "^12.5.1",
     "mysql2": "^2.3.3",
     "string-similarity": "^4.0.4",
     "turndown": "^7.1.1"
   },
   "devDependencies": {
-    "@types/node": "^17.0.34",
-    "eslint": "^8.3.0",
-    "eslint-plugin-jest": "^25.3.0",
-    "eslint-plugin-jsdoc": "^37.0.3",
+    "@types/node": "^18.8.3",
+    "eslint": "^8.25.0",
+    "eslint-plugin-jsdoc": "^39.3.6",
     "eslint-plugin-json": "^3.1.0",
-    "husky": "^6.0.0",
-    "lint-staged": "^11.0.0"
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3"
   },
   "lint-staged": {
     "*.js": [
