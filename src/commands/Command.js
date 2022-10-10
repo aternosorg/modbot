@@ -1,6 +1,6 @@
 import {ApplicationCommandType, ContextMenuCommandBuilder, SlashCommandBuilder} from 'discord.js';
 import ExecutableCommand from './ExecutableCommand.js';
-import {toTitleCase} from '../util/util.js';
+import {toTitleCase} from '../util/format.js';
 
 /**
  * @abstract

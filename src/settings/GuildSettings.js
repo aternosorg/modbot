@@ -6,6 +6,7 @@ import Zendesk from '../Zendesk.js';
 import colors from '../util/colors.js';
 import {formatTime} from '../util/timeutils.js';
 import YouTubePlaylist from '../YouTubePlaylist.js';
+import {inlineEmojiIfExists} from '../util/format.js';
 
 /**
  * @classdesc settings of a guild
@@ -134,8 +135,8 @@ export default class GuildSettings extends Settings {
      */
     getConnectionsSettings() {
         //How can YouTube's link shortener *NOT* support playlists?
-        return `Playlist: ${this.playlist ? this.getPlaylist().getFormattedUrl() : 'disabled'}\n` +
-            `Helpcenter: ${this.helpcenter ? `https://${this.helpcenter}.zendesk.com/` : 'disabled'}\n`;
+        return inlineEmojiIfExists('youtube') + `Playlist: ${this.playlist ? this.getPlaylist().getFormattedUrl() : 'disabled'}\n` +
+            inlineEmojiIfExists('zendesk') + `Helpcenter: ${this.helpcenter ? `https://${this.helpcenter}.zendesk.com/` : 'disabled'}\n`;
     }
 
     /**

@@ -28,23 +28,6 @@ export async function retry(fn, thisArg, args = [], maxRetries = 5, returnValMat
 }
 
 /**
- * convert a string to title case
- * @param {string} s
- * @return {string}
- */
-export function toTitleCase(s) {
-    return s.toLowerCase().replace(/^(\w)|\s(\w)/g, c => c.toUpperCase());
-}
-
-/**
- * @param {*} bool
- * @return {string}
- */
-export function yesNo(bool) {
-    return bool ? 'Yes' : 'No';
-}
-
-/**
  *
  * @template T, Z
  * @param {T[]} array

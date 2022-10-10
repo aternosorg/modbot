@@ -4,7 +4,7 @@ import {formatTime, parseTime} from '../util/timeutils.js';
 import Database from '../bot/Database.js';
 import GuildWrapper from './GuildWrapper.js';
 import {resolveColor} from '../util/colors.js';
-import {toTitleCase} from '../util/util.js';
+import {toTitleCase} from '../util/format.js';
 import {BAN_MESSAGE_DELETE_LIMIT, TIMEOUT_LIMIT} from '../util/apiLimits.js';
 import Moderation from '../database/Moderation.js';
 import UserWrapper from './UserWrapper.js';

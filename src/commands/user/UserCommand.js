@@ -3,7 +3,7 @@ import MemberWrapper from '../../discord/MemberWrapper.js';
 import Moderation from '../../database/Moderation.js';
 import WhereParameter from '../../database/WhereParameter.js';
 import {bold, time, TimestampStyles} from 'discord.js';
-import {toTitleCase} from '../../util/util.js';
+import {toTitleCase} from '../../util/format.js';
 import {formatTime} from '../../util/timeutils.js';
 import UserWrapper from '../../discord/UserWrapper.js';
 import Confirmation from '../../database/Confirmation.js';

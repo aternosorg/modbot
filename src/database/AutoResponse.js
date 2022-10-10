@@ -2,7 +2,7 @@ import ChatTriggeredFeature from './ChatTriggeredFeature.js';
 import TypeChecker from '../settings/TypeChecker.js';
 import {channelMention} from 'discord.js';
 import KeyValueEmbed from '../embeds/KeyValueEmbed.js';
-import {yesNo} from '../util/util.js';
+import {yesNo} from '../util/format.js';
 import {EMBED_FIELD_LIMIT} from '../util/apiLimits.js';
 import colors from '../util/colors.js';
 

@@ -36,6 +36,8 @@ import {exists, readJSON} from '../util/fsutils.js';
  * @property {?string} privacy
  * @property {?string} invite
  * @property {?string} discord
+ * @property {?string} youtube
+ * @property {?string} zendesk
  * @property {?string} first-page
  * @property {?string} previous-page
  * @property {?string} refresh
@@ -107,6 +109,8 @@ export default class Config {
                     privacy: process.env.MODBOT_EMOJI_PRIVACY,
                     invite: process.env.MODBOT_EMOJI_INVITE,
                     discord: process.env.MODBOT_EMOJI_DISCORD,
+                    youtube: process.env.MODBOT_EMOJI_YOUTUBE,
+                    zendesk: process.env.MODBOT_EMOJI_ZENDESK,
                     'first-page': process.env.MODBOT_EMOJI_FIRST_PAGE,
                     'previous-page': process.env.MODBOT_EMOJI_PREVIOUS_PAGE,
                     refresh: process.env.MODBOT_EMOJI_REFRESH,

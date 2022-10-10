@@ -2,7 +2,7 @@ import Command from '../Command.js';
 import {time, TimestampStyles, userMention} from 'discord.js';
 import KeyValueEmbed from '../../embeds/KeyValueEmbed.js';
 import colors from '../../util/colors.js';
-import {yesNo} from '../../util/util.js';
+import {yesNo} from '../../util/format.js';
 
 export default class GuildInfoCommand extends Command {
 
