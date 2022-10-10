@@ -2,6 +2,7 @@ import Cache from './Cache.js';
 import Config from './bot/Config.js';
 import {youtube as youtube_fn} from '@googleapis/youtube';
 import Fuse from 'fuse.js';
+import {hyperlink} from 'discord.js';
 const youtube = youtube_fn('v3');
 
 const CACHE_DURATION = 10 * 60 * 1000;
@@ -53,6 +54,28 @@ export default class YouTubePlaylist {
     }
 
     /**
+     * is this a valid playlist id
+     * @param {string} id
+     * @return {Promise<boolean>}
+     */
+    static async isValidPlaylist(id) {
+        const response = await youtube.playlists.list({
+            auth: Config.instance.data.googleApiKey,
+            part: 'id',
+            id
+        });
+
+        return !!response.data.items.length;
+    }
+
+    /**
+     * delete the cache for this playlist
+     */
+    clearCache() {
+        cache.delete(this.#id);
+    }
+
+    /**
      * get all videos in this playlist
      * @return {Promise<YouTubeVideo[]>}
      */
@@ -95,5 +118,13 @@ export default class YouTubePlaylist {
             includeScore: true
         });
         return fuse.search(query);
+    }
+
+    getUrl() {
+        return `https://www.youtube.com/playlist?list=${this.#id}`;
+    }
+
+    getFormattedUrl() {
+        return hyperlink(this.#id, this.getUrl(), 'YouTube playlist ID');
     }
 }

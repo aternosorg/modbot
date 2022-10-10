@@ -73,7 +73,7 @@ export default class HelpCenterCommand extends SubCommand {
      * @return {?string}
      */
     findDomain(domain) {
-        const match = domain.match(/^(?:https?:\/\/)?([\w.]+)(?:[/?].*)?$/);
+        const match = domain.match(/^(?:https?:\/\/)?([\w.]+)(?:[/?].*)?$/i);
         if (!match) {
             return null;
         }

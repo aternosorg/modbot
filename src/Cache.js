@@ -42,6 +42,14 @@ export default class Cache {
         this.#cache.set(key, new CacheEntry(value, ttl));
     }
 
+    /**
+     * delete this key from the cache
+     * @param {K} key
+     */
+    delete(key) {
+        this.#cache.delete(key);
+    }
+
     checkCache() {
         for (const [key, entry] of this.#cache) {
             if (entry.isCacheTimeOver) {

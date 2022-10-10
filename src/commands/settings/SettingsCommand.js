@@ -8,6 +8,7 @@ import SpamCommand from './SpamCommand.js';
 import AutoResponseCommandGroup from './AutoResponseCommandGroup.js';
 import CapsCommand from './CapsCommand.js';
 import HelpCenterCommand from './HelpCenterCommand.js';
+import PlaylistCommand from './PlaylistCommand.js';
 
 export default class SettingsCommand extends ParentCommand {
 
@@ -26,6 +27,7 @@ export default class SettingsCommand extends ParentCommand {
             new SpamCommand(),
             new CapsCommand(),
             new HelpCenterCommand(),
+            new PlaylistCommand(),
         ];
     }
 
