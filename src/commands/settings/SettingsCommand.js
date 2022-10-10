@@ -6,6 +6,7 @@ import MessageLogCommand from './MessageLogCommand.js';
 import JoinLogCommand from './JoinLogCommand.js';
 import SpamCommand from './SpamCommand.js';
 import AutoResponseCommandGroup from './AutoResponseCommandGroup.js';
+import CapsCommand from './CapsCommand.js';
 
 export default class SettingsCommand extends ParentCommand {
 
@@ -20,8 +21,9 @@ export default class SettingsCommand extends ParentCommand {
             new LogChannelCommand(),
             new MessageLogCommand(),
             new JoinLogCommand(),
-            new SpamCommand(),
             new AutoResponseCommandGroup(),
+            new SpamCommand(),
+            new CapsCommand(),
         ];
     }
 
