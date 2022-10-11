@@ -9,6 +9,7 @@ import AutoResponseCommandGroup from './AutoResponseCommandGroup.js';
 import CapsCommand from './CapsCommand.js';
 import HelpCenterCommand from './HelpCenterCommand.js';
 import PlaylistCommand from './PlaylistCommand.js';
+import SimilarMessagesCommand from './SimilarMessagesCommand.js';
 
 export default class SettingsCommand extends ParentCommand {
 
@@ -20,12 +21,17 @@ export default class SettingsCommand extends ParentCommand {
     getChildren() {
         return [
             new SettingsOverviewCommand(),
+
             new LogChannelCommand(),
             new MessageLogCommand(),
             new JoinLogCommand(),
+
             new AutoResponseCommandGroup(),
+
             new SpamCommand(),
             new CapsCommand(),
+            new SimilarMessagesCommand(),
+
             new HelpCenterCommand(),
             new PlaylistCommand(),
         ];
