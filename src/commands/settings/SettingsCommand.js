@@ -10,6 +10,7 @@ import CapsCommand from './CapsCommand.js';
 import HelpCenterCommand from './HelpCenterCommand.js';
 import PlaylistCommand from './PlaylistCommand.js';
 import SimilarMessagesCommand from './SimilarMessagesCommand.js';
+import PunishmentsCommandGroup from './PunishmentsCommandGroup.js';
 
 export default class SettingsCommand extends ParentCommand {
 
@@ -26,6 +27,7 @@ export default class SettingsCommand extends ParentCommand {
             new MessageLogCommand(),
             new JoinLogCommand(),
 
+            new PunishmentsCommandGroup(),
             new AutoResponseCommandGroup(),
 
             new SpamCommand(),

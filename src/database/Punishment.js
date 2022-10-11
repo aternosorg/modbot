@@ -14,6 +14,12 @@ export default class Punishment {
      */
     message = null;
 
+    /**
+     * @param {Object} raw
+     * @param {string} raw.action
+     * @param {?number|string} [raw.duration]
+     * @param {?string} [raw.message]
+     */
     constructor(raw) {
         this.action = raw.action;
         this.duration = raw.duration ?? null;
