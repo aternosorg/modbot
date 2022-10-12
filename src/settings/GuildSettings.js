@@ -198,11 +198,11 @@ export default class GuildSettings extends Settings {
     }
 
     /**
-     * list all protected roles
-     * @return {String}
+     * get all protected roles
+     * @return {import('discord.js').Snowflake[]}
      */
-    listProtectedRoles() {
-        return this.#protectedRoles.map(role => `<@&${role}>`).join(', ') || 'none';
+    getProtectedRoles() {
+        return this.#protectedRoles;
     }
 
     /**

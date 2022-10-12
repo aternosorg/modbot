@@ -11,6 +11,7 @@ import HelpCenterCommand from './HelpCenterCommand.js';
 import PlaylistCommand from './PlaylistCommand.js';
 import SimilarMessagesCommand from './SimilarMessagesCommand.js';
 import PunishmentsCommandGroup from './PunishmentsCommandGroup.js';
+import ProtectedRolesCommandGroup from './ProtectedRolesCommandGroup.js';
 
 export default class SettingsCommand extends ParentCommand {
 
@@ -28,6 +29,7 @@ export default class SettingsCommand extends ParentCommand {
             new JoinLogCommand(),
 
             new PunishmentsCommandGroup(),
+            new ProtectedRolesCommandGroup(),
             new AutoResponseCommandGroup(),
 
             new SpamCommand(),
