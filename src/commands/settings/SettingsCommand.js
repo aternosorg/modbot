@@ -12,6 +12,7 @@ import PlaylistCommand from './PlaylistCommand.js';
 import SimilarMessagesCommand from './SimilarMessagesCommand.js';
 import PunishmentsCommandGroup from './PunishmentsCommandGroup.js';
 import ProtectedRolesCommandGroup from './ProtectedRolesCommandGroup.js';
+import MutedRoleCommandGroup from './MutedRoleCommandGroup.js';
 
 export default class SettingsCommand extends ParentCommand {
 
@@ -30,6 +31,7 @@ export default class SettingsCommand extends ParentCommand {
 
             new PunishmentsCommandGroup(),
             new ProtectedRolesCommandGroup(),
+            new MutedRoleCommandGroup(),
             new AutoResponseCommandGroup(),
 
             new SpamCommand(),

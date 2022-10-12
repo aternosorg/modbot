@@ -1,6 +1,6 @@
 import Settings from './Settings.js';
 import TypeChecker from './TypeChecker.js';
-import {Collection, EmbedBuilder} from 'discord.js';
+import {Collection, EmbedBuilder, roleMention} from 'discord.js';
 import Punishment from '../database/Punishment.js';
 import Zendesk from '../Zendesk.js';
 import colors from '../util/colors.js';
@@ -126,7 +126,7 @@ export default class GuildSettings extends Settings {
             `Message Log: ${this.messageLogChannel ? `<#${this.messageLogChannel}>` : 'disabled'}\n` +
             `Join Log: ${this.joinLogChannel ? `<#${this.joinLogChannel}>` : 'disabled'}\n` +
             `Muted role: ${this.mutedRole ? `<@&${this.mutedRole}>` : 'disabled'}\n` +
-            `Protected roles: ${this.listProtectedRoles()}\n`;
+            `Protected roles: \n${this.getProtectedRoles().map(role => '- ' + roleMention(role)).join('\n')}\n`;
     }
 
     /**
