@@ -14,6 +14,7 @@ import PunishmentsCommandGroup from './PunishmentsCommandGroup.js';
 import ProtectedRolesCommandGroup from './ProtectedRolesCommandGroup.js';
 import MutedRoleCommandGroup from './MutedRoleCommandGroup.js';
 import LinkCoolDownCommand from './LinkCoolDownCommand.js';
+import InvitesCommandGroup from './InvitesCommandGroup.js';
 
 export default class SettingsCommand extends ParentCommand {
 
@@ -30,6 +31,7 @@ export default class SettingsCommand extends ParentCommand {
             new MessageLogCommand(),
             new JoinLogCommand(),
 
+            new InvitesCommandGroup(),
             new PunishmentsCommandGroup(),
             new ProtectedRolesCommandGroup(),
             new MutedRoleCommandGroup(),
