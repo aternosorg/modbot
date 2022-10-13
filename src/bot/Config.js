@@ -56,6 +56,9 @@ import {exists, readJSON} from '../util/fsutils.js';
  * @property {?string} pardon
  * @property {?string} strike
  * @property {?string} kick
+ * @property {?string} user-created
+ * @property {?string} user-id
+ * @property {?string} user-joined
  */
 
 export default class Config {
@@ -129,6 +132,9 @@ export default class Config {
                     pardon: process.env.MODBOT_EMOJI_pardon,
                     strike: process.env.MODBOT_EMOJI_strike,
                     kick: process.env.MODBOT_EMOJI_kick,
+                    'user-created': process.env.MODBOT_EMOJI_USER_CREATED,
+                    'user-id': process.env.MODBOT_EMOJI_USER_ID,
+                    'user-joined': process.env.MODBOT_EMOJI_USER_JOINED,
                 }
             };
         }

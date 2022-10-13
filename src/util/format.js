@@ -31,3 +31,17 @@ export function inlineEmojiIfExists(configKey) {
         return formatEmoji(emoji) + ' ';
     }
 }
+
+/**
+ * @param {string} configKey
+ * @return {import('discord.js').APIMessageComponentEmoji}
+ */
+export function buttonEmojiIfExists(configKey) {
+    const emoji = Config.instance.data.emoji[configKey];
+    if (!emoji) {
+        return {};
+    }
+    else {
+        return {id: emoji};
+    }
+}

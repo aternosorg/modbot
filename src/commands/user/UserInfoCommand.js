@@ -5,8 +5,8 @@ import MemberWrapper from '../../discord/MemberWrapper.js';
 import UserWrapper from '../../discord/UserWrapper.js';
 import colors from '../../util/colors.js';
 import UserEmbed from '../../embeds/UserEmbed.js';
-import Config from '../../bot/Config.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
+import {buttonEmojiIfExists, inlineEmojiIfExists} from '../../util/format.js';
 
 export default class UserInfoCommand extends Command {
 
@@ -69,8 +69,8 @@ export default class UserInfoCommand extends Command {
         const member = await memberWrapper.fetchMember();
         const embed = new UserEmbed(user)
             .setColor(colors.GREEN)
-            .addPair('Discord ID', user.id)
-            .addPair('Created', time(user.createdAt, TimestampStyles.LongDate));
+            .addPair(inlineEmojiIfExists('user-id') + 'Discord ID', user.id)
+            .addPair(inlineEmojiIfExists('user-created') + 'Created', time(user.createdAt, TimestampStyles.LongDate));
 
         /** @type {ActionRowBuilder<ButtonBuilder>} */
         const actionRow = new ActionRowBuilder()
@@ -79,7 +79,7 @@ export default class UserInfoCommand extends Command {
                     .setLabel('Strike')
                     .setCustomId(`strike:${user.id}`)
                     .setStyle(ButtonStyle.Danger)
-                    .setEmoji(Config.instance.data.emoji.strike ?? {}),
+                    .setEmoji(buttonEmojiIfExists('strike')),
             );
         const informationRow = new ActionRowBuilder()
             .addComponents(
@@ -87,41 +87,41 @@ export default class UserInfoCommand extends Command {
                     .setLabel('Refresh')
                     .setCustomId(`user:refresh:${user.id}`)
                     .setStyle(ButtonStyle.Secondary)
-                    .setEmoji(Config.instance.data.emoji.refresh ?? {}),
+                    .setEmoji(buttonEmojiIfExists('refresh')),
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Avatar')
                     .setCustomId(`avatar:${user.id}`)
                     .setStyle(ButtonStyle.Secondary)
-                    .setEmoji(Config.instance.data.emoji.avatar ?? {}),
+                    .setEmoji(buttonEmojiIfExists('avatar')),
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Moderations')
                     .setCustomId(`moderation:list:${user.id}`)
                     .setStyle(ButtonStyle.Secondary)
-                    .setEmoji(Config.instance.data.emoji.moderations ?? {}),
+                    .setEmoji(buttonEmojiIfExists('moderations')),
             );
 
         if (member) {
-            embed.addPair('Joined', time(member.joinedAt, TimestampStyles.LongDate));
+            embed.addPair(inlineEmojiIfExists('user-joined') + 'Joined', time(member.joinedAt, TimestampStyles.LongDate));
             actionRow.addComponents(
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Kick')
                     .setCustomId(`kick:${user.id}`)
                     .setStyle(ButtonStyle.Danger)
-                    .setEmoji(Config.instance.data.emoji.kick ?? {})
+                    .setEmoji(buttonEmojiIfExists('kick'))
             );
         }
 
         {
             const strikeCount = await memberWrapper.getStrikeSum();
-            embed.addPair('Moderations', (await memberWrapper.getModerations()).length)
-                .addPair('Strike count', strikeCount);
+            embed.addPair(inlineEmojiIfExists('moderations') + 'Moderations', (await memberWrapper.getModerations()).length)
+                .addPair(inlineEmojiIfExists('strike') + ' Strike count', strikeCount);
             if (strikeCount) {
                 actionRow.addComponents(
                     /** @type {*} */ new ButtonBuilder()
                         .setLabel('Pardon')
                         .setCustomId(`pardon:${user.id}`)
                         .setStyle(ButtonStyle.Success)
-                        .setEmoji(Config.instance.data.emoji.pardon ?? {})
+                        .setEmoji(buttonEmojiIfExists('pardon'))
                 );
             }
         }
@@ -130,7 +130,7 @@ export default class UserInfoCommand extends Command {
             const mute = await memberWrapper.getMuteInfo();
             if (mute.muted) {
                 embed.newLine()
-                    .addPair('Muted', mute.reason);
+                    .addPair( inlineEmojiIfExists('mute') + 'Muted', mute.reason);
                 if (mute.end) {
                     embed.addPair('Muted until', time(Math.floor(mute.end / 1_000)));
                 }
@@ -139,7 +139,7 @@ export default class UserInfoCommand extends Command {
                         .setLabel('Unmute')
                         .setCustomId(`unmute:${user.id}`)
                         .setStyle(ButtonStyle.Success)
-                        .setEmoji(Config.instance.data.emoji.mute ?? {})
+                        .setEmoji(buttonEmojiIfExists('mute'))
                 );
                 embed.setColor(colors.ORANGE);
             }
@@ -149,7 +149,7 @@ export default class UserInfoCommand extends Command {
                         .setLabel('Mute')
                         .setCustomId(`mute:${user.id}`)
                         .setStyle(ButtonStyle.Danger)
-                        .setEmoji(Config.instance.data.emoji.mute ?? {})
+                        .setEmoji(buttonEmojiIfExists('mute'))
                 );
             }
         }
@@ -158,7 +158,7 @@ export default class UserInfoCommand extends Command {
             const ban = await memberWrapper.getBanInfo();
             if (ban.banned) {
                 embed.newLine()
-                    .addPair('Banned', ban.reason);
+                    .addPair(inlineEmojiIfExists('ban') + 'Banned', ban.reason);
                 if (ban.end) {
                     embed.addPair('Banned until', time(Math.floor(ban.end / 1_000)));
                 }
@@ -167,7 +167,7 @@ export default class UserInfoCommand extends Command {
                         .setLabel('Unban')
                         .setCustomId(`unban:${user.id}`)
                         .setStyle(ButtonStyle.Success)
-                        .setEmoji(Config.instance.data.emoji.ban ?? {})
+                        .setEmoji(buttonEmojiIfExists('ban'))
                 );
                 embed.setColor(colors.RED);
             }
@@ -177,7 +177,7 @@ export default class UserInfoCommand extends Command {
                         .setLabel('Ban')
                         .setCustomId(`ban:${user.id}`)
                         .setStyle(ButtonStyle.Danger)
-                        .setEmoji(Config.instance.data.emoji.ban ?? {})
+                        .setEmoji(buttonEmojiIfExists('ban'))
                 );
             }
         }
