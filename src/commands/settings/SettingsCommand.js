@@ -13,6 +13,7 @@ import SimilarMessagesCommand from './SimilarMessagesCommand.js';
 import PunishmentsCommandGroup from './PunishmentsCommandGroup.js';
 import ProtectedRolesCommandGroup from './ProtectedRolesCommandGroup.js';
 import MutedRoleCommandGroup from './MutedRoleCommandGroup.js';
+import LinkCoolDownCommand from './LinkCoolDownCommand.js';
 
 export default class SettingsCommand extends ParentCommand {
 
@@ -37,6 +38,7 @@ export default class SettingsCommand extends ParentCommand {
             new SpamCommand(),
             new CapsCommand(),
             new SimilarMessagesCommand(),
+            new LinkCoolDownCommand(),
 
             new HelpCenterCommand(),
             new PlaylistCommand(),
