@@ -1,8 +1,12 @@
 import ChatTriggeredFeature from './ChatTriggeredFeature.js';
 import TypeChecker from '../settings/TypeChecker.js';
-import {EmbedBuilder} from 'discord.js';
+import {channelMention} from 'discord.js';
 import * as util from 'util';
 import Punishment from './Punishment.js';
+import EmbedWrapper from '../embeds/EmbedWrapper.js';
+import {yesNo} from '../util/format.js';
+import {EMBED_FIELD_LIMIT} from '../util/apiLimits.js';
+import colors from '../util/colors.js';
 
 /**
  * Class representing a bad word
@@ -90,41 +94,25 @@ export default class BadWord extends ChatTriggeredFeature {
      * generate an Embed displaying the info of this bad word
      * @param {String}        title
      * @param {Number}        color
-     * @returns {EmbedBuilder}
+     * @returns {EmbedWrapper}
      */
-    embed(title, color) {
-        const duration = this.punishment.duration, trigger = this.trigger;
-        return new EmbedBuilder()
+    embed(title = 'Bad-word', color = colors.GREEN) {
+        const duration = this.punishment.duration;
+        return new EmbedWrapper()
             .setTitle(title + ` [${this.id}]`)
             .setColor(color)
+            .addPair('Trigger', this.trigger.asString())
+            .addPair('Global', yesNo(this.global))
+            .addPairIf(!this.global, 'Channels', this.channels.map(channelMention).join(', '))
+            .addPair('Punishment', `${this.punishment.action} ${duration ? `for ${duration}` : ''}`)
+            .addPair('Priority', this.priority)
             .addFields(
-                /** @type {any} */[
-                    {
-                        name: 'Trigger',
-                        value: `${trigger.type}: \`${trigger.type === 'regex' ? '/' + trigger.content + '/' + trigger.flags : trigger.content}\``.substring(0, 1000),
-                        inline: true
-                    },
-                    {
-                        name: 'Response',
-                        value: this.response === 'default' ? BadWord.defaultResponse : this.response.substring(0, 1000),
-                        inline: true
-                    },
-                    {
-                        name: 'Channels',
-                        value: this.global ? 'global' : this.channels.map(c => `<#${c}>`).join(', ').substring(0, 1000),
-                        inline: true
-                    },
-                    {
-                        name: 'Punishment',
-                        value: `${this.punishment.action} ${duration ? `for ${duration}` : ''}`,
-                        inline: true
-                    },
-                    {
-                        name: 'Priority',
-                        value: this.priority.toString(),
-                        inline: true
-                    },
-                ]);
+                /** @type {any} */
+                {
+                    name: 'Response',
+                    value: this.response.substring(0, EMBED_FIELD_LIMIT)
+                },
+            );
     }
 
     /**
@@ -135,19 +123,23 @@ export default class BadWord extends ChatTriggeredFeature {
      * @param {String} triggerType
      * @param {String} triggerContent
      * @param {String} [response] response to bad-word
+     * @param {?string} punishment
+     * @param {?number} duration
+     * @param {?number} priority
      * @returns {Promise<{success:boolean, badWord: ?BadWord, message: ?string}>}
      */
-    static async new(guildID, global, channels, triggerType, triggerContent, response) {
+    static async new(guildID, global, channels, triggerType, triggerContent, response, punishment, duration, priority) {
         let trigger = this.getTrigger(triggerType, triggerContent);
         if (!trigger.success)
             return {success: false, badWord: null, message: trigger.message};
 
         const badWord = new BadWord(guildID, {
             trigger: trigger.trigger,
-            punishment: new Punishment({action: 'none'}),
+            punishment: new Punishment({action: punishment ?? 'none', duration: duration}),
             global,
             channels,
             response: response ?? 'disabled',
+            priority,
         });
         await badWord.save();
         return {success: true, badWord, message: null};

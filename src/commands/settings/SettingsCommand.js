@@ -15,6 +15,7 @@ import ProtectedRolesCommandGroup from './ProtectedRolesCommandGroup.js';
 import MutedRoleCommandGroup from './MutedRoleCommandGroup.js';
 import LinkCoolDownCommand from './LinkCoolDownCommand.js';
 import InvitesCommandGroup from './InvitesCommandGroup.js';
+import BadWordCommandGroup from './BadWordCommandGroup.js';
 
 export default class SettingsCommand extends ParentCommand {
 
@@ -27,21 +28,25 @@ export default class SettingsCommand extends ParentCommand {
         return [
             new SettingsOverviewCommand(),
 
+            // Logging
             new LogChannelCommand(),
             new MessageLogCommand(),
             new JoinLogCommand(),
 
-            new InvitesCommandGroup(),
             new PunishmentsCommandGroup(),
             new ProtectedRolesCommandGroup(),
             new MutedRoleCommandGroup(),
             new AutoResponseCommandGroup(),
+            new BadWordCommandGroup(),
 
+            // Auto Moderation
             new SpamCommand(),
             new CapsCommand(),
             new SimilarMessagesCommand(),
             new LinkCoolDownCommand(),
+            new InvitesCommandGroup(),
 
+            // External
             new HelpCenterCommand(),
             new PlaylistCommand(),
         ];
