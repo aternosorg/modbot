@@ -37,6 +37,8 @@ import PurgeInvitesCommand from './guild/PurgeInvitesCommand.js';
 import ErrorEmbed from '../embeds/ErrorEmbed.js';
 import StrikePurgeCommand from './user/StrikePurgeCommand.js';
 import {asyncFilter} from '../util/util.js';
+import AutoResponseCommand from './settings/AutoResponseCommand.js';
+import BadWordCommand from './settings/BadWordCommand.js';
 
 const cooldowns = new Cache();
 
@@ -74,6 +76,8 @@ export default class CommandManager {
 
         // SETTINGS
         new SettingsCommand(),
+        new AutoResponseCommand(),
+        new BadWordCommand(),
 
         // GUILD
         new LockCommand(),

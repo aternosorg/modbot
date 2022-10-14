@@ -1,11 +1,17 @@
-import SubCommandGroup from '../SubCommandGroup.js';
 import AddBadWordCommand from './bad-word/AddBadWordCommand.js';
 import EditBadWordCommand from './bad-word/EditBadWordCommand.js';
 import ListBadWordCommand from './bad-word/ListBadWordCommand.js';
 import ShowBadWordCommand from './bad-word/ShowBadWordCommand.js';
 import DeleteBadWordCommand from './bad-word/DeleteBadWordCommand.js';
+import ParentCommand from '../ParentCommand.js';
+import {PermissionFlagsBits, PermissionsBitField} from 'discord.js';
 
-export default class BadWordCommandGroup extends SubCommandGroup {
+export default class BadWordCommand extends ParentCommand {
+
+    getDefaultMemberPermissions() {
+        return new PermissionsBitField()
+            .add(PermissionFlagsBits.ManageGuild);
+    }
 
     getChildren() {
         return [

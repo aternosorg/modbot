@@ -1,11 +1,17 @@
-import SubCommandGroup from '../SubCommandGroup.js';
 import AddAutoResponseCommand from './auto-response/AddAutoResponseCommand.js';
 import ListAutoResponseCommand from './auto-response/ListAutoResponseCommand.js';
 import ShowAutoReponseCommand from './auto-response/ShowAutoReponseCommand.js';
 import DeleteAutoReponseCommand from './auto-response/DeleteAutoReponseCommand.js';
 import EditAutoResponseCommand from './auto-response/EditAutoResponseCommand.js';
+import {PermissionFlagsBits, PermissionsBitField} from 'discord.js';
+import ParentCommand from '../ParentCommand.js';
 
-export default class AutoResponseCommandGroup extends SubCommandGroup {
+export default class AutoResponseCommand extends ParentCommand {
+
+    getDefaultMemberPermissions() {
+        return new PermissionsBitField()
+            .add(PermissionFlagsBits.ManageGuild);
+    }
 
     getChildren() {
         return [

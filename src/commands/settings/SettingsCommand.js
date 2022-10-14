@@ -5,7 +5,7 @@ import LogChannelCommand from './LogChannelCommand.js';
 import MessageLogCommand from './MessageLogCommand.js';
 import JoinLogCommand from './JoinLogCommand.js';
 import SpamCommand from './SpamCommand.js';
-import AutoResponseCommandGroup from './AutoResponseCommandGroup.js';
+import AutoResponseCommand from './AutoResponseCommand.js';
 import CapsCommand from './CapsCommand.js';
 import HelpCenterCommand from './HelpCenterCommand.js';
 import PlaylistCommand from './PlaylistCommand.js';
@@ -15,7 +15,7 @@ import ProtectedRolesCommandGroup from './ProtectedRolesCommandGroup.js';
 import MutedRoleCommandGroup from './MutedRoleCommandGroup.js';
 import LinkCoolDownCommand from './LinkCoolDownCommand.js';
 import InvitesCommandGroup from './InvitesCommandGroup.js';
-import BadWordCommandGroup from './BadWordCommandGroup.js';
+import BadWordCommand from './BadWordCommand.js';
 
 export default class SettingsCommand extends ParentCommand {
 
@@ -36,8 +36,8 @@ export default class SettingsCommand extends ParentCommand {
             new PunishmentsCommandGroup(),
             new ProtectedRolesCommandGroup(),
             new MutedRoleCommandGroup(),
-            new AutoResponseCommandGroup(),
-            new BadWordCommandGroup(),
+            new AutoResponseCommand(),
+            new BadWordCommand(),
 
             // Auto Moderation
             new SpamCommand(),
