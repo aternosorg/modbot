@@ -42,7 +42,7 @@ type: string
 config file: `database.database`
 environment: `MODBOT_DATABASE_DATABASE`
 
-### Database
+### Port
 Database port
 type: number
 config file: `database.port`
