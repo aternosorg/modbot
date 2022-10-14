@@ -16,8 +16,9 @@ export default class TransferMuteToTimeoutInterval extends Interval {
     async run() {
         for (const result of await Database.instance.queryAll('SELECT * FROM moderations WHERE action = \'mute\' AND active = TRUE AND expireTime IS NOT NULL AND expireTime <= ?',
             Math.floor(Date.now() / 1000) + TIMEOUT_DURATION_LIMIT)) {
-            const guild = await GuildWrapper.fetch(result.guildid);
-            if (!guild.guild.members.me.permissions.has(PermissionFlagsBits.ModerateMembers)) {
+            const guild = await GuildWrapper.fetch(result.guildid),
+                me = await guild.guild.members.fetchMe();
+            if (!me.permissions.has(PermissionFlagsBits.ModerateMembers)) {
                 continue;
             }
 

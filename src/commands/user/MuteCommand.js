@@ -89,8 +89,9 @@ export default class MuteCommand extends UserCommand {
             }
 
 
-            const role = await (await GuildWrapper.fetch(interaction.guild.id)).fetchRole(guildSettings.mutedRole);
-            if (interaction.guild.members.me.roles.highest.comparePositionTo(role) <= 0) {
+            const role = await (await GuildWrapper.fetch(interaction.guild.id)).fetchRole(guildSettings.mutedRole),
+                me = await interaction.guild.members.fetchMe();
+            if (me.roles.highest.comparePositionTo(role) <= 0) {
                 await interaction.reply(ErrorEmbed.message('I can\'t manage the muted role. Please move my highest role above it.'));
                 return;
             }

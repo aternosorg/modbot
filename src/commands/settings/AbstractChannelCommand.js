@@ -21,7 +21,7 @@ export default class AbstractChannelCommand extends SubCommand {
                 return false;
             }
 
-            if (!channel.permissionsFor(interaction.guild.members.me)
+            if (!channel.permissionsFor(await interaction.guild.members.fetchMe())
                 .has(PermissionFlagsBits.SendMessages)) {
                 await interaction.reply(ErrorEmbed.message('I can\'t send messages to that channel!'));
                 return false;

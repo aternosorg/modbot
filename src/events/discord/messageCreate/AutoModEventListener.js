@@ -1,7 +1,7 @@
 import MessageCreateEventListener from './MessageCreateEventListener.js';
 import BadWord from '../../../database/BadWord.js';
 import Member from '../../../discord/MemberWrapper.js';
-import {Collection, PermissionFlagsBits} from 'discord.js';
+import {Collection, PermissionFlagsBits, RESTJSONErrorCodes} from 'discord.js';
 import GuildSettings from '../../../settings/GuildSettings.js';
 import Bot from '../../../bot/Bot.js';
 import ChannelSettings from '../../../settings/ChannelSettings.js';
@@ -37,6 +37,14 @@ export default class AutoModEventListener extends MessageCreateEventListener {
 
         for (const fn of [this.badWords, this.caps, this.invites, this.linkCoolDown, this.spam]) {
             if (await fn.bind(this)(message)) {
+                try {
+                    await message.member.timeout(10 * 1000);
+                }
+                catch (e) {
+                    if (e.code !== RESTJSONErrorCodes.MissingPermissions) {
+                        throw e;
+                    }
+                }
                 return;
             }
         }

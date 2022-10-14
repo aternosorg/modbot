@@ -220,7 +220,7 @@ export default class MemberWrapper {
      * @return {Promise<boolean>}
      */
     async isModerateable() {
-        return this.isModerateableBy(this.guild.guild.members.me);
+        return this.isModerateableBy(await this.guild.guild.members.fetchMe());
     }
 
     /**
