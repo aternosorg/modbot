@@ -38,11 +38,11 @@ import {exists, readJSON} from '../util/fsutils.js';
  * @property {?string} discord
  * @property {?string} youtube
  * @property {?string} zendesk
- * @property {?string} first-page
- * @property {?string} previous-page
+ * @property {?string} firstPage
+ * @property {?string} previousPage
  * @property {?string} refresh
- * @property {?string} next-page
- * @property {?string} last-page
+ * @property {?string} nextPage
+ * @property {?string} lastPage
  * @property {?string} announcement
  * @property {?string} channel
  * @property {?string} forum
@@ -56,9 +56,9 @@ import {exists, readJSON} from '../util/fsutils.js';
  * @property {?string} pardon
  * @property {?string} strike
  * @property {?string} kick
- * @property {?string} user-created
- * @property {?string} user-id
- * @property {?string} user-joined
+ * @property {?string} userCreated
+ * @property {?string} userId
+ * @property {?string} userJoined
  */
 
 export default class Config {
@@ -94,17 +94,13 @@ export default class Config {
                 },
                 googleApiKey:  process.env.MODBOT_GOOGLE_API_KEY,
                 monitoring: {
-                    enabled: !['0', 'false'].includes(process.env.MODBOT_MONITORING_ENABLED),
+                    enabled: ['1', 'true', 'y'].includes(process.env.MODBOT_MONITORING_ENABLED?.toLowerCase?.()),
                     projectId: process.env.MODBOT_MONITORING_PROJECT_ID,
                     logName: process.env.MODBOT_MONITORING_LOG_NAME,
                     credentials: {
                         client_email: process.env.MODBOT_MONITORING_CREDENTIALS_CLIENT_EMAIL,
                         private_key: process.env.MODBOT_MONITORING_CREDENTIALS_PRIVATE_KEY
                     }
-                },
-                debug: {
-                    enabled: !['0', 'false'].includes(process.env.MODBOT_DEBUG_ENABLED),
-                    guild: process.env.MODBOT_DEBUG_GUILD
                 },
                 featureWhitelist: (process.env.MODBOT_FEATURE_WHITELIST ?? '').split(/ *, */),
                 emoji: {
@@ -114,11 +110,11 @@ export default class Config {
                     discord: process.env.MODBOT_EMOJI_DISCORD,
                     youtube: process.env.MODBOT_EMOJI_YOUTUBE,
                     zendesk: process.env.MODBOT_EMOJI_ZENDESK,
-                    'first-page': process.env.MODBOT_EMOJI_FIRST_PAGE,
-                    'previous-page': process.env.MODBOT_EMOJI_PREVIOUS_PAGE,
+                    firstPage: process.env.MODBOT_EMOJI_FIRST_PAGE,
+                    previousPage: process.env.MODBOT_EMOJI_PREVIOUS_PAGE,
                     refresh: process.env.MODBOT_EMOJI_REFRESH,
-                    'next-page': process.env.MODBOT_EMOJI_NEXT_PAGE,
-                    'last-page': process.env.MODBOT_EMOJI_LAST_PAGE,
+                    nextPage: process.env.MODBOT_EMOJI_NEXT_PAGE,
+                    lastPage: process.env.MODBOT_EMOJI_LAST_PAGE,
                     announcement: process.env.MODBOT_EMOJI_ANNOUNCEMENT,
                     channel: process.env.MODBOT_EMOJI_CHANNEL,
                     forum: process.env.MODBOT_EMOJI_FORUM,
@@ -132,9 +128,9 @@ export default class Config {
                     pardon: process.env.MODBOT_EMOJI_pardon,
                     strike: process.env.MODBOT_EMOJI_strike,
                     kick: process.env.MODBOT_EMOJI_kick,
-                    'user-created': process.env.MODBOT_EMOJI_USER_CREATED,
-                    'user-id': process.env.MODBOT_EMOJI_USER_ID,
-                    'user-joined': process.env.MODBOT_EMOJI_USER_JOINED,
+                    userCreated: process.env.MODBOT_EMOJI_USER_CREATED,
+                    userId: process.env.MODBOT_EMOJI_USER_ID,
+                    userJoined: process.env.MODBOT_EMOJI_USER_JOINED,
                 }
             };
         }
@@ -143,7 +139,6 @@ export default class Config {
             if (!await exists('./config.json')) {
                 await Logger.instance.error('No settings file found.\n' +
                     'Create a config.json or use environment variables as described in the README.md');
-                // TODO write documentation
                 process.exit(1);
             }
 
@@ -158,6 +153,7 @@ export default class Config {
                 },
             };
             this.#data.emoji ??= {};
+            this.#data.featureWhitelist ??= [];
         }
     }
 }

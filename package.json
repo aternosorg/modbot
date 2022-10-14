@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/aternosorg/modbot#readme",
   "engines": {
-    "node": ">=16.6.0"
+    "node": ">=16.9.0"
   },
   "dependencies": {
     "@google-cloud/logging": "^10.1.10",

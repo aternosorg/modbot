@@ -1,4 +1,5 @@
 {
+  "DOCUMENTATION": "View the CONFIGURATION.md file for more options",
   "authToken": "AUTH TOKEN",
   "database": {
     "host": "localhost",
@@ -6,26 +7,5 @@
     "password": "password",
     "database": "modbot",
     "port": 3306
-  },
-  "googleApiKey": null,
-  "monitoring": {
-    "enabled": false,
-    "projectId": "000",
-    "logName": "modbot",
-    "credentials": {
-      "client_email": "modbot@example.com",
-      "private_key": "google service account private key"
-    }
-  },
-  "debug": {
-    "enabled": false,
-    "guild": ""
-  },
-  "featureWhitelist": ["guild-id of guild that should have additional features"],
-  "emoji": {
-    "source": null,
-    "privacy": null,
-    "invite": null,
-    "discord": null
   }
 }

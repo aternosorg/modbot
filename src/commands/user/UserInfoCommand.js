@@ -69,8 +69,8 @@ export default class UserInfoCommand extends Command {
         const member = await memberWrapper.fetchMember();
         const embed = new UserEmbed(user)
             .setColor(colors.GREEN)
-            .addPair(inlineEmojiIfExists('user-id') + 'Discord ID', user.id)
-            .addPair(inlineEmojiIfExists('user-created') + 'Created', time(user.createdAt, TimestampStyles.LongDate));
+            .addPair(inlineEmojiIfExists('userId') + 'Discord ID', user.id)
+            .addPair(inlineEmojiIfExists('userCreated') + 'Created', time(user.createdAt, TimestampStyles.LongDate));
 
         /** @type {ActionRowBuilder<ButtonBuilder>} */
         const actionRow = new ActionRowBuilder()
@@ -101,7 +101,7 @@ export default class UserInfoCommand extends Command {
             );
 
         if (member) {
-            embed.addPair(inlineEmojiIfExists('user-joined') + 'Joined', time(member.joinedAt, TimestampStyles.LongDate));
+            embed.addPair(inlineEmojiIfExists('userJoined') + 'Joined', time(member.joinedAt, TimestampStyles.LongDate));
             actionRow.addComponents(
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Kick')

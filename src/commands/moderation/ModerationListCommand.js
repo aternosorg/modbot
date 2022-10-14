@@ -115,11 +115,11 @@ export default class ModerationListCommand extends SubCommand {
         /** @type {ActionRowBuilder<ButtonBuilder>} */
         const actionRow = new ActionRowBuilder();
         for (const data of [
-            { id: `moderation:list:${user.id}:first`, emoji: 'first-page', label: icons.first, disabled: page === 1 },
-            { id: `moderation:list:${user.id}:${page - 1}`, emoji: 'previous-page', label: icons.left, disabled: page === 1 },
+            { id: `moderation:list:${user.id}:first`, emoji: 'firstPage', label: icons.first, disabled: page === 1 },
+            { id: `moderation:list:${user.id}:${page - 1}`, emoji: 'previousPage', label: icons.left, disabled: page === 1 },
             { id: `moderation:list:${user.id}:${page}`, emoji: 'refresh', label: icons.refresh },
-            { id: `moderation:list:${user.id}:${page + 1}`, emoji: 'next-page', label: icons.right, disabled: page === lastPage },
-            { id: `moderation:list:${user.id}:last`, emoji: 'last-page', label: icons.last, disabled: page === lastPage },
+            { id: `moderation:list:${user.id}:${page + 1}`, emoji: 'nextPage', label: icons.right, disabled: page === lastPage },
+            { id: `moderation:list:${user.id}:last`, emoji: 'lastPage', label: icons.last, disabled: page === lastPage },
         ]) {
             const button = new ButtonBuilder()
                 .setCustomId(data.id)
