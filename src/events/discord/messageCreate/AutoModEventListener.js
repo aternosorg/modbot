@@ -1,7 +1,7 @@
 import MessageCreateEventListener from './MessageCreateEventListener.js';
 import BadWord from '../../../database/BadWord.js';
 import Member from '../../../discord/MemberWrapper.js';
-import {Collection, PermissionFlagsBits, RESTJSONErrorCodes} from 'discord.js';
+import {Collection, PermissionFlagsBits, RESTJSONErrorCodes, ThreadChannel} from 'discord.js';
 import GuildSettings from '../../../settings/GuildSettings.js';
 import Bot from '../../../bot/Bot.js';
 import ChannelSettings from '../../../settings/ChannelSettings.js';
@@ -67,16 +67,20 @@ export default class AutoModEventListener extends MessageCreateEventListener {
      * @return {Promise<boolean>} has the message been deleted
      */
     async badWords(message) {
-        /** @type {import('discord.js').TextChannel|import('discord.js').VoiceChannel}*/
-        const channel = message.channel;
+        let channel = message.channel;
+        if (channel instanceof ThreadChannel) {
+            channel = (/** @type {import('discord.js').ThreadChannel} */ channel).parent;
+        }
 
-        const words = (/** @type {Collection<number, BadWord>} */ await BadWord.get(message.channel.id, message.guild.id))
+        const words = (/** @type {Collection<number, BadWord>} */ await BadWord.get(channel.id, message.guild.id))
             .sort( (a,b) => b.priority - a.priority);
         for (let word of words.values()) {
             if (word.matches(message)) {
                 const reason = `Using forbidden words or phrases (Filter ID: ${word.id})`;
                 await Bot.instance.delete(message, reason);
                 if (word.response !== 'disabled') {
+                    /** @type {import('discord.js').TextChannel|import('discord.js').VoiceChannel}*/
+                    const channel = message.channel;
                     const response = await channel.send(`<@!${message.author.id}>` + word.getResponse());
                     await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
                 }
