@@ -14,6 +14,17 @@ export default class Command extends ExecutableCommand {
     id = '';
 
     /**
+     * Permissions that members need to execute this command by default.
+     * Null: no permissions required. Empty bitfield: disabled by default
+     *
+     * This is not checked by ModBot and is only used to register commands on discord
+     * @return {?import('discord.js').PermissionsBitField}
+     */
+    getDefaultMemberPermissions() {
+        return null;
+    }
+
+    /**
      * add options to slash command builder
      * @param {import('discord.js').SlashCommandBuilder} builder
      * @return {import('discord.js').SlashCommandBuilder}
