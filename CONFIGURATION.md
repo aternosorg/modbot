@@ -49,7 +49,7 @@ config file: `database.port`
 environment: `MODBOT_DATABASE_PORT`
 
 ## Google API Key (optional)
-Google cloud API Key. Currently used for the YouTube v3 API (`/article`).
+Google cloud API Key. Currently used for the YouTube v3 API (`/video` and `/playlist`).
 type: string
 config file: `googleApiKey`
 environment: `MODBOT_GOOGLE_API_KEY`
