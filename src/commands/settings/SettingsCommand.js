@@ -16,6 +16,7 @@ import MutedRoleCommandGroup from './MutedRoleCommandGroup.js';
 import LinkCoolDownCommand from './LinkCoolDownCommand.js';
 import InvitesCommandGroup from './InvitesCommandGroup.js';
 import BadWordCommand from './BadWordCommand.js';
+import AttachmentCoolDownCommand from './AttachmentCoolDownCommand.js';
 
 export default class SettingsCommand extends ParentCommand {
 
@@ -44,6 +45,7 @@ export default class SettingsCommand extends ParentCommand {
             new CapsCommand(),
             new SimilarMessagesCommand(),
             new LinkCoolDownCommand(),
+            new AttachmentCoolDownCommand(),
             new InvitesCommandGroup(),
 
             // External

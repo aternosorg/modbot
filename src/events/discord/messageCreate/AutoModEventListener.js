@@ -19,7 +19,7 @@ export default class AutoModEventListener extends MessageCreateEventListener {
     /**
      * @type {Collection<string, number>}
      */
-    linkCoolDowns = new Collection();
+    cooldowns = new Collection();
 
     constructor() {
         super();
@@ -35,7 +35,7 @@ export default class AutoModEventListener extends MessageCreateEventListener {
             return;
         }
 
-        for (const fn of [this.badWords, this.caps, this.invites, this.linkCoolDown, this.spam]) {
+        for (const fn of [this.badWords, this.caps, this.invites, this.attachmentCoolDown, this.linkCoolDown, this.spam]) {
             if (await fn.bind(this)(message)) {
                 try {
                     await message.member.timeout(10 * 1000);
@@ -152,15 +152,44 @@ export default class AutoModEventListener extends MessageCreateEventListener {
         }
 
         const now = Math.floor(Date.now() / 1000),
-            key = `${message.guild.id}-${message.author.id}`,
-            coolDownEnd = (this.linkCoolDowns.get(key) ?? 0) + guild.linkCooldown;
+            key = `link-${message.guild.id}-${message.author.id}`,
+            coolDownEnd = (this.cooldowns.get(key) ?? 0) + guild.linkCooldown;
         if (coolDownEnd <= now) {
-            this.linkCoolDowns.set(key, now);
+            this.cooldowns.set(key, now);
             return false;
         }
         await Bot.instance.delete(message, 'Sending too many links');
         const response = await message.channel.send(
             `<@!${message.author.id}> You can post a link again in ${formatTime(coolDownEnd - now) || '1s'}!`);
+        await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
+        return true;
+    }
+
+    /**
+     * @param {import('discord.js').Message} message
+     * @return {Promise<boolean>} has the message been deleted
+     */
+    async attachmentCoolDown(message) {
+        if (!message.attachments.size) {
+            return false;
+        }
+
+        const guild = await GuildSettings.get(message.guild.id);
+
+        if (guild.attachmentCooldown === -1) {
+            return false;
+        }
+
+        const now = Math.floor(Date.now() / 1000),
+            key = `attachment-${message.guild.id}-${message.author.id}`,
+            coolDownEnd = (this.cooldowns.get(key) ?? 0) + guild.attachmentCooldown;
+        if (coolDownEnd <= now) {
+            this.cooldowns.set(key, now);
+            return false;
+        }
+        await Bot.instance.delete(message, 'Sending too many attachments');
+        const response = await message.channel.send(
+            `<@!${message.author.id}> You can post an attachment again in ${formatTime(coolDownEnd - now) || '1s'}!`);
         await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
         return true;
     }
@@ -181,9 +210,9 @@ export default class AutoModEventListener extends MessageCreateEventListener {
     }
 
     cleanUpCaches() {
-        for (const [key, time] of this.linkCoolDowns.entries()) {
+        for (const [key, time] of this.cooldowns.entries()) {
             if (time < Math.floor(Date.now()/1000)) {
-                this.linkCoolDowns.delete(key);
+                this.cooldowns.delete(key);
             }
         }
     }
