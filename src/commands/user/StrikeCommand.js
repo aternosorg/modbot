@@ -80,6 +80,10 @@ export default class StrikeCommand extends UserCommand {
             count = 1;
         }
 
+        if (count > 100) {
+            count = 100;
+        }
+
         if (!await this.checkPermissions(interaction, member) ||
             !await this.preventDuplicateModeration(interaction, member, {reason, count})) {
             return;
