@@ -3,6 +3,7 @@ import {Collection, escapeMarkdown, PermissionFlagsBits, PermissionsBitField} fr
 import LineEmbed from '../../embeds/LineEmbed.js';
 import colors from '../../util/colors.js';
 import {FETCH_BAN_PAGE_SIZE} from '../../util/apiLimits.js';
+import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
 export default class IDCommand extends Command {
 
@@ -47,7 +48,7 @@ export default class IDCommand extends Command {
 
         const bans = await this.#fetchAndFilterBans(interaction, name, discrim?.toString?.());
         if (!bans.size && !users.size) {
-            return await interaction.editReply('No users found');
+            return await interaction.editReply(ErrorEmbed.message('No users found'));
         }
 
         await interaction.editReply(this.#generateResultEmbed(query, Array.from(users.concat(bans).values())));
