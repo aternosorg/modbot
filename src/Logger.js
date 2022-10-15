@@ -13,9 +13,9 @@ export default class Logger {
 
     get cloudLog() {
         return this.#cloudLog ??= new Logging({
-            projectId: this.config.monitoring.projectId,
-            credentials: this.config.monitoring.credentials
-        }).log(this.config.monitoring.logName);
+            projectId: this.config.projectId,
+            credentials: this.config.credentials
+        }).log(this.config.logName);
     }
 
     /**
