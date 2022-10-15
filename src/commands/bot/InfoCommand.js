@@ -2,7 +2,7 @@ import Command from '../Command.js';
 import {
     ActionRowBuilder,
     ButtonBuilder,
-    ButtonStyle,
+    ButtonStyle, hyperlink,
     PermissionFlagsBits,
     PermissionsBitField
 } from 'discord.js';
@@ -35,7 +35,7 @@ const VERSION = await getPackageVersion();
 async function getPackageVersion() {
     try {
         const pkgJson = JSON.parse((await readFile('package.json')).toString());
-        if (pkgJson.version) {
+        if (pkgJson?.version) {
             return pkgJson.version;
         }
     } catch {/* ignored */}
@@ -45,12 +45,10 @@ async function getPackageVersion() {
 const COMMIT = await getGitCommit();
 async function getGitCommit() {
     try {
-        const output = (await promisify(exec)('git rev-parse --short HEAD'))?.stdout?.replaceAll?.('\n', '');
-        if (output) {
-            return `#${output}`;
-        }
-    } catch {/* ignored */}
-    return null;
+        return (await promisify(exec)('git rev-parse --short HEAD'))?.stdout?.replaceAll?.('\n', '');
+    } catch {
+        return null;
+    }
 }
 
 export default class InfoCommand extends Command {
@@ -85,7 +83,7 @@ export default class InfoCommand extends Command {
                 )
                 .newLine()
                 .addPairIf(VERSION, 'Version', VERSION)
-                .addPairIf(COMMIT, 'Commit', COMMIT)
+                .addPairIf(COMMIT, 'Commit', hyperlink(COMMIT, `https://github.com/aternosorg/modbot/tree/${COMMIT}`, 'View on GitHub'))
                 .addPair('Uptime', formatTime(process.uptime()))
                 .addPair('Ping', Bot.instance.client.ws.ping + 'ms')
             ],
