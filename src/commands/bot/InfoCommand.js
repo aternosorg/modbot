@@ -3,13 +3,16 @@ import {
     ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
-    EmbedBuilder,
     PermissionFlagsBits,
     PermissionsBitField
 } from 'discord.js';
 import Bot from '../../bot/Bot.js';
 import Config from '../../bot/Config.js';
-import {readFileSync} from 'fs';
+import KeyValueEmbed from '../../embeds/KeyValueEmbed.js';
+import {formatTime} from '../../util/timeutils.js';
+import {readFile} from 'fs/promises';
+import {exec} from 'child_process';
+import {promisify} from 'util';
 
 const DISCORD_INVITE_LINK = 'https://discord.gg/zYYhgPtmxw';
 const GITHUB_REPOSITORY = 'https://github.com/aternosorg/modbot';
@@ -27,13 +30,28 @@ const PERMISSIONS = new PermissionsBitField()
     .add(PermissionFlagsBits.ManageMessages)
     .add(PermissionFlagsBits.SendMessages);
 const INVITE_LINK = `https://discordapp.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=${SCOPES.join('%20')}&permissions=${PERMISSIONS.bitfield}`;
-let VERSION = 'unknown';
-try {
-    const pkgJson = JSON.parse(readFileSync('package.json').toString());
-    if (pkgJson.version) {
-        VERSION = pkgJson.version;
-    }
-} catch { /* ignore */ }
+
+const VERSION = await getPackageVersion();
+async function getPackageVersion() {
+    try {
+        const pkgJson = JSON.parse((await readFile('package.json')).toString());
+        if (pkgJson.version) {
+            return pkgJson.version;
+        }
+    } catch {/* ignored */}
+    return null;
+}
+
+const COMMIT = await getGitCommit();
+async function getGitCommit() {
+    try {
+        const output = (await promisify(exec)('git rev-parse --short HEAD'))?.stdout?.replaceAll?.('\n', '');
+        if (output) {
+            return `#${output}`;
+        }
+    } catch {/* ignored */}
+    return null;
+}
 
 export default class InfoCommand extends Command {
 
@@ -51,18 +69,26 @@ export default class InfoCommand extends Command {
 
         await interaction.reply({
             ephemeral: true,
-            embeds: [new EmbedBuilder()
+            embeds: [new KeyValueEmbed()
                 .setAuthor({name: 'ModBot by Aternos', iconURL: Bot.instance.client.user.displayAvatarURL()})
-                .setDescription(
+                .addLine(
                     'ModBot is an open source moderation bot with advanced features developed by [Aternos](https://aternos.org/). ' +
                     'It uses modern Discord features like slash-commands, context-menus, timeouts, buttons, select-menus ' +
                     'and modals and offers everything you need for moderation. Including bad-words and auto-responses ' +
                     'with support for regex, detecting phishing urls, temporary bans, a strike system, message logging ' +
-                    'and various other forms of automatic moderation filters.\n\n' +
-                    `If you want to suggest something or need help you can join our [Discord](${DISCORD_INVITE_LINK}) or ` +
-                    ` create an issue on our [Github](${GITHUB_REPOSITORY}) repository.`
+                    'and various other forms of automatic moderation filters.'
                 )
-                .addFields(/** @type {*} */ {name: 'Version', value: VERSION})],
+                .newLine()
+                .addLine(
+                    `If you want to suggest something or need help you can join our [Discord](${DISCORD_INVITE_LINK}) ` +
+                    `or create an issue on our [Github](${GITHUB_REPOSITORY}) repository.`
+                )
+                .newLine()
+                .addPairIf(VERSION, 'Version', VERSION)
+                .addPairIf(COMMIT, 'Commit', COMMIT)
+                .addPair('Uptime', formatTime(process.uptime()))
+                .addPair('Ping', Bot.instance.client.ws.ping + 'ms')
+            ],
             components: [
                 /** @type {ActionRowBuilder} */
                 new ActionRowBuilder()
