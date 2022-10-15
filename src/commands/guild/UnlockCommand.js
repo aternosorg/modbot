@@ -14,6 +14,7 @@ import ChannelWrapper from '../../discord/ChannelWrapper.js';
 import Confirmation from '../../database/Confirmation.js';
 import {timeAfter} from '../../util/timeutils.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
+import {toTitleCase} from '../../util/format.js';
 
 export default class UnlockCommand extends Command {
 
@@ -115,7 +116,12 @@ export default class UnlockCommand extends Command {
             const wrapper = new ChannelWrapper(channel);
 
             const channelSettings = await ChannelSettings.get(channelId);
-            await channel.permissionOverwrites.edit(everyone, channelSettings.lock ?? {});
+
+            // convert old database entries using previous flag names (e.g. SEND_MESSAGES -> SendMessages)
+            const unlockPerms = Object.fromEntries(Object.entries(channelSettings.lock ?? {})
+                .map(([key, value]) => ([key.split('_').map(toTitleCase).join(''), value])));
+
+            await channel.permissionOverwrites.edit(everyone, unlockPerms);
             channelSettings.lock = {};
             await channelSettings.save();
 
