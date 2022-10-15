@@ -13,7 +13,7 @@ import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
 import Config from '../../bot/Config.js';
-import {inLimits} from '../../util/util';
+import {inLimits} from '../../util/util.js';
 
 export default class StrikeCommand extends UserCommand {
 
