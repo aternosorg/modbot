@@ -108,8 +108,7 @@ export default class VideoCommand extends Command {
     async complete(interaction) {
         const playlist = (await GuildSettings.get(interaction.guild.id)).getPlaylist();
 
-        if (!playlist) {
-            await interaction.reply(ErrorEmbed.message('No playlist configured!'));
+        if (!playlist || !Config.instance.data.googleApiKey) {
             return [];
         }
 
