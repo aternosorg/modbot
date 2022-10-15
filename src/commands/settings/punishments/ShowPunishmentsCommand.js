@@ -19,7 +19,7 @@ export default class ShowPunishmentsCommand extends SubCommand {
             const key = count.toString() + ' ' + (count === 1 ? 'strike': 'strikes');
             let value = punishment.action;
             if (punishment.duration) {
-                value += `for ${formatTime(punishment.duration)}`;
+                value += ` for ${formatTime(punishment.duration)}`;
             }
 
             embed.addPair(key, value);
