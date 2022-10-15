@@ -12,6 +12,7 @@ import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
 import Config from '../../bot/Config.js';
+import {inLimits} from '../../util/util.js';
 
 export default class PardonCommand extends Command {
 
@@ -62,13 +63,7 @@ export default class PardonCommand extends Command {
      * @return {Promise<void>}
      */
     async pardon(interaction, member, reason, moderator, count) {
-        if (!member) {
-            return;
-        }
-
-        if (!count || count < 1) {
-            count = 1;
-        }
+        count = inLimits(count, 1, 100);
 
         reason = reason || 'No reason provided';
         await member.pardon(reason, moderator, count);

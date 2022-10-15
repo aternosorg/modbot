@@ -44,3 +44,17 @@ export async function asyncFilter(array, filter, ...args) {
     }
     return results;
 }
+
+/**
+ *
+ * @param {number} value
+ * @param {number} min
+ * @param {number} max
+ */
+export function inLimits(value, min, max) {
+    if (typeof value != 'number') {
+        return min;
+    }
+
+    return Math.min(Math.max(value, min), max);
+}

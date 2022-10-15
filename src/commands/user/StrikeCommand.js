@@ -13,6 +13,7 @@ import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
 import Config from '../../bot/Config.js';
+import {inLimits} from '../../util/util';
 
 export default class StrikeCommand extends UserCommand {
 
@@ -75,14 +76,7 @@ export default class StrikeCommand extends UserCommand {
      */
     async strike(interaction, member, reason, count) {
         reason = reason || 'No reason provided';
-
-        if (!count || count < 1) {
-            count = 1;
-        }
-
-        if (count > 100) {
-            count = 100;
-        }
+        count = inLimits(count, 1, 100);
 
         if (!await this.checkPermissions(interaction, member) ||
             !await this.preventDuplicateModeration(interaction, member, {reason, count})) {
