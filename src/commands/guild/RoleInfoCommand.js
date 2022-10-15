@@ -21,7 +21,7 @@ export default class RoleInfoCommand extends Command {
             .setColor(role.color)
             .setImage(role.iconURL())
             .addPair('Name', role.name)
-            .addPair('Created', time(role.created, TimestampStyles.LongDateTime))
+            .addPair('Created', time(role.createdAt, TimestampStyles.LongDateTime))
             .addPair('Managed', role.managed ? 'Yes' : 'No')
             .addPair('Hoisted', role.hoist ? 'Yes' : 'No')
             .addPair('Color', `${role.hexColor}`);
