@@ -46,13 +46,16 @@ export async function asyncFilter(array, filter, ...args) {
 }
 
 /**
- *
+ * Ensure that a number is within bounds
+ * Returns min if value is below limit or not a number.
+ * Returns max if value is above limit.
+ * If value is within limits returns value
  * @param {number} value
  * @param {number} min
  * @param {number} max
  */
 export function inLimits(value, min, max) {
-    if (typeof value != 'number') {
+    if (isNaN(value)) {
         return min;
     }
 
