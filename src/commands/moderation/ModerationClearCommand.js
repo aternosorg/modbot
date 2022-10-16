@@ -5,7 +5,7 @@ import {
     escapeMarkdown,
 } from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
-import Database from '../../bot/Database.js';
+import database from '../../bot/Database.js';
 import Confirmation from '../../database/Confirmation.js';
 import {timeAfter} from '../../util/timeutils.js';
 import ConfirmationEmbed from '../../embeds/ConfirmationEmbed.js';
@@ -50,7 +50,7 @@ export default class ModerationClearCommand extends SubCommand {
             }
 
             /** @property {Number} affectedRows */
-            const deletion = await Database.instance.queryAll('DELETE FROM moderations WHERE guildid = ? AND userid = ?',
+            const deletion = await database.queryAll('DELETE FROM moderations WHERE guildid = ? AND userid = ?',
                 interaction.guildId, member.user.id);
             await interaction.update({
                 content: `Deleted ${deletion.affectedRows} ${deletion.affectedRows === 1 ? 'moderation' : 'moderations'}!`,

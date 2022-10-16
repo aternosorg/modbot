@@ -1,4 +1,4 @@
-import Database from '../bot/Database.js';
+import database from '../bot/Database.js';
 
 /**
  * @template T
@@ -27,7 +27,7 @@ export default class Confirmation {
             id = parseInt(id);
         }
 
-        const data = await Database.instance.query('SELECT id, data, expires FROM confirmations WHERE id = ?', id);
+        const data = await database.query('SELECT id, data, expires FROM confirmations WHERE id = ?', id);
         if (!data) {
             return null;
         }
@@ -41,11 +41,11 @@ export default class Confirmation {
      */
     async save() {
         if (this.id) {
-            await Database.instance.query('UPDATE confirmations SET data = ?, expires = ? WHERE id = ?',
+            await database.query('UPDATE confirmations SET data = ?, expires = ? WHERE id = ?',
                 JSON.stringify(this.data), this.expires, this.id);
             return this.id;
         } else {
-            const insert = await Database.instance.queryAll('INSERT INTO confirmations (data, expires) VALUES (?,?)',
+            const insert = await database.queryAll('INSERT INTO confirmations (data, expires) VALUES (?,?)',
                 JSON.stringify(this.data), this.expires);
             return this.id = insert.insertId;
         }
@@ -57,7 +57,7 @@ export default class Confirmation {
      */
     async delete() {
         if (this.id) {
-            await Database.instance.query('DELETE FROM confirmations WHERE id = ?', this.id);
+            await database.query('DELETE FROM confirmations WHERE id = ?', this.id);
         }
     }
 }

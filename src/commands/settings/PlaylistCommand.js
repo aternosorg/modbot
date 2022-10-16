@@ -3,8 +3,8 @@ import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 import GuildSettings from '../../settings/GuildSettings.js';
 import EmbedWrapper from '../../embeds/EmbedWrapper.js';
 import colors from '../../util/colors.js';
-import CommandManager from '../CommandManager.js';
-import Config from '../../bot/Config.js';
+import commandManager from '../CommandManager.js';
+import config from '../../bot/Config.js';
 import YouTubePlaylist from '../../YouTubePlaylist.js';
 
 const PLAYLIST_REGEX = /^(?:(?:https?:\/\/)?(?:www\.)?youtube\.com\/.*[&?]list=)?([a-zA-Z0-9\-_]+?)(?:&.*)?$/i;
@@ -27,7 +27,7 @@ export default class PlaylistCommand extends SubCommand {
         if (!option) {
             guildSettings.playlist = null;
             await guildSettings.save();
-            await CommandManager.instance.updateCommandsForGuild(interaction.guild);
+            await commandManager.updateCommandsForGuild(interaction.guild);
             return await interaction.reply(new EmbedWrapper()
                 .setDescription('Disabled playlist')
                 .setColor(colors.RED)
@@ -35,7 +35,7 @@ export default class PlaylistCommand extends SubCommand {
             );
         }
 
-        if (!Config.instance.data.googleApiKey) {
+        if (!config.data.googleApiKey) {
             return await interaction.reply(ErrorEmbed
                 .message('There is no google API key configured for this instance of ModBot!'));
         }
@@ -56,7 +56,7 @@ export default class PlaylistCommand extends SubCommand {
         const playlist = new YouTubePlaylist(id);
 
         await guildSettings.save();
-        await CommandManager.instance.updateCommandsForGuild(interaction.guild);
+        await commandManager.updateCommandsForGuild(interaction.guild);
         await interaction.reply(new EmbedWrapper()
             .setDescription(`Set playlist to ${playlist.getFormattedUrl()}`)
             .setColor(colors.GREEN)

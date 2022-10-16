@@ -1,5 +1,5 @@
 import TypeChecker from '../settings/TypeChecker.js';
-import Database from '../bot/Database.js';
+import database from '../bot/Database.js';
 import UserWrapper from '../discord/UserWrapper.js';
 import WhereParameter from './WhereParameter.js';
 
@@ -118,7 +118,7 @@ export default class Moderation {
      */
     static getFields() {
         return ['id', 'guildid', 'userid', 'action', 'created', 'value', 'expireTime', 'reason', 'moderator', 'active']
-            .map(field => Database.instance.escapeId(field));
+            .map(field => database.escapeId(field));
     }
 
     /**
@@ -139,7 +139,7 @@ export default class Moderation {
             values.push(limit);
         }
 
-        return (await Database.instance.queryAll(query, ...values))
+        return (await database.queryAll(query, ...values))
             .map(data => new Moderation(data));
     }
 
@@ -187,7 +187,7 @@ export default class Moderation {
         while (data.length) {
             const current = data.slice(0, 100);
             data = data.slice(100);
-            queries.push(Database.instance.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
+            queries.push(database.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
                 `VALUES ${'(?,?,?,?,?,?,?,?,?), '.repeat(current.length).slice(0, - 2)}`, ...current.flat()));
         }
         await Promise.all(queries);
@@ -209,12 +209,12 @@ export default class Moderation {
     async save() {
         const fields = this.constructor.getFields().slice(1);
         if (this.id) {
-            await Database.instance.query(
+            await database.query(
                 `UPDATE moderations SET ${fields.map(field => `${field} = ?`).join(', ')} WHERE id = ?`,
                 ...this.getParameters(), this.id);
         }
         else {
-            const result = await Database.instance.query(
+            const result = await database.query(
                 `INSERT INTO moderations (${fields.join(', ')}) VALUES ${'?'.repeat(fields.length)}`,
                 ...this.getParameters());
             this.id = result.insertId;
@@ -227,7 +227,7 @@ export default class Moderation {
      * @return {Promise}
      */
     async delete() {
-        return Database.instance.query('DELETE FROM moderations WHERE id = ?', this.id);
+        return database.query('DELETE FROM moderations WHERE id = ?', this.id);
     }
 
     /**

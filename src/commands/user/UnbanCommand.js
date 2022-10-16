@@ -12,7 +12,7 @@ import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
-import Config from '../../bot/Config.js';
+import config from '../../bot/Config.js';
 
 export default class UnbanCommand extends Command {
 
@@ -68,7 +68,7 @@ export default class UnbanCommand extends Command {
         reason = reason || 'No reason provided';
         await member.unban(reason, moderator);
         await interaction.reply(
-            new UserActionEmbed(member.user, reason, 'unbanned', colors.GREEN, Config.instance.data.emoji.ban)
+            new UserActionEmbed(member.user, reason, 'unbanned', colors.GREEN, config.data.emoji.ban)
                 .toMessage());
     }
 

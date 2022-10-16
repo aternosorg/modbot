@@ -1,5 +1,5 @@
 import Interval from './Interval.js';
-import Database from '../bot/Database.js';
+import database from '../bot/Database.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
 import MemberWrapper from '../discord/MemberWrapper.js';
 import {PermissionFlagsBits} from 'discord.js';
@@ -14,7 +14,7 @@ export default class TransferMuteToTimeoutInterval extends Interval {
     }
 
     async run() {
-        for (const result of await Database.instance.queryAll('SELECT * FROM moderations WHERE action = \'mute\' AND active = TRUE AND expireTime IS NOT NULL AND expireTime <= ?',
+        for (const result of await database.queryAll('SELECT * FROM moderations WHERE action = \'mute\' AND active = TRUE AND expireTime IS NOT NULL AND expireTime <= ?',
             Math.floor(Date.now() / 1000) + TIMEOUT_DURATION_LIMIT)) {
             const guild = await GuildWrapper.fetch(result.guildid),
                 me = await guild.guild.members.fetchMe();

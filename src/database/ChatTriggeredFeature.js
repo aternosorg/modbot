@@ -1,7 +1,7 @@
 import Trigger from './Trigger.js';
 import {Collection} from 'discord.js';
 import stringSimilarity from 'string-similarity';
-import Database from '../bot/Database.js';
+import database from '../bot/Database.js';
 import LineEmbed from '../embeds/LineEmbed.js';
 import {EMBED_DESCRIPTION_LIMIT} from '../util/apiLimits.js';
 import colors from '../util/colors.js';
@@ -212,7 +212,7 @@ export default class ChatTriggeredFeature {
      * @return {string}
      */
     static get escapedTableName() {
-        return Database.instance.escapeId(this.tableName);
+        return database.escapeId(this.tableName);
     }
 
     /**
@@ -265,17 +265,17 @@ export default class ChatTriggeredFeature {
                 columns = this.constructor.columns,
                 data = this.serialize();
             for (const column of columns) {
-                assignments.push(`${Database.instance.escapeId(column)}=?`);
+                assignments.push(`${database.escapeId(column)}=?`);
             }
             if (data.length !== columns.length) throw 'Unable to update, lengths differ!';
             data.push(this.id);
-            await Database.instance.queryAll(`UPDATE ${this.constructor.escapedTableName} SET ${assignments.join(', ')} WHERE id = ?`, ...data);
+            await database.queryAll(`UPDATE ${this.constructor.escapedTableName} SET ${assignments.join(', ')} WHERE id = ?`, ...data);
         }
         else {
-            const columns = Database.instance.escapeId(this.constructor.columns);
+            const columns = database.escapeId(this.constructor.columns);
             const values = ',?'.repeat(this.constructor.columns.length).slice(1);
             /** @property {Number} insertId*/
-            const dbEntry = await Database.instance.queryAll(
+            const dbEntry = await database.queryAll(
                 `INSERT INTO ${this.constructor.escapedTableName} (${columns}) VALUES (${values})`, ...this.serialize());
             this.id = dbEntry.insertId;
         }
@@ -300,7 +300,7 @@ export default class ChatTriggeredFeature {
      * @returns {Promise<void>}
      */
     async delete() {
-        await Database.instance.query(`DELETE FROM ${this.constructor.escapedTableName} WHERE id = ?`,[this.id]);
+        await database.query(`DELETE FROM ${this.constructor.escapedTableName} WHERE id = ?`,[this.id]);
 
         if (this.global) {
             if (this.constructor.getGuildCache().has(this.gid))
@@ -339,7 +339,7 @@ export default class ChatTriggeredFeature {
      * @returns {Promise<?this>}
      */
     static async getByID(id, guildid) {
-        const result = await Database.instance.query(`SELECT *FROM ${this.escapedTableName} WHERE id = ? AND guildid = ?`, id, guildid);
+        const result = await database.query(`SELECT *FROM ${this.escapedTableName} WHERE id = ? AND guildid = ?`, id, guildid);
         if (!result) return null;
         return this.fromData(result);
     }
@@ -397,7 +397,7 @@ export default class ChatTriggeredFeature {
      * @return {Promise<Collection<Number, this.prototype>>}
      */
     static async getAll(guildId) {
-        const result = await Database.instance.queryAll(
+        const result = await database.queryAll(
             `SELECT *FROM ${this.escapedTableName} WHERE guildid = ?`, [guildId]);
 
         const collection = new Collection();
@@ -414,7 +414,7 @@ export default class ChatTriggeredFeature {
      * @param {import('discord.js').Snowflake} guildId
      */
     static async refreshGuild(guildId) {
-        const result = await Database.instance.queryAll(
+        const result = await database.queryAll(
             `SELECT *FROM ${this.escapedTableName} WHERE guildid = ?AND global = TRUE`, [guildId]);
 
         const newItems = new Collection();
@@ -433,7 +433,7 @@ export default class ChatTriggeredFeature {
      * @param {import('discord.js').Snowflake} channelId
      */
     static async refreshChannel(channelId) {
-        const result = await Database.instance.queryAll(
+        const result = await database.queryAll(
             `SELECT *FROM ${this.escapedTableName} WHERE channels LIKE ?`, [`%${channelId}%`]);
 
         const newItems = new Collection();

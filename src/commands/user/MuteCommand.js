@@ -15,7 +15,7 @@ import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
-import Config from '../../bot/Config.js';
+import config from '../../bot/Config.js';
 
 export default class MuteCommand extends UserCommand {
 
@@ -99,7 +99,7 @@ export default class MuteCommand extends UserCommand {
 
         await member.mute(reason, interaction.user, duration);
         await interaction.reply(
-            new UserActionEmbed(member.user, reason, 'muted', colors.ORANGE, Config.instance.data.emoji.mute, duration)
+            new UserActionEmbed(member.user, reason, 'muted', colors.ORANGE, config.data.emoji.mute, duration)
                 .toMessage());
     }
 

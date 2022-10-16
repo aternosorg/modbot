@@ -12,7 +12,7 @@ import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
-import Config from '../../bot/Config.js';
+import config from '../../bot/Config.js';
 
 export default class KickCommand extends UserCommand {
 
@@ -70,7 +70,7 @@ export default class KickCommand extends UserCommand {
 
         await member.kick(reason, interaction.user);
         await interaction.reply(
-            new UserActionEmbed(member.user, reason, 'kicked', colors.ORANGE, Config.instance.data.emoji.kick)
+            new UserActionEmbed(member.user, reason, 'kicked', colors.ORANGE, config.data.emoji.kick)
                 .toMessage());
     }
 

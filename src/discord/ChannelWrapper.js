@@ -1,7 +1,7 @@
 import {ChannelType, Collection, PermissionFlagsBits, PermissionsBitField, RESTJSONErrorCodes} from 'discord.js';
-import Config from '../bot/Config.js';
+import config from '../bot/Config.js';
 import {BULK_DELETE_LIMIT, FETCH_MESSAGES_LIMIT} from '../util/apiLimits.js';
-import Bot from '../bot/Bot.js';
+import bot from '../bot/Bot.js';
 
 /** @type {ChannelType[]} */
 export const SENDABLE_CHANNEL_TYPES = [
@@ -38,7 +38,7 @@ export default class ChannelWrapper {
             return false;
         }
 
-        return this.channel.permissionsFor(Bot.instance.client.user.id).has(
+        return this.channel.permissionsFor(bot.client.user.id).has(
             new PermissionsBitField()
                 .add(PermissionFlagsBits.ViewChannel)
                 .add(PermissionFlagsBits.SendMessages)
@@ -87,7 +87,7 @@ export default class ChannelWrapper {
      * @return {import('discord.js').Snowflake|null}
      */
     getChannelEmojiId() {
-        const emojis = Config.instance.data.emoji;
+        const emojis = config.data.emoji;
 
         switch (this.channel.type) {
             case ChannelType.AnnouncementThread:

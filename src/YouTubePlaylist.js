@@ -1,5 +1,5 @@
 import Cache from './Cache.js';
-import Config from './bot/Config.js';
+import config from './bot/Config.js';
 import {youtube as youtube_fn} from '@googleapis/youtube';
 import Fuse from 'fuse.js';
 import {hyperlink} from 'discord.js';
@@ -60,7 +60,7 @@ export default class YouTubePlaylist {
      */
     static async isValidPlaylist(id) {
         const response = await youtube.playlists.list({
-            auth: Config.instance.data.googleApiKey,
+            auth: config.data.googleApiKey,
             part: 'id',
             id
         });
@@ -90,7 +90,7 @@ export default class YouTubePlaylist {
         let totalVideos = 0, nextPageToken = null;
         do {
             const response = /** @type {PlaylistResponse} */ await youtube.playlistItems.list({
-                auth: Config.instance.data.googleApiKey,
+                auth: config.data.googleApiKey,
                 part: 'snippet,contentDetails,id',
                 playlistId: this.#id,
                 maxResults: 50,

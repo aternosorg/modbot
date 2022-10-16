@@ -1,6 +1,6 @@
 import EventListener from '../EventListener.js';
 import {EmbedBuilder, escapeMarkdown} from 'discord.js';
-import Database from '../../bot/Database.js';
+import database from '../../bot/Database.js';
 import {formatTime} from '../../util/timeutils.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 
@@ -14,11 +14,11 @@ export default class BanRemoveEventListener extends EventListener {
      * @return {Promise<void>}
      */
     async execute(ban) {
-        const databaseBan = await Database.instance.query(
+        const databaseBan = await database.query(
             'SELECT * FROM moderations WHERE action = \'ban\' AND active = TRUE AND userid = ? AND guildid = ?',
             ban.user.id, ban.guild.id);
         if (databaseBan) {
-            await Database.instance.query(
+            await database.query(
                 'UPDATE moderations SET active = FALSE WHERE action = \'ban\' AND active = TRUE AND userid = ? AND guildid = ?',
                 ban.user.id, ban.guild.id);
 

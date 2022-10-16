@@ -2,7 +2,7 @@ import Importer from './Importer.js';
 import TypeChecker from '../../settings/TypeChecker.js';
 import Moderation from '../Moderation.js';
 import {EmbedBuilder} from 'discord.js';
-import Bot from '../../bot/Bot.js';
+import bot from '../../bot/Bot.js';
 
 /***
  * @typedef {Object} VortexModeration
@@ -108,7 +108,7 @@ export default class VortexImporter extends Importer {
             action: type,
             expireTime: moderation.value,
             reason: /** @type {String} */'Imported from Vortex',
-            moderator: Bot.instance.client.user.id
+            moderator: bot.client.user.id
         });
     }
 
@@ -124,7 +124,7 @@ export default class VortexImporter extends Importer {
             value: moderation.value,
             action: 'strike',
             reason: 'Imported from Vortex',
-            moderator: Bot.instance.client.user.id
+            moderator: bot.client.user.id
         });
     }
 

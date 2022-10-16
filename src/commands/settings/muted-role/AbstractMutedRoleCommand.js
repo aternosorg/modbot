@@ -3,7 +3,7 @@ import GuildSettings from '../../../settings/GuildSettings.js';
 import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
 import {PermissionFlagsBits, PermissionsBitField} from 'discord.js';
 import GuildWrapper from '../../../discord/GuildWrapper.js';
-import Database from '../../../bot/Database.js';
+import database from '../../../bot/Database.js';
 import EmbedWrapper from '../../../embeds/EmbedWrapper.js';
 import colors from '../../../util/colors.js';
 
@@ -102,7 +102,7 @@ export default class AbstractMutedRoleCommand extends SubCommand {
             return true;
         }
 
-        for (const moderation of await Database.instance.queryAll(
+        for (const moderation of await database.queryAll(
             'SELECT userid FROM moderations WHERE active = TRUE AND action = \'mute\' AND guildid = ?',
             interaction.guildId)) {
             const member = await guild.fetchMember(moderation.userid);

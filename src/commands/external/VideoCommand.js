@@ -4,7 +4,7 @@ import {SELECT_MENU_TITLE_LIMIT} from '../../util/apiLimits.js';
 import icons from '../../util/icons.js';
 import {ActionRowBuilder, SelectMenuBuilder} from 'discord.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
-import Config from '../../bot/Config.js';
+import config from '../../bot/Config.js';
 
 export default class VideoCommand extends Command {
 
@@ -27,7 +27,7 @@ export default class VideoCommand extends Command {
     }
 
     async execute(interaction) {
-        if (!Config.instance.data.googleApiKey) {
+        if (!config.data.googleApiKey) {
             return await interaction.reply(ErrorEmbed
                 .message('There is no google API key configured for this instance of ModBot!'));
         }
@@ -108,7 +108,7 @@ export default class VideoCommand extends Command {
     async complete(interaction) {
         const playlist = (await GuildSettings.get(interaction.guild.id)).getPlaylist();
 
-        if (!playlist || !Config.instance.data.googleApiKey) {
+        if (!playlist || !config.data.googleApiKey) {
             return [];
         }
 

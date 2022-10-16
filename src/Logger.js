@@ -1,14 +1,11 @@
-import Config from './bot/Config.js';
+import config from './bot/Config.js';
 import {Logging} from '@google-cloud/logging';
 
-export default class Logger {
-
-    static #instance = new Logger();
-
+export class Logger {
     #cloudLog;
 
     get config() {
-        return Config.instance.data?.monitoring;
+        return config.data?.monitoring;
     }
 
     get cloudLog() {
@@ -16,13 +13,6 @@ export default class Logger {
             projectId: this.config.projectId,
             credentials: this.config.credentials
         }).log(this.config.logName);
-    }
-
-    /**
-     * @returns {Logger}
-     */
-    static get instance() {
-        return this.#instance;
     }
 
     /**
@@ -128,3 +118,5 @@ export default class Logger {
         return object;
     }
 }
+
+export default new Logger();

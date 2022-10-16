@@ -1,5 +1,5 @@
 import UnbanInterval from './UnbanInterval.js';
-import Logger from '../Logger.js';
+import logger from '../Logger.js';
 import UnmuteInterval from './UnmuteInterval.js';
 import TransferMuteToTimeoutInterval from './TransferMuteToTimeoutInterval.js';
 import CleanupConfirmationInterval from './CleanupConfirmationInterval.js';
@@ -30,7 +30,7 @@ export default class IntervalManager {
         }
         catch(error) {
             try {
-                await Logger.instance.error(`Failed to run interval '${interval.constructor.name}'`, error);
+                await logger.error(`Failed to run interval '${interval.constructor.name}'`, error);
             }
             catch (e) {
                 console.error(e);

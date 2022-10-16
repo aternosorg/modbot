@@ -1,9 +1,7 @@
 import * as mysql from 'mysql2/promise';
-import Logger from '../Logger.js';
+import logger from '../Logger.js';
 
-export default class Database {
-    static #instance = new Database();
-
+export class Database {
     /**
      * @type {import("mysql2").Connection}
      */
@@ -13,13 +11,6 @@ export default class Database {
      * @type {{resolve: function, reject: function}[]}
      */
     #waiting = [];
-
-    /**
-     * @return {Database}
-     */
-    static get instance() {
-        return this.#instance;
-    }
 
     /**
      * @param {DatabaseConfig} options
@@ -71,7 +62,7 @@ export default class Database {
             this.#handleFatalError(err);
         }
         else {
-            Logger.instance.error('A database error occurred', err)
+            logger.error('A database error occurred', err)
                 .catch(console.error);
         }
     }
@@ -84,7 +75,7 @@ export default class Database {
      */
     #handleFatalError(err) {
         console.error('A fatal database error occurred', err);
-        Logger.instance.error('A fatal database error occurred', err)
+        logger.error('A fatal database error occurred', err)
             .catch(console.error);
 
         if (err.code === 'ER_ACCESS_DENIED_ERROR') {
@@ -164,3 +155,5 @@ export default class Database {
         return insert.insertId;
     }
 }
+
+export default new Database();

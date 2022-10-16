@@ -6,8 +6,8 @@ import {
     PermissionFlagsBits,
     PermissionsBitField
 } from 'discord.js';
-import Bot from '../../bot/Bot.js';
-import Config from '../../bot/Config.js';
+import bot from '../../bot/Bot.js';
+import config from '../../bot/Config.js';
 import KeyValueEmbed from '../../embeds/KeyValueEmbed.js';
 import {formatTime} from '../../util/timeutils.js';
 import {readFile} from 'fs/promises';
@@ -68,7 +68,7 @@ export default class InfoCommand extends Command {
         await interaction.reply({
             ephemeral: true,
             embeds: [new KeyValueEmbed()
-                .setAuthor({name: 'ModBot by Aternos', iconURL: Bot.instance.client.user.displayAvatarURL()})
+                .setAuthor({name: 'ModBot by Aternos', iconURL: bot.client.user.displayAvatarURL()})
                 .addLine(
                     'ModBot is an open source moderation bot with advanced features developed by [Aternos](https://aternos.org/). ' +
                     'It uses modern Discord features like slash-commands, context-menus, timeouts, buttons, select-menus ' +
@@ -85,7 +85,7 @@ export default class InfoCommand extends Command {
                 .addPairIf(VERSION, 'Version', VERSION)
                 .addPairIf(COMMIT, 'Commit', hyperlink(COMMIT, `https://github.com/aternosorg/modbot/tree/${COMMIT}`, 'View on GitHub'))
                 .addPair('Uptime', formatTime(process.uptime()))
-                .addPair('Ping', Bot.instance.client.ws.ping + 'ms')
+                .addPair('Ping', bot.client.ws.ping + 'ms')
             ],
             components: [
                 /** @type {ActionRowBuilder} */
@@ -96,7 +96,7 @@ export default class InfoCommand extends Command {
                                 .setLabel(data.name)
                                 .setStyle(ButtonStyle.Link)
                                 .setURL(data.url)
-                                .setEmoji(Config.instance.data.emoji[data.emoji] ?? {}))
+                                .setEmoji(config.data.emoji[data.emoji] ?? {}))
                     )
             ]
         });

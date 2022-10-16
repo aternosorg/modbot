@@ -1,4 +1,4 @@
-import Bot from '../../bot/Bot.js';
+import bot from '../../bot/Bot.js';
 import ErrorEventListener from './ErrorEventListener.js';
 import BanRemoveEventListener from './BanRemoveEventListener.js';
 import GuildDeleteEventListener from './GuildDeleteEventListener.js';
@@ -18,7 +18,7 @@ import DeleteConfirmationEventListener from './interactionCreate/DeleteConfirmat
 export default class DiscordEventManager extends EventManager {
 
     subscribe() {
-        const client = Bot.instance.client;
+        const client = bot.client;
         for (const eventListener of this.getEventListeners()) {
             client.on(eventListener.name, this.notifyEventListener.bind(this, eventListener));
         }

@@ -9,7 +9,7 @@ import UserWrapper from '../../discord/UserWrapper.js';
 import Confirmation from '../../database/Confirmation.js';
 import ConfirmationEmbed from '../../embeds/ConfirmationEmbed.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
-import Database from '../../bot/Database.js';
+import database from '../../bot/Database.js';
 
 /**
  * warn a user if this member has been moderated in the last x seconds
@@ -108,7 +108,7 @@ export default class UserCommand extends Command {
         const focussed = interaction.options.getFocused(true);
         switch (focussed.name) {
             case 'reason': {
-                const options = await Database.instance.queryAll(
+                const options = await database.queryAll(
                     'SELECT reason, COUNT(*) AS count FROM (SELECT reason FROM moderations WHERE moderator = ? AND guildid = ? AND action = ? LIMIT 500) AS reasons WHERE reason LIKE CONCAT(\'%\', ?, \'%\') GROUP BY reason ORDER BY count DESC LIMIT 5;',
                     interaction.user.id, interaction.guild.id, this.getName(), focussed.value);
                 if (focussed.value) {
@@ -118,7 +118,7 @@ export default class UserCommand extends Command {
             }
 
             case 'duration':{
-                let options = await Database.instance.queryAll(
+                let options = await database.queryAll(
                     'SELECT duration, COUNT(*) AS count FROM (SELECT expireTime - created AS duration FROM moderations WHERE moderator = ? AND guildid = ? AND action = ? AND expireTime IS NOT NULL LIMIT 250) AS durations GROUP BY duration ORDER BY count DESC LIMIT 5;',
                     interaction.user.id, interaction.guild.id, this.getName());
                 options = options.map(data => {

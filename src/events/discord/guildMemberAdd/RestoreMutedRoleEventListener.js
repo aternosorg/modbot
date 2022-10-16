@@ -2,7 +2,7 @@ import GuildMemberAddEventListener from './GuildMemberAddEventListener.js';
 import GuildSettings from '../../../settings/GuildSettings.js';
 import GuildWrapper from '../../../discord/GuildWrapper.js';
 import {EmbedBuilder, escapeMarkdown, RESTJSONErrorCodes} from 'discord.js';
-import Database from '../../../bot/Database.js';
+import database from '../../../bot/Database.js';
 
 export default class RestoreMutedRoleEventListener extends GuildMemberAddEventListener {
 
@@ -11,7 +11,7 @@ export default class RestoreMutedRoleEventListener extends GuildMemberAddEventLi
             return;
         }
 
-        const mute = await Database.instance.query(
+        const mute = await database.query(
             'SELECT * FROM moderations WHERE action = \'mute\' AND active = TRUE AND userid = ? AND guildid = ?',
             member.id,member.guild.id);
 

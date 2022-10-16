@@ -1,6 +1,6 @@
 import EventListener from '../EventListener.js';
 import {EmbedBuilder, escapeMarkdown} from 'discord.js';
-import Bot from '../../bot/Bot.js';
+import bot from '../../bot/Bot.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import colors from '../../util/colors.js';
 import {EMBED_DESCRIPTION_LIMIT} from '../../util/apiLimits.js';
@@ -19,8 +19,8 @@ export default class MessageDeleteEventListener extends EventListener {
             return;
         }
 
-        if (Bot.instance.deletedMessages.has(message.id)) {
-            Bot.instance.deletedMessages.delete(message.id);
+        if (bot.deletedMessages.has(message.id)) {
+            bot.deletedMessages.delete(message.id);
             return;
         }
 

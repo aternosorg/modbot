@@ -1,4 +1,4 @@
-import Config from '../bot/Config.js';
+import config from '../bot/Config.js';
 import {formatEmoji} from 'discord.js';
 
 /**
@@ -23,7 +23,7 @@ export function yesNo(bool) {
  * @return {string}
  */
 export function inlineEmojiIfExists(configKey) {
-    const emoji = Config.instance.data.emoji[configKey];
+    const emoji = config.data.emoji[configKey];
     if (!emoji) {
         return '';
     }
@@ -37,7 +37,7 @@ export function inlineEmojiIfExists(configKey) {
  * @return {import('discord.js').APIMessageComponentEmoji}
  */
 export function buttonEmojiIfExists(configKey) {
-    const emoji = Config.instance.data.emoji[configKey];
+    const emoji = config.data.emoji[configKey];
     if (!emoji) {
         return {};
     }

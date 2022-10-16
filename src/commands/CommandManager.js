@@ -1,4 +1,4 @@
-import Bot from '../bot/Bot.js';
+import bot from '../bot/Bot.js';
 import {
     ApplicationCommandPermissionType,
     ApplicationCommandType,
@@ -42,9 +42,7 @@ import BadWordCommand from './settings/BadWordCommand.js';
 
 const cooldowns = new Cache();
 
-export default class CommandManager {
-    static #instance;
-
+export class CommandManager {
     /**
      * @type {Command[]}
      */
@@ -89,10 +87,6 @@ export default class CommandManager {
         new PurgeInvitesCommand(),
     ];
 
-    static get instance() {
-        return this.#instance ??= new CommandManager();
-    }
-
     /**
      * @return {Command[]}
      */
@@ -106,13 +100,13 @@ export default class CommandManager {
      */
     async register() {
         const globalCommands = this.#commands.filter(command => command.isAvailableInAllGuilds());
-        for (const [id, command] of await Bot.instance.client.application.commands.set(this.buildCommands(globalCommands))) {
+        for (const [id, command] of await bot.client.application.commands.set(this.buildCommands(globalCommands))) {
             if (command.type === ApplicationCommandType.ChatInput) {
                 this.findCommand(command.name).id = id;
             }
         }
 
-        for (const guild of Bot.instance.client.guilds.cache.values()) {
+        for (const guild of bot.client.guilds.cache.values()) {
             await this.updateCommandsForGuild(guild);
         }
     }
@@ -346,7 +340,7 @@ export default class CommandManager {
         }
 
         // Fallback to global permissions if they exist
-        const globalPermissions = await this.fetchCommandOverrides(interaction.guild, Bot.instance.client.user.id);
+        const globalPermissions = await this.fetchCommandOverrides(interaction.guild, bot.client.user.id);
         if (globalPermissions.length) {
             return this.hasPermissionInOverrides(member, interaction.channel, globalPermissions);
         }
@@ -451,3 +445,5 @@ export default class CommandManager {
         }
     }
 }
+
+export default new CommandManager();

@@ -3,7 +3,7 @@ import {formatTime, parseTime, timeAfter} from '../../util/timeutils.js';
 import Confirmation from '../../database/Confirmation.js';
 import ConfirmationEmbed from '../../embeds/ConfirmationEmbed.js';
 import {ButtonStyle, PermissionFlagsBits, PermissionsBitField, RESTJSONErrorCodes} from 'discord.js';
-import Config from '../../bot/Config.js';
+import config from '../../bot/Config.js';
 
 export default class PurgeInvitesCommand extends Command {
 
@@ -85,7 +85,7 @@ export default class PurgeInvitesCommand extends Command {
     }
 
     async isAvailableIn(guild) {
-        return Config.instance.data.featureWhitelist.includes(guild.id);
+        return config.data.featureWhitelist.includes(guild.id);
     }
 
     getDescription() {

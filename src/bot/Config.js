@@ -1,4 +1,4 @@
-import Logger from '../Logger.js';
+import logger from '../Logger.js';
 import {exists, readJSON} from '../util/fsutils.js';
 
 /**
@@ -61,20 +61,11 @@ import {exists, readJSON} from '../util/fsutils.js';
  * @property {?string} userJoined
  */
 
-export default class Config {
-    static #instance = new Config();
-
+export class Config {
     /**
      * @type {ConfigData}
      */
     #data;
-
-    /**
-     * @returns {Config}
-     */
-    static get instance() {
-        return this.#instance;
-    }
 
     get data() {
         return this.#data;
@@ -137,7 +128,7 @@ export default class Config {
         else {
             // load settings from file
             if (!await exists('./config.json')) {
-                await Logger.instance.error('No settings file found.\n' +
+                await logger.error('No settings file found.\n' +
                     'Create a config.json or use environment variables as described in the README.md');
                 process.exit(1);
             }
@@ -157,3 +148,5 @@ export default class Config {
         }
     }
 }
+
+export default new Config();

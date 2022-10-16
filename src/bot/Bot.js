@@ -9,13 +9,11 @@ import {
     escapeMarkdown
 } from 'discord.js';
 import {retry} from '../util/util.js';
-import Config from './Config.js';
+import config from './Config.js';
 import colors from '../util/colors.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
 
-export default class Bot {
-    static #instance = null;
-
+export class Bot {
     /**
      * @type {Client}
      */
@@ -48,10 +46,6 @@ export default class Bot {
         });
     }
 
-    static get instance() {
-        return this.#instance ??= new Bot();
-    }
-
     get client() {
         return this.#client;
     }
@@ -61,7 +55,7 @@ export default class Bot {
     }
 
     async start(){
-        await this.#client.login(Config.instance.data.authToken);
+        await this.#client.login(config.data.authToken);
     }
 
     /**
@@ -78,7 +72,7 @@ export default class Bot {
 
         if (timeout) {
             setTimeout(() => {
-                Bot.instance.delete(message, reason).catch(console.error);
+                this.delete(message, reason).catch(console.error);
             }, timeout);
             return null;
         }
@@ -119,3 +113,5 @@ export default class Bot {
         });
     }
 }
+
+export default new Bot();

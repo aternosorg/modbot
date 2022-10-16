@@ -13,7 +13,7 @@ import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
-import Config from '../../bot/Config.js';
+import config from '../../bot/Config.js';
 
 export default class BanCommand extends UserCommand {
 
@@ -86,7 +86,7 @@ export default class BanCommand extends UserCommand {
 
         await member.ban(reason, interaction.user, duration, deleteMessageTime);
         await interaction.reply(
-            new UserActionEmbed(member.user, reason, 'banned', colors.RED, Config.instance.data.emoji.ban, duration)
+            new UserActionEmbed(member.user, reason, 'banned', colors.RED, config.data.emoji.ban, duration)
                 .toMessage());
     }
 

@@ -2,7 +2,7 @@ import Command from './Command.js';
 import {SlashCommandBuilder} from 'discord.js';
 import SubCommandGroup from './SubCommandGroup.js';
 import SubCommand from './SubCommand.js';
-import CommandManager from './CommandManager.js';
+import commandManager from './CommandManager.js';
 
 /**
  * @abstract
@@ -63,7 +63,7 @@ export default class ParentCommand extends Command {
 
     async execute(interaction) {
         const command = this.#findChildByName(interaction);
-        if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
+        if (!await commandManager.checkCommandAvailability(command, interaction)) {
             return;
         }
 
@@ -72,7 +72,7 @@ export default class ParentCommand extends Command {
 
     async executeModal(interaction) {
         const command = await this.#findChildByCustomId(interaction);
-        if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
+        if (!await commandManager.checkCommandAvailability(command, interaction)) {
             return;
         }
 
@@ -81,7 +81,7 @@ export default class ParentCommand extends Command {
 
     async executeButton(interaction) {
         const command = await this.#findChildByCustomId(interaction);
-        if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
+        if (!await commandManager.checkCommandAvailability(command, interaction)) {
             return;
         }
 
@@ -90,7 +90,7 @@ export default class ParentCommand extends Command {
 
     async executeSelectMenu(interaction) {
         const command = await this.#findChildByCustomId(interaction);
-        if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
+        if (!await commandManager.checkCommandAvailability(command, interaction)) {
             return;
         }
 

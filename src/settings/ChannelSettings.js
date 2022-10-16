@@ -1,8 +1,8 @@
 import TypeChecker from './TypeChecker.js';
 import {RESTJSONErrorCodes} from 'discord.js';
 import Settings from './Settings.js';
-import Database from '../bot/Database.js';
-import Bot from '../bot/Bot.js';
+import database from '../bot/Database.js';
+import bot from '../bot/Bot.js';
 
 /**
  * Class representing the settings of a channel
@@ -50,7 +50,7 @@ export default class ChannelSettings extends Settings {
      */
     static async getForGuild(guildID) {
         const result = [];
-        for (const {id, config} of await Database.instance.queryAll('SELECT id, config FROM channels WHERE guildid = ?', [guildID])) {
+        for (const {id, config} of await database.queryAll('SELECT id, config FROM channels WHERE guildid = ?', [guildID])) {
             result.push(new ChannelSettings(id, JSON.parse(config)));
         }
         return result;
@@ -62,7 +62,7 @@ export default class ChannelSettings extends Settings {
      */
     async getGuildID() {
         try {
-            const channel = await Bot.instance.client.channels.fetch(this.id);
+            const channel = await bot.client.channels.fetch(this.id);
             return channel.guild.id;
         }
         catch (e) {
@@ -74,7 +74,7 @@ export default class ChannelSettings extends Settings {
     }
 
     async insert() {
-        return Database.instance.query('INSERT INTO channels (config,id,guildid) VALUES (?,?,?)',
+        return database.query('INSERT INTO channels (config,id,guildid) VALUES (?,?,?)',
             this.toJSONString(), this.id, await this.getGuildID());
     }
 
@@ -86,7 +86,7 @@ export default class ChannelSettings extends Settings {
     static async import(guildID, data) {
         let channel;
         try {
-            channel = await Bot.instance.client.channels.fetch(data.id);
+            channel = await bot.client.channels.fetch(data.id);
         }
         catch (e) {
             return null;

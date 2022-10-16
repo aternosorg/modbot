@@ -1,6 +1,6 @@
 import {Collection} from 'discord.js';
 import {compareTwoStrings} from 'string-similarity';
-import Bot from '../../../bot/Bot.js';
+import bot from '../../../bot/Bot.js';
 
 export default class RepeatedMessage {
 
@@ -123,7 +123,7 @@ export default class RepeatedMessage {
         const channel = /** @type {import('discord.js').TextChannel} */ messages[0].channel;
         await channel.bulkDelete(messages);
 
-        await Promise.all(messages.map(m => Bot.instance.logMessageDeletion(m, reason)));
+        await Promise.all(messages.map(m => bot.logMessageDeletion(m, reason)));
     }
 
     /**
@@ -174,7 +174,7 @@ export default class RepeatedMessage {
             if (!cache.warned) {
                 cache.warned = true;
                 const reply = await message.channel.send(`<@!${message.author.id}> Stop sending messages this fast!`);
-                await Bot.instance.delete(reply, null, timeout);
+                await bot.delete(reply, null, timeout);
             }
             return true;
         }
@@ -196,7 +196,7 @@ export default class RepeatedMessage {
             if (!cache.warned) {
                 cache.warned = true;
                 const reply = await message.channel.send(`<@!${message.author.id}> Stop repeating your messages!`);
-                await Bot.instance.delete(reply, null, timeout);
+                await bot.delete(reply, null, timeout);
             }
             return true;
         }

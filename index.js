@@ -1,9 +1,36 @@
-import Logger from './src/Logger.js';
-import BotManager from './src/bot/BotManager.js';
+import logger from './src/Logger.js';
+import config from './src/bot/Config.js';
+import database from './src/bot/Database.js';
+import bot from './src/bot/Bot.js';
+import DiscordEventManager from './src/events/discord/DiscordEventManager.js';
+import RestEventManagerEventManager from './src/events/rest/RestEventManager.js';
+import commandManager from './src/commands/CommandManager.js';
+import IntervalManager from './src/interval/IntervalManager.js';
 
-BotManager.instance.start().catch(async (error) => {
+async function start() {
+    await logger.debug('Loading settings');
+    await config.load();
+    await logger.info('Connecting to database');
+    await database.connect(config.data.database);
+    await logger.info('Creating database tables');
+    await database.createTables();
+    await logger.notice('Logging into discord');
+    await bot.start();
+    await logger.info('Online');
+
+    await logger.debug('Loading event listeners');
+    new DiscordEventManager().subscribe();
+    new RestEventManagerEventManager().subscribe();
+    await logger.notice('Registering slash commands');
+    await commandManager.register();
+    await logger.debug('Loading intervals');
+    new IntervalManager().schedule();
+    await logger.info('Started');
+}
+
+start().catch(async (error) => {
     try {
-        await Logger.instance.critical('Bot crashed', error);
+        await logger.critical('Bot crashed', error);
     }
     catch (e) {
         console.error('Failed to send fatal error to monitoring');

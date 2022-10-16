@@ -1,5 +1,5 @@
 import ExecutableCommand from './ExecutableCommand.js';
-import CommandManager from './CommandManager.js';
+import commandManager from './CommandManager.js';
 
 export default class SubCommandGroup extends ExecutableCommand {
 
@@ -66,7 +66,7 @@ export default class SubCommandGroup extends ExecutableCommand {
 
     async execute(interaction) {
         const command = this.#findChildByName(interaction);
-        if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
+        if (!await commandManager.checkCommandAvailability(command, interaction)) {
             return;
         }
 
@@ -75,7 +75,7 @@ export default class SubCommandGroup extends ExecutableCommand {
 
     async executeModal(interaction) {
         const command = await this.#findChildByCustomId(interaction);
-        if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
+        if (!await commandManager.checkCommandAvailability(command, interaction)) {
             return;
         }
 
@@ -84,7 +84,7 @@ export default class SubCommandGroup extends ExecutableCommand {
 
     async executeButton(interaction) {
         const command = await this.#findChildByCustomId(interaction);
-        if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
+        if (!await commandManager.checkCommandAvailability(command, interaction)) {
             return;
         }
 
@@ -93,7 +93,7 @@ export default class SubCommandGroup extends ExecutableCommand {
 
     async executeSelectMenu(interaction) {
         const command = await this.#findChildByCustomId(interaction);
-        if (!await CommandManager.instance.checkCommandAvailability(command, interaction)) {
+        if (!await commandManager.checkCommandAvailability(command, interaction)) {
             return;
         }
 

@@ -1,5 +1,5 @@
 import {Collection} from 'discord.js';
-import Database from '../bot/Database.js';
+import database from '../bot/Database.js';
 
 /**
  * Config cache time (ms)
@@ -76,7 +76,7 @@ export default class Settings {
      * @return {string}
      */
     static get escapedTableName() {
-        return Database.instance.escapeId(this.tableName);
+        return database.escapeId(this.tableName);
     }
 
     /**
@@ -118,7 +118,7 @@ export default class Settings {
      * @private
      */
     static async _select(key) {
-        return Database.instance.query(`SELECT id, config FROM ${this.escapedTableName} WHERE id = ?`, key);
+        return database.query(`SELECT id, config FROM ${this.escapedTableName} WHERE id = ?`, key);
     }
 
     /**
@@ -136,7 +136,7 @@ export default class Settings {
      * @private
      */
     async _update() {
-        return Database.instance.query(
+        return database.query(
             `UPDATE ${this.constructor.escapedTableName} SET config = ? WHERE id = ?`, this.toJSONString(), this.id);
     }
 
@@ -146,7 +146,7 @@ export default class Settings {
      * @protected
      */
     async insert() {
-        return Database.instance.query(
+        return database.query(
             `INSERT INTO ${this.constructor.escapedTableName} (config,id) VALUES (?,?)`, this.toJSONString(), this.id);
     }
 

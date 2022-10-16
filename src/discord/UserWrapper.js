@@ -1,5 +1,5 @@
 import {RESTJSONErrorCodes} from 'discord.js';
-import Bot from '../bot/Bot.js';
+import bot from '../bot/Bot.js';
 
 export default class UserWrapper {
 
@@ -27,7 +27,7 @@ export default class UserWrapper {
      */
     async fetchUser() {
         try {
-            this.user = await Bot.instance.client.users.fetch(this.id);
+            this.user = await bot.client.users.fetch(this.id);
         }
         catch (e) {
             if (e.code === RESTJSONErrorCodes.UnknownUser || e.httpStatus === 404) {

@@ -11,7 +11,7 @@ import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
-import Config from '../../bot/Config.js';
+import config from '../../bot/Config.js';
 import {inLimits} from '../../util/util.js';
 
 export default class PardonCommand extends Command {
@@ -68,7 +68,7 @@ export default class PardonCommand extends Command {
         reason = reason || 'No reason provided';
         await member.pardon(reason, moderator, count);
         await interaction.reply(
-            new UserActionEmbed(member.user, reason, 'pardoned', colors.GREEN, Config.instance.data.emoji.pardon)
+            new UserActionEmbed(member.user, reason, 'pardoned', colors.GREEN, config.data.emoji.pardon)
                 .toMessage());
     }
 

@@ -1,8 +1,8 @@
 import {BaseGuildTextChannel, Collection, RESTJSONErrorCodes} from 'discord.js';
 import RateLimiter from './RateLimiter.js';
-import Bot from '../bot/Bot.js';
+import bot from '../bot/Bot.js';
 import GuildSettings from '../settings/GuildSettings.js';
-import Database from '../bot/Database.js';
+import database from '../bot/Database.js';
 
 export default class GuildWrapper {
 
@@ -31,7 +31,7 @@ export default class GuildWrapper {
      */
     static async fetch(id) {
         try {
-            return new this(await Bot.instance.client.guilds.fetch(id));
+            return new this(await bot.client.guilds.fetch(id));
         }
         catch (e) {
             if (e.code === RESTJSONErrorCodes.UnknownGuild) {
@@ -203,11 +203,11 @@ export default class GuildWrapper {
      */
     async deleteData() {
         return Promise.all([
-            Database.instance.query('DELETE FROM channels WHERE guildid = ?', this.guild.id),
-            Database.instance.query('DELETE FROM guilds WHERE id = ?', this.guild.id),
-            Database.instance.query('DELETE FROM responses WHERE guildid = ?', this.guild.id),
-            Database.instance.query('DELETE FROM badWords WHERE guildid = ?', this.guild.id),
-            Database.instance.query('DELETE FROM moderations WHERE guildid = ?', this.guild.id)
+            database.query('DELETE FROM channels WHERE guildid = ?', this.guild.id),
+            database.query('DELETE FROM guilds WHERE id = ?', this.guild.id),
+            database.query('DELETE FROM responses WHERE guildid = ?', this.guild.id),
+            database.query('DELETE FROM badWords WHERE guildid = ?', this.guild.id),
+            database.query('DELETE FROM moderations WHERE guildid = ?', this.guild.id)
         ]);
     }
 

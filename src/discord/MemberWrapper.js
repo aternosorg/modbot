@@ -1,7 +1,7 @@
 import GuildSettings from '../settings/GuildSettings.js';
 import {Guild, RESTJSONErrorCodes} from 'discord.js';
 import {formatTime, parseTime} from '../util/timeutils.js';
-import Database from '../bot/Database.js';
+import database from '../bot/Database.js';
 import GuildWrapper from './GuildWrapper.js';
 import {resolveColor} from '../util/colors.js';
 import {toTitleCase} from '../util/format.js';
@@ -95,7 +95,7 @@ export default class MemberWrapper {
      * @return {Promise<?Moderation>}
      */
     async getActiveModeration(type) {
-        const moderation = await Database.instance.query(
+        const moderation = await database.query(
             'SELECT * FROM moderations WHERE active = TRUE AND action = ? AND guildid = ? AND userid = ?',
             type, this.guild.guild.id, this.user.id);
 
@@ -259,7 +259,7 @@ export default class MemberWrapper {
      */
     async strike(reason, moderator, amount = 1){
         await this.dmPunishedUser('striked', reason, null, 'in');
-        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'strike', reason, null, moderator.id, amount);
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'strike', reason, null, moderator.id, amount);
         const total = await this.getStrikeSum();
         await Promise.all([
             this.#logModeration(moderator, reason, id, 'strike', null, amount, total),
@@ -272,7 +272,7 @@ export default class MemberWrapper {
      * @return {Promise<number>}
      */
     async getStrikeSum() {
-        return (await Database.instance.query(
+        return (await database.query(
             'SELECT SUM(value) AS sum FROM moderations WHERE guildid = ? AND userid = ? AND (action = \'strike\' OR action = \'pardon\')',
             this.guild.guild.id, this.user.id)
         )?.sum || 0;
@@ -330,7 +330,7 @@ export default class MemberWrapper {
     async pardon(reason, moderator, amount = 1){
         await this.guild.sendDM(this.user, `${amount} strikes have been pardoned in \`${this.guild.guild.name}\` | ${reason}`);
 
-        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'pardon', reason, null, moderator.id, -amount);
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'pardon', reason, null, moderator.id, -amount);
         await this.#logModeration(moderator, reason, id, 'pardon', null, amount, await this.getStrikeSum());
     }
 
@@ -353,7 +353,7 @@ export default class MemberWrapper {
             reason: this._shortenReason(`${moderator.tag} ${duration ? `(${formatTime(duration)}) ` : ''}| ${reason}`),
             deleteMessageSeconds,
         });
-        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'ban', reason, duration, moderator.id);
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'ban', reason, duration, moderator.id);
         await this.#logModeration(moderator, reason, id, 'ban', formatTime(duration));
     }
 
@@ -372,10 +372,10 @@ export default class MemberWrapper {
                 throw e;
             }
         }
-        await Database.instance.query(
+        await database.query(
             'UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'ban\'',
             this.guild.guild.id, this.user.id);
-        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'unban', reason, null, moderator.id);
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'unban', reason, null, moderator.id);
         await this.#logModeration(moderator, reason, id, 'unban');
     }
 
@@ -398,7 +398,7 @@ export default class MemberWrapper {
             reason: this._shortenReason(`${moderator.tag} | ${reason}`)
         });
         await this.guild.guild.members.unban(this.user.id, 'softban');
-        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'softban', reason, null, moderator.id);
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'softban', reason, null, moderator.id);
         await this.#logModeration(moderator, reason, id, 'softban');
     }
 
@@ -412,7 +412,7 @@ export default class MemberWrapper {
         await this.dmPunishedUser('kicked', reason, null, 'from');
         if (!this.member && await this.fetchMember() === null) return;
         await this.member.kick(this._shortenReason(`${moderator.tag} | ${reason}`));
-        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'kick', reason, null, moderator.id);
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'kick', reason, null, moderator.id);
         await this.#logModeration(moderator, reason, id, 'kick');
     }
 
@@ -442,7 +442,7 @@ export default class MemberWrapper {
                 await this.member.roles.add(mutedRole, shortedReason);
             }
         }
-        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'mute', reason, duration, moderator.id);
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'mute', reason, duration, moderator.id);
         await this.#logModeration(moderator, reason, id, 'mute', formatTime(duration));
     }
 
@@ -461,10 +461,10 @@ export default class MemberWrapper {
             }
             await this.member.timeout(null);
         }
-        await Database.instance.query(
+        await database.query(
             'UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'mute\'',
             this.guild.guild.id, this.user.id);
-        const id = await Database.instance.addModeration(this.guild.guild.id, this.user.id, 'unmute', reason, null, moderator.id);
+        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'unmute', reason, null, moderator.id);
         await this.#logModeration(moderator, reason, id, 'unmute');
     }
 

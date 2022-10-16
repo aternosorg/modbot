@@ -1,4 +1,4 @@
-import Database from '../bot/Database.js';
+import database from '../bot/Database.js';
 
 export default class WhereParameter {
     /**
@@ -14,7 +14,7 @@ export default class WhereParameter {
     }
 
     get escapedField() {
-        return Database.instance.escapeId(this.field);
+        return database.escapeId(this.field);
     }
 
     get comparator() {

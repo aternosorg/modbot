@@ -3,7 +3,7 @@ import BadWord from '../../../database/BadWord.js';
 import Member from '../../../discord/MemberWrapper.js';
 import {Collection, PermissionFlagsBits, RESTJSONErrorCodes, ThreadChannel} from 'discord.js';
 import GuildSettings from '../../../settings/GuildSettings.js';
-import Bot from '../../../bot/Bot.js';
+import bot from '../../../bot/Bot.js';
 import ChannelSettings from '../../../settings/ChannelSettings.js';
 import {formatTime} from '../../../util/timeutils.js';
 import RepeatedMessage from './RepeatedMessage.js';
@@ -77,12 +77,12 @@ export default class AutoModEventListener extends MessageCreateEventListener {
         for (let word of words.values()) {
             if (word.matches(message)) {
                 const reason = `Using forbidden words or phrases (Filter ID: ${word.id})`;
-                await Bot.instance.delete(message, reason);
+                await bot.delete(message, reason);
                 if (word.response !== 'disabled') {
                     /** @type {import('discord.js').TextChannel|import('discord.js').VoiceChannel}*/
                     const channel = message.channel;
                     const response = await channel.send(`<@!${message.author.id}>` + word.getResponse());
-                    await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
+                    await bot.delete(response, null, this.RESPONSE_TIMEOUT);
                 }
                 if (word.punishment.action !== 'none') {
                     const member = new Member(message.author, message.guild);
@@ -106,9 +106,9 @@ export default class AutoModEventListener extends MessageCreateEventListener {
             return false;
         }
 
-        await Bot.instance.delete(message, 'Too many caps');
+        await bot.delete(message, 'Too many caps');
         const response = await message.channel.send(`<@!${message.author.id}> Don't use that many capital letters!`);
-        await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
+        await bot.delete(response, null, this.RESPONSE_TIMEOUT);
         return true;
     }
 
@@ -129,9 +129,9 @@ export default class AutoModEventListener extends MessageCreateEventListener {
             return false;
         }
 
-        await Bot.instance.delete(message, 'Invites are not allowed here');
+        await bot.delete(message, 'Invites are not allowed here');
         const response = await message.channel.send(`<@!${message.author.id}> Invites are not allowed here!`);
-        await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
+        await bot.delete(response, null, this.RESPONSE_TIMEOUT);
         return true;
     }
 
@@ -162,10 +162,10 @@ export default class AutoModEventListener extends MessageCreateEventListener {
             this.cooldowns.set(key, now);
             return false;
         }
-        await Bot.instance.delete(message, 'Sending too many links');
+        await bot.delete(message, 'Sending too many links');
         const response = await message.channel.send(
             `<@!${message.author.id}> You can post a link again in ${formatTime(coolDownEnd - now) || '1s'}!`);
-        await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
+        await bot.delete(response, null, this.RESPONSE_TIMEOUT);
         return true;
     }
 
@@ -191,10 +191,10 @@ export default class AutoModEventListener extends MessageCreateEventListener {
             this.cooldowns.set(key, now);
             return false;
         }
-        await Bot.instance.delete(message, 'Sending too many attachments');
+        await bot.delete(message, 'Sending too many attachments');
         const response = await message.channel.send(
             `<@!${message.author.id}> You can post an attachment again in ${formatTime(coolDownEnd - now) || '1s'}!`);
-        await Bot.instance.delete(response, null, this.RESPONSE_TIMEOUT);
+        await bot.delete(response, null, this.RESPONSE_TIMEOUT);
         return true;
     }
 

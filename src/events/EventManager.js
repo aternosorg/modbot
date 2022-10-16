@@ -1,4 +1,4 @@
-import Logger from '../Logger.js';
+import logger from '../Logger.js';
 
 export default class EventManager {
 
@@ -29,7 +29,7 @@ export default class EventManager {
         }
         catch (e) {
             try {
-                await Logger.instance.error(`Failed to execute event listener '${eventListener.constructor.name}'`, e);
+                await logger.error(`Failed to execute event listener '${eventListener.constructor.name}'`, e);
             }
             catch (e) {
                 console.error(e);

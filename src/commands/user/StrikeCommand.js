@@ -12,7 +12,7 @@ import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
-import Config from '../../bot/Config.js';
+import config from '../../bot/Config.js';
 import {inLimits} from '../../util/util.js';
 
 export default class StrikeCommand extends UserCommand {
@@ -85,7 +85,7 @@ export default class StrikeCommand extends UserCommand {
 
         await member.strike(reason, interaction.user, count);
         await interaction.reply(
-            new UserActionEmbed(member.user, reason, 'striked', colors.RED, Config.instance.data.emoji.strike)
+            new UserActionEmbed(member.user, reason, 'striked', colors.RED, config.data.emoji.strike)
                 .toMessage());
     }
 

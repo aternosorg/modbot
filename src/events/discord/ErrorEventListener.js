@@ -1,5 +1,5 @@
 import EventListener from '../EventListener.js';
-import Logger from '../../Logger.js';
+import logger from '../../Logger.js';
 
 export default class ErrorEventListener extends EventListener {
     get name() {
@@ -11,6 +11,6 @@ export default class ErrorEventListener extends EventListener {
      * @return {Promise<void>}
      */
     async execute(error) {
-        await Logger.instance.error('The discord client experienced an error', error);
+        await logger.error('The discord client experienced an error', error);
     }
 }
