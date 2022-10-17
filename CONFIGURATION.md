@@ -54,27 +54,15 @@ type: string
 config file: `googleApiKey`
 environment: `MODBOT_GOOGLE_API_KEY`
 
-## Google Cloud Monitoring (optional)
-Credentials for logging messages to the Google cloud. If you don't want to use Google cloud logging just ignore this.
-
-### Enabled
-type: boolean
-config file: `monitoring.enabled`
-environment: `MODBOT_MONITORING_ENABLED`
-
-### Project ID
-type: string
-config file: `monitoring.projectId`
-environment: `MODBOT_MONITORING_PROJECT_ID`
-
-### Log Name
-type: string
-config file: `monitoring.logName`
-environment: `MODBOT_MONITORING_LOG_NAME`
+## Google Cloud (optional)
+Configuration for Google cloud features
 
 ### Credentials
 These options break our convention on using `camelCase` because they are passed directly to the Google API.
-If you're using a config file you add additional options to this and they will be passed along.
+If you're using a config file you add additional options to this, and they will be passed along.
+These credentials are used for the following apis if you enabled them in the config:
+- Cloud Vision
+- Cloud Logging
 
 #### Client Email
 type: string
@@ -85,6 +73,33 @@ environment: `MODBOT_MONITORING_CREDENTIALS_CLIENT_EMAIL`
 type: string
 config file: `monitoring.credentials.private_key`
 environment: `MODBOT_MONITORING_CREDENTIALS_PRIVATE_KEY`
+
+### Logging
+Configuration for logging messages to the Google cloud using the Google cloud logging api. 
+If you don't want to use Google cloud logging just ignore this.
+
+#### Enabled
+type: boolean
+config file: `googleCloud.logging.enabled`
+environment: `MODBOT_GOOGLE_CLOUD_LOGGING_ENABLED`
+
+#### Project ID
+type: string
+config file: `googleCloud.logging.projectId`
+environment: `MODBOT_GOOGLE_CLOUD_LOGGING_PROJECT_ID`
+
+#### Log Name
+type: string
+config file: `googleCloud.logging.logName`
+environment: `MODBOT_GOOGLE_CLOUD_LOGGING_LOG_NAME`
+
+### Vision
+Configuration for using the cloud vision API to detect adult images.
+
+#### Enabled
+type: boolean
+config file: `googleCloud.vision.enabled`
+environment: `MODBOT_GOOGLE_CLOUD_VISION_ENABLED`
 
 ## Feature Whitelist (optional)
 Array of server ids that are allowed to use special features (e.g. `/purge-invites`).

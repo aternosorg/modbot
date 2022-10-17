@@ -5,13 +5,13 @@ export class Logger {
     #cloudLog;
 
     get config() {
-        return config.data?.monitoring;
+        return config.data?.googleCloud?.logging;
     }
 
     get cloudLog() {
         return this.#cloudLog ??= new Logging({
             projectId: this.config.projectId,
-            credentials: this.config.credentials
+            credentials: config.data.googleCloud.credentials
         }).log(this.config.logName);
     }
 

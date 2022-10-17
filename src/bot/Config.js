@@ -6,10 +6,17 @@ import {exists, readJSON} from '../util/fsutils.js';
  * @property {string} authToken
  * @property {DatabaseConfig} database
  * @property {?string} googleApiKey
- * @property {?MonitoringConfig} monitoring
+ * @property {?GoogleCloudConfig} googleCloud
  * @property {{enabled: boolean, guild: string}} debug
  * @property {string[]} featureWhitelist
  * @property {Emojis} emoji emoji ids
+ */
+
+/**
+ * @typedef {Object} GoogleCloudConfig
+ * @property {GoogleCloudCredentials} credentials
+ * @property {CloudLoggingConfig} logging
+ * @property {VisionConfig} vision
  */
 
 /**
@@ -17,15 +24,19 @@ import {exists, readJSON} from '../util/fsutils.js';
  */
 
 /**
- * @typedef {Object} MonitoringConfig google cloud monitoring
+ * @typedef {Object} VisionConfig
  * @property {boolean} enabled
- * @property {string} projectId
- * @property {string} logName
- * @property {MonitoringCredentials} credentials
  */
 
 /**
- * @typedef {Object} MonitoringCredentials
+ * @typedef {Object} CloudLoggingConfig google cloud monitoring
+ * @property {boolean} enabled
+ * @property {string} projectId
+ * @property {string} logName
+ */
+
+/**
+ * @typedef {Object} GoogleCloudCredentials
  * @property {string} client_email
  * @property {string} private_key
  */
@@ -87,14 +98,19 @@ export class Config {
                     port: parseInt(process.env.MODBOT_DATABASE_PORT ?? '3306'),
                 },
                 googleApiKey:  process.env.MODBOT_GOOGLE_API_KEY,
-                monitoring: {
-                    enabled: ['1', 'true', 'y'].includes(process.env.MODBOT_MONITORING_ENABLED?.toLowerCase?.()),
-                    projectId: process.env.MODBOT_MONITORING_PROJECT_ID,
-                    logName: process.env.MODBOT_MONITORING_LOG_NAME,
+                googleCloud: {
                     credentials: {
-                        client_email: process.env.MODBOT_MONITORING_CREDENTIALS_CLIENT_EMAIL,
-                        private_key: process.env.MODBOT_MONITORING_CREDENTIALS_PRIVATE_KEY
-                    }
+                        client_email: process.env.MODBOT_GOOGLE_CLOUD_CREDENTIALS_CLIENT_EMAIL,
+                        private_key: process.env.MODBOT_GOOGLE_CLOUD_CREDENTIALS_PRIVATE_KEY
+                    },
+                    vision: {
+                        enabled: this.#parseBooleanFromEnv(process.env.MODBOT_GOOGLE_CLOUD_VISION_ENABLED)
+                    },
+                    logging: {
+                        enabled: this.#parseBooleanFromEnv(process.env.MODBOT_GOOGLE_CLOUD_LOGGING_ENABLED),
+                        projectId: process.env.MODBOT_GOOGLE_CLOUD_LOGGING_PROJECT_ID,
+                        logName: process.env.MODBOT_GOOGLE_CLOUD_LOGGING_LOG_NAME,
+                    },
                 },
                 featureWhitelist: (process.env.MODBOT_FEATURE_WHITELIST ?? '').split(/ *, */),
                 emoji: {
@@ -137,10 +153,15 @@ export class Config {
             }
 
             this.#data = await readJSON('./config.json');
-            this.#data.monitoring ??= {
-                enabled: false,
-                projectId: '',
-                logName: '',
+            this.#data.googleCloud ??= {
+                vision: {
+                    enabled: false
+                },
+                logging: {
+                    enabled: false,
+                    projectId: '',
+                    logName: '',
+                },
                 credentials: {
                     client_email: '',
                     private_key: '',
@@ -149,6 +170,15 @@ export class Config {
             this.#data.emoji ??= {};
             this.#data.featureWhitelist ??= [];
         }
+    }
+
+    /**
+     * parse an environment variable as a boolean
+     * @param {string} string
+     * @return {boolean}
+     */
+    #parseBooleanFromEnv(string) {
+        return ['1', 'true', 'y'].includes(string?.toLowerCase?.());
     }
 }
 
