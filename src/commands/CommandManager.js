@@ -41,6 +41,7 @@ import {asyncFilter} from '../util/util.js';
 import AutoResponseCommand from './settings/AutoResponseCommand.js';
 import BadWordCommand from './settings/BadWordCommand.js';
 import {replyOrFollowUp} from '../util/interaction.js';
+import logger from '../Logger.js';
 
 const cooldowns = new Cache();
 
@@ -194,16 +195,14 @@ export class CommandManager {
      * @return {Promise<void>}
      */
     async handleCommandError(interaction, error) {
-        let embed = new ErrorEmbed('An error occurred while executing this command.');
+        await logger.error(error);
+        let message = 'An error occurred while executing this command.';
         if (error.code === RESTJSONErrorCodes.MissingPermissions) {
-            embed = new ErrorEmbed('I\'m missing some permissions to execute this command.');
+            message = 'I\'m missing some permissions to execute this command.';
         }
 
-        embed.setFooter({
-            text: `If this happens consistently please create an issue ${hyperlink('here', `${GITHUB_REPOSITORY}/issues`, 'GitHub Issues')}`
-        });
-
-        await replyOrFollowUp(interaction, embed.toMessage());
+        message += `If this happens consistently please create an issue ${hyperlink('here', `${GITHUB_REPOSITORY}/issues`, 'GitHub Issues')}`;
+        await replyOrFollowUp(interaction, ErrorEmbed.message(message));
     }
 
     /**
