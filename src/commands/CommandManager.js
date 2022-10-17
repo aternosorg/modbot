@@ -2,6 +2,7 @@ import bot from '../bot/Bot.js';
 import {
     ApplicationCommandPermissionType,
     ApplicationCommandType,
+    hyperlink,
     PermissionFlagsBits,
     RESTJSONErrorCodes
 } from 'discord.js';
@@ -13,7 +14,7 @@ import ArticleCommand from './external/ArticleCommand.js';
 import AvatarCommand from './user/AvatarCommand.js';
 import ExportCommand from './bot/ExportCommand.js';
 import ImportCommand from './bot/ImportCommand.js';
-import InfoCommand from './bot/InfoCommand.js';
+import InfoCommand, {GITHUB_REPOSITORY} from './bot/InfoCommand.js';
 import UserInfoCommand from './user/UserInfoCommand.js';
 import MemberWrapper from '../discord/MemberWrapper.js';
 import BanCommand from './user/BanCommand.js';
@@ -39,6 +40,7 @@ import StrikePurgeCommand from './user/StrikePurgeCommand.js';
 import {asyncFilter} from '../util/util.js';
 import AutoResponseCommand from './settings/AutoResponseCommand.js';
 import BadWordCommand from './settings/BadWordCommand.js';
+import {replyOrFollowUp} from '../util/interaction.js';
 
 const cooldowns = new Cache();
 
@@ -187,6 +189,24 @@ export class CommandManager {
     }
 
     /**
+     * @param {import('discord.js').Interaction} interaction
+     * @param {Error|import('discord.js').DiscordAPIError} error
+     * @return {Promise<void>}
+     */
+    async handleCommandError(interaction, error) {
+        let embed = new ErrorEmbed('An error occurred while executing this command.');
+        if (error.code === RESTJSONErrorCodes.MissingPermissions) {
+            embed = new ErrorEmbed('I\'m missing some permissions to execute this command.');
+        }
+
+        embed.setFooter({
+            text: `If this happens consistently please create an issue ${hyperlink('here', `${GITHUB_REPOSITORY}/issues`, 'GitHub Issues')}`
+        });
+
+        await replyOrFollowUp(interaction, embed.toMessage());
+    }
+
+    /**
      * @param {import('discord.js').ChatInputCommandInteraction} interaction
      * @return {Promise<void>}
      */
@@ -195,7 +215,13 @@ export class CommandManager {
         if (!await this.checkCommandAvailability(command, interaction)) {
             return;
         }
-        await command.execute(interaction);
+
+        try {
+            await command.execute(interaction);
+        }
+        catch (e) {
+            await this.handleCommandError(interaction, e);
+        }
     }
 
     /**
@@ -209,7 +235,6 @@ export class CommandManager {
         }
 
         const options = await command.complete(interaction);
-
         await interaction.respond(options.slice(0, AUTOCOMPLETE_OPTIONS_LIMIT));
     }
 
@@ -222,7 +247,13 @@ export class CommandManager {
         if (!await this.checkCommandAvailability(command, interaction)) {
             return;
         }
-        await command.executeUserMenu(interaction);
+
+        try {
+            await command.executeUserMenu(interaction);
+        }
+        catch (e) {
+            await this.handleCommandError(interaction, e);
+        }
     }
 
     /**
@@ -234,7 +265,13 @@ export class CommandManager {
         if (!await this.checkCommandAvailability(command, interaction)) {
             return;
         }
-        await command.executeMessageMenu(interaction);
+
+        try {
+            await command.executeMessageMenu(interaction);
+        }
+        catch (e) {
+            await this.handleCommandError(interaction, e);
+        }
     }
 
     /**
@@ -255,7 +292,12 @@ export class CommandManager {
             return;
         }
 
-        await command.executeButton(interaction);
+        try {
+            await command.executeButton(interaction);
+        }
+        catch (e) {
+            await this.handleCommandError(interaction, e);
+        }
     }
 
     /**
@@ -272,7 +314,12 @@ export class CommandManager {
             return;
         }
 
-        await command.executeModal(interaction);
+        try {
+            await command.executeModal(interaction);
+        }
+        catch (e) {
+            await this.handleCommandError(interaction, e);
+        }
     }
 
     /**
@@ -289,7 +336,12 @@ export class CommandManager {
             return;
         }
 
-        await command.executeSelectMenu(interaction);
+        try {
+            await command.executeSelectMenu(interaction);
+        }
+        catch (e) {
+            await this.handleCommandError(interaction, e);
+        }
     }
 
     /**

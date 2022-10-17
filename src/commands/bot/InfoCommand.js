@@ -14,13 +14,13 @@ import {readFile} from 'fs/promises';
 import {exec} from 'child_process';
 import {promisify} from 'util';
 
-const DISCORD_INVITE_LINK = 'https://discord.gg/zYYhgPtmxw';
-const GITHUB_REPOSITORY = 'https://github.com/aternosorg/modbot';
-const PRIVACY_POLICY = 'https://aternos.gmbh/en/modbot/privacy';
+export const DISCORD_INVITE_LINK = 'https://discord.gg/zYYhgPtmxw';
+export const GITHUB_REPOSITORY = 'https://github.com/aternosorg/modbot';
+export const PRIVACY_POLICY = 'https://aternos.gmbh/en/modbot/privacy';
 
-const CLIENT_ID = '790967448111153153';
-const SCOPES = ['bot', 'applications.commands'];
-const PERMISSIONS = new PermissionsBitField()
+export const CLIENT_ID = '790967448111153153';
+export const SCOPES = ['bot', 'applications.commands'];
+export const PERMISSIONS = new PermissionsBitField()
     .add(PermissionFlagsBits.ViewChannel)
     .add(PermissionFlagsBits.ManageChannels)
     .add(PermissionFlagsBits.ManageRoles)
@@ -29,9 +29,9 @@ const PERMISSIONS = new PermissionsBitField()
     .add(PermissionFlagsBits.ModerateMembers)
     .add(PermissionFlagsBits.ManageMessages)
     .add(PermissionFlagsBits.SendMessages);
-const INVITE_LINK = `https://discordapp.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=${SCOPES.join('%20')}&permissions=${PERMISSIONS.bitfield}`;
+export const INVITE_LINK = `https://discordapp.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=${SCOPES.join('%20')}&permissions=${PERMISSIONS.bitfield}`;
 
-const VERSION = await getPackageVersion();
+export const VERSION = await getPackageVersion();
 async function getPackageVersion() {
     try {
         const pkgJson = JSON.parse((await readFile('package.json')).toString());
@@ -42,7 +42,7 @@ async function getPackageVersion() {
     return null;
 }
 
-const COMMIT = await getGitCommit();
+export const COMMIT = await getGitCommit();
 async function getGitCommit() {
     try {
         return (await promisify(exec)('git rev-parse --short HEAD'))?.stdout?.replaceAll?.('\n', '');
@@ -83,7 +83,7 @@ export default class InfoCommand extends Command {
                 )
                 .newLine()
                 .addPairIf(VERSION, 'Version', VERSION)
-                .addPairIf(COMMIT, 'Commit', hyperlink(COMMIT, `https://github.com/aternosorg/modbot/tree/${COMMIT}`, 'View on GitHub'))
+                .addPairIf(COMMIT, 'Commit', hyperlink(COMMIT, `${GITHUB_REPOSITORY}/tree/${COMMIT}`, 'View on GitHub'))
                 .addPair('Uptime', formatTime(process.uptime()))
                 .addPair('Ping', bot.client.ws.ping + 'ms')
             ],
