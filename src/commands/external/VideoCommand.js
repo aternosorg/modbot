@@ -5,6 +5,7 @@ import icons from '../../util/icons.js';
 import {ActionRowBuilder, SelectMenuBuilder} from 'discord.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 import config from '../../bot/Config.js';
+import {componentEmojiIfExists} from '../../util/format.js';
 
 export default class VideoCommand extends Command {
 
@@ -50,7 +51,7 @@ export default class VideoCommand extends Command {
             return {
                 default: false,
                 label: video.item.snippet.title.substring(0, SELECT_MENU_TITLE_LIMIT),
-                emoji: icons.article,
+                emoji: componentEmojiIfExists('youtube', icons.video),
                 value: video.item.snippet.resourceId.videoId,
             };
         }).slice(0, 5);

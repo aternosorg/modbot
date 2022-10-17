@@ -21,6 +21,7 @@ export default class PlaylistCommand extends SubCommand {
     }
 
     async execute(interaction) {
+        await interaction.deferReply({ ephemeral: true });
         const option = interaction.options.getString('playlist');
         const guildSettings = await GuildSettings.get(interaction.guildId);
 
@@ -28,7 +29,7 @@ export default class PlaylistCommand extends SubCommand {
             guildSettings.playlist = null;
             await guildSettings.save();
             await commandManager.updateCommandsForGuild(interaction.guild);
-            return await interaction.reply(new EmbedWrapper()
+            return await interaction.editReply(new EmbedWrapper()
                 .setDescription('Disabled playlist')
                 .setColor(colors.RED)
                 .toMessage()
@@ -36,17 +37,17 @@ export default class PlaylistCommand extends SubCommand {
         }
 
         if (!config.data.googleApiKey) {
-            return await interaction.reply(ErrorEmbed
+            return await interaction.editReply(ErrorEmbed
                 .message('There is no google API key configured for this instance of ModBot!'));
         }
 
         const id = this.getPlaylistId(option);
         if (!id) {
-            return await interaction.reply(ErrorEmbed.message('Invalid playlist URL!'));
+            return await interaction.editReply(ErrorEmbed.message('Invalid playlist URL!'));
         }
 
         if (!await YouTubePlaylist.isValidPlaylist(id)) {
-            await interaction.reply(ErrorEmbed
+            await interaction.editReply(ErrorEmbed
                 .message('Playlist not found. Make sure the playlist is public or unlisted and the link is correct.'));
             return;
         }
@@ -57,7 +58,7 @@ export default class PlaylistCommand extends SubCommand {
 
         await guildSettings.save();
         await commandManager.updateCommandsForGuild(interaction.guild);
-        await interaction.reply(new EmbedWrapper()
+        await interaction.editReply(new EmbedWrapper()
             .setDescription(`Set playlist to ${playlist.getFormattedUrl()}`)
             .setColor(colors.GREEN)
             .toMessage()

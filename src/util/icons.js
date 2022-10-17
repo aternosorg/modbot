@@ -10,4 +10,5 @@ export default {
     last: String.fromCodePoint(9197),
     eyes: String.fromCodePoint(128064),
     article: String.fromCodePoint(128214),
+    video: String.fromCodePoint(127909)
 };

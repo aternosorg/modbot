@@ -6,7 +6,7 @@ import UserWrapper from '../../discord/UserWrapper.js';
 import colors from '../../util/colors.js';
 import UserEmbed from '../../embeds/UserEmbed.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
-import {buttonEmojiIfExists, inlineEmojiIfExists} from '../../util/format.js';
+import {componentEmojiIfExists, inlineEmojiIfExists} from '../../util/format.js';
 
 export default class UserInfoCommand extends Command {
 
@@ -79,7 +79,7 @@ export default class UserInfoCommand extends Command {
                     .setLabel('Strike')
                     .setCustomId(`strike:${user.id}`)
                     .setStyle(ButtonStyle.Danger)
-                    .setEmoji(buttonEmojiIfExists('strike')),
+                    .setEmoji(componentEmojiIfExists('strike')),
             );
         const informationRow = new ActionRowBuilder()
             .addComponents(
@@ -87,17 +87,17 @@ export default class UserInfoCommand extends Command {
                     .setLabel('Refresh')
                     .setCustomId(`user:refresh:${user.id}`)
                     .setStyle(ButtonStyle.Secondary)
-                    .setEmoji(buttonEmojiIfExists('refresh')),
+                    .setEmoji(componentEmojiIfExists('refresh')),
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Avatar')
                     .setCustomId(`avatar:${user.id}`)
                     .setStyle(ButtonStyle.Secondary)
-                    .setEmoji(buttonEmojiIfExists('avatar')),
+                    .setEmoji(componentEmojiIfExists('avatar')),
                 /** @type {*} */ new ButtonBuilder()
                     .setLabel('Moderations')
                     .setCustomId(`moderation:list:${user.id}`)
                     .setStyle(ButtonStyle.Secondary)
-                    .setEmoji(buttonEmojiIfExists('moderations')),
+                    .setEmoji(componentEmojiIfExists('moderations')),
             );
 
         if (member) {
@@ -107,7 +107,7 @@ export default class UserInfoCommand extends Command {
                     .setLabel('Kick')
                     .setCustomId(`kick:${user.id}`)
                     .setStyle(ButtonStyle.Danger)
-                    .setEmoji(buttonEmojiIfExists('kick'))
+                    .setEmoji(componentEmojiIfExists('kick'))
             );
         }
 
@@ -121,7 +121,7 @@ export default class UserInfoCommand extends Command {
                         .setLabel('Pardon')
                         .setCustomId(`pardon:${user.id}`)
                         .setStyle(ButtonStyle.Success)
-                        .setEmoji(buttonEmojiIfExists('pardon'))
+                        .setEmoji(componentEmojiIfExists('pardon'))
                 );
             }
         }
@@ -139,7 +139,7 @@ export default class UserInfoCommand extends Command {
                         .setLabel('Unmute')
                         .setCustomId(`unmute:${user.id}`)
                         .setStyle(ButtonStyle.Success)
-                        .setEmoji(buttonEmojiIfExists('mute'))
+                        .setEmoji(componentEmojiIfExists('mute'))
                 );
                 embed.setColor(colors.ORANGE);
             }
@@ -149,7 +149,7 @@ export default class UserInfoCommand extends Command {
                         .setLabel('Mute')
                         .setCustomId(`mute:${user.id}`)
                         .setStyle(ButtonStyle.Danger)
-                        .setEmoji(buttonEmojiIfExists('mute'))
+                        .setEmoji(componentEmojiIfExists('mute'))
                 );
             }
         }
@@ -167,7 +167,7 @@ export default class UserInfoCommand extends Command {
                         .setLabel('Unban')
                         .setCustomId(`unban:${user.id}`)
                         .setStyle(ButtonStyle.Success)
-                        .setEmoji(buttonEmojiIfExists('ban'))
+                        .setEmoji(componentEmojiIfExists('ban'))
                 );
                 embed.setColor(colors.RED);
             }
@@ -177,7 +177,7 @@ export default class UserInfoCommand extends Command {
                         .setLabel('Ban')
                         .setCustomId(`ban:${user.id}`)
                         .setStyle(ButtonStyle.Danger)
-                        .setEmoji(buttonEmojiIfExists('ban'))
+                        .setEmoji(componentEmojiIfExists('ban'))
                 );
             }
         }

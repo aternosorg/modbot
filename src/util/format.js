@@ -34,12 +34,13 @@ export function inlineEmojiIfExists(configKey) {
 
 /**
  * @param {string} configKey
+ * @param {?string} fallback
  * @return {import('discord.js').APIMessageComponentEmoji}
  */
-export function buttonEmojiIfExists(configKey) {
+export function componentEmojiIfExists(configKey, fallback = null) {
     const emoji = config.data.emoji[configKey];
     if (!emoji) {
-        return {};
+        return {name: fallback ?? undefined};
     }
     else {
         return {id: emoji};
