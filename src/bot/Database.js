@@ -1,5 +1,6 @@
 import * as mysql from 'mysql2/promise';
 import logger from '../Logger.js';
+import config from './Config.js';
 
 export class Database {
     /**
@@ -13,11 +14,14 @@ export class Database {
     #waiting = [];
 
     /**
-     * @param {DatabaseConfig} options
      * @returns {Promise<void>}
      */
-    async connect(options) {
-        this.options = options;
+    async connect() {
+        this.options = config.data.database;
+        if (!this.options) {
+            throw new Error('Missing database configuration! Make sure your config is up to date!');
+        }
+
         this.options.charset = 'utf8mb4';
         this.options.supportBigNumbers = true;
         this.options.bigNumberStrings = true;

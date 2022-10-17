@@ -67,6 +67,9 @@ export class Config {
      */
     #data;
 
+    /**
+     * @return {ConfigData}
+     */
     get data() {
         return this.#data;
     }

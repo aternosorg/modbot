@@ -11,7 +11,7 @@ async function start() {
     await logger.debug('Loading settings');
     await config.load();
     await logger.info('Connecting to database');
-    await database.connect(config.data.database);
+    await database.connect();
     await logger.info('Creating database tables');
     await database.createTables();
     await logger.notice('Logging into discord');
