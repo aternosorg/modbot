@@ -11,6 +11,6 @@ export default class RateLimitEventListener extends EventListener {
     }
 
     get name() {
-        return 'rateLimit';
+        return 'rateLimited';
     }
 }
