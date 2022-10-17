@@ -21,10 +21,10 @@ async function start() {
     await logger.debug('Loading event listeners');
     new DiscordEventManager().subscribe();
     new RestEventManagerEventManager().subscribe();
-    await logger.notice('Registering slash commands');
-    await commandManager.register();
     await logger.debug('Loading intervals');
     new IntervalManager().schedule();
+    await logger.notice('Registering slash commands');
+    await commandManager.register();
     await logger.info('Started');
 }
 
