@@ -45,15 +45,15 @@ export default class MessageDeleteEventListener extends EventListener {
             }
         }
 
-        const attachments = [];
+        const files = [];
         for (const attachment of message.attachments.values()) {
-            attachments.push({attachment: attachment.attachment, name: attachment.name, description: attachment.description});
+            files.push({attachment: attachment.attachment, name: attachment.name, description: attachment.description});
         }
 
         const guild = new GuildWrapper(message.guild);
         await guild.logMessage({
             embeds: [embed],
-            attachments,
+            files,
         });
     }
 }
