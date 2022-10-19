@@ -161,12 +161,11 @@ export default class MemberWrapper {
             };
         }
 
-        const until = this.member?.communicationDisabledUntilTimestamp;
-        if (until && until > Date.now()) {
+        if (this.member?.isCommunicationDisabled?.()) {
             return {
                 muted: true,
                 reason: 'Unknown (time-out)',
-                end: until,
+                end: this.member.communicationDisabledUntilTimestamp,
             };
         }
 
