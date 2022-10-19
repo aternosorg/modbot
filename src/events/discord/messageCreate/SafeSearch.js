@@ -19,7 +19,7 @@ export default class SafeSearch {
     }
 
     get isEnabled() {
-        return config.data.googleCloud.vision.enabled;
+        return config.data.googleCloud.vision?.enabled;
     }
 
     /**
