@@ -129,10 +129,9 @@ export default class UserInfoCommand extends Command {
         {
             const mute = await memberWrapper.getMuteInfo();
             if (mute.muted) {
-                embed.newLine()
-                    .addPair( inlineEmojiIfExists('mute') + 'Muted', mute.reason);
+                embed.addPair( inlineEmojiIfExists('mute') + 'Muted', mute.reason);
                 if (mute.end) {
-                    embed.addPair('Muted until', time(Math.floor(mute.end / 1_000)));
+                    embed.addPair(inlineEmojiIfExists('mute') + 'Muted until', time(Math.floor(mute.end / 1_000)));
                 }
                 actionRow.addComponents(
                     /** @type {*} */ new ButtonBuilder()
@@ -157,10 +156,9 @@ export default class UserInfoCommand extends Command {
         {
             const ban = await memberWrapper.getBanInfo();
             if (ban.banned) {
-                embed.newLine()
-                    .addPair(inlineEmojiIfExists('ban') + 'Banned', ban.reason);
+                embed.addPair(inlineEmojiIfExists('ban') + 'Banned', ban.reason);
                 if (ban.end) {
-                    embed.addPair('Banned until', time(Math.floor(ban.end / 1_000)));
+                    embed.addPair(inlineEmojiIfExists('ban') + 'Banned until', time(Math.floor(ban.end / 1_000)));
                 }
                 actionRow.addComponents(
                     /** @type {*} */ new ButtonBuilder()
