@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@google-cloud/logging": "^10.1.10",
+    "@google-cloud/vision": "^3.0.1",
     "@googleapis/youtube": "^6.0.0",
     "diff": "^5.1.0",
     "discord-api-types": "^0.37.12",

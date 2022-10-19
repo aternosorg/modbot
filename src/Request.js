@@ -1,4 +1,5 @@
 import got from 'got';
+import {createHash} from 'crypto';
 
 export default class Request {
 
@@ -43,5 +44,14 @@ export default class Request {
             throw new Error(`Failed to parse JSON response of ${this.url}`);
         }
         return this;
+    }
+
+    /**
+     * request this url and return a sha256 hash of the raw body
+     * @return {Promise<string>}
+     */
+    async getHash() {
+        const response = await got.get(this.url, this.options);
+        return createHash('sha256').update(new DataView(response.rawBody.buffer)).digest('hex').toString();
     }
 }

@@ -40,6 +40,7 @@ export default class StrikeCommand extends UserCommand {
                 .setDescription('Strike count')
                 .setRequired(false)
                 .setMinValue(1)
+                .setMaxValue(100)
         );
         return super.buildOptions(builder);
     }

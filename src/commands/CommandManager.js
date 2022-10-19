@@ -42,6 +42,7 @@ import AutoResponseCommand from './settings/AutoResponseCommand.js';
 import BadWordCommand from './settings/BadWordCommand.js';
 import {replyOrFollowUp} from '../util/interaction.js';
 import logger from '../Logger.js';
+import SafeSearchCommand from './settings/SafeSearchCommand.js';
 
 const cooldowns = new Cache();
 
@@ -79,6 +80,7 @@ export class CommandManager {
         new SettingsCommand(),
         new AutoResponseCommand(),
         new BadWordCommand(),
+        new SafeSearchCommand(),
 
         // GUILD
         new LockCommand(),

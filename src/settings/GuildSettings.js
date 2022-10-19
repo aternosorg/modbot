@@ -7,6 +7,13 @@ import colors from '../util/colors.js';
 import {formatTime} from '../util/timeutils.js';
 import YouTubePlaylist from '../YouTubePlaylist.js';
 import {inlineEmojiIfExists} from '../util/format.js';
+import config from '../bot/Config.js';
+
+/**
+ * @typedef {Object} SafeSearchSettings
+ * @property {boolean} enabled
+ * @property {number} strikes
+ */
 
 /**
  * @classdesc settings of a guild
@@ -39,6 +46,7 @@ export default class GuildSettings extends Settings {
      * @param  {Boolean}                          [json.raidMode]           is anti-raid-mode enabled
      * @param  {Number}                           [json.antiSpam]           should message spam detection be enabled
      * @param  {Number}                           [json.similarMessages]    should similar message detection be enabled
+     * @param  {?SafeSearchSettings}              [json.safeSearch]         safe search configuration
      * @return {GuildSettings}
      */
     constructor(id, json = {}) {
@@ -63,6 +71,7 @@ export default class GuildSettings extends Settings {
         this.raidMode = json.raidMode || false;
         this.antiSpam = typeof(json.antiSpam) === 'number' ? json.antiSpam : -1;
         this.similarMessages = json.similarMessages || -1;
+        this.safeSearch = json.safeSearch ?? {enabled: true, strikes: 1};
     }
 
     /**
@@ -147,12 +156,33 @@ export default class GuildSettings extends Settings {
      * @returns {String}
      */
     getAutomodSettings() {
-        return `Invites: ${this.invites ? 'allowed' : 'forbidden'}\n` +
-            `Link cooldown: ${this.linkCooldown !== -1 ? formatTime(this.linkCooldown) : 'disabled'}\n` +
-            `Attachment cooldown: ${this.attachmentCooldown !== -1 ? formatTime(this.attachmentCooldown) : 'disabled'}\n` +
-            `Caps: ${this.caps ? 'forbidden' : 'allowed'}\n` +
-            `Spam protection: ${this.antiSpam === -1 ? 'disabled' : `${this.antiSpam} messages per minute`}\n` +
-            `Repeated message protection: ${this.similarMessages === -1 ? 'disabled' : `${this.similarMessages} similar messages per minute`}\n`;
+        const lines = [
+            `Invites: ${this.invites ? 'allowed' : 'forbidden'}`,
+            `Link cooldown: ${this.linkCooldown !== -1 ? formatTime(this.linkCooldown) : 'disabled'}`,
+            `Attachment cooldown: ${this.attachmentCooldown !== -1 ? formatTime(this.attachmentCooldown) : 'disabled'}`,
+            `Caps: ${this.caps ? 'forbidden' : 'allowed'}`,
+            `Spam protection: ${this.antiSpam === -1 ? 'disabled' : `${this.antiSpam} messages per minute`}`,
+            `Repeated message protection: ${this.similarMessages === -1 ? 'disabled' : `${this.similarMessages} similar messages per minute`}`,
+        ];
+
+        if (this.isFeatureWhitelisted) {
+            if (this.safeSearch.enabled) {
+                lines.push(`Safe search: enabled (${this.safeSearch.strikes} strikes)`);
+            }
+            else {
+                lines.push('Safe search: disabled');
+            }
+        }
+
+        return lines.join('\n');
+    }
+
+    /**
+     * is this guild in the feature whitelist
+     * @return {boolean}
+     */
+    get isFeatureWhitelisted() {
+        return config.data.featureWhitelist.includes(this.id);
     }
 
     /**
