@@ -72,14 +72,14 @@ These credentials are used for the following apis if you enabled them in the con
 - Cloud Logging
 
 #### Client Email
-| type   | config file                           | environment                                  |
-|--------|---------------------------------------|----------------------------------------------|
-| string | `monitoring.credentials.client_email` | `MODBOT_MONITORING_CREDENTIALS_CLIENT_EMAIL` |
+| type   | config file                            | environment                                    |
+|--------|----------------------------------------|------------------------------------------------|
+| string | `googleCloud.credentials.client_email` | `MODBOT_GOOGLE_CLOUD_CREDENTIALS_CLIENT_EMAIL` |
 
 #### Private Key
-| type   | config file                          | environment                                 |
-|--------|--------------------------------------|---------------------------------------------|
-| string | `monitoring.credentials.private_key` | `MODBOT_MONITORING_CREDENTIALS_PRIVATE_KEY` |
+| type   | config file                           | environment                                   |
+|--------|---------------------------------------|-----------------------------------------------|
+| string | `googleCloud.credentials.private_key` | `MODBOT_GOOGLE_CLOUD_CREDENTIALS_PRIVATE_KEY` |
 
 ### Logging
 Configuration for logging messages to the Google cloud using the Google cloud logging api. 
