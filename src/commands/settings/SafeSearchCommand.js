@@ -13,7 +13,7 @@ export default class SafeSearchCommand extends Command {
 
     async isAvailableIn(guild) {
         const guildSettings = await GuildSettings.get(guild.id);
-        return config.data.googleCloud.vision.enabled && guildSettings.isFeatureWhitelisted;
+        return config.data.googleCloud.vision?.enabled && guildSettings.isFeatureWhitelisted;
     }
 
     buildOptions(builder) {
