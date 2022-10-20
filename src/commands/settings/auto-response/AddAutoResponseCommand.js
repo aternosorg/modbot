@@ -44,7 +44,7 @@ export default class AddAutoResponseCommand extends SubCommand {
         const confirmation = new Confirmation({global, type}, timeAfter('1 hour'));
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Create new Auto-response of type ${type}` + (global ? '(all channels)' : ''))
-            .setCustomId(`settings:auto-response:add:${await confirmation.save()}`)
+            .setCustomId(`auto-response:add:${await confirmation.save()}`)
             .addComponents(
                 /** @type {*} */
                 new ActionRowBuilder()
@@ -120,7 +120,7 @@ export default class AddAutoResponseCommand extends SubCommand {
                     /** @type {ActionRowBuilder} */
                     new ActionRowBuilder().addComponents(/** @type {*} */
                         channelSelectMenu(channels)
-                            .setCustomId(`settings:auto-response:add:${await confirmation.save()}`)
+                            .setCustomId(`auto-response:add:${await confirmation.save()}`)
                     ),
                 ]
             });

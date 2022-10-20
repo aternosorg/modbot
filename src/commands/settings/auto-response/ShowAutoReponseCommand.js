@@ -35,12 +35,12 @@ export default class ShowAutoReponseCommand extends CompletingAutoResponseComman
                         new ButtonBuilder()
                             .setLabel('Delete')
                             .setStyle(ButtonStyle.Danger)
-                            .setCustomId(`settings:auto-response:delete:${autoResponse.id}`),
+                            .setCustomId(`auto-response:delete:${autoResponse.id}`),
                         /** @type {*} */
                         new ButtonBuilder()
                             .setLabel('Edit')
                             .setStyle(ButtonStyle.Secondary)
-                            .setCustomId(`settings:auto-response:edit:${autoResponse.id}`)
+                            .setCustomId(`auto-response:edit:${autoResponse.id}`)
                     )
             ]
         });

@@ -81,7 +81,7 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
         const confirmation = new Confirmation({global, type, id: autoResponse.id}, timeAfter('1 hour'));
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Edit Auto-response #${autoResponse.id}`)
-            .setCustomId(`settings:auto-response:edit:${await confirmation.save()}`)
+            .setCustomId(`auto-response:edit:${await confirmation.save()}`)
             .addComponents(
                 /** @type {*} */
                 new ActionRowBuilder()
@@ -170,7 +170,7 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
                     /** @type {ActionRowBuilder} */
                     new ActionRowBuilder().addComponents(/** @type {*} */
                         channelSelectMenu(channels)
-                            .setCustomId(`settings:auto-response:edit:${await confirmation.save()}`)
+                            .setCustomId(`auto-response:edit:${await confirmation.save()}`)
                     )
                 ]
             });

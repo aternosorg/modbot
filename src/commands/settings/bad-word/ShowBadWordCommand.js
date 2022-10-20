@@ -35,12 +35,12 @@ export default class ShowBadWordCommand extends CompletingBadWordCommand {
                         new ButtonBuilder()
                             .setLabel('Delete')
                             .setStyle(ButtonStyle.Danger)
-                            .setCustomId(`settings:bad-word:delete:${badWord.id}`),
+                            .setCustomId(`bad-word:delete:${badWord.id}`),
                         /** @type {*} */
                         new ButtonBuilder()
                             .setLabel('Edit')
                             .setStyle(ButtonStyle.Secondary)
-                            .setCustomId(`settings:bad-word:edit:${badWord.id}`)
+                            .setCustomId(`bad-word:edit:${badWord.id}`)
                     )
             ]
         });

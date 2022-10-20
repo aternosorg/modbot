@@ -122,7 +122,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
 
         const modal = new ModalBuilder()
             .setTitle(`Edit Bad-word #${badWord.id}`)
-            .setCustomId(`settings:bad-word:edit:${await confirmation.save()}`)
+            .setCustomId(`bad-word:edit:${await confirmation.save()}`)
             .addComponents(
                 /** @type {*} */
                 new ActionRowBuilder()
@@ -256,7 +256,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                     /** @type {ActionRowBuilder} */
                     new ActionRowBuilder().addComponents(/** @type {*} */
                         channelSelectMenu(channels)
-                            .setCustomId(`settings:bad-word:edit:${await confirmation.save()}`)
+                            .setCustomId(`bad-word:edit:${await confirmation.save()}`)
                     )
                 ]
             });
