@@ -5,26 +5,35 @@
 [![GitHub last commit](https://img.shields.io/github/last-commit/aternosorg/modbot?style=plastic)](https://github.com/aternosorg/modbot/commits/)
 
 ---
-ModBot is a moderation bot that is mainly used in the [Aternos Discord](https://chat.aternos.org).
+ModBot is an open source moderation bot with advanced features developed by [Aternos](https://aternos.org/).
 
-### Features
-- Moderation commands (ban, kick, mute, softban, strike)
-- Import strikes, tempmutes and tempbans from Vortex 
-- Auto moderation (Discord invites, link cooldown)
-- Find articles from your Zendesk helpcenter and videos from a YouTube playlist
-- Lock (all or specific) channels
-- Log message edits and deletions
-- Autoresponses
-- Bad word filters
+It uses **modern Discord features** like slash-commands, context-menus, timeouts, buttons, select-menus
+and modals and offers everything you need for moderation. Including bad-words and auto-responses
+with support for regex, detecting phishing urls, temporary bans, a strike system, message logging
+and various other forms of automatic moderation filters.
+
+
+### Screenshots
+Moderating users or viewing information is faster than ever thanks to buttons, modals and context menus:
+
+![User Embed](https://user-images.githubusercontent.com/45244473/195941862-e4375148-8291-403e-87ef-cf6961fb88d7.png)
+
+ModBot will prevent accidentally punishing a user twice by warning the moderator if another moderator
+has punished this user in the last 5 minutes.
+
+![Strike Confirmation](https://user-images.githubusercontent.com/45244473/196765157-553224f0-1854-451d-8613-75da70503dd0.png)
 
 ### Add ModBot to your server
 By adding the bot to your server you agree to our [privacy policy](https://aternos.gmbh/en/modbot/privacy). <br>
 Invite: [Click me](https://discordapp.com/oauth2/authorize?client_id=790967448111153153&scope=bot&permissions=268446806)
 
-You can view all commands by typing a slash `/` in the text input field. All commands and options have clear descriptions.
+You can view all commands by typing a slash `/` in the text input field. 
+All commands and options have clear descriptions.
 
 We also have a [Discord server](https://discord.gg/zYYhgPtmxw). <br>
-**Please note: ModBot is a side project for us. We don't earn any money with it and primarily develop it for use on our own servers. We can't help with every problem and won't add features that we don't need.**
+**Please note: ModBot is a side project for us. 
+We don't earn any money with it and primarily develop it for use on our own servers. 
+We can't help with every problem and won't add features that we don't need.**
 
 ### Getting Started
 - You can view the settings with `/settings overview`
