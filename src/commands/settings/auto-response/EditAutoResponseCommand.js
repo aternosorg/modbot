@@ -111,7 +111,7 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
     }
 
     async executeModal(interaction) {
-        const confirmationId = interaction.customId.split(':')[3];
+        const confirmationId = interaction.customId.split(':')[2];
         const confirmation = await Confirmation.get(confirmationId);
 
         if (!confirmation) {
@@ -178,7 +178,7 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
     }
 
     async executeSelectMenu(interaction) {
-        const confirmationId = interaction.customId.split(':')[3];
+        const confirmationId = interaction.customId.split(':')[2];
         const confirmation = await Confirmation.get(confirmationId);
 
         if (!confirmation) {

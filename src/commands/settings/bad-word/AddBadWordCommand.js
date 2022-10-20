@@ -114,7 +114,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
     }
 
     async executeModal(interaction) {
-        const confirmationId = interaction.customId.split(':')[3];
+        const confirmationId = interaction.customId.split(':')[2];
         const confirmation = await Confirmation.get(confirmationId);
 
         if (!confirmation) {
@@ -178,7 +178,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
     }
 
     async executeSelectMenu(interaction) {
-        const confirmationId = interaction.customId.split(':')[3];
+        const confirmationId = interaction.customId.split(':')[2];
         const confirmation = await Confirmation.get(confirmationId);
 
         if (!confirmation) {

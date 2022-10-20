@@ -76,7 +76,7 @@ export default class AddAutoResponseCommand extends SubCommand {
     }
 
     async executeModal(interaction) {
-        const confirmationId = interaction.customId.split(':')[3];
+        const confirmationId = interaction.customId.split(':')[2];
         const confirmation = await Confirmation.get(confirmationId);
 
         if (!confirmation) {
@@ -128,7 +128,7 @@ export default class AddAutoResponseCommand extends SubCommand {
     }
 
     async executeSelectMenu(interaction) {
-        const confirmationId = interaction.customId.split(':')[3];
+        const confirmationId = interaction.customId.split(':')[2];
         const confirmation = await Confirmation.get(confirmationId);
 
         if (!confirmation) {
