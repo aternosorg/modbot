@@ -16,12 +16,12 @@ and various other forms of automatic moderation filters.
 ### Screenshots
 Moderating users or viewing information is faster than ever thanks to buttons, modals and context menus:
 
-![User Embed](https://user-images.githubusercontent.com/45244473/195941862-e4375148-8291-403e-87ef-cf6961fb88d7.png)
+![User Embed](https://user-images.githubusercontent.com/45244473/196917527-cff86e16-f074-493d-8067-a85c0599c102.png)
 
 ModBot will prevent accidentally punishing a user twice by warning the moderator if another moderator
 has punished this user in the last 5 minutes.
 
-![Strike Confirmation](https://user-images.githubusercontent.com/45244473/196765157-553224f0-1854-451d-8613-75da70503dd0.png)
+![Strike Confirmation](https://user-images.githubusercontent.com/45244473/196927951-5a3f8cda-8cda-4824-a094-ee868a335709.png)
 
 ### Add ModBot to your server
 By adding the bot to your server you agree to our [privacy policy](https://aternos.gmbh/en/modbot/privacy). <br>
