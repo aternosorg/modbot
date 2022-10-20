@@ -101,7 +101,7 @@ If you don't want to use Google cloud logging just ignore this.
 | string | `googleCloud.logging.logName` | `MODBOT_GOOGLE_CLOUD_LOGGING_LOG_NAME` |
 
 ### Vision
-Configuration for using the cloud vision API to detect adult images.
+Configuration for using the cloud vision API to detect inappropriate images.
 
 #### Enabled
 | type    | config file                  | environment                          |
