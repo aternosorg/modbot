@@ -33,6 +33,20 @@ export function inlineEmojiIfExists(configKey) {
 }
 
 /**
+ * Format a number followed by a name/unit.
+ * Add s if number is not 1
+ * @param {number} number
+ * @param {string} name
+ * @return {*}
+ */
+export function formatNumber(number, name) {
+    if (number === 1) {
+        return `${number} ${name}`;
+    }
+    return `${number} ${name}s`;
+}
+
+/**
  * @param {string} configKey
  * @param {?string} fallback
  * @return {import('discord.js').APIMessageComponentEmoji}

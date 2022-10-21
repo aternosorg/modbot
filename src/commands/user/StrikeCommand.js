@@ -1,5 +1,7 @@
 import {
     ActionRowBuilder,
+    bold,
+    escapeMarkdown,
     ModalBuilder,
     PermissionFlagsBits,
     PermissionsBitField,
@@ -11,9 +13,9 @@ import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
-import UserActionEmbed from '../../embeds/UserActionEmbed.js';
-import config from '../../bot/Config.js';
 import {inLimits} from '../../util/util.js';
+import EmbedWrapper from '../../embeds/EmbedWrapper.js';
+import {formatNumber, inlineEmojiIfExists} from '../../util/format.js';
 
 export default class StrikeCommand extends UserCommand {
 
@@ -85,9 +87,12 @@ export default class StrikeCommand extends UserCommand {
         }
 
         await member.strike(reason, interaction.user, count);
-        await interaction.reply(
-            new UserActionEmbed(member.user, reason, 'striked', colors.RED, config.data.emoji.strike)
-                .toMessage());
+        await interaction.reply(new EmbedWrapper()
+            .setDescription(inlineEmojiIfExists('strike') +
+                `${bold(escapeMarkdown(member.user.tag))} has received ${formatNumber(count, 'strike')}: ${reason}`)
+            .setColor(colors.RED)
+            .toMessage()
+        );
     }
 
     async executeButton(interaction) {
