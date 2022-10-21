@@ -148,7 +148,7 @@ export class Config {
             // load settings from file
             if (!await exists('./config.json')) {
                 await logger.error('No settings file found.\n' +
-                    'Create a config.json or use environment variables as described in the README.md');
+                    'Create a config.json or use environment variables as described in the CONFIGURATION.md');
                 process.exit(1);
             }
 
