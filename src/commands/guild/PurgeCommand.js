@@ -1,5 +1,5 @@
 import Command from '../Command.js';
-import {PermissionFlagsBits, PermissionsBitField} from 'discord.js';
+import {inlineCode, PermissionFlagsBits, PermissionsBitField} from 'discord.js';
 import ChannelWrapper from '../../discord/ChannelWrapper.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import {BULK_DELETE_MAX_AGE} from '../../util/apiLimits.js';
@@ -54,7 +54,7 @@ export default class PurgeCommand extends Command {
             try {
                 regex = new RegExp(match[1], match[2]);
             } catch {
-                await interaction.editReply(`Invalid regex: \`${rawRegex}\``);
+                await interaction.editReply(`Invalid regex: ${inlineCode(rawRegex)}`);
                 return;
             }
         }

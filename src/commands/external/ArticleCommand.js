@@ -2,9 +2,12 @@ import Command from '../Command.js';
 import GuildSettings from '../../settings/GuildSettings.js';
 import {
     ActionRowBuilder,
+    bold,
     ButtonBuilder,
     ButtonStyle,
+    codeBlock,
     EmbedBuilder,
+    escapeBold,
     SelectMenuBuilder,
 } from 'discord.js';
 import Turndown from 'turndown';
@@ -162,18 +165,19 @@ export default class ArticleCommand extends Command {
             .addRule('headings', {
                 filter: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
                 replacement(content) {
-                    if (!content) return '';
-                    return '**' + content.replaceAll('**', '') + '**\n';
+                    if (!content) {
+                        return '';
+                    }
+                    return bold(escapeBold(content)) + '\n';
                 }
             })
             //ignore pre tags
             .addRule('codeblocks', {
                 filter: ['pre'],
                 replacement(content) {
-                    return '```' + content
-                        .replace(/(?<!\\)[*_~`]+/g, '')
-                        .replace(/\\([*_~`>[\]])/g, '$1')
-                        + '```';
+                    return codeBlock(content
+                        .replace(/(?<!\\)[*_~`]+/g, '') // remove unescaped markdown
+                        .replace(/\\([*_~`>[\]])/g, '$1')); // unescape escaped markdown
                 }
             })
             //remove img tags
@@ -181,7 +185,6 @@ export default class ArticleCommand extends Command {
                 filter: ['img'],
                 replacement() {
                     return '';
-
                 }
             })
             .addRule('iframes', {

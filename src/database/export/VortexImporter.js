@@ -4,7 +4,7 @@ import Moderation from '../Moderation.js';
 import {EmbedBuilder} from 'discord.js';
 import bot from '../../bot/Bot.js';
 
-/***
+/**
  * @typedef {Object} VortexModeration
  * @property {number} value
  * @property {import('discord.js').Snowflake} id

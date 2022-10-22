@@ -1,5 +1,5 @@
 import GuildSettings from '../settings/GuildSettings.js';
-import {Guild, RESTJSONErrorCodes, userMention} from 'discord.js';
+import {bold, Guild, RESTJSONErrorCodes, userMention} from 'discord.js';
 import {formatTime, parseTime} from '../util/timeutils.js';
 import database from '../bot/Database.js';
 import GuildWrapper from './GuildWrapper.js';
@@ -312,7 +312,7 @@ export default class MemberWrapper {
                 return this.strike(reason, this.user.client.user);
 
             case 'dm':
-                return this.guild.sendDM(this.user, `Your message in \`${this.guild.guild.name}\` was removed: ` + punishment.message);
+                return this.guild.sendDM(this.user, `Your message in ${bold(this.guild.guild.name)} was removed: ` + punishment.message);
 
             default:
                 throw `Unknown punishment action ${punishment.action}`;
@@ -327,7 +327,7 @@ export default class MemberWrapper {
      * @return {Promise<void>}
      */
     async pardon(reason, moderator, amount = 1){
-        await this.guild.sendDM(this.user, `${amount} strikes have been pardoned in \`${this.guild.guild.name}\` | ${reason}`);
+        await this.guild.sendDM(this.user, `${amount} strikes have been pardoned in ${bold(this.guild.guild.name)} | ${reason}`);
 
         const id = await database.addModeration(this.guild.guild.id, this.user.id, 'pardon', reason, null, moderator.id, -amount);
         await this.#logModeration(moderator, reason, id, 'pardon', null, amount, await this.getStrikeSum());
@@ -508,7 +508,7 @@ export default class MemberWrapper {
      */
     async dmPunishedUser(verb, reason, duration, preposition = 'from') {
         return this.guild.sendDM(this.user,
-            `You have been ${verb} ${preposition} \`${this.guild.guild.name}\` ${duration ? `for ${formatTime(duration)}` : ''}: ${reason}`
+            `You have been ${verb} ${preposition} ${bold(this.guild.guild.name)} ${duration ? `for ${formatTime(duration)}` : ''}: ${reason}`
         );
     }
 

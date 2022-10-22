@@ -1,7 +1,7 @@
 import Interval from './Interval.js';
 import database from '../bot/Database.js';
 import bot from '../bot/Bot.js';
-import {EmbedBuilder, RESTJSONErrorCodes, userMention} from 'discord.js';
+import {bold, EmbedBuilder, RESTJSONErrorCodes, userMention} from 'discord.js';
 import logger from '../Logger.js';
 import GuildSettings from '../settings/GuildSettings.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
@@ -36,11 +36,11 @@ export default class UnmuteInterval extends Interval {
                             await logger.error(`Failed to unmute user ${result.userid} in ${result.guildid}`, e);
                         }
                     }
-                    await guild.sendDM(member.user, `You have been unmuted in \`${guild.guild.name}\` | ${reason}`);
+                    await guild.sendDM(member.user, `You have been unmuted in ${bold(guild.guild.name)} | ${reason}`);
                 }
                 else if (member.communicationDisabledUntilTimestamp) {
                     await member.disableCommunicationUntil(null);
-                    await guild.sendDM(member.user, `You have been unmuted in \`${guild.guild.name}\` | ${reason}`);
+                    await guild.sendDM(member.user, `You have been unmuted in ${bold(guild.guild.name)} | ${reason}`);
                 }
             }
 
