@@ -1,4 +1,4 @@
-import {Collection} from 'discord.js';
+import {Collection, userMention} from 'discord.js';
 import {compareTwoStrings} from 'string-similarity';
 import bot from '../../../bot/Bot.js';
 
@@ -173,7 +173,7 @@ export default class RepeatedMessage {
             await cache.deleteAll();
             if (!cache.warned) {
                 cache.warned = true;
-                const reply = await message.channel.send(`<@!${message.author.id}> Stop sending messages this fast!`);
+                const reply = await message.channel.send(`${userMention(message.author.id)} Stop sending messages this fast!`);
                 await bot.delete(reply, null, timeout);
             }
             return true;
@@ -195,7 +195,7 @@ export default class RepeatedMessage {
             await cache.deleteSimilar(message);
             if (!cache.warned) {
                 cache.warned = true;
-                const reply = await message.channel.send(`<@!${message.author.id}> Stop repeating your messages!`);
+                const reply = await message.channel.send(`${userMention(message.author.id)} Stop repeating your messages!`);
                 await bot.delete(reply, null, timeout);
             }
             return true;

@@ -1,7 +1,7 @@
 import SubCommand from '../../SubCommand.js';
 import GuildSettings from '../../../settings/GuildSettings.js';
 import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
-import {PermissionFlagsBits, PermissionsBitField} from 'discord.js';
+import {PermissionFlagsBits, PermissionsBitField, roleMention} from 'discord.js';
 import GuildWrapper from '../../../discord/GuildWrapper.js';
 import database from '../../../bot/Database.js';
 import EmbedWrapper from '../../../embeds/EmbedWrapper.js';
@@ -48,7 +48,7 @@ export default class AbstractMutedRoleCommand extends SubCommand {
         await guildSettings.save();
         await interaction.editReply({
             embeds: [new EmbedWrapper()
-                .setDescription(`Set muted role to <@&${role.id}>`)
+                .setDescription(`Set muted role to ${roleMention(role.id)}`)
                 .setColor(colors.GREEN)],
             content: ''
         });

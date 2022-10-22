@@ -6,7 +6,7 @@ import {
     ActivityType,
     RESTJSONErrorCodes,
     EmbedBuilder,
-    escapeMarkdown
+    escapeMarkdown, channelMention
 } from 'discord.js';
 import {retry} from '../util/util.js';
 import config from './Config.js';
@@ -102,7 +102,7 @@ export class Bot {
         const guild = new GuildWrapper(message.guild);
         await guild.logMessage({
             embeds: [new EmbedBuilder()
-                .setTitle(`Message in <#${message.channel.id}> deleted`)
+                .setTitle(`Message in ${channelMention(message.channel.id)} deleted`)
                 .setFooter({text: message.author.id})
                 .setAuthor({name: escapeMarkdown(message.author.tag), iconURL: message.author.avatarURL()})
                 .setColor(colors.ORANGE)

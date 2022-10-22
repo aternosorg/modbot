@@ -1,5 +1,5 @@
 import GuildSettings from '../settings/GuildSettings.js';
-import {Guild, RESTJSONErrorCodes} from 'discord.js';
+import {Guild, RESTJSONErrorCodes, userMention} from 'discord.js';
 import {formatTime, parseTime} from '../util/timeutils.js';
 import database from '../bot/Database.js';
 import GuildWrapper from './GuildWrapper.js';
@@ -488,8 +488,8 @@ export default class MemberWrapper {
                         iconURL: this.user.avatarURL()
                     })
                     .setFooter({text: this.user.id})
-                    .addPair('User', `<@${this.user.id}>`)
-                    .addPair('Moderator', `<@${moderator.id}>`)
+                    .addPair('User', userMention(this.user.id))
+                    .addPair('Moderator', userMention(moderator.id))
                     .addPairIf(time, 'Duration', time)
                     .addPairIf(amount, 'Amount', amount)
                     .addPairIf(amount, 'Total Strikes', total)

@@ -2,6 +2,7 @@ import GuildSettings from '../../settings/GuildSettings.js';
 import AbstractChannelCommand from './AbstractChannelCommand.js';
 import EmbedWrapper from '../../embeds/EmbedWrapper.js';
 import colors from '../../util/colors.js';
+import {channelMention} from 'discord.js';
 
 export default class JoinLogCommand extends AbstractChannelCommand {
 
@@ -26,7 +27,7 @@ export default class JoinLogCommand extends AbstractChannelCommand {
         await guildSettings.save();
         const embed = new EmbedWrapper();
         if (channel) {
-            embed.setDescription(`Set join log to <#${channel.id}>.`)
+            embed.setDescription(`Set join log to ${channelMention(channel.id)}.`)
                 .setColor(colors.GREEN);
         }
         else {

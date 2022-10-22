@@ -118,6 +118,6 @@ export default class AutoResponse extends ChatTriggeredFeature {
     }
 
     getOverview() {
-        return `[${this.id}] ${this.global ? 'global' : this.channels.map(c => `<#${c}>`).join(', ')} ${this.trigger.asString()}`;
+        return `[${this.id}] ${this.global ? 'global' : this.channels.map(channelMention).join(', ')} ${this.trigger.asString()}`;
     }
 }

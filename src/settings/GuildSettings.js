@@ -1,6 +1,6 @@
 import Settings from './Settings.js';
 import TypeChecker from './TypeChecker.js';
-import {Collection, EmbedBuilder, roleMention} from 'discord.js';
+import {channelMention, Collection, EmbedBuilder, roleMention} from 'discord.js';
 import Punishment from '../database/Punishment.js';
 import Zendesk from '../Zendesk.js';
 import colors from '../util/colors.js';
@@ -134,10 +134,10 @@ export default class GuildSettings extends Settings {
      * @returns {string}
      */
     getModerationSettings() {
-        return `Log: ${this.logChannel ? `<#${this.logChannel}>` : 'disabled'}\n` +
-            `Message Log: ${this.messageLogChannel ? `<#${this.messageLogChannel}>` : 'disabled'}\n` +
-            `Join Log: ${this.joinLogChannel ? `<#${this.joinLogChannel}>` : 'disabled'}\n` +
-            `Muted role: ${this.mutedRole ? `<@&${this.mutedRole}>` : 'disabled'}\n` +
+        return `Log: ${this.logChannel ? channelMention(this.logChannel) : 'disabled'}\n` +
+            `Message Log: ${this.messageLogChannel ? channelMention(this.messageLogChannel) : 'disabled'}\n` +
+            `Join Log: ${this.joinLogChannel ? channelMention(this.joinLogChannel) : 'disabled'}\n` +
+            `Muted role: ${this.mutedRole ? roleMention(this.mutedRole) : 'disabled'}\n` +
             `Protected roles: \n${this.getProtectedRoles().map(role => '- ' + roleMention(role)).join('\n')}\n`;
     }
 

@@ -1,4 +1,4 @@
-import {time, TimestampStyles} from 'discord.js';
+import {time, TimestampStyles, userMention} from 'discord.js';
 import {resolveColor} from '../util/colors.js';
 import {formatTime} from '../util/timeutils.js';
 import KeyValueEmbed from './KeyValueEmbed.js';
@@ -28,7 +28,7 @@ export default class ModerationEmbed extends KeyValueEmbed {
         }
 
         if (moderation.moderator) {
-            this.addPair('Moderator', `<@!${moderation.moderator}>`);
+            this.addPair('Moderator', userMention(moderation.moderator));
         }
 
         this.addPair('Reason', moderation.reason);

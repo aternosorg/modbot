@@ -3,7 +3,7 @@ import Moderation from '../../database/Moderation.js';
 import ModerationListEmbed from '../../embeds/ModerationListEmbed.js';
 import {formatTime} from '../../util/timeutils.js';
 import {EMBED_FIELD_LIMIT, EMBED_TOTAL_LIMIT} from '../../util/apiLimits.js';
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle, time, TimestampStyles} from 'discord.js';
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, time, TimestampStyles, userMention} from 'discord.js';
 import config from '../../bot/Config.js';
 import icons from '../../util/icons.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
@@ -95,7 +95,7 @@ export default class ModerationListCommand extends SubCommand {
             }
 
             if (moderation.moderator) {
-                lines.push(`Moderator: <@!${moderation.moderator}>`);
+                lines.push(`Moderator: ${userMention(moderation.moderator)}`);
             }
 
             const limit = Math.min(

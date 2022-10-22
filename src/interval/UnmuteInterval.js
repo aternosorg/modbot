@@ -1,7 +1,7 @@
 import Interval from './Interval.js';
 import database from '../bot/Database.js';
 import bot from '../bot/Bot.js';
-import {EmbedBuilder, RESTJSONErrorCodes} from 'discord.js';
+import {EmbedBuilder, RESTJSONErrorCodes, userMention} from 'discord.js';
 import logger from '../Logger.js';
 import GuildSettings from '../settings/GuildSettings.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
@@ -55,7 +55,7 @@ export default class UnmuteInterval extends Interval {
                 .setFooter({text: user.id})
                 .setTimestamp()
                 .addFields(
-                    /** @type {any} */ { name: 'User', value: `<@!${user.id}>`, inline: true},
+                    /** @type {any} */ { name: 'User', value: `${userMention(user.id)}`, inline: true},
                     /** @type {any} */ { name: 'Reason', value: reason.substring(0, 512), inline: true}
                 );
             await guild.log({embeds: [embed]});
