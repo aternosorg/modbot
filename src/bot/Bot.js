@@ -5,13 +5,11 @@ import {
     AllowedMentionsTypes,
     ActivityType,
     RESTJSONErrorCodes,
-    EmbedBuilder,
-    escapeMarkdown, channelMention
 } from 'discord.js';
 import {retry} from '../util/util.js';
 import config from './Config.js';
-import colors from '../util/colors.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
+import MessageDeleteEmbed from '../embeds/MessageDeleteEmbed.js';
 
 export class Bot {
     /**
@@ -86,7 +84,7 @@ export class Bot {
             }
         }
 
-        if (message.content && reason) {
+        if (reason) {
             await this.logMessageDeletion(message, reason);
         }
         return message;
@@ -100,17 +98,12 @@ export class Bot {
      */
     async logMessageDeletion(message, reason) {
         const guild = new GuildWrapper(message.guild);
-        await guild.logMessage({
-            embeds: [new EmbedBuilder()
-                .setTitle(`Message in ${channelMention(message.channel.id)} deleted`)
-                .setFooter({text: message.author.id})
-                .setAuthor({name: escapeMarkdown(message.author.tag), iconURL: message.author.avatarURL()})
-                .setColor(colors.ORANGE)
-                .setFields(
-                    /** @type {any}*/ {name: 'Message', value: message.content.substring(0, 1024)},
-                    /** @type {any}*/ {name: 'Reason', value: reason.substring(0, 1024)},
-                )]
-        });
+        const embed = new MessageDeleteEmbed(message);
+        embed.addFields(
+            /** @type {any}*/ {name: 'Reason', value: reason.substring(0, 1024)},
+        );
+
+        await guild.logMessage(embed.toMessage());
     }
 }
 

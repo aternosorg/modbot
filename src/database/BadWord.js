@@ -3,10 +3,10 @@ import TypeChecker from '../settings/TypeChecker.js';
 import {channelMention} from 'discord.js';
 import * as util from 'util';
 import Punishment from './Punishment.js';
-import EmbedWrapper from '../embeds/EmbedWrapper.js';
 import {yesNo} from '../util/format.js';
 import {EMBED_FIELD_LIMIT} from '../util/apiLimits.js';
 import colors from '../util/colors.js';
+import KeyValueEmbed from '../embeds/KeyValueEmbed.js';
 
 /**
  * Class representing a bad word
@@ -98,7 +98,7 @@ export default class BadWord extends ChatTriggeredFeature {
      */
     embed(title = 'Bad-word', color = colors.GREEN) {
         const duration = this.punishment.duration;
-        return new EmbedWrapper()
+        return new KeyValueEmbed()
             .setTitle(title + ` [${this.id}]`)
             .setColor(color)
             .addPair('Trigger', this.trigger.asString())

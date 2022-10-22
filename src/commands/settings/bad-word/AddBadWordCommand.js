@@ -84,7 +84,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                     .addComponents(
                         /** @type {*} */
                         new TextInputBuilder()
-                            .setRequired(true)
+                            .setRequired(false)
                             .setCustomId('priority')
                             .setStyle(TextInputStyle.Paragraph)
                             .setPlaceholder('0')
@@ -122,7 +122,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
             return;
         }
 
-        let trigger, response, duration = null, priority;
+        let trigger, response, duration = null, priority = 0;
         for (let component of interaction.components) {
             component = component.components[0];
             if (component.customId === 'trigger') {
@@ -219,7 +219,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
             return interaction.reply(ErrorEmbed.message(result.message));
         }
 
-        await interaction.reply(result.response
+        await interaction.reply(result.badWord
             .embed('Added new bad-word', colors.RED)
             .toMessage()
         );
