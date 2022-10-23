@@ -1,5 +1,5 @@
-import Cache from './Cache.js';
-import config from './bot/Config.js';
+import Cache from '../bot/Cache.js';
+import config from '../bot/Config.js';
 import {youtube as youtube_fn} from '@googleapis/youtube';
 import Fuse from 'fuse.js';
 import {hyperlink} from 'discord.js';

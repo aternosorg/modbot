@@ -1,4 +1,3 @@
-import EventListener from '../EventListener.js';
 import {diffWords} from 'diff';
 import {
     EmbedBuilder,
@@ -8,20 +7,12 @@ import {
     strikethrough,
     underscore
 } from 'discord.js';
-import colors from '../../util/colors.js';
-import GuildWrapper from '../../discord/GuildWrapper.js';
-import {EMBED_DESCRIPTION_LIMIT} from '../../util/apiLimits.js';
+import colors from '../../../util/colors.js';
+import GuildWrapper from '../../../discord/GuildWrapper.js';
+import {EMBED_DESCRIPTION_LIMIT} from '../../../util/apiLimits.js';
+import MessageUpdateEventListener from './MessageUpdateEventListener.js';
 
-export default class MessageUpdateEventListener extends EventListener {
-    get name() {
-        return 'messageUpdate';
-    }
-
-    /**
-     * @param {import('discord.js').Message} oldMessage
-     * @param {import('discord.js').Message} message
-     * @return {Promise<void>}
-     */
+export default class LogMessageUpdateEventListener extends MessageUpdateEventListener {
     async execute(oldMessage, message) {
         if (!message.guild || message.author.bot || !oldMessage.content || oldMessage.content === message.content) {
             return;

@@ -1,5 +1,5 @@
 import EventListener from '../EventListener.js';
-import logger from '../../Logger.js';
+import logger from '../../bot/Logger.js';
 
 export default class WarnEventListener extends EventListener {
     get name() {

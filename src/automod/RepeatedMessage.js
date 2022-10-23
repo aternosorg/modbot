@@ -1,6 +1,6 @@
 import {Collection, userMention} from 'discord.js';
 import {compareTwoStrings} from 'string-similarity';
-import bot from '../../../bot/Bot.js';
+import bot from '../bot/Bot.js';
 
 export default class RepeatedMessage {
 

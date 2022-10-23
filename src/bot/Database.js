@@ -1,5 +1,5 @@
 import * as mysql from 'mysql2/promise';
-import logger from '../Logger.js';
+import logger from './Logger.js';
 import config from './Config.js';
 
 export class Database {

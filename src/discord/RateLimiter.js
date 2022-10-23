@@ -1,6 +1,6 @@
 import {Collection} from 'discord.js';
 import database from '../bot/Database.js';
-import logger from '../Logger.js';
+import logger from '../bot/Logger.js';
 
 export default class RateLimiter {
     static #modCountCache = new Collection();

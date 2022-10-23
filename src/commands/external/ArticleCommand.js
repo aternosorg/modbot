@@ -13,7 +13,7 @@ import {
 import Turndown from 'turndown';
 import icons from '../../util/icons.js';
 import {SELECT_MENU_OPTIONS_LIMIT, SELECT_MENU_TITLE_LIMIT} from '../../util/apiLimits.js';
-import Cache from '../../Cache.js';
+import Cache from '../../bot/Cache.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
 const completions = new Cache();

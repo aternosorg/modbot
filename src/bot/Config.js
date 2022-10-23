@@ -1,4 +1,4 @@
-import logger from '../Logger.js';
+import logger from './Logger.js';
 import {exists, readJSON} from '../util/fsutils.js';
 
 /**

@@ -1,4 +1,4 @@
-import logger from './src/Logger.js';
+import logger from './src/bot/Logger.js';
 import config from './src/bot/Config.js';
 import database from './src/bot/Database.js';
 import bot from './src/bot/Bot.js';

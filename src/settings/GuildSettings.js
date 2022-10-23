@@ -2,10 +2,10 @@ import Settings from './Settings.js';
 import TypeChecker from './TypeChecker.js';
 import {channelMention, Collection, EmbedBuilder, roleMention} from 'discord.js';
 import Punishment from '../database/Punishment.js';
-import Zendesk from '../Zendesk.js';
+import Zendesk from '../apis/Zendesk.js';
 import colors from '../util/colors.js';
 import {formatTime} from '../util/timeutils.js';
-import YouTubePlaylist from '../YouTubePlaylist.js';
+import YouTubePlaylist from '../apis/YouTubePlaylist.js';
 import {inlineEmojiIfExists} from '../util/format.js';
 import config from '../bot/Config.js';
 

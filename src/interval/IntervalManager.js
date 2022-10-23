@@ -1,5 +1,5 @@
 import UnbanInterval from './UnbanInterval.js';
-import logger from '../Logger.js';
+import logger from '../bot/Logger.js';
 import UnmuteInterval from './UnmuteInterval.js';
 import TransferMuteToTimeoutInterval from './TransferMuteToTimeoutInterval.js';
 import CleanupConfirmationInterval from './CleanupConfirmationInterval.js';

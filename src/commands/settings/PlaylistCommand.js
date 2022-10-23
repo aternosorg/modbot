@@ -5,7 +5,7 @@ import EmbedWrapper from '../../embeds/EmbedWrapper.js';
 import colors from '../../util/colors.js';
 import commandManager from '../CommandManager.js';
 import config from '../../bot/Config.js';
-import YouTubePlaylist from '../../YouTubePlaylist.js';
+import YouTubePlaylist from '../../apis/YouTubePlaylist.js';
 
 const PLAYLIST_REGEX = /^(?:(?:https?:\/\/)?(?:www\.)?youtube\.com\/.*[&?]list=)?([a-zA-Z0-9\-_]+?)(?:&.*)?$/i;
 

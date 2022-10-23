@@ -7,7 +7,7 @@ import {
     RESTJSONErrorCodes
 } from 'discord.js';
 import {AUTOCOMPLETE_OPTIONS_LIMIT} from '../util/apiLimits.js';
-import Cache from '../Cache.js';
+import Cache from '../bot/Cache.js';
 import {formatTime} from '../util/timeutils.js';
 
 import ArticleCommand from './external/ArticleCommand.js';
@@ -41,7 +41,7 @@ import {asyncFilter} from '../util/util.js';
 import AutoResponseCommand from './settings/AutoResponseCommand.js';
 import BadWordCommand from './settings/BadWordCommand.js';
 import {replyOrFollowUp} from '../util/interaction.js';
-import logger from '../Logger.js';
+import logger from '../bot/Logger.js';
 import SafeSearchCommand from './settings/SafeSearchCommand.js';
 
 const cooldowns = new Cache();

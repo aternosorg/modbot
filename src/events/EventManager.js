@@ -1,4 +1,4 @@
-import logger from '../Logger.js';
+import logger from '../bot/Logger.js';
 
 export default class EventManager {
 

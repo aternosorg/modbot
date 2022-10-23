@@ -1,9 +1,9 @@
-import config from '../../../bot/Config.js';
-import GuildSettings from '../../../settings/GuildSettings.js';
+import config from '../bot/Config.js';
+import GuildSettings from '../settings/GuildSettings.js';
 import vision from '@google-cloud/vision';
-import Cache from '../../../Cache.js';
-import Request from '../../../Request.js';
-import database from '../../../bot/Database.js';
+import Cache from '../bot/Cache.js';
+import Request from '../bot/Request.js';
+import database from '../bot/Database.js';
 
 const CACHE_DURATION = 60 * 60 * 1000;
 
