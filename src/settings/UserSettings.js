@@ -5,12 +5,6 @@ export default class UserSettings extends Settings {
     static tableName = 'users';
 
     /**
-     * should commands be deleted automatically
-     * @type {boolean}
-     */
-    deleteCommands;
-
-    /**
      * Constructor - create a channel settings
      *
      * @param {import('discord.js').Snowflake} id user id
@@ -20,11 +14,10 @@ export default class UserSettings extends Settings {
      */
     constructor(id, json = {}) {
         super(id);
-        this.deleteCommands = json.deleteCommands || false;
     }
 
     /**
-     * @param {Snowflake|String} userid
+     * @param {import('discord.js').Snowflake} userid
      * @return {Promise<UserSettings>}
      */
     static async get(userid) {

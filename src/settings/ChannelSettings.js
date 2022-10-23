@@ -28,7 +28,7 @@ export default class ChannelSettings extends Settings {
         super(id);
 
         this.invites = json.invites ?? null;
-        this.lock = json.lock || {};
+        this.lock = json.lock ?? {};
     }
 
     /**
@@ -40,7 +40,7 @@ export default class ChannelSettings extends Settings {
         TypeChecker.assertOfTypes(json, ['object'], 'Data object');
 
         TypeChecker.assertOfTypes(json.invites, ['undefined','boolean'], 'Invites', true);
-        TypeChecker.assertOfTypes(json.lock, ['object'], 'Lock');
+        TypeChecker.assertOfTypes(json.lock, ['object'], 'Lock', true);
     }
 
     /**

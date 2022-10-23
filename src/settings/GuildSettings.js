@@ -1,10 +1,10 @@
 import Settings from './Settings.js';
 import TypeChecker from './TypeChecker.js';
 import {channelMention, Collection, EmbedBuilder, roleMention} from 'discord.js';
-import Punishment from '../database/Punishment.js';
+import Punishment, {PunishmentAction} from '../database/Punishment.js';
 import Zendesk from '../apis/Zendesk.js';
 import colors from '../util/colors.js';
-import {formatTime} from '../util/timeutils.js';
+import {formatTime, parseTime} from '../util/timeutils.js';
 import YouTubePlaylist from '../apis/YouTubePlaylist.js';
 import {inlineEmojiIfExists} from '../util/format.js';
 import config from '../bot/Config.js';
@@ -22,7 +22,15 @@ export default class GuildSettings extends Settings {
 
     static tableName = 'guilds';
 
-    #punishments = {};
+    #punishments = {
+        1: Punishment.from(PunishmentAction.MUTE, '15 min'),
+        2: Punishment.from(PunishmentAction.MUTE, '1 hour'),
+        3: Punishment.from(PunishmentAction.BAN, '1 day'),
+        5: Punishment.from(PunishmentAction.BAN, '1 month'),
+        7: Punishment.from(PunishmentAction.BAN, '6 month'),
+        10: Punishment.from(PunishmentAction.BAN),
+    };
+
     #protectedRoles = [];
 
     /**
@@ -43,7 +51,6 @@ export default class GuildSettings extends Settings {
      * @param  {Number}                           [json.linkCooldown]       cooldown on links in s (user based)
      * @param  {Number}                           [json.attachmentCooldown] cooldown on attachments in s (user based)
      * @param  {Boolean}                          [json.caps]               should caps be automatically deleted
-     * @param  {Boolean}                          [json.raidMode]           is anti-raid-mode enabled
      * @param  {Number}                           [json.antiSpam]           should message spam detection be enabled
      * @param  {Number}                           [json.similarMessages]    should similar message detection be enabled
      * @param  {?SafeSearchSettings}              [json.safeSearch]         safe search configuration
@@ -55,22 +62,24 @@ export default class GuildSettings extends Settings {
         this.logChannel = json.logChannel;
         this.messageLogChannel = json.messageLogChannel;
         this.joinLogChannel = json.joinLogChannel;
+
         this.mutedRole = json.mutedRole;
         if (json.protectedRoles instanceof Array)
             this.#protectedRoles = json.protectedRoles;
         if (json.modRoles instanceof Array)
             this.#protectedRoles.push(...json.modRoles);
-        if (json.punishments instanceof Object)
-            this.#punishments = json.punishments;
+
+        this.#punishments = json.punishments ?? this.#punishments;
+
         this.playlist = json.playlist;
         this.helpcenter = json.helpcenter;
+
         this.invites = json.invites ?? true;
-        this.linkCooldown = json.linkCooldown || -1;
-        this.attachmentCooldown = json.attachmentCooldown || -1;
-        this.caps = json.caps || false;
-        this.raidMode = json.raidMode || false;
-        this.antiSpam = typeof(json.antiSpam) === 'number' ? json.antiSpam : -1;
-        this.similarMessages = json.similarMessages || -1;
+        this.linkCooldown = json.linkCooldown ?? parseTime('10s');
+        this.attachmentCooldown = json.attachmentCooldown ?? parseTime('10s');
+        this.caps = json.caps ?? false;
+        this.antiSpam = json.antiSpam ?? 10;
+        this.similarMessages = json.similarMessages ?? 3;
         this.safeSearch = json.safeSearch ?? {enabled: true, strikes: 1};
     }
 
@@ -86,9 +95,6 @@ export default class GuildSettings extends Settings {
         TypeChecker.assertStringUndefinedOrNull(json.messageLogChannel, 'Message log channel');
         TypeChecker.assertStringUndefinedOrNull(json.mutedRole, 'Muted role');
 
-        if (!(json.modRoles instanceof Array) || !json.modRoles.every(r => typeof r === 'string')) {
-            throw new TypeError('Mod roles must be an array of strings!');
-        }
         if (!(json.protectedRoles instanceof Array) || !json.protectedRoles.every(r => typeof r === 'string')) {
             throw new TypeError('Protected roles must be an array of strings!');
         }
@@ -100,11 +106,19 @@ export default class GuildSettings extends Settings {
 
         TypeChecker.assertStringUndefinedOrNull(json.playlist, 'Playlist');
         TypeChecker.assertStringUndefinedOrNull(json.helpcenter, 'Help center');
+
         TypeChecker.assertOfTypes(json.invites, ['boolean', 'undefined'], 'Invites');
         TypeChecker.assertNumberUndefinedOrNull(json.linkCooldown, 'Link cooldown');
         TypeChecker.assertNumberUndefinedOrNull(json.attachmentCooldown, 'Attachment cooldown');
         TypeChecker.assertNumberUndefinedOrNull(json.antiSpam, 'Anti Spam');
         TypeChecker.assertNumberUndefinedOrNull(json.similarMessages, 'Similar Messages');
+        TypeChecker.assertOfTypes(json.safeSearch, ['object', 'undefined'], 'Safe Search', true);
+        if (typeof json.safeSearch === 'object') {
+            if (typeof json.safeSearch.enabled !== 'boolean') {
+                throw new TypeError('Invalid safe search configuration');
+            }
+            TypeChecker.assertNumberUndefinedOrNull(json.safeSearch.strikes, 'Safe Search');
+        }
     }
 
     /**
@@ -134,11 +148,13 @@ export default class GuildSettings extends Settings {
      * @returns {string}
      */
     getModerationSettings() {
+        const protectedRoles = this.getProtectedRoles().map(role => '- ' + roleMention(role)).join('\n') || 'None';
+
         return `Log: ${this.logChannel ? channelMention(this.logChannel) : 'disabled'}\n` +
             `Message Log: ${this.messageLogChannel ? channelMention(this.messageLogChannel) : 'disabled'}\n` +
             `Join Log: ${this.joinLogChannel ? channelMention(this.joinLogChannel) : 'disabled'}\n` +
             `Muted role: ${this.mutedRole ? roleMention(this.mutedRole) : 'disabled'}\n` +
-            `Protected roles: \n${this.getProtectedRoles().map(role => '- ' + roleMention(role)).join('\n')}\n`;
+            `Protected roles: ${this.getProtectedRoles().length ? '\n' : ''}${protectedRoles}\n`;
     }
 
     /**
