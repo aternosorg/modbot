@@ -122,7 +122,14 @@ export class CommandManager {
             (command, guild) => command.isAvailableIn(guild), guild
         ));
 
-        await guild.commands.set(commands);
+        try {
+            await guild.commands.set(commands);
+        }
+        catch (e) {
+            if (![RESTJSONErrorCodes.MissingPermissions, RESTJSONErrorCodes.MissingAccess].includes(e.code)) {
+                await logger.error(`Failed to register commands in guild ${guild.id}`, e);
+            }
+        }
     }
 
     /**
