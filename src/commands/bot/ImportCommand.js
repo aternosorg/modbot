@@ -62,7 +62,7 @@ export default class ImportCommand extends Command {
         const importer = this.getImporter(data, interaction);
 
         if (!importer) {
-            await interaction.editReply('Unknown data type. Only Vortex and ModBot data are currently supported.' +
+            await interaction.editReply('Unknown data type. Only Vortex and ModBot data are currently supported. ' +
                 'Feel free to create an issue on our GitHub if you want to suggest another type.');
             return;
         }
@@ -72,7 +72,7 @@ export default class ImportCommand extends Command {
         }
         catch (e) {
             if (e instanceof TypeError) {
-                await interaction.editReply('Invalid Data! Only Vortex and ModBot data are currently supported.' +
+                await interaction.editReply('Invalid Data! Only Vortex and ModBot data are currently supported. ' +
                     'Feel free to create an issue on our GitHub if you want to suggest another type.');
                 return;
             }

@@ -198,9 +198,9 @@ export class CommandManager {
      */
     async handleCommandError(interaction, error) {
         await logger.error(error);
-        let message = 'An error occurred while executing this command.';
+        let message = 'An error occurred while executing this command. ';
         if (error.code === RESTJSONErrorCodes.MissingPermissions) {
-            message = 'I\'m missing some permissions to execute this command.';
+            message = 'I\'m missing some permissions to execute this command. ';
         }
 
         message += `If this happens consistently please create an issue ${hyperlink('here', `${GITHUB_REPOSITORY}/issues`, 'GitHub Issues')}`;

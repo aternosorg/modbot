@@ -187,7 +187,7 @@ export default class Moderation {
         while (data.length) {
             const current = data.slice(0, 100);
             data = data.slice(100);
-            queries.push(database.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value, active) ' +
+            queries.push(database.queryAll(`INSERT INTO moderations (${this.getFields().slice(1)}) ` +
                 `VALUES ${'(?,?,?,?,?,?,?,?,?), '.repeat(current.length).slice(0, - 2)}`, ...current.flat()));
         }
         await Promise.all(queries);
