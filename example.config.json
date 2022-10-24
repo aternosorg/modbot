@@ -1,28 +1,11 @@
 {
-  "auth_token": "AUTHTOKEN",
-  "db": {
+  "DOCUMENTATION": "View the CONFIGURATION.md file for more options",
+  "authToken": "AUTH TOKEN",
+  "database": {
     "host": "localhost",
     "user": "modbot",
     "password": "password",
     "database": "modbot",
-    "charset": "utf8mb4",
-    "supportBigNumbers": true,
-    "bigNumberStrings": true
-  },
-  "prefix": "!",
-  "googleapikey":"google API Key",
-  "monitoring": {
-    "enabled": false,
-    "project_id": "000",
-    "log_name": "modbot",
-    "credentials": {
-      "client_email": "modbot@example.com",
-      "private_key": "google service account private key"
-    }
-  },
-  "debug": {
-    "enabled": false,
-    "guild": ""
-  },
-  "featureWhitelist": ["guild-id of guild that should have additional features"]
+    "port": 3306
+  }
 }

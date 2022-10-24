@@ -3,11 +3,12 @@
         "commonjs": true,
         "es2021": true,
         "node": true,
-        "jest/globals": true
+        "es6": true
     },
     "extends": ["eslint:recommended","plugin:json/recommended"],
     "parserOptions": {
-        "ecmaVersion": "latest"
+        "ecmaVersion": "latest",
+        "sourceType": "module"
     },
     "rules": {
         "indent": [
@@ -25,15 +26,21 @@
             "error",
             "single"
         ],
+        "no-unused-vars": [
+            "error",
+            {
+                "vars": "all",
+                "args": "none",
+                "ignoreRestSiblings": false
+            }
+        ],
         "semi": [
             "error",
             "always"
-        ],
-        "jsdoc/no-undefined-types": 1
+        ]
     },
     "plugins": [
         "jsdoc",
-        "jest",
         "json"
     ]
 }

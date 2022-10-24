@@ -1,24 +1,43 @@
-const ConfigCommand = require('../ConfigCommand');
+import SubCommand from '../SubCommand.js';
+import GuildSettings from '../../settings/GuildSettings.js';
+import EmbedWrapper from '../../embeds/EmbedWrapper.js';
+import colors from '../../util/colors.js';
 
-class SimilarMessagesCommand extends ConfigCommand {
+export default class SimilarMessagesCommand extends SubCommand {
+    buildOptions(builder) {
+        builder.addIntegerOption(option => option
+            .setName('value')
+            .setDescription('Maximum amount of similar messages a user can send per minute.')
+            .setMinValue(1)
+            .setMaxValue(60));
+        return super.buildOptions(builder);
+    }
 
-    static description = 'Configure message repeated message protection (deletes similar messages)';
+    async execute(interaction) {
+        const count = interaction.options.getInteger('value') ?? -1;
 
-    static usage = 'get|set|disable';
+        const guildSettings = await GuildSettings.get(interaction.guild.id);
+        guildSettings.similarMessages = count;
+        await guildSettings.save();
+        const embed = new EmbedWrapper();
 
-    static comment = 'Count is the number of similar messages(1-60) a user is allowed to send per minute.';
+        if (count === -1) {
+            embed.setDescription('Disabled repeated message protection.')
+                .setColor(colors.GREEN);
+        }
+        else {
+            embed.setDescription(`Set repeated message protection to a maximum of ${count} similar messages per second.`)
+                .setColor(colors.RED);
+        }
 
-    static names = ['similarmessages'];
+        await interaction.reply(embed.toMessage());
+    }
 
-    static userPerms = ['MANAGE_GUILD'];
+    getDescription() {
+        return 'Prevent users from repeating messages';
+    }
 
-    static getSubCommands() {
-        return [
-            require('./similarmessages/GetSimilarMessages'),
-            require('./similarmessages/SetSimilarMessages'),
-            require('./similarmessages/DisableSimilarMessages'),
-        ];
+    getName() {
+        return 'similar-messages';
     }
 }
-
-module.exports = SimilarMessagesCommand;

@@ -1,29 +1,33 @@
-const ConfigCommand = require('../ConfigCommand');
-const ListBadWordCommand = require('./badword/ListBadWordCommand');
-const AddBadWordCommand = require('./badword/AddBadWordCommand');
-const RemoveBadWordCommand = require('./badword/RemoveBadWordCommand');
-const ShowBadWordCommand = require('./badword/ShowBadWordCommand');
-const EditBadWordCommand = require('./badword/EditBadWordCommand');
+import AddBadWordCommand from './bad-word/AddBadWordCommand.js';
+import EditBadWordCommand from './bad-word/EditBadWordCommand.js';
+import ListBadWordCommand from './bad-word/ListBadWordCommand.js';
+import ShowBadWordCommand from './bad-word/ShowBadWordCommand.js';
+import DeleteBadWordCommand from './bad-word/DeleteBadWordCommand.js';
+import ParentCommand from '../ParentCommand.js';
+import {PermissionFlagsBits, PermissionsBitField} from 'discord.js';
 
-class BadWordCommand extends ConfigCommand {
+export default class BadWordCommand extends ParentCommand {
 
-    static description = 'Manage bad-words';
+    getDefaultMemberPermissions() {
+        return new PermissionsBitField()
+            .add(PermissionFlagsBits.ManageGuild);
+    }
 
-    static names = ['badword'];
-
-    static userPerms = ['MANAGE_GUILD'];
-
-    static usage = 'list|add|remove|show|edit';
-
-    static getSubCommands() {
+    getChildren() {
         return [
-            ListBadWordCommand,
-            AddBadWordCommand,
-            RemoveBadWordCommand,
-            ShowBadWordCommand,
-            EditBadWordCommand,
+            new ListBadWordCommand(),
+            new AddBadWordCommand(),
+            new ShowBadWordCommand(),
+            new DeleteBadWordCommand(),
+            new EditBadWordCommand(),
         ];
     }
-}
 
-module.exports = BadWordCommand;
+    getDescription() {
+        return 'Manage bad-words';
+    }
+
+    getName() {
+        return 'bad-word';
+    }
+}

@@ -1,10 +1,10 @@
 {
   "name": "modbot",
-  "version": "2.3.1",
+  "version": "3.0.0",
   "description": "Discord Bot for the Aternos Discord server",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "jest",
     "prepare": "husky install",
     "lint": "eslint"
   },
@@ -19,34 +19,32 @@
   },
   "homepage": "https://github.com/aternosorg/modbot#readme",
   "engines": {
-    "node": ">=16.6.0"
+    "node": ">=16.9.0"
   },
   "dependencies": {
-    "@google-cloud/logging": "^9.1.1",
-    "@googleapis/youtube": "^2.0.0",
-    "diff": "^4.0.2",
-    "discord.js": "^13.8.0",
-    "fuse.js": "^6.4.6",
-    "got": "^11.8.2",
+    "@google-cloud/logging": "^10.1.10",
+    "@google-cloud/vision": "^3.0.1",
+    "@googleapis/youtube": "^6.0.0",
+    "diff": "^5.1.0",
+    "discord-api-types": "^0.37.12",
+    "discord.js": "^14.6.0",
+    "fuse.js": "^6.6.2",
+    "got": "^12.5.1",
     "mysql2": "^2.3.3",
     "string-similarity": "^4.0.4",
     "turndown": "^7.1.1"
   },
   "devDependencies": {
-    "@types/node": "^17.0.34",
-    "eslint": "^8.3.0",
-    "eslint-plugin-import": "^2.25.3",
-    "eslint-plugin-jest": "^25.3.0",
-    "eslint-plugin-jsdoc": "^37.0.3",
+    "@types/node": "^18.8.3",
+    "eslint": "^8.25.0",
+    "eslint-plugin-jsdoc": "^39.3.6",
     "eslint-plugin-json": "^3.1.0",
-    "husky": "^6.0.0",
-    "jest": "^27.2.5",
-    "lint-staged": "^11.0.0"
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3"
   },
   "lint-staged": {
     "*.js": [
-      "eslint --fix",
-      "jest --passWithNoTests --findRelatedTests"
+      "eslint --fix"
     ],
     "*.json": [
       "eslint --fix"

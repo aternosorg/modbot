@@ -1,104 +1,71 @@
-const SetConfigCommand = require('../../SetConfigCommand');
-const ChannelConfig = require('../../../config/ChannelConfig');
-const {MessageEmbed} = require('discord.js');
-const util = require('../../../util');
+import SubCommand from '../../SubCommand.js';
+import GuildSettings from '../../../settings/GuildSettings.js';
+import ChannelSettings from '../../../settings/ChannelSettings.js';
+import {getEmbed} from './ShowInvitesCommand.js';
+import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
 
-class SetInvitesCommand extends SetConfigCommand {
-    static usage = '<allowed|forbidden|default> [<#channel|channelid>]';
+export default class SetInvitesCommand extends SubCommand {
 
-    async execute() {
-        const channelID = this.source.isInteraction ?
-            this.options.getChannel('channel')?.id : this.options.getString('channelid');
-        const mode = this.getInviteMode(this.options.getString('mode'));
-        if (channelID) {
-            if (typeof mode !== 'boolean' && mode !== null) {
-                await this.sendUsage();
-                return;
-            }
-            /** @type {ChannelConfig} */
-            const channelConfig = await ChannelConfig.get(channelID);
-            channelConfig.invites = mode;
-            await channelConfig.save();
-            if (channelConfig.invites === null) {
-                await this.reply(
-                    new MessageEmbed()
-                        .setDescription(`Invites will now default to the guild setting in <#${channelID}>!`));
-            } else {
-                await this.reply(
-                    new MessageEmbed()
-                        .setColor(channelConfig.invites ? util.color.green : util.color.red)
-                        .setDescription(`Invites are now ${channelConfig.invites ? 'allowed' : 'forbidden'} in <#${channelID}>!`)
-                );
-            }
+    buildOptions(builder) {
+        builder.addStringOption(option => option
+            .setName('invites')
+            .setDescription('Are invites allowed?')
+            .addChoices(
+                { name: 'Allowed', value: 'allowed' },
+                { name: 'Forbidden', value: 'forbidden' },
+                { name: 'Default (only available for channels)', value: 'default' },
+            )
+            .setRequired(true)
+        );
+        builder.addChannelOption(option => option
+            .setName('channel')
+            .setDescription('get the configuration for this channel')
+        );
+        return super.buildOptions(builder);
+    }
+
+    async execute(interaction) {
+        const channel = interaction.options.getChannel('channel');
+        let invites = null;
+
+        switch (interaction.options.getString('invites')) {
+            case 'default':
+                invites = null;
+                break;
+
+            case 'allowed':
+                invites = true;
+                break;
+
+            case 'forbidden':
+                invites = false;
+                break;
+        }
+
+        if (channel) {
+            const channelSettings = await ChannelSettings.get(channel.id);
+            channelSettings.invites = invites;
+            await channelSettings.save();
+            await interaction.reply(await getEmbed(interaction.guildId, channel));
         }
         else {
-            if (typeof mode !== 'boolean') {
-                await this.sendError('Invites can either be \'allowed\' or \'forbidden\' in a server.');
-                return;
+            if (invites === null) {
+                return await interaction.reply(ErrorEmbed
+                    .message('The option \'default\' is only allowed for channel overrides.'));
             }
-            this.guildConfig.invites = mode;
-            await this.guildConfig.save();
-            await this.reply(new MessageEmbed()
-                .setColor(this.guildConfig.invites ? util.color.green : util.color.red)
-                .setDescription(`Invites are now ${this.guildConfig.invites ? 'allowed' : 'forbidden'} in this server!`)
-            );
+
+            const guildSettings = await GuildSettings.get(interaction.guildId);
+            guildSettings.invites = invites;
+            await guildSettings.save();
+            await interaction.reply(await getEmbed(interaction.guildId));
         }
     }
 
-    /**
-     * @param {String} string
-     * @return {null|boolean|undefined}
-     */
-    getInviteMode(string) {
-        switch (string.toLowerCase()) {
-            case 'allowed':
-                return true;
-            case 'forbidden':
-                return false;
-            case 'default':
-                return null;
-            default:
-                return undefined;
-        }
+    getDescription() {
+        return 'Configure if users are allowed to post invites (in this channel)';
     }
 
-    static getOptions() {
-        return [{
-            name: 'mode',
-            type: 'STRING',
-            description: '?',
-            required: true,
-            choices: [
-                {
-                    name: 'allowed',
-                    value: 'allowed',
-                }, {
-                    name: 'forbidden',
-                    value: 'forbidden',
-                }, {
-                    name: 'default',
-                    value: 'default',
-                }
-            ]
-        }, {
-            name: 'channel',
-            type: 'CHANNEL',
-            description: 'Get the override for a specific channel.',
-            required: false
-        }];
-    }
-
-    parseOptions(args) {
-        return [{
-            name: 'mode',
-            type: 'STRING',
-            value: args.shift()
-        },{
-            name: 'channelid',
-            type: 'STRING',
-            value: util.channelMentionToId(args.shift())
-        }];
+    getName() {
+        return 'set';
     }
 }
-
-module.exports = SetInvitesCommand;

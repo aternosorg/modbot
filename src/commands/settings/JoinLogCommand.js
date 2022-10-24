@@ -1,25 +1,47 @@
-const ConfigCommand = require('../ConfigCommand');
-const DisableJoinLogCommand = require('./joinlog/DisableJoinLogCommand');
-const GetJoinLogCommand = require('./joinlog/GetJoinLogCommand');
-const SetJoinLogCommand = require('./joinlog/SetJoinLogCommand');
+import GuildSettings from '../../settings/GuildSettings.js';
+import AbstractChannelCommand from './AbstractChannelCommand.js';
+import EmbedWrapper from '../../embeds/EmbedWrapper.js';
+import colors from '../../util/colors.js';
+import {channelMention} from 'discord.js';
 
-class JoinLogCommand extends ConfigCommand {
+export default class JoinLogCommand extends AbstractChannelCommand {
 
-    static description = 'Configure the channel that joins will be logged in';
+    buildOptions(builder) {
+        builder.addChannelOption(option => option
+            .setName('channel')
+            .setDescription('Join log channel')
+            .setRequired(false)
+        );
+        return super.buildOptions(builder);
+    }
 
-    static usage = 'set|get|disable';
+    async execute(interaction) {
+        const channel = await this.getChannel(interaction);
 
-    static names = ['joinlog','memberlog'];
+        if (channel === false) {
+            return;
+        }
 
-    static userPerms = ['MANAGE_GUILD'];
+        const guildSettings = await GuildSettings.get(interaction.guildId);
+        guildSettings.joinLogChannel = channel ? channel.id : channel;
+        await guildSettings.save();
+        const embed = new EmbedWrapper();
+        if (channel) {
+            embed.setDescription(`Set join log to ${channelMention(channel.id)}.`)
+                .setColor(colors.GREEN);
+        }
+        else {
+            embed.setDescription('Disabled join log.')
+                .setColor(colors.RED);
+        }
+        await interaction.reply(embed.toMessage());
+    }
 
-    static getSubCommands() {
-        return [
-            DisableJoinLogCommand,
-            GetJoinLogCommand,
-            SetJoinLogCommand,
-        ];
+    getDescription() {
+        return 'Set the channel where joins and leaves messages are logged';
+    }
+
+    getName() {
+        return 'join-log';
     }
 }
-
-module.exports = JoinLogCommand;

@@ -1,25 +1,47 @@
-const ConfigCommand = require('../ConfigCommand');
-const DisableMessageLogCommand = require('./messagelog/DisableMessageLogCommand');
-const GetMessageLogCommand = require('./messagelog/GetMessageLogCommand');
-const SetMessageLogCommand = require('./messagelog/SetMessageLogCommand');
+import GuildSettings from '../../settings/GuildSettings.js';
+import EmbedWrapper from '../../embeds/EmbedWrapper.js';
+import colors from '../../util/colors.js';
+import AbstractChannelCommand from './AbstractChannelCommand.js';
+import {channelMention} from 'discord.js';
 
-class MessageLogCommand extends ConfigCommand {
+export default class MessageLogCommand extends AbstractChannelCommand {
 
-    static description = 'Configure the channel that deleted and edited messages will be logged in';
+    buildOptions(builder) {
+        builder.addChannelOption(option => option
+            .setName('channel')
+            .setDescription('Message log channel')
+            .setRequired(false)
+        );
+        return super.buildOptions(builder);
+    }
 
-    static usage = 'set|get|disable';
+    async execute(interaction) {
+        const channel = await this.getChannel(interaction);
 
-    static names = ['messagelog'];
+        if (channel === false) {
+            return;
+        }
 
-    static userPerms = ['MANAGE_GUILD'];
+        const guildSettings = await GuildSettings.get(interaction.guildId);
+        guildSettings.messageLogChannel = channel ? channel.id : channel;
+        await guildSettings.save();
+        const embed = new EmbedWrapper();
+        if (channel) {
+            embed.setDescription(`Set message log to ${channelMention(channel.id)}.`)
+                .setColor(colors.GREEN);
+        }
+        else {
+            embed.setDescription('Disabled message log.')
+                .setColor(colors.RED);
+        }
+        await interaction.reply(embed.toMessage());
+    }
 
-    static getSubCommands() {
-        return [
-            DisableMessageLogCommand,
-            GetMessageLogCommand,
-            SetMessageLogCommand,
-        ];
+    getDescription() {
+        return 'Set the channel where deleted/edited messages are logged';
+    }
+
+    getName() {
+        return 'message-log';
     }
 }
-
-module.exports = MessageLogCommand;

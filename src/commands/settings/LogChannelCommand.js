@@ -1,25 +1,47 @@
-const ConfigCommand = require('../ConfigCommand');
-const DisableLogChannelCommand = require('./logchannel/DisableLogChannelCommand');
-const GetLogChannelCommand = require('./logchannel/GetLogChannelCommand');
-const SetLogChannelCommand = require('./logchannel/SetLogChannelCommand');
+import GuildSettings from '../../settings/GuildSettings.js';
+import EmbedWrapper from '../../embeds/EmbedWrapper.js';
+import colors from '../../util/colors.js';
+import AbstractChannelCommand from './AbstractChannelCommand.js';
+import {channelMention} from 'discord.js';
 
-class LogChannelCommand extends ConfigCommand {
+export default class LogChannelCommand extends AbstractChannelCommand {
 
-    static description = 'Configure the channel that moderations will be logged in';
+    buildOptions(builder) {
+        builder.addChannelOption(option => option
+            .setName('channel')
+            .setDescription('Log channel')
+            .setRequired(false)
+        );
+        return super.buildOptions(builder);
+    }
 
-    static usage = 'set|get|disable';
+    async execute(interaction) {
+        const channel = await this.getChannel(interaction);
 
-    static names = ['log','logchannel'];
+        if (channel === false) {
+            return;
+        }
 
-    static userPerms = ['MANAGE_GUILD'];
+        const guildSettings = await GuildSettings.get(interaction.guildId);
+        guildSettings.logChannel = channel ? channel.id : channel;
+        await guildSettings.save();
+        const embed = new EmbedWrapper();
+        if (channel) {
+            embed.setDescription(`Set log channel to ${channelMention(channel.id)}.`)
+                .setColor(colors.GREEN);
+        }
+        else {
+            embed.setDescription('Disabled log channel.')
+                .setColor(colors.RED);
+        }
+        await interaction.reply(embed.toMessage());
+    }
 
-    static getSubCommands() {
-        return [
-            DisableLogChannelCommand,
-            GetLogChannelCommand,
-            SetLogChannelCommand,
-        ];
+    getDescription() {
+        return 'Set the log channel';
+    }
+
+    getName() {
+        return 'log-channel';
     }
 }
-
-module.exports = LogChannelCommand;

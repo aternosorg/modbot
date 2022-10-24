@@ -1,29 +1,33 @@
-const ConfigCommand = require('../ConfigCommand');
-const AddAutoResponseCommand = require('./autoresponses/AddAutoResponseCommand');
-const EditAutoResponseCommand = require('./autoresponses/EditAutoResponseCommand');
-const ListAutoResponseCommand = require('./autoresponses/ListAutoResponseCommand');
-const RemoveAutoResponseCommand = require('./autoresponses/RemoveAutoResponseCommand');
-const ShowAutoResponseCommand = require('./autoresponses/ShowAutoResponseCommand');
+import AddAutoResponseCommand from './auto-response/AddAutoResponseCommand.js';
+import ListAutoResponseCommand from './auto-response/ListAutoResponseCommand.js';
+import ShowAutoReponseCommand from './auto-response/ShowAutoReponseCommand.js';
+import DeleteAutoReponseCommand from './auto-response/DeleteAutoReponseCommand.js';
+import EditAutoResponseCommand from './auto-response/EditAutoResponseCommand.js';
+import {PermissionFlagsBits, PermissionsBitField} from 'discord.js';
+import ParentCommand from '../ParentCommand.js';
 
-class AutoResponseCommand extends ConfigCommand {
+export default class AutoResponseCommand extends ParentCommand {
 
-    static description = 'Manage auto-responses';
+    getDefaultMemberPermissions() {
+        return new PermissionsBitField()
+            .add(PermissionFlagsBits.ManageGuild);
+    }
 
-    static names = ['autoresponse','response'];
-
-    static userPerms = ['MANAGE_GUILD'];
-
-    static usage = 'list|add|remove|show|edit';
-
-    static getSubCommands() {
+    getChildren() {
         return [
-            AddAutoResponseCommand,
-            EditAutoResponseCommand,
-            ListAutoResponseCommand,
-            RemoveAutoResponseCommand,
-            ShowAutoResponseCommand,
+            new ListAutoResponseCommand(),
+            new AddAutoResponseCommand(),
+            new ShowAutoReponseCommand(),
+            new DeleteAutoReponseCommand(),
+            new EditAutoResponseCommand(),
         ];
     }
-}
 
-module.exports = AutoResponseCommand;
+    getDescription() {
+        return 'Manage auto-responses';
+    }
+
+    getName() {
+        return 'auto-response';
+    }
+}

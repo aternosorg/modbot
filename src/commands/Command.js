@@ -1,151 +1,126 @@
-const {AbstractCommand, AbstractCommandType} = require('./AbstractCommand');
-const util = require('../util');
-const {
-    Message,
-    Client,
-    MessageEmbed,
-    CommandInteractionOptionResolver,
-} = require('discord.js');
-const defaultPrefix = require('../../config.json').prefix;
-const Database = require('../Database');
-const CommandSource = require('./CommandSource');
-const GuildConfig = require('../config/GuildConfig');
+import {ApplicationCommandType, ContextMenuCommandBuilder, SlashCommandBuilder} from 'discord.js';
+import ExecutableCommand from './ExecutableCommand.js';
+import {toTitleCase} from '../util/format.js';
 
 /**
- * @class
- * @classdesc A top-level-command
  * @abstract
  */
-class Command extends AbstractCommand {
-
-    static type = AbstractCommandType.COMMAND;
+export default class Command extends ExecutableCommand {
 
     /**
-     * Comment
-     * @type {String|null}
+     * discord slash command id
+     * @type {import('discord.js').Snowflake}
      */
-    static comment = null;
+    id = '';
 
     /**
-     * does this command support slash commands
-     * @type {boolean}
+     * Permissions that members need to execute this command by default.
+     * Null: no permissions required. Empty bitfield: disabled by default
+     *
+     * This is not checked by ModBot and is only used to register commands on discord
+     * @return {?import('discord.js').PermissionsBitField}
      */
-    static supportsSlashCommands = true;
-
-    /**
-     * supported context menus
-     * @type {{MESSAGE: boolean, USER: boolean}}
-     */
-    static supportedContextMenus = {
-        USER: false,
-        MESSAGE: false,
-    };
-
-    /**
-     * can this command only be used in guilds
-     * to allow commands in dms enable this. Note that the following things don't exist in DMs:
-     * * Permission checks
-     * * User configs
-     * * Channel configs
-     * * Guild configs (duh!)
-     * * The channel object (will be partial!)
-     * @type {boolean}
-     */
-    static guildOnly = true;
-
-    /**
-     * can this command only be used in whitelisted guilds (config->featureWhitelist)
-     * @type {boolean}
-     */
-    static private = false;
-
-    /**
-     * @type {Message}
-     * @deprecated use {@link source source}
-     */
-    message;
-
-    /**
-     * arguments passed to the command
-     * @deprecated get options from the {@link options OptionResolver}
-     * @type {String[]}
-     */
-    args;
-
-    /**
-     * the name of this command that was used to call it
-     * @type {String}
-     */
-    name;
-
-    /**
-     * the prefix used in this command call
-     * @type {String}
-     */
-    prefix;
-
-    /**
-     * call this command
-     * @param {CommandSource} source
-     * @param {Database} database
-     * @param {Client} bot
-     * @param {String} name
-     * @param {String} prefix
-     */
-    constructor(source, database, bot, name, prefix) {
-        super(source, database, bot, null);
-        this.name = name;
-        this.prefix = prefix;
-
-        if (source.isInteraction) {
-            this.options = source.getOptions();
-        }
-        else {
-            this.message = source.getRaw();
-            const args = util.split(source.getRaw().content.substring(prefix.length + name.length), ' ');
-            this.args = args;
-            this.options = new CommandInteractionOptionResolver(bot, this.parseOptions(args));
-        }
+    getDefaultMemberPermissions() {
+        return null;
     }
 
     /**
-     * Generate a usage embed
-     * @param {CommandSource} source
-     * @return {MessageEmbed}
+     * add options to slash command builder
+     * @param {import('discord.js').SlashCommandBuilder} builder
+     * @return {import('discord.js').SlashCommandBuilder}
      */
-    static async getUsage(source) {
-        const guildConfig = await GuildConfig.get(source.getGuild().id);
-        const prefix = source.isInteraction ? '/' : guildConfig.prefix || defaultPrefix;
-        const embed = new MessageEmbed()
-            .setAuthor({name: `Help for ${this.getPrimaryName()} | Prefix: ${prefix}`})
-            .setFooter({text: `Command executed by ${util.escapeFormatting(source.getUser().tag)}`})
-            .addFields(
-                /** @type {any} */ { name: 'Usage', value: `\`${prefix}${this.getPrimaryName()} ${this.usage ?? ''}`.trim() + '`', inline: true},
-                /** @type {any} */ { name: 'Description', value: this.description, inline: true},
-                /** @type {any} */ { name: 'Required Permissions', value: this.userPerms.map(p => '`'+p+'`').join(', ') || 'none', inline: true }
-            )
-            .setColor(util.color.red)
-            .setTimestamp();
-        if (this.comment) {
-            embed.addFields(
-                /** @type {any} */{ name: 'Comment', value: `${this.comment}`, inline: false});
-        }
-        let aliases = this.names.slice(1).map(name => `\`${name}\``).join(', ');
-        if(aliases) {
-            embed.addFields(
-                /** @type {any} */{name: 'Aliases', value: aliases, inline: true});
-        }
-        return embed;
+    buildOptions(builder) {
+        return super.buildOptions(builder);
     }
 
     /**
-     * get an overview of this command
-     * @return {string}
+     * build this slash command
+     * @return {SlashCommandBuilder}
      */
-    static getOverview() {
-        return `**${this.names.join(', ')}**\n`+
-            `${this.description}\n`;
+    buildSlashCommand() {
+        const builder = new SlashCommandBuilder()
+            .setName(this.getName())
+            .setDescription(this.getDescription())
+            .setDefaultMemberPermissions(this.getDefaultMemberPermissions()?.bitfield)
+            .setDMPermission(this.isAvailableInDMs());
+
+        this.buildOptions(builder);
+        return builder;
+    }
+
+    /**
+     * does this command support user context menus
+     * @return {boolean}
+     */
+    supportsUserCommands() {
+        return false;
+    }
+
+    /**
+     * build user context menu
+     * @return {ContextMenuCommandBuilder}
+     */
+    buildUserCommand() {
+        return new ContextMenuCommandBuilder()
+            .setName(toTitleCase(this.getName()))
+            .setType(ApplicationCommandType.User)
+            .setDefaultMemberPermissions(this.getDefaultMemberPermissions()?.bitfield)
+            .setDMPermission(this.isAvailableInDMs());
+    }
+
+    /**
+     * execute a user context menu
+     * @param {import('discord.js').UserContextMenuCommandInteraction} interaction
+     * @return {Promise<void>}
+     */
+    async executeUserMenu(interaction) {
+
+    }
+
+    /**
+     * does this command support message context menus
+     * @return {boolean}
+     */
+    supportsMessageCommands() {
+        return false;
+    }
+
+    /**
+     * build message context menu
+     * @return {ContextMenuCommandBuilder}
+     */
+    buildMessageCommand() {
+        return new ContextMenuCommandBuilder()
+            .setName(toTitleCase(this.getName()))
+            .setType(ApplicationCommandType.Message)
+            .setDefaultMemberPermissions(this.getDefaultMemberPermissions()?.bitfield)
+            .setDMPermission(this.isAvailableInDMs());
+    }
+
+    /**
+     * execute a message context menu
+     * @param {import('discord.js').MessageContextMenuCommandInteraction} interaction
+     * @return {Promise<void>}
+     */
+    async executeMessageMenu(interaction) {
+
+    }
+
+    /**
+     * is this command available in all guilds?
+     * if not this command will manually be registered in all guilds where
+     * @return {boolean}
+     */
+    isAvailableInAllGuilds() {
+        return true;
+    }
+
+    /**
+     * is this command available in this guild?
+     * @param {import('discord.js').Guild} guild
+     * @return {Promise<boolean>}
+     */
+    async isAvailableIn(guild) {
+        return false;
     }
 }
-
-module.exports = Command;
