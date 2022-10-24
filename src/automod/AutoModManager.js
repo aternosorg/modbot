@@ -203,7 +203,7 @@ export class AutoModManager {
 
         const guildConfig = await GuildSettings.get(message.guild.id);
         const channelConfig = await ChannelSettings.get(message.channel.id);
-        const allowed = channelConfig.#invites ?? guildConfig.invites;
+        const allowed = channelConfig.invites ?? guildConfig.invites;
 
         if (allowed) {
             return false;
