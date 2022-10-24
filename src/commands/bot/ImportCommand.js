@@ -1,9 +1,12 @@
 import Command from '../Command.js';
 import {PermissionFlagsBits, PermissionsBitField} from 'discord.js';
 import got from 'got';
-import {gunzipSync} from 'zlib';
+import {promisify} from 'util';
+import {gunzip as gunzipCb} from 'zlib';
 import VortexImporter from '../../database/export/VortexImporter.js';
 import ModBotImporter from '../../database/export/ModBotImporter.js';
+
+const gunzip = promisify(gunzipCb);
 
 export default class ImportCommand extends Command {
 
@@ -34,7 +37,7 @@ export default class ImportCommand extends Command {
         let data = await got.get(file.url).buffer();
         if (fileName.endsWith('.gz')) {
             try {
-                data = gunzipSync(data.buffer);
+                data = await gunzip(data.buffer);
             }
             catch (e) {
                 await interaction.editReply('Failed to decompress gzip data. Make sure the file you\'re trying to upload is valid gzip.');
