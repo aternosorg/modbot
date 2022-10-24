@@ -23,12 +23,15 @@ export default class GuildSettings extends Settings {
     static tableName = 'guilds';
 
     #punishments = {
-        1: Punishment.from(PunishmentAction.MUTE, '15 min'),
-        2: Punishment.from(PunishmentAction.MUTE, '1 hour'),
-        3: Punishment.from(PunishmentAction.BAN, '1 day'),
-        5: Punishment.from(PunishmentAction.BAN, '1 month'),
-        7: Punishment.from(PunishmentAction.BAN, '6 month'),
-        10: Punishment.from(PunishmentAction.BAN),
+        1: Punishment.from(PunishmentAction.MUTE, '5 minutes'),
+        2: Punishment.from(PunishmentAction.MUTE, '30 minutes'),
+        3: Punishment.from(PunishmentAction.MUTE, '3 hours'),
+        5: Punishment.from(PunishmentAction.BAN, '1 day'),
+        6: Punishment.from(PunishmentAction.BAN, '1 week'),
+        7: Punishment.from(PunishmentAction.BAN, '2 weeks'),
+        8: Punishment.from(PunishmentAction.BAN, '2 months'),
+        9: Punishment.from(PunishmentAction.BAN, '6 months'),
+        11: Punishment.from(PunishmentAction.BAN),
     };
 
     #protectedRoles = [];
