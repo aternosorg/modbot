@@ -50,7 +50,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
 
         const confirmation = new Confirmation({global, punishment, type}, timeAfter('1 hour'));
         const modal = new ModalBuilder()
-            .setTitle(`Create new Bad-word of type ${type}` + (global ? '(all channels)' : ''))
+            .setTitle(`Create new Bad-word of type ${type}`)
             .setCustomId(`bad-word:add:${await confirmation.save()}`)
             .addComponents(
                 /** @type {*} */
