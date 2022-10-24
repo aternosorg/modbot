@@ -43,7 +43,7 @@ export default class AddAutoResponseCommand extends SubCommand {
 
         const confirmation = new Confirmation({global, type}, timeAfter('1 hour'));
         await interaction.showModal(new ModalBuilder()
-            .setTitle(`Create new Auto-response of type ${type}` + (global ? '(all channels)' : ''))
+            .setTitle(`Create new Auto-response of type ${type}`)
             .setCustomId(`auto-response:add:${await confirmation.save()}`)
             .addComponents(
                 /** @type {*} */
