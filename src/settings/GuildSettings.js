@@ -37,8 +37,6 @@ export default class GuildSettings extends Settings {
     #protectedRoles = [];
 
     /**
-     * Constructor - create a guild settings
-     *
      * @param  {import('discord.js').Snowflake}   id                        guild id
      * @param  {Object}                           [json]                    options
      * @param  {import('discord.js').Snowflake}   [json.logChannel]         id of the log channel

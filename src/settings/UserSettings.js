@@ -5,8 +5,6 @@ export default class UserSettings extends Settings {
     static tableName = 'users';
 
     /**
-     * Constructor - create a channel settings
-     *
      * @param {import('discord.js').Snowflake} id user id
      * @param {Object} [json] options
      * @param {boolean} [json.deleteCommands] should commands be deleted automatically

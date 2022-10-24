@@ -16,8 +16,6 @@ export default class ChannelSettings extends Settings {
     lock;
 
     /**
-     * Constructor - create a channel settings
-     *
      * @param  {import('discord.js').Snowflake}  id             channel id
      * @param  {Object}                         [json]          options
      * @param  {Boolean}                        [json.invites]  allow invites
