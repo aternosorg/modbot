@@ -204,9 +204,14 @@ export class CommandManager {
      * @return {Promise<void>}
      */
     async handleCommandError(interaction, error) {
-        await logger.error(error);
+        const name = [
+            interaction.commandName,
+            interaction.options.getSubcommandGroup(false),
+            interaction.options.getSubcommand(false)
+        ].filter(v => !!v).join(' ');
+        await logger.error(`Failed to execute command '${name}': ${error.name}`, error);
         let message = 'An error occurred while executing this command. ';
-        if (error.code === RESTJSONErrorCodes.MissingPermissions) {
+        if ([RESTJSONErrorCodes.MissingPermissions, RESTJSONErrorCodes.MissingAccess].includes(error.code)) {
             message = 'I\'m missing some permissions to execute this command. ';
         }
 
