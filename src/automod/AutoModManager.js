@@ -135,7 +135,7 @@ export class AutoModManager {
 
         const guildSettings = await GuildSettings.get(message.guild.id);
         const likelihood = await this.#safeSearch.detect(message);
-        if (likelihood.value < 0) {
+        if (!likelihood || likelihood.value < 0) {
             return false;
         }
 
