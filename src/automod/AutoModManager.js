@@ -182,6 +182,9 @@ export class AutoModManager {
      * @return {Promise<boolean>} has the message been deleted
      */
     async #caps(message) {
+        const guildConfig = await GuildSettings.get(message.guild.id);
+        if (!guildConfig.caps) return;
+
         const uppercase = (message.content.match(/[A-Z]/g) ?? []).length;
         const lowercase = (message.content.match(/[a-z]/g) ?? []).length;
 
