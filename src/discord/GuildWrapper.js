@@ -168,7 +168,8 @@ export default class GuildWrapper {
             }
             catch (e) {
                 if ([RESTJSONErrorCodes.MissingPermissions, RESTJSONErrorCodes.MissingAccess].includes(e.code)) {
-                    await logger.warn(`Failed to send message to ${channel.name} (${channelId}) in ${this.guild.name} (${this.guild.id}): ` + e.name, e);
+                    await logger.warn('Failed to send message to ' +
+                        `${channel.name} (${channelId}) in ${this.guild.name} (${this.guild.id}): ${e.name}`, e);
                 } else {
                     throw e;
                 }
