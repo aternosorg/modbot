@@ -95,8 +95,8 @@ export class AutoModManager {
         if (!message.guild || message.system || message.author.bot) {
             return true;
         }
-        const guildconfig = await GuildSettings.get(message.guild.id);
-        return message.member.permissions.has(PermissionFlagsBits.ManageMessages) || guildconfig.isProtected(message.member);
+        const guildSettings = await GuildSettings.get(message.guild.id);
+        return message.member.permissions.has(PermissionFlagsBits.ManageMessages) || guildSettings.isProtected(message.member);
     }
 
     /**
@@ -182,6 +182,11 @@ export class AutoModManager {
      * @return {Promise<boolean>} has the message been deleted
      */
     async #caps(message) {
+        const guildSettings = await GuildSettings.get(message.guild.id);
+        if (!guildSettings.caps) {
+            return false;
+        }
+
         const uppercase = (message.content.match(/[A-Z]/g) ?? []).length;
         const lowercase = (message.content.match(/[a-z]/g) ?? []).length;
 
@@ -201,9 +206,9 @@ export class AutoModManager {
             return false;
         }
 
-        const guildConfig = await GuildSettings.get(message.guild.id);
-        const channelConfig = await ChannelSettings.get(message.channel.id);
-        const allowed = channelConfig.invites ?? guildConfig.invites;
+        const guildSettings = await GuildSettings.get(message.guild.id);
+        const channelSettings = await ChannelSettings.get(message.channel.id);
+        const allowed = channelSettings.invites ?? guildSettings.invites;
 
         if (allowed) {
             return false;
@@ -274,16 +279,16 @@ export class AutoModManager {
      * @return {Promise<boolean>}
      */
     async spam(message) {
-        const guildConfig = await GuildSettings.get(message.guild.id);
-        if (guildConfig.antiSpam === -1 && guildConfig.similarMessages === -1) {
+        const guildSettings = await GuildSettings.get(message.guild.id);
+        if (guildSettings.antiSpam === -1 && guildSettings.similarMessages === -1) {
             return false;
         }
 
         RepeatedMessage.add(message);
-        if (guildConfig.antiSpam !== -1 && await RepeatedMessage.checkSpam(message, guildConfig.antiSpam, this.#RESPONSE_TIMEOUT)) {
+        if (guildSettings.antiSpam !== -1 && await RepeatedMessage.checkSpam(message, guildSettings.antiSpam, this.#RESPONSE_TIMEOUT)) {
             return await this.#deleteAndWarn(message, 'Sending messages to quickly', 'Slow down, you\'re sending messages to quickly!');
         }
-        else if (guildConfig.similarMessages !== -1 && await RepeatedMessage.checkSimilar(message, guildConfig.similarMessages, this.#RESPONSE_TIMEOUT)) {
+        else if (guildSettings.similarMessages !== -1 && await RepeatedMessage.checkSimilar(message, guildSettings.similarMessages, this.#RESPONSE_TIMEOUT)) {
             return await this.#deleteAndWarn(message, 'Repeating messages', 'Stop repeating your messages!');
         }
         return false;
