@@ -3,6 +3,7 @@ import RateLimiter from './RateLimiter.js';
 import bot from '../bot/Bot.js';
 import GuildSettings from '../settings/GuildSettings.js';
 import database from '../bot/Database.js';
+import logger from '../bot/Logger.js';
 
 export default class GuildWrapper {
 
@@ -162,7 +163,16 @@ export default class GuildWrapper {
 
         const channel = await this.fetchChannel(channelId);
         if (channel && channel instanceof BaseGuildTextChannel) {
-            return channel.send(options);
+            try {
+                return channel.send(options);
+            }
+            catch (e) {
+                if ([RESTJSONErrorCodes.MissingPermissions, RESTJSONErrorCodes.MissingAccess].includes(e.code)) {
+                    await logger.warn(`Failed to send message to ${channel.name} (${channelId}) in ${this.guild.name} (${this.guild.id}): ` + e.name, e);
+                } else {
+                    throw e;
+                }
+            }
         }
         return null;
     }
