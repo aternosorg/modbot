@@ -15,7 +15,7 @@ export default class PurgeLogEmbed extends KeyValueEmbed {
         this.setColor(colors.RED)
             .setAuthor({name: `${interaction.user.tag} purged ${count} messages`})
             .addPair('Channel', channelMention(interaction.channel.id))
-            .addPairIf(user, 'User', userMention(user.id))
+            .addPairIf(user, 'User', userMention(user?.id))
             .addPairIf(regex, 'Regex', codeBlock(regex))
             .addPair('Tested messages', limit)
             .setFooter({text: interaction.user.id.toString()});
