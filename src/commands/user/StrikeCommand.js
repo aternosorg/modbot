@@ -16,6 +16,7 @@ import Confirmation from '../../database/Confirmation.js';
 import {inLimits} from '../../util/util.js';
 import EmbedWrapper from '../../embeds/EmbedWrapper.js';
 import {formatNumber, inlineEmojiIfExists} from '../../util/format.js';
+import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
 
 export default class StrikeCommand extends UserCommand {
 
@@ -78,6 +79,7 @@ export default class StrikeCommand extends UserCommand {
      * @return {Promise<void>}
      */
     async strike(interaction, member, reason, count) {
+        await deferReplyOnce(interaction);
         reason = reason || 'No reason provided';
         count = inLimits(count, 1, 100);
 
@@ -87,7 +89,7 @@ export default class StrikeCommand extends UserCommand {
         }
 
         await member.strike(reason, interaction.user, count);
-        await interaction.reply(new EmbedWrapper()
+        await replyOrEdit(interaction, new EmbedWrapper()
             .setDescription(inlineEmojiIfExists('strike') +
                 `${bold(escapeMarkdown(member.user.tag))} has received ${formatNumber(count, 'strike')}: ${reason}`)
             .setColor(colors.RED)

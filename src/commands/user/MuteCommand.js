@@ -16,6 +16,7 @@ import Confirmation from '../../database/Confirmation.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
 import config from '../../bot/Config.js';
+import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
 
 export default class MuteCommand extends UserCommand {
 
@@ -73,6 +74,7 @@ export default class MuteCommand extends UserCommand {
      * @return {Promise<void>}
      */
     async mute(interaction, member, reason, duration) {
+        await deferReplyOnce(interaction);
         reason = reason || 'No reason provided';
 
         if (!await this.checkPermissions(interaction, member) ||
@@ -83,7 +85,7 @@ export default class MuteCommand extends UserCommand {
         const guildSettings = await member.getGuildSettings();
         if (!duration || duration > TIMEOUT_DURATION_LIMIT) {
             if (!guildSettings.mutedRole) {
-                await interaction.reply(ErrorEmbed
+                await replyOrEdit(interaction, ErrorEmbed
                     .message(`Timeouts longer than ${formatTime(TIMEOUT_DURATION_LIMIT)} require a muted role! Use /muted-role to configure it.`));
                 return;
             }
@@ -92,13 +94,13 @@ export default class MuteCommand extends UserCommand {
             const role = await (await GuildWrapper.fetch(interaction.guild.id)).fetchRole(guildSettings.mutedRole),
                 me = await interaction.guild.members.fetchMe();
             if (me.roles.highest.comparePositionTo(role) <= 0) {
-                await interaction.reply(ErrorEmbed.message('I can\'t manage the muted role. Please move my highest role above it.'));
+                await replyOrEdit(interaction, ErrorEmbed.message('I can\'t manage the muted role. Please move my highest role above it.'));
                 return;
             }
         }
 
         await member.mute(reason, interaction.user, duration);
-        await interaction.reply(
+        await replyOrEdit(interaction,
             new UserActionEmbed(member.user, reason, 'muted', colors.ORANGE, config.data.emoji.mute, duration)
                 .toMessage());
     }

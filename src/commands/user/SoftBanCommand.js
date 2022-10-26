@@ -14,6 +14,7 @@ import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
 import config from '../../bot/Config.js';
+import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
 
 export default class SoftBanCommand extends UserCommand {
 
@@ -65,6 +66,7 @@ export default class SoftBanCommand extends UserCommand {
      * @return {Promise<void>}
      */
     async softBan(interaction, member, reason, deleteMessageTime) {
+        await deferReplyOnce(interaction);
         reason = reason || 'No reason provided';
 
         if (!await this.checkPermissions(interaction, member) ||
@@ -73,7 +75,7 @@ export default class SoftBanCommand extends UserCommand {
         }
 
         await member.softban(reason, interaction.user, deleteMessageTime);
-        await interaction.reply(
+        await replyOrEdit(interaction,
             new UserActionEmbed(member.user, reason, 'softbanned', colors.ORANGE, config.data.emoji.kick)
                 .toMessage());
     }

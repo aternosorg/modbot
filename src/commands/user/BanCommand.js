@@ -14,6 +14,7 @@ import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
 import config from '../../bot/Config.js';
+import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
 
 export default class BanCommand extends UserCommand {
 
@@ -78,6 +79,7 @@ export default class BanCommand extends UserCommand {
      */
     async ban(interaction, member, reason, duration, deleteMessageTime) {
         reason = reason || 'No reason provided';
+        await deferReplyOnce(interaction);
 
         if (!await this.checkPermissions(interaction, member) ||
             !await this.preventDuplicateModeration(interaction, member, {reason, duration, deleteMessageTime})) {
@@ -85,7 +87,8 @@ export default class BanCommand extends UserCommand {
         }
 
         await member.ban(reason, interaction.user, duration, deleteMessageTime);
-        await interaction.reply(
+        await replyOrEdit(
+            interaction,
             new UserActionEmbed(member.user, reason, 'banned', colors.RED, config.data.emoji.ban, duration)
                 .toMessage());
     }
