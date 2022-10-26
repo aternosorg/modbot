@@ -3,9 +3,14 @@ import GuildSettings from '../../settings/GuildSettings.js';
 import config from '../../bot/Config.js';
 import colors from '../../util/colors.js';
 import LineEmbed from '../../embeds/LineEmbed.js';
-import {bold} from 'discord.js';
+import {bold, PermissionsBitField, PermissionFlagsBits} from 'discord.js';
 
 export default class SafeSearchCommand extends Command {
+
+    getDefaultMemberPermissions() {
+        return new PermissionsBitField()
+            .add(PermissionFlagsBits.ManageGuild);
+    }
 
     isAvailableInAllGuilds() {
         return false;
@@ -34,9 +39,9 @@ export default class SafeSearchCommand extends Command {
 
     async execute(interaction) {
         const enabled = interaction.options.getBoolean('enabled', true);
-        const strikes = interaction.options.getInteger('strikes') ?? 0;
-
         const guildSettings = await GuildSettings.get(interaction.guild.id);
+        const strikes = interaction.options.getInteger('strikes') ?? guildSettings.safeSearch.strikes;
+
         guildSettings.safeSearch = {enabled, strikes};
         await guildSettings.save();
 
