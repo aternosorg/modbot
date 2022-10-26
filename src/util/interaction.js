@@ -30,11 +30,12 @@ export async function replyOrEdit(interaction, options) {
 
 /**
  * Defer a reply to an interaction if it wasn't already deferred or replied.
- * @param {import('discord.js').Interaction} interaction
+ * @param {import('discord.js').Interaction} interaction interaction to defer
+ * @param {boolean} ephemeral should the reply be ephemeral
  * @return {Promise<void>}
  */
-export async function deferReplyOnce(interaction) {
+export async function deferReplyOnce(interaction, ephemeral = true) {
     if (!interaction.deferred && !interaction.replied) {
-        await interaction.deferReply();
+        await interaction.deferReply( {ephemeral});
     }
 }
