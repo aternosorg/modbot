@@ -5,6 +5,7 @@ import AutoResponse from '../AutoResponse.js';
 import BadWord from '../BadWord.js';
 import Moderation from '../Moderation.js';
 import {EmbedBuilder} from 'discord.js';
+import GuildWrapper from '../../discord/GuildWrapper.js';
 
 export default class ModBotImporter extends Importer {
 
@@ -78,7 +79,15 @@ export default class ModBotImporter extends Importer {
         ]);
     }
 
-    _importGuildConfig() {
+    async _importGuildConfig() {
+        const guildWrapper = await GuildWrapper.fetch(this.guildID);
+        for (const key of ['logChannel', 'messageLogChannel', 'joinLogChannel']) {
+            const id = this.data.guildConfig[key];
+            if (id && !await guildWrapper.fetchChannel(id)) {
+                this.data.guildConfig[key] = null;
+            }
+        }
+
         const guildConfig = new GuildSettings(this.guildID, this.data.guildConfig);
         return guildConfig.save();
     }
