@@ -247,8 +247,19 @@ export class CommandManager {
             return;
         }
 
-        const options = await command.complete(interaction);
-        await interaction.respond(options.slice(0, AUTOCOMPLETE_OPTIONS_LIMIT));
+        try {
+            const options = await command.complete(interaction);
+            await interaction.respond(options.slice(0, AUTOCOMPLETE_OPTIONS_LIMIT));
+        }
+        catch (e) {
+            const name = [
+                interaction.commandName,
+                interaction.options.getSubcommandGroup(false),
+                interaction.options.getSubcommand(false)
+            ].filter(v => !!v).join(' ');
+            e.commandOptions = interaction.options.data;
+            await logger.error(`Failed to autocomplete command '${name}': ${e.name}`, e);
+        }
     }
 
     /**
