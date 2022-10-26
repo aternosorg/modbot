@@ -161,18 +161,22 @@ export default class GuildWrapper {
             return null;
         }
 
-        const channel = await this.fetchChannel(channelId);
-        if (channel && channel instanceof BaseGuildTextChannel) {
-            try {
+        try {
+            const channel = await this.fetchChannel(channelId);
+            if (channel && channel instanceof BaseGuildTextChannel) {
                 return channel.send(options);
+
             }
-            catch (e) {
-                if ([RESTJSONErrorCodes.MissingPermissions, RESTJSONErrorCodes.MissingAccess].includes(e.code)) {
-                    await logger.warn('Failed to send message to ' +
-                        `${channel.name} (${channelId}) in ${this.guild.name} (${this.guild.id}): ${e.name}`, e);
-                } else {
-                    throw e;
-                }
+        }
+        catch (e) {
+            if ([RESTJSONErrorCodes.MissingPermissions,
+                RESTJSONErrorCodes.MissingAccess,
+                RESTJSONErrorCodes.UnknownChannel,
+            ].includes(e.code)) {
+                await logger.warn('Failed to send message to ' +
+                    `channel ${channelId} in ${this.guild.name} (${this.guild.id}): ${e.name}`, e);
+            } else {
+                throw e;
             }
         }
         return null;
