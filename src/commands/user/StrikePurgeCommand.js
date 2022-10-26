@@ -11,6 +11,7 @@ import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import ChannelWrapper from '../../discord/ChannelWrapper.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import PurgeLogEmbed from '../../embeds/PurgeLogEmbed.js';
+import {deferReplyOnce} from '../../util/interaction.js';
 
 export default class StrikePurgeCommand extends StrikeCommand {
     buildOptions(builder) {
@@ -57,6 +58,7 @@ export default class StrikePurgeCommand extends StrikeCommand {
      * @return {Promise<void>}
      */
     async strikePurge(interaction, member, reason, count, limit) {
+        await deferReplyOnce(interaction);
         reason = reason || 'No reason provided';
 
         if (!count || count < 1) {

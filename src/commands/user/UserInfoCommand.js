@@ -39,7 +39,6 @@ export default class UserInfoCommand extends Command {
     async executeUserMenu(interaction) {
         const message = await this.generateUserMessage(interaction.targetUser, interaction);
         message.ephemeral = true;
-
         await interaction.reply(message);
     }
 

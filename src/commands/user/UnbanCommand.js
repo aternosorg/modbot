@@ -13,6 +13,7 @@ import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
 import config from '../../bot/Config.js';
+import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
 
 export default class UnbanCommand extends Command {
 
@@ -59,6 +60,7 @@ export default class UnbanCommand extends Command {
         if (!member) {
             return;
         }
+        await deferReplyOnce(interaction);
 
         if (!await member.isBanned()) {
             await interaction.reply(ErrorEmbed.message('This member isn\'t banned!'));
@@ -67,7 +69,8 @@ export default class UnbanCommand extends Command {
 
         reason = reason || 'No reason provided';
         await member.unban(reason, moderator);
-        await interaction.reply(
+        await replyOrEdit(
+            interaction,
             new UserActionEmbed(member.user, reason, 'unbanned', colors.GREEN, config.data.emoji.ban)
                 .toMessage());
     }

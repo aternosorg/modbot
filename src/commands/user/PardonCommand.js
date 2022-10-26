@@ -13,6 +13,7 @@ import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import {inLimits} from '../../util/util.js';
 import EmbedWrapper from '../../embeds/EmbedWrapper.js';
 import {formatNumber, inlineEmojiIfExists} from '../../util/format.js';
+import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
 
 export default class PardonCommand extends Command {
 
@@ -64,11 +65,12 @@ export default class PardonCommand extends Command {
      * @return {Promise<void>}
      */
     async pardon(interaction, member, reason, moderator, count) {
+        await deferReplyOnce(interaction);
         count = inLimits(count, 1, 100);
 
         reason = reason || 'No reason provided';
         await member.pardon(reason, moderator, count);
-        await interaction.reply(new EmbedWrapper()
+        await replyOrEdit(interaction, new EmbedWrapper()
             .setDescription(inlineEmojiIfExists('pardon') +
                 `${formatNumber(count, 'strike')} were pardoned for ${bold(escapeMarkdown(member.user.tag))}: ${reason}`)
             .setColor(colors.GREEN)
