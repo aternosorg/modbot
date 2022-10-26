@@ -74,12 +74,14 @@ export class AutoModManager {
         }
 
         for (const fn of checks) {
-            if (await fn.bind(this)(message) && !message.member.isCommunicationDisabled()) {
-                try {
-                    await message.member.timeout(30 * 1000);
-                } catch (e) {
-                    if (e.code !== RESTJSONErrorCodes.MissingPermissions) {
-                        throw e;
+            if (await fn.bind(this)(message)) {
+                if (message.member && !message.member.isCommunicationDisabled()) {
+                    try {
+                        await message.member.timeout(30 * 1000);
+                    } catch (e) {
+                        if (e.code !== RESTJSONErrorCodes.MissingPermissions) {
+                            throw e;
+                        }
                     }
                 }
                 return;
