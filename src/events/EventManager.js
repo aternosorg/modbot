@@ -29,7 +29,7 @@ export default class EventManager {
         }
         catch (e) {
             try {
-                await logger.error(`Failed to execute event listener '${eventListener.constructor.name}'`, e);
+                await logger.error(`Failed to execute event listener '${eventListener.constructor.name}': ${e.name}`, e);
             }
             catch (e) {
                 console.error(e);

@@ -107,7 +107,7 @@ export default class AbstractMutedRoleCommand extends SubCommand {
             interaction.guildId)) {
             const member = await guild.fetchMember(moderation.userid);
 
-            if (member.roles.cache.get(oldRole.id)) {
+            if (member && member.roles.cache.get(oldRole.id)) {
                 await Promise.all([
                     member.roles.remove(oldRole),
                     member.roles.add(role)
