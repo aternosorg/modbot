@@ -14,7 +14,7 @@ export default class GuildMemberRemoveEventListener extends EventListener {
      */
     async execute(member) {
         let description = `${bold('ID:')} ${member.id}\n` +
-            `${bold('Created Account:')} ${time(member.user.createdTimestamp, TimestampStyles.RelativeTime)}\n`;
+            `${bold('Created Account:')} ${time(member.user.createdAt, TimestampStyles.RelativeTime)}\n`;
 
         if (member.joinedTimestamp) {
             description += `${bold('Joined:')} ${time(member.joinedTimestamp, TimestampStyles.RelativeTime)}`;
