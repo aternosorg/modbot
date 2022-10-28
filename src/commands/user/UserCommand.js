@@ -11,6 +11,7 @@ import ConfirmationEmbed from '../../embeds/ConfirmationEmbed.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 import database from '../../bot/Database.js';
 import {replyOrEdit} from '../../util/interaction.js';
+import {AUTOCOMPLETE_NAME_LIMIT} from '../../util/apiLimits.js';
 
 /**
  * warn a user if this member has been moderated in the last x seconds
@@ -110,8 +111,8 @@ export default class UserCommand extends Command {
         switch (focussed.name) {
             case 'reason': {
                 const options = await database.queryAll(
-                    'SELECT reason, COUNT(*) AS count FROM (SELECT reason FROM moderations WHERE moderator = ? AND guildid = ? AND action = ? LIMIT 500) AS reasons WHERE reason LIKE CONCAT(\'%\', ?, \'%\') GROUP BY reason ORDER BY count DESC LIMIT 5;',
-                    interaction.user.id, interaction.guild.id, this.getName(), focussed.value);
+                    'SELECT reason, COUNT(*) AS count FROM (SELECT reason FROM moderations WHERE moderator = ? AND guildid = ? AND action = ? LIMIT 500) AS reasons WHERE reason LIKE CONCAT(\'%\', ?, \'%\') AND LENGTH(reason) <= ? GROUP BY reason ORDER BY count DESC LIMIT 5;',
+                    interaction.user.id, interaction.guild.id, this.getName(), focussed.value, AUTOCOMPLETE_NAME_LIMIT);
                 if (focussed.value) {
                     options.unshift({reason: focussed.value});
                 }
