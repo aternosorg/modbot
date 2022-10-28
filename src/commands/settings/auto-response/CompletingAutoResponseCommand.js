@@ -13,12 +13,12 @@ export default class CompletingAutoResponseCommand extends SubCommand {
                 const options = [];
 
                 /** @type {import('discord.js').Collection<number, AutoResponse>} */
-                const autoResponses = await AutoResponse.getAll(interaction.guildId);
+                let autoResponses = await AutoResponse.getAll(interaction.guildId);
 
-                const value = focussed.value;
+                const value = parseInt(focussed.value);
                 if (value) {
-                    options.unshift({name: value, value: parseInt(value)});
-                    autoResponses.filter(response => response.id.toString().includes(value));
+                    options.unshift({name: value, value: value});
+                    autoResponses = autoResponses.filter(response => response.id.toString().includes(focussed.value));
                 }
 
                 for (const response of autoResponses.values()) {
