@@ -12,7 +12,7 @@ export default class LogJoinEventListener extends GuildMemberAddEventListener {
             .setThumbnail(member.user.avatarURL())
             .setDescription(
                 `${bold('ID:')} ${member.id}\n` +
-                `${bold('Created Account:')} ${time(member.user.createdTimestamp, TimestampStyles.RelativeTime)}`
+                `${bold('Created Account:')} ${time(member.user.createdAt, TimestampStyles.RelativeTime)}`
             )
             .setTimestamp()
             .setFooter({text: `Members: ${member.guild.memberCount}`});
