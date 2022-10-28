@@ -10,7 +10,6 @@ import MemberWrapper from '../../discord/MemberWrapper.js';
 import {formatTime, parseTime} from '../../util/timeutils.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT, TIMEOUT_DURATION_LIMIT} from '../../util/apiLimits.js';
-import GuildWrapper from '../../discord/GuildWrapper.js';
 import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
@@ -82,17 +81,16 @@ export default class MuteCommand extends UserCommand {
             return;
         }
 
-        const guildSettings = await member.getGuildSettings();
         if (!duration || duration > TIMEOUT_DURATION_LIMIT) {
-            if (!guildSettings.mutedRole) {
+            const role = await member.getMutedRole();
+            if (!role) {
                 await replyOrEdit(interaction, ErrorEmbed
-                    .message(`Timeouts longer than ${formatTime(TIMEOUT_DURATION_LIMIT)} require a muted role! Use /muted-role to configure it.`));
+                    .message(`Timeouts longer than ${formatTime(TIMEOUT_DURATION_LIMIT)} require a valid muted role! Use /muted-role to configure it.`));
                 return;
             }
 
 
-            const role = await (await GuildWrapper.fetch(interaction.guild.id)).fetchRole(guildSettings.mutedRole),
-                me = await interaction.guild.members.fetchMe();
+            const me = await interaction.guild.members.fetchMe();
             if (me.roles.highest.comparePositionTo(role) <= 0) {
                 await replyOrEdit(interaction, ErrorEmbed.message('I can\'t manage the muted role. Please move my highest role above it.'));
                 return;

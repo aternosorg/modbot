@@ -169,7 +169,7 @@ export default class MemberWrapper {
             };
         }
 
-        const {mutedRole} = await this.getGuildSettings();
+        const mutedRole = await this.getMutedRole();
         if (mutedRole && this.member && this.member.roles.cache.get(mutedRole)) {
             return {
                 muted: true,
@@ -199,6 +199,19 @@ export default class MemberWrapper {
      */
     async getGuildSettings() {
         return GuildSettings.get(this.guild.guild.id);
+    }
+
+    /**
+     * fetch the muted role, return null if no muted role is set or the muted role doesn't exist.
+     * @return {Promise<import('discord.js').Role|null>}
+     */
+    async getMutedRole() {
+        const settings = await this.getGuildSettings();
+        if (!settings.mutedRole) {
+            return null;
+        }
+
+        return await this.guild.fetchRole(settings.mutedRole);
     }
 
     /**
@@ -426,9 +439,9 @@ export default class MemberWrapper {
         const timeout = duration && duration <= TIMEOUT_LIMIT;
         let mutedRole;
         if (!timeout) {
-            mutedRole = (await this.getGuildSettings()).mutedRole;
+            mutedRole = await this.getMutedRole();
             if (!mutedRole) {
-                return this.guild.log({content: 'Can\'t mute user because no muted role is specified'});
+                return this.guild.log({content: 'Can\'t mute user because no valid muted role is specified'});
             }
         }
         await this.dmPunishedUser('muted', reason, duration, 'in');
@@ -454,8 +467,8 @@ export default class MemberWrapper {
     async unmute(reason, moderator){
         if (!this.member) await this.fetchMember();
         if (this.member) {
-            const {mutedRole} = await this.getGuildSettings();
-            if (this.member.roles.cache.has(mutedRole)) {
+            const mutedRole = await this.getMutedRole();
+            if (mutedRole && this.member.roles.cache.has(mutedRole)) {
                 await this.member.roles.remove(mutedRole, this._shortenReason(`${moderator.tag} | ${reason}`));
             }
             await this.member.timeout(null);
