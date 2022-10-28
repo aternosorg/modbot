@@ -110,6 +110,10 @@ export default class UserCommand extends Command {
         const focussed = interaction.options.getFocused(true);
         switch (focussed.name) {
             case 'reason': {
+                if (focussed.value?.length > AUTOCOMPLETE_NAME_LIMIT) {
+                    return [];
+                }
+
                 const options = await database.queryAll(
                     'SELECT reason, COUNT(*) AS count FROM (SELECT reason FROM moderations WHERE moderator = ? AND guildid = ? AND action = ? LIMIT 500) AS reasons WHERE reason LIKE CONCAT(\'%\', ?, \'%\') AND LENGTH(reason) <= ? GROUP BY reason ORDER BY count DESC LIMIT 5;',
                     interaction.user.id, interaction.guild.id, this.getName(), focussed.value, AUTOCOMPLETE_NAME_LIMIT);
