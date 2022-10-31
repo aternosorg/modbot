@@ -33,6 +33,22 @@ export default class ChannelWrapper {
         this.channel = channel;
     }
 
+    /**
+     * @param {import("discord.js").Snowflake} id
+     * @return {Promise<ChannelWrapper>}
+     */
+    static async fetch(id) {
+        try {
+            return new this(await bot.client.channels.fetch(id));
+        }
+        catch (e) {
+            if ([RESTJSONErrorCodes.UnknownChannel, RESTJSONErrorCodes.MissingAccess].includes(e.code)) {
+                return null;
+            }
+            throw e;
+        }
+    }
+
     sendable() {
         if (!SENDABLE_CHANNEL_TYPES.includes(this.channel.type)) {
             return false;
