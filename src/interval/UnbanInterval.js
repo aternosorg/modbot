@@ -21,6 +21,12 @@ export default class UnbanInterval extends Interval {
             /** @property {number} insertId */
             const unban = await database.queryAll('INSERT INTO moderations (guildid, userid, action, created, reason, active) VALUES (?,?,?,?,?,?)', result.guildid, result.userid, 'unban', Math.floor(Date.now()/1000), reason, false);
             const guild = await GuildWrapper.fetch(result.guildid);
+
+            if (!guild) {
+                const wrapper = new GuildWrapper({id: result.guildid});
+                await wrapper.deleteData();
+            }
+
             const member = new MemberWrapper(user, guild);
 
             await database.query('UPDATE moderations SET active = FALSE WHERE action = \'ban\' AND userid = ? AND guildid = ?',result.userid, result.guildid);
