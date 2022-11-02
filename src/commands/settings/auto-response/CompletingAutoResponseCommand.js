@@ -22,8 +22,21 @@ export default class CompletingAutoResponseCommand extends SubCommand {
                 }
 
                 for (const response of autoResponses.values()) {
+                    let name = `[${response.id}] `;
+                    if (response.global) {
+                        name += 'global';
+                    }
+                    else {
+                        name += response.channels.map(channel => {
+                            channel = (/** @type {import('discord.js').Guild} */ interaction.guild)
+                                .channels.cache.get(channel);
+                            return '#' + (channel?.name ?? 'unknown');
+                        }).join(', ');
+                    }
+                    name += ` ${response.trigger.type}: ${response.trigger.asContentString()}`;
+
                     options.push({
-                        name: response.getOverview().slice(0, AUTOCOMPLETE_NAME_LIMIT),
+                        name: name.slice(0, AUTOCOMPLETE_NAME_LIMIT),
                         value: response.id
                     });
                 }
