@@ -34,6 +34,21 @@ export default class SafeSearchCommand extends Command {
             .setMinValue(0)
             .setMaxValue(100)
         );
+        builder.addIntegerOption(strikes => strikes
+            .setName('likelihood')
+            .setRequired(false)
+            .setDescription('Likelihood required to delete an image')
+            .setChoices({
+                name: 'possible',
+                value: 0,
+            },{
+                name: 'likely',
+                value: 1,
+            }, {
+                name: 'very likely',
+                value: 2,
+            })
+        );
         return super.buildOptions(builder);
     }
 
@@ -41,14 +56,15 @@ export default class SafeSearchCommand extends Command {
         const enabled = interaction.options.getBoolean('enabled', true);
         const guildSettings = await GuildSettings.get(interaction.guild.id);
         const strikes = interaction.options.getInteger('strikes') ?? guildSettings.safeSearch.strikes;
+        const likelihood = interaction.options.getInteger('likelihood') ?? guildSettings.safeSearch.likelihood;
 
-        guildSettings.safeSearch = {enabled, strikes};
+        guildSettings.safeSearch = {enabled, strikes, likelihood};
         await guildSettings.save();
 
         const embed = new LineEmbed();
         if (enabled) {
             embed.setColor(colors.GREEN)
-                .addLine(`Images containing adult, violent, medical or racy content ${bold('will be deleted')}.`);
+                .addLine(`Images ${guildSettings.displayLikelihood()} adult, violent, medical or racy content ${bold('will be deleted')}.`);
 
             if (strikes) {
                 embed.addLine(`If the detection is ${bold('very likely')} to be correct the user will receive ${bold(strikes + ' strikes')}`);

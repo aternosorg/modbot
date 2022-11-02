@@ -61,3 +61,23 @@ export function inLimits(value, min, max) {
 
     return Math.min(Math.max(value, min), max);
 }
+
+/**
+ * deep merge two objects
+ * @param {Object} target
+ * @param {Object} source
+ * @return {Object}
+ */
+export function deepMerge(target, source) {
+    for (const key in source) {
+        switch (typeof target[key]) {
+            case 'undefined':
+                target[key] = source[key];
+                break;
+            case 'object':
+                target[key] = deepMerge(target[key], source[key]);
+                break;
+        }
+    }
+    return target;
+}
