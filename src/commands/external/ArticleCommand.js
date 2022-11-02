@@ -8,7 +8,7 @@ import {
     codeBlock,
     EmbedBuilder,
     escapeBold,
-    SelectMenuBuilder,
+    SelectMenuBuilder, userMention,
 } from 'discord.js';
 import Turndown from 'turndown';
 import icons from '../../util/icons.js';
@@ -31,12 +31,15 @@ export default class ArticleCommand extends Command {
     }
 
     buildOptions(builder) {
-        builder
-            .addStringOption(option =>
-                option.setName('query')
-                    .setDescription('Search query')
-                    .setRequired(true)
-                    .setAutocomplete(true));
+        builder.addStringOption(option =>
+            option.setName('query')
+                .setDescription('Search query')
+                .setRequired(true)
+                .setAutocomplete(true));
+        builder.addUserOption(option =>
+            option.setName('user')
+                .setDescription('The user you\'re replying to. This user will be mentioned in the Message.')
+                .setRequired(false));
         return builder;
     }
 
@@ -71,11 +74,12 @@ export default class ArticleCommand extends Command {
             };
         }).slice(0, SELECT_MENU_OPTIONS_LIMIT);
 
-        await interaction.reply(this.generateMessage(results, data.results[0], interaction.user.id));
+        await interaction.reply(this.generateMessage(results, data.results[0], interaction.user.id, 0, interaction.options.getUser('user')?.id));
     }
 
     async executeSelectMenu(interaction) {
-        if (interaction.user.id !== interaction.customId.split(':')[1]) {
+        const [, originalAuthor, mentionedUser] = interaction.customId.split(':');
+        if (interaction.user.id !== originalAuthor) {
             await interaction.reply(ErrorEmbed.message('Only the person who executed this command can select a different result'));
             return;
         }
@@ -86,7 +90,7 @@ export default class ArticleCommand extends Command {
             .findIndex(option => option.value === interaction.values[0]);
         const article = await (await GuildSettings.get(interaction.guildId)).getZendesk()
             .getArticle(selectMenu.options[index].value);
-        await interaction.update(this.generateMessage(selectMenu.options, article, interaction.user.id, index));
+        await interaction.update(this.generateMessage(selectMenu.options, article, interaction.user.id, index, mentionedUser));
     }
 
     async complete(interaction) {
@@ -116,24 +120,26 @@ export default class ArticleCommand extends Command {
     /**
      * @param {import('discord.js').APISelectMenuOption[]} results
      * @param {ZendeskArticle} article
-     * @param {import('discord.js').Snowflake} userId
+     * @param {import('discord.js').Snowflake} userId id of the user that executed the command
      * @param {number} [index]
-     * @return {{embeds: EmbedBuilder[], components: ActionRowBuilder[], fetchReply: boolean}}
+     * @param {?import('discord.js').Snowflake} mention user to mention in the message
+     * @return {{embeds: EmbedBuilder[], components: ActionRowBuilder[], fetchReply: boolean, content: ?string}}
      */
-    generateMessage(results, article, userId, index = 0) {
+    generateMessage(results, article, userId, index = 0, mention = null) {
         for (const result of results) {
             result.default = false;
         }
         results[index].default = true;
 
         return {
+            content: mention ? `${userMention(mention)} this article from our help-center might help you:` : null,
             embeds: [this.createEmbed(results[index], article.body)],
             components: [
                 new ActionRowBuilder()
                     .addComponents(
                         /** @type {any} */ new SelectMenuBuilder()
                             .setOptions(/** @type {any} */ results)
-                            .setCustomId(`article:${userId}`)
+                            .setCustomId(`article:${userId}` + (mention ? `:${mention}` : ''))
                     ),
                 new ActionRowBuilder()
                     .addComponents(
