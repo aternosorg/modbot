@@ -35,7 +35,7 @@ export default class GuildWrapper {
             return new this(await bot.client.guilds.fetch(id));
         }
         catch (e) {
-            if (e.code === RESTJSONErrorCodes.UnknownGuild) {
+            if ([RESTJSONErrorCodes.UnknownGuild, RESTJSONErrorCodes.MissingAccess].includes(e.code)) {
                 return null;
             }
             throw e;
