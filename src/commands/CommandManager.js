@@ -205,9 +205,9 @@ export class CommandManager {
      */
     async handleCommandError(interaction, error) {
         const name = [
-            interaction.commandName,
-            interaction.options.getSubcommandGroup(false),
-            interaction.options.getSubcommand(false)
+            interaction.commandName ?? interaction.customId,
+            interaction.options?.getSubcommandGroup(false),
+            interaction.options?.getSubcommand(false)
         ].filter(v => !!v).join(' ');
         await logger.error(`Failed to execute command '${name}': ${error.name}`, error);
         let message = 'An error occurred while executing this command. ';
