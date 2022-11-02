@@ -1,6 +1,6 @@
 import Settings from './Settings.js';
 import TypeChecker from './TypeChecker.js';
-import {channelMention, Collection, EmbedBuilder, roleMention} from 'discord.js';
+import {bold, channelMention, Collection, EmbedBuilder, roleMention} from 'discord.js';
 import Punishment, {PunishmentAction} from '../database/Punishment.js';
 import Zendesk from '../apis/Zendesk.js';
 import colors from '../util/colors.js';
@@ -8,11 +8,13 @@ import {formatTime, parseTime} from '../util/timeutils.js';
 import YouTubePlaylist from '../apis/YouTubePlaylist.js';
 import {inlineEmojiIfExists} from '../util/format.js';
 import config from '../bot/Config.js';
+import {deepMerge} from '../util/util.js';
 
 /**
  * @typedef {Object} SafeSearchSettings
  * @property {boolean} enabled
  * @property {number} strikes
+ * @property {number} likelihood likelihood required for a message deletion (-3 to 2)
  */
 
 /**
@@ -32,6 +34,20 @@ export default class GuildSettings extends Settings {
         8: Punishment.from(PunishmentAction.BAN, '2 months'),
         9: Punishment.from(PunishmentAction.BAN, '6 months'),
         11: Punishment.from(PunishmentAction.BAN),
+    };
+
+    #defaults = {
+        invites: true,
+        linkCooldown: parseTime('10s'),
+        attachmentCooldown: parseTime('10s'),
+        caps: false,
+        antiSpam: 10,
+        similarMessages: 3,
+        safeSearch: {
+            enabled: true,
+            strikes: 1,
+            likelihood: 1,
+        },
     };
 
     #protectedRoles = [];
@@ -59,29 +75,36 @@ export default class GuildSettings extends Settings {
      */
     constructor(id, json = {}) {
         super(id);
+        json = deepMerge(json, this.#defaults);
 
-        this.logChannel = json.logChannel;
-        this.messageLogChannel = json.messageLogChannel;
-        this.joinLogChannel = json.joinLogChannel;
+        for (const setting of [
+            // logging
+            'logChannel',
+            'messageLogChannel',
+            'joinLogChannel',
+            // roles
+            'mutedRole',
+            // external
+            'playlist',
+            'helpcenter',
+            // automod
+            'invites',
+            'linkCooldown',
+            'attachmentCooldown',
+            'caps',
+            'antiSpam',
+            'similarMessages',
+            'safeSearch',
+        ]) {
+            this[setting] = json[setting];
+        }
 
-        this.mutedRole = json.mutedRole;
         if (json.protectedRoles instanceof Array)
             this.#protectedRoles = json.protectedRoles;
         if (json.modRoles instanceof Array)
             this.#protectedRoles.push(...json.modRoles);
 
         this.#punishments = json.punishments ?? this.#punishments;
-
-        this.playlist = json.playlist;
-        this.helpcenter = json.helpcenter;
-
-        this.invites = json.invites ?? true;
-        this.linkCooldown = json.linkCooldown ?? parseTime('10s');
-        this.attachmentCooldown = json.attachmentCooldown ?? parseTime('10s');
-        this.caps = json.caps ?? false;
-        this.antiSpam = json.antiSpam ?? 10;
-        this.similarMessages = json.similarMessages ?? 3;
-        this.safeSearch = json.safeSearch ?? {enabled: true, strikes: 1};
     }
 
     /**
@@ -184,7 +207,7 @@ export default class GuildSettings extends Settings {
 
         if (this.isFeatureWhitelisted) {
             if (this.safeSearch.enabled) {
-                lines.push(`Safe search: enabled (${this.safeSearch.strikes} strikes)`);
+                lines.push(`Safe search: enabled for images ${this.displayLikelihood()} nsfw content (${this.safeSearch.strikes} strikes)`);
             }
             else {
                 lines.push('Safe search: disabled');
@@ -192,6 +215,17 @@ export default class GuildSettings extends Settings {
         }
 
         return lines.join('\n');
+    }
+
+    displayLikelihood() {
+        switch (this.safeSearch.likelihood) {
+            case 0:
+                return `${bold('possibly')} containing`;
+            case 1:
+                return `${bold('likely')} to contain`;
+            case 2:
+                return `${bold('very likely')} to contain`;
+        }
     }
 
     /**
