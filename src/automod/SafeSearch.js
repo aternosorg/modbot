@@ -51,6 +51,10 @@ export default class SafeSearch {
         let maxType = null, maxValue = null;
         for (const image of images.values()) {
             const safeSearchAnnotation = await this.request(image);
+            if (!safeSearchAnnotation) {
+                continue;
+            }
+
             for (const type of ['adult', 'medical', 'violence', 'racy']) {
                 const likelihood = this.getLikelihoodAsNumber(safeSearchAnnotation[type]);
                 if (!maxValue || likelihood > maxValue) {
@@ -76,8 +80,10 @@ export default class SafeSearch {
         }
 
         const [{safeSearchAnnotation}] = await this.annotatorClient.safeSearchDetection(image.url);
-        this.#cache.set(hash, safeSearchAnnotation, CACHE_DURATION);
-        await database.query('INSERT INTO safeSearch (hash, data) VALUES (?, ?)', hash, JSON.stringify(safeSearchAnnotation));
+        if (safeSearchAnnotation) {
+            this.#cache.set(hash, safeSearchAnnotation, CACHE_DURATION);
+            await database.query('INSERT INTO safeSearch (hash, data) VALUES (?, ?)', hash, JSON.stringify(safeSearchAnnotation));
+        }
         return safeSearchAnnotation;
     }
 
