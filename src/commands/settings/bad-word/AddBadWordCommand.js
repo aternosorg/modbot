@@ -71,12 +71,10 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                     .addComponents(
                         /** @type {*} */
                         new TextInputBuilder()
-                            .setRequired(true)
                             .setCustomId('response')
                             .setStyle(TextInputStyle.Paragraph)
                             .setPlaceholder('Hi there :wave:')
                             .setLabel('Response')
-                            .setMinLength(1)
                             .setMaxLength(4000)
                     ),
                 /** @type {*} */
@@ -104,7 +102,6 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                             .setStyle(TextInputStyle.Short)
                             .setPlaceholder('Punishment duration')
                             .setLabel('duration')
-                            .setMinLength(1)
                             .setMaxLength(4000)
                     )
             );
@@ -122,7 +119,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
             return;
         }
 
-        let trigger, response, duration = null, priority = 0;
+        let trigger, response = null, duration = null, priority = 0;
         for (let component of interaction.components) {
             component = component.components[0];
             if (component.customId === 'trigger') {
