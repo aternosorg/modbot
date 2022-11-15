@@ -75,7 +75,6 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                             .setStyle(TextInputStyle.Paragraph)
                             .setPlaceholder('Hi there :wave:')
                             .setLabel('Response')
-                            .setMaxLength(4000)
                     ),
                 /** @type {*} */
                 new ActionRowBuilder()
@@ -102,7 +101,6 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                             .setStyle(TextInputStyle.Short)
                             .setPlaceholder('Punishment duration')
                             .setLabel('duration')
-                            .setMaxLength(4000)
                     )
             );
         }
@@ -126,7 +124,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                 trigger = component.value;
             }
             else if (component.customId === 'response') {
-                response = component.value;
+                response = component.value?.substring?.(0, 4000);
             }
             else if (component.customId === 'duration') {
                 duration = parseTime(component.value) || null;
