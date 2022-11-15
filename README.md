@@ -45,7 +45,7 @@ We can't help with every problem and won't add features that we don't need.**
 ### Support
 You can view the usage of commands with the help command.<br>
 If you think you found a bug in ModBot then please create an [issue](https://github.com/aternosorg/modbot/issues). <br>
-For security vulnerabilities send a mail to [security@aternos.org](mailto://security@aternos.org).
+For security issues please refer to the [SECURITY.md](./SECURITY.md).
 
 ### Self Hosting
 Requirements: [Node.js](https://nodejs.org/en/download/) (v16.9.0+), a [MySQL](https://dev.mysql.com/downloads/mysql/) database
