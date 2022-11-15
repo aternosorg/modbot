@@ -17,7 +17,7 @@ export default class GuildMemberRemoveEventListener extends EventListener {
             `${bold('Created Account:')} ${time(member.user.createdAt, TimestampStyles.RelativeTime)}\n`;
 
         if (member.joinedTimestamp) {
-            description += `${bold('Joined:')} ${time(member.joinedTimestamp, TimestampStyles.RelativeTime)}`;
+            description += `${bold('Joined:')} ${time(member.joinedAt, TimestampStyles.RelativeTime)}`;
         }
         const embed = new EmbedBuilder()
             .setTitle(`${member.user.tag} left this server`)
