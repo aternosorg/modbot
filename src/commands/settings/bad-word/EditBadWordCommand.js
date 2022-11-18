@@ -141,7 +141,6 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                     .addComponents(
                         /** @type {*} */
                         new TextInputBuilder()
-                            .setRequired(true)
                             .setCustomId('response')
                             .setStyle(TextInputStyle.Paragraph)
                             .setPlaceholder('Hi there :wave:')
@@ -153,12 +152,11 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                     .addComponents(
                         /** @type {*} */
                         new TextInputBuilder()
-                            .setRequired(true)
                             .setCustomId('priority')
                             .setStyle(TextInputStyle.Paragraph)
                             .setPlaceholder('0')
                             .setLabel('Priority')
-                            .setValue(badWord.priority)
+                            .setValue(badWord.priority.toString())
                     )
             );
 
