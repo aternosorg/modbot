@@ -25,7 +25,7 @@ has punished this user in the last 5 minutes.
 
 ### Add ModBot to your server
 By adding the bot to your server you agree to our [privacy policy](https://aternos.gmbh/en/modbot/privacy). <br>
-Invite: [Click me](https://discordapp.com/oauth2/authorize?client_id=790967448111153153&scope=bot&permissions=268446806)
+Invite: [Click me](https://discord.com/oauth2/authorize?client_id=790967448111153153&scope=bot&permissions=268446806)
 
 You can view all commands by typing a slash `/` in the text input field. 
 All commands and options have clear descriptions.
@@ -50,7 +50,7 @@ For security issues please refer to the [SECURITY.md](./SECURITY.md).
 ### Self Hosting
 Requirements: [Node.js](https://nodejs.org/en/download/) (v16.9.0+), a [MySQL](https://dev.mysql.com/downloads/mysql/) database
 1. Download the code and run `npm install`
-2. Create a [Discord application](https://discordapp.com/developers/applications/).
+2. Create a [Discord application](https://discord.com/developers/applications/).
    You also have to enable the SERVER MEMBERS intent.
    The bot needs this to reassign the muted role when a muted user joins your server
 3. Add a bot to the application and copy the auth token
@@ -58,7 +58,7 @@ Requirements: [Node.js](https://nodejs.org/en/download/) (v16.9.0+), a [MySQL](h
 5. Configure the bot (see [CONFIGURATION.md](./CONFIGURATION.md))
 6. Start the index.js file
 7. To invite the bot to your server replace `ID` with the client ID of your application
-https://discordapp.com/oauth2/authorize?client_id=ID&scope=bot%20applications.commands&permissions=1099780074518 and open the link
+https://discord.com/oauth2/authorize?client_id=ID&scope=bot%20applications.commands&permissions=1099780074518 and open the link
 
 ### Contributing
 If you want to contribute you need to [fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo)
