@@ -1,7 +1,6 @@
 import ChatTriggeredFeature from './ChatTriggeredFeature.js';
 import TypeChecker from '../settings/TypeChecker.js';
 import {channelMention} from 'discord.js';
-import * as util from 'util';
 import Punishment from './Punishment.js';
 import {yesNo} from '../util/format.js';
 import {EMBED_FIELD_LIMIT} from '../util/apiLimits.js';
@@ -41,7 +40,7 @@ export default class BadWord extends ChatTriggeredFeature {
         if (json) {
             this.punishment = typeof (json.punishment) === 'string' ? JSON.parse(json.punishment) : json.punishment;
             this.response = json.response;
-            if (this.punishment && this.punishment.action === 'dm' && this.response && this.response !== 'disabled') {
+            if (this.punishment?.action?.toUpperCase?.() === 'DM' && this.response && this.response !== 'disabled') {
                 if (this.response === 'default') {
                     this.punishment.message = BadWord.defaultResponse;
                 } else {
@@ -144,72 +143,6 @@ export default class BadWord extends ChatTriggeredFeature {
         await badWord.save();
         return {success: true, badWord, message: null};
     }
-
-    /**
-     * edit this badword
-     * @param {String} option option to change
-     * @param {String[]} args
-     * @param {Guild} guild
-     * @returns {Promise<{success: boolean, message: String}>} response message
-     */
-    async edit(option, args, guild) {
-        switch (option) {
-            case 'trigger': {
-                let trigger = this.constructor.getTrigger(args.shift(), args.join(' '));
-                if (!trigger.success) return {success: false, message:trigger.message};
-                this.trigger = trigger.trigger;
-                await this.save();
-                return {success: true, message:'Successfully changed trigger'};
-            }
-
-            case 'response': {
-                let response = args.join(' ');
-                if (!response) response = 'disabled';
-
-                this.response = response;
-                await this.save();
-                return {success: true, message:`Successfully ${response === 'disabled' ? 'disabled' : 'changed'} response`};
-            }
-
-            case 'punishment': {
-                let action = args.shift().toLowerCase(),
-                    duration = args.join(' ');
-                if (!this.constructor.punishmentTypes.includes(action)) return {success: false, message:'Unknown punishment'};
-                this.punishment = {action, duration};
-                await this.save();
-                return {success: true, message:`Successfully ${action === 'none' ? 'disabled' : 'changed'} punishment`};
-            }
-
-            case 'priority': {
-                let priority = parseInt(args.shift());
-                if (Number.isNaN(priority)) return {success: false, message:'Invalid priority'};
-                this.priority = priority;
-                await this.save();
-                return {success: true, message:`Successfully changed priority to ${priority}`};
-            }
-
-            case 'channels': {
-                if (args[0].toLowerCase() === 'global') {
-                    this.global = true;
-                    this.channels = [];
-                }
-                else {
-                    // TODO: update
-                    let channels = util.channelMentions(guild, args);
-                    if (!channels) return {success: false, message:'No valid channels specified'};
-                    this.global = false;
-                    this.channels = channels;
-                }
-                await this.save();
-                return {success: true, message: global ? 'Successfully made this badword global' : 'Successfully changed channels'};
-            }
-
-            default: {
-                return {success: false, message:'Unknown option'};
-            }
-        }
-    }
-
     getOverview() {
         return `[${this.id}] ${this.global ? 'global' : this.channels.map(channelMention).join(', ')} ${this.trigger.asString()}`;
     }

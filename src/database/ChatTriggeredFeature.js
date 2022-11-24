@@ -339,7 +339,7 @@ export default class ChatTriggeredFeature {
      * @returns {Promise<?this>}
      */
     static async getByID(id, guildid) {
-        const result = await database.query(`SELECT *FROM ${this.escapedTableName} WHERE id = ? AND guildid = ?`, id, guildid);
+        const result = await database.query(`SELECT * FROM ${this.escapedTableName} WHERE id = ? AND guildid = ?`, id, guildid);
         if (!result) return null;
         return this.fromData(result);
     }
@@ -398,7 +398,7 @@ export default class ChatTriggeredFeature {
      */
     static async getAll(guildId) {
         const result = await database.queryAll(
-            `SELECT *FROM ${this.escapedTableName} WHERE guildid = ?`, [guildId]);
+            `SELECT * FROM ${this.escapedTableName} WHERE guildid = ?`, [guildId]);
 
         const collection = new Collection();
         for (const res of result) {
@@ -415,7 +415,7 @@ export default class ChatTriggeredFeature {
      */
     static async refreshGuild(guildId) {
         const result = await database.queryAll(
-            `SELECT *FROM ${this.escapedTableName} WHERE guildid = ?AND global = TRUE`, [guildId]);
+            `SELECT * FROM ${this.escapedTableName} WHERE guildid = ?AND global = TRUE`, [guildId]);
 
         const newItems = new Collection();
         for (const res of result) {
@@ -434,7 +434,7 @@ export default class ChatTriggeredFeature {
      */
     static async refreshChannel(channelId) {
         const result = await database.queryAll(
-            `SELECT *FROM ${this.escapedTableName} WHERE channels LIKE ?`, [`%${channelId}%`]);
+            `SELECT * FROM ${this.escapedTableName} WHERE channels LIKE ?`, [`%${channelId}%`]);
 
         const newItems = new Collection();
         for (const res of result) {
