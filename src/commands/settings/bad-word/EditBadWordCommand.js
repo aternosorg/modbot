@@ -91,7 +91,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
     async executeButton(interaction) {
         const parts = interaction.customId.split(':');
         const badWord = /** @type {?BadWord} */
-            await BadWord.getByID(parts[3], interaction.guildId);
+            await BadWord.getByID(parts[2], interaction.guildId);
 
         if (!badWord) {
             await interaction.update({
