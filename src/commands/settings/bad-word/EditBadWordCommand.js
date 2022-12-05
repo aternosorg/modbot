@@ -325,7 +325,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
             return interaction.reply(ErrorEmbed.message(triggerResponse.message));
         }
         badWord.trigger = triggerResponse.trigger;
-        badWord.response = response;
+        badWord.response = response || 'disabled';
         badWord.punishment = new Punishment({action: punishment, duration});
         badWord.priority = priority;
         await badWord.save();
