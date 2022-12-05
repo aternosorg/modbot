@@ -85,6 +85,11 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
         global ??= autoResponse.global;
         type ??= autoResponse.trigger.type;
 
+        let trigger = autoResponse.trigger;
+        if (type === 'regex') {
+            trigger = trigger.toRegex();
+        }
+
         const confirmation = new Confirmation({global, type, id: autoResponse.id}, timeAfter('1 hour'));
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Edit Auto-response #${autoResponse.id}`)
@@ -100,7 +105,7 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
                             .setStyle(TextInputStyle.Short)
                             .setPlaceholder(AutoResponse.getTriggerPlaceholder(type))
                             .setLabel('Trigger')
-                            .setValue(autoResponse.trigger.asContentString()),
+                            .setValue(trigger.asContentString()),
                     ),
                 /** @type {*} */
                 new ActionRowBuilder()

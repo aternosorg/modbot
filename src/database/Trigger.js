@@ -45,4 +45,26 @@ export default class Trigger {
             return this.content;
         }
     }
+
+    /**
+     * Convert this trigger to a regex trigger.
+     * This is only supported for include and match types.
+     * @return {Trigger}
+     */
+    toRegex() {
+        let content;
+        switch (this.type) {
+            case 'include':
+                content = this.content;
+                break;
+            case 'match':
+                content = `^${this.content}$`;
+                break;
+
+            default:
+                return this;
+        }
+
+        return  new Trigger({type: 'regex', content, flags: 'i'});
+    }
 }

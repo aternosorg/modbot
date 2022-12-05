@@ -122,10 +122,14 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
     async showModal(interaction, badWord, global, type, punishment) {
         global ??= badWord.global;
         type ??= badWord.trigger.type;
-        punishment ??= badWord.punishment;
+        punishment ??= badWord.punishment.action;
+
+        let trigger = badWord.trigger;
+        if (type === 'regex') {
+            trigger = trigger.toRegex();
+        }
 
         const confirmation = new Confirmation({global, type, id: badWord.id, punishment}, timeAfter('1 hour'));
-
         const modal = new ModalBuilder()
             .setTitle(`Edit Bad-word #${badWord.id}`)
             .setCustomId(`bad-word:edit:${await confirmation.save()}`)
@@ -140,7 +144,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                             .setStyle(TextInputStyle.Short)
                             .setPlaceholder(BadWord.getTriggerPlaceholder(type))
                             .setLabel('Trigger')
-                            .setValue(badWord.trigger.asContentString()),
+                            .setValue(trigger.asContentString()),
                     ),
                 /** @type {*} */
                 new ActionRowBuilder()
@@ -238,7 +242,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                 confirmation.data.type,
                 trigger,
                 response,
-                confirmation.data.punishment.action,
+                confirmation.data.punishment,
                 duration,
                 priority,
             );
@@ -289,7 +293,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
             confirmation.data.type,
             confirmation.data.trigger,
             confirmation.data.response,
-            confirmation.data.punishment.action,
+            confirmation.data.punishment,
             confirmation.data.duration,
             confirmation.data.priority,
         );
@@ -304,7 +308,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
      * @param {string} type
      * @param {string} trigger
      * @param {string} response
-     * @param {string} punishment
+     * @param {PunishmentAction} punishment
      * @param {?number} duration
      * @param {number} priority
      * @return {Promise<*>}
