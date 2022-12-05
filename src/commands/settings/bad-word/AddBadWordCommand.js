@@ -77,10 +77,13 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                     .addComponents(
                         /** @type {*} */
                         new TextInputBuilder()
+                            .setRequired(false)
                             .setCustomId('response')
                             .setStyle(TextInputStyle.Paragraph)
                             .setPlaceholder('Hi there :wave:')
                             .setLabel('Response')
+                            .setMinLength(1)
+                            .setMaxLength(4000)
                     ),
                 /** @type {*} */
                 new ActionRowBuilder()
@@ -92,6 +95,8 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                             .setStyle(TextInputStyle.Paragraph)
                             .setPlaceholder('0')
                             .setLabel('Priority')
+                            .setMinLength(1)
+                            .setMaxLength(10)
                     )
             );
 
@@ -102,11 +107,13 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                     .addComponents(
                         /** @type {*} */
                         new TextInputBuilder()
-                            .setRequired(true)
+                            .setRequired(false)
                             .setCustomId('duration')
                             .setStyle(TextInputStyle.Short)
                             .setPlaceholder('Punishment duration')
                             .setLabel('duration')
+                            .setMinLength(2)
+                            .setMaxLength(4000)
                     )
             );
         }

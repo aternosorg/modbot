@@ -147,22 +147,28 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                     .addComponents(
                         /** @type {*} */
                         new TextInputBuilder()
+                            .setRequired(false)
                             .setCustomId('response')
                             .setStyle(TextInputStyle.Paragraph)
                             .setPlaceholder('Hi there :wave:')
                             .setLabel('Response')
                             .setValue(badWord.response)
+                            .setMinLength(1)
+                            .setMaxLength(4000)
                     ),
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
                         /** @type {*} */
                         new TextInputBuilder()
+                            .setRequired(false)
                             .setCustomId('priority')
                             .setStyle(TextInputStyle.Paragraph)
                             .setPlaceholder('0')
                             .setLabel('Priority')
                             .setValue(badWord.priority.toString())
+                            .setMinLength(1)
+                            .setMaxLength(10)
                     )
             );
 
@@ -173,7 +179,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                     .addComponents(
                         /** @type {*} */
                         new TextInputBuilder()
-                            .setRequired(true)
+                            .setRequired(false)
                             .setCustomId('duration')
                             .setStyle(TextInputStyle.Short)
                             .setPlaceholder('Punishment duration')
