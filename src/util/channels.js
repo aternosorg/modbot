@@ -1,15 +1,13 @@
-import {SelectMenuBuilder} from 'discord.js';
+import {StringSelectMenuBuilder} from 'discord.js';
 import {SELECT_MENU_OPTIONS_LIMIT} from './apiLimits.js';
 
 /**
  * @param {ChannelWrapper[]} channels
  * @param {import('discord.js').Snowflake[]} defaultChannels
- * @return {SelectMenuBuilder}
+ * @return {import('discord.js').StringSelectMenuBuilder}
  */
 export function channelSelectMenu(channels, defaultChannels = []) {
-    return new SelectMenuBuilder()
-        .setMinValues(1)
-        .setMaxValues(SELECT_MENU_OPTIONS_LIMIT)
+    return new StringSelectMenuBuilder()
         .setOptions(
             /** @type {*} */
             channels

@@ -347,7 +347,7 @@ export class CommandManager {
     }
 
     /**
-     * @param {import('discord.js').SelectMenuInteraction} interaction
+     * @param {import('discord.js').AnySelectMenuInteraction} interaction
      * @return {Promise<void>}
      */
     async executeSelectMenu(interaction) {

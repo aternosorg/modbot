@@ -5,7 +5,6 @@ import {
     ChatInputCommandInteraction,
     MessageContextMenuCommandInteraction,
     ModalSubmitInteraction,
-    SelectMenuInteraction,
     UserContextMenuCommandInteraction
 } from 'discord.js';
 import commandManager from '../../../commands/CommandManager.js';
@@ -30,8 +29,8 @@ export default class CommandEventListener extends InteractionCreateEventListener
         else if (interaction instanceof ModalSubmitInteraction) {
             await commandManager.executeModal(interaction);
         }
-        else if (interaction instanceof SelectMenuInteraction) {
-            await commandManager.executeSelectMenu(interaction);
+        else if (interaction.isAnySelectMenu()) {
+            await commandManager.executeSelectMenu(/** @type {import('discord.js').AnySelectMenuInteraction} */interaction);
         }
     }
 }

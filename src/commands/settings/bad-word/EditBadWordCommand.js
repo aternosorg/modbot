@@ -1,13 +1,19 @@
 import CompletingBadWordCommand from './CompletingBadWordCommand.js';
 import Confirmation from '../../../database/Confirmation.js';
 import {formatTime, parseTime, timeAfter} from '../../../util/timeutils.js';
-import {ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle} from 'discord.js';
+import {
+    ActionRowBuilder,
+    channelMention,
+    ChannelSelectMenuBuilder, ChannelType,
+    ModalBuilder,
+    TextInputBuilder,
+    TextInputStyle
+} from 'discord.js';
 import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
-import ChannelWrapper from '../../../discord/ChannelWrapper.js';
-import {channelSelectMenu} from '../../../util/channels.js';
 import colors from '../../../util/colors.js';
 import BadWord from '../../../database/BadWord.js';
 import Punishment from '../../../database/Punishment.js';
+import {SELECT_MENU_OPTIONS_LIMIT} from '../../../util/apiLimits.js';
 
 export default class EditBadWordCommand extends CompletingBadWordCommand {
 
@@ -238,23 +244,22 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
             confirmation.data.priority = priority;
             confirmation.expires = timeAfter('30 min');
 
-            const channels = (await interaction.guild.channels.fetch())
-                .map(channel => new ChannelWrapper(channel));
-
             await interaction.reply({
                 ephemeral: true,
-                content: 'Select channels for the bad-word',
+                content: `Select channels for the bad-word. Currently selected channels: ${
+                    badWord.channels.map(c => channelMention(c)).join(', ')}`,
                 components: [
                     /** @type {ActionRowBuilder} */
-                    new ActionRowBuilder().addComponents(/** @type {*} */
-                        channelSelectMenu(channels, badWord.channels)
-                            .setCustomId('noop')
-                            .setDisabled(true)
-                    ),
-                    /** @type {ActionRowBuilder} */
-                    new ActionRowBuilder().addComponents(/** @type {*} */
-                        channelSelectMenu(channels)
-                            .setCustomId(`bad-word:edit:${await confirmation.save()}`)
+                    new ActionRowBuilder().addComponents(/** @type {*} */new ChannelSelectMenuBuilder()
+                        .addChannelTypes(/** @type {*} */[
+                            ChannelType.GuildText,
+                            ChannelType.GuildForum,
+                            ChannelType.GuildAnnouncement,
+                            ChannelType.GuildStageVoice,
+                        ])
+                        .setMinValues(1)
+                        .setMaxValues(SELECT_MENU_OPTIONS_LIMIT)
+                        .setCustomId(`auto-response:edit:${await confirmation.save()}`)
                     )
                 ]
             });

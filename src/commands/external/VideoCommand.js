@@ -2,7 +2,7 @@ import Command from '../Command.js';
 import GuildSettings from '../../settings/GuildSettings.js';
 import {SELECT_MENU_TITLE_LIMIT} from '../../util/apiLimits.js';
 import icons from '../../util/icons.js';
-import {ActionRowBuilder, SelectMenuBuilder, userMention} from 'discord.js';
+import {ActionRowBuilder, StringSelectMenuBuilder, userMention} from 'discord.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 import config from '../../bot/Config.js';
 import {componentEmojiIfExists} from '../../util/format.js';
@@ -111,7 +111,7 @@ export default class VideoCommand extends Command {
             components: [
                 new ActionRowBuilder()
                     .addComponents(
-                        /** @type {any} */ new SelectMenuBuilder()
+                        /** @type {any} */ new StringSelectMenuBuilder()
                             .setOptions(/** @type {any} */ videos)
                             .setCustomId(`video:${userId}` + (mention ? `:${mention}` : ''))
                     ),
