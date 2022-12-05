@@ -238,7 +238,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                 confirmation.data.type,
                 trigger,
                 response,
-                confirmation.data.punishment,
+                confirmation.data.punishment.action,
                 duration,
                 priority,
             );
@@ -289,7 +289,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
             confirmation.data.type,
             confirmation.data.trigger,
             confirmation.data.response,
-            confirmation.data.punishment,
+            confirmation.data.punishment.action,
             confirmation.data.duration,
             confirmation.data.priority,
         );
