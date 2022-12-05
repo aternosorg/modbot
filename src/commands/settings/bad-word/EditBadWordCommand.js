@@ -265,7 +265,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                         ])
                         .setMinValues(1)
                         .setMaxValues(SELECT_MENU_OPTIONS_LIMIT)
-                        .setCustomId(`auto-response:edit:${await confirmation.save()}`)
+                        .setCustomId(`bad-word:edit:${await confirmation.save()}`)
                     )
                 ]
             });
