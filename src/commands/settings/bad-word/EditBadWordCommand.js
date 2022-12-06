@@ -1,13 +1,19 @@
 import CompletingBadWordCommand from './CompletingBadWordCommand.js';
 import Confirmation from '../../../database/Confirmation.js';
 import {formatTime, parseTime, timeAfter} from '../../../util/timeutils.js';
-import {ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle} from 'discord.js';
+import {
+    ActionRowBuilder,
+    channelMention,
+    ChannelSelectMenuBuilder, ChannelType,
+    ModalBuilder,
+    TextInputBuilder,
+    TextInputStyle
+} from 'discord.js';
 import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
-import ChannelWrapper from '../../../discord/ChannelWrapper.js';
-import {channelSelectMenu} from '../../../util/channels.js';
 import colors from '../../../util/colors.js';
 import BadWord from '../../../database/BadWord.js';
 import Punishment from '../../../database/Punishment.js';
+import {SELECT_MENU_OPTIONS_LIMIT} from '../../../util/apiLimits.js';
 
 export default class EditBadWordCommand extends CompletingBadWordCommand {
 
@@ -116,10 +122,14 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
     async showModal(interaction, badWord, global, type, punishment) {
         global ??= badWord.global;
         type ??= badWord.trigger.type;
-        punishment ??= badWord.punishment;
+        punishment ??= badWord.punishment.action;
+
+        let trigger = badWord.trigger;
+        if (type === 'regex') {
+            trigger = trigger.toRegex();
+        }
 
         const confirmation = new Confirmation({global, type, id: badWord.id, punishment}, timeAfter('1 hour'));
-
         const modal = new ModalBuilder()
             .setTitle(`Edit Bad-word #${badWord.id}`)
             .setCustomId(`bad-word:edit:${await confirmation.save()}`)
@@ -134,29 +144,35 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                             .setStyle(TextInputStyle.Short)
                             .setPlaceholder(BadWord.getTriggerPlaceholder(type))
                             .setLabel('Trigger')
-                            .setValue(badWord.trigger.asContentString()),
+                            .setValue(trigger.asContentString()),
                     ),
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
                         /** @type {*} */
                         new TextInputBuilder()
+                            .setRequired(false)
                             .setCustomId('response')
                             .setStyle(TextInputStyle.Paragraph)
                             .setPlaceholder('Hi there :wave:')
                             .setLabel('Response')
                             .setValue(badWord.response)
+                            .setMinLength(1)
+                            .setMaxLength(4000)
                     ),
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
                         /** @type {*} */
                         new TextInputBuilder()
+                            .setRequired(false)
                             .setCustomId('priority')
                             .setStyle(TextInputStyle.Paragraph)
                             .setPlaceholder('0')
                             .setLabel('Priority')
                             .setValue(badWord.priority.toString())
+                            .setMinLength(1)
+                            .setMaxLength(10)
                     )
             );
 
@@ -167,7 +183,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                     .addComponents(
                         /** @type {*} */
                         new TextInputBuilder()
-                            .setRequired(true)
+                            .setRequired(false)
                             .setCustomId('duration')
                             .setStyle(TextInputStyle.Short)
                             .setPlaceholder('Punishment duration')
@@ -238,23 +254,22 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
             confirmation.data.priority = priority;
             confirmation.expires = timeAfter('30 min');
 
-            const channels = (await interaction.guild.channels.fetch())
-                .map(channel => new ChannelWrapper(channel));
-
             await interaction.reply({
                 ephemeral: true,
-                content: 'Select channels for the bad-word',
+                content: `Select channels for the bad-word. Currently selected channels: ${
+                    badWord.channels.map(c => channelMention(c)).join(', ')}`,
                 components: [
                     /** @type {ActionRowBuilder} */
-                    new ActionRowBuilder().addComponents(/** @type {*} */
-                        channelSelectMenu(channels, badWord.channels)
-                            .setCustomId('noop')
-                            .setDisabled(true)
-                    ),
-                    /** @type {ActionRowBuilder} */
-                    new ActionRowBuilder().addComponents(/** @type {*} */
-                        channelSelectMenu(channels)
-                            .setCustomId(`bad-word:edit:${await confirmation.save()}`)
+                    new ActionRowBuilder().addComponents(/** @type {*} */new ChannelSelectMenuBuilder()
+                        .addChannelTypes(/** @type {*} */[
+                            ChannelType.GuildText,
+                            ChannelType.GuildForum,
+                            ChannelType.GuildAnnouncement,
+                            ChannelType.GuildStageVoice,
+                        ])
+                        .setMinValues(1)
+                        .setMaxValues(SELECT_MENU_OPTIONS_LIMIT)
+                        .setCustomId(`bad-word:edit:${await confirmation.save()}`)
                     )
                 ]
             });
@@ -293,7 +308,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
      * @param {string} type
      * @param {string} trigger
      * @param {string} response
-     * @param {string} punishment
+     * @param {PunishmentAction} punishment
      * @param {?number} duration
      * @param {number} priority
      * @return {Promise<*>}
@@ -314,7 +329,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
             return interaction.reply(ErrorEmbed.message(triggerResponse.message));
         }
         badWord.trigger = triggerResponse.trigger;
-        badWord.response = response;
+        badWord.response = response || 'disabled';
         badWord.punishment = new Punishment({action: punishment, duration});
         badWord.priority = priority;
         await badWord.save();

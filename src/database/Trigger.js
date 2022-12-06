@@ -1,4 +1,5 @@
 import {inlineCode} from 'discord.js';
+import {escapeRegExp} from '../util/util.js';
 
 export default class Trigger {
     /**
@@ -44,5 +45,27 @@ export default class Trigger {
         } else {
             return this.content;
         }
+    }
+
+    /**
+     * Convert this trigger to a regex trigger.
+     * This is only supported for include and match types.
+     * @return {Trigger}
+     */
+    toRegex() {
+        let content;
+        switch (this.type) {
+            case 'include':
+                content = escapeRegExp(this.content);
+                break;
+            case 'match':
+                content = `^${escapeRegExp(this.content)}$`;
+                break;
+
+            default:
+                return this;
+        }
+
+        return  new Trigger({type: 'regex', content, flags: 'i'});
     }
 }

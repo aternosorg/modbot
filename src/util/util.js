@@ -81,3 +81,12 @@ export function deepMerge(target, source) {
     }
     return target;
 }
+
+/**
+ * escape a regular expression
+ * @param string
+ * @return {string}
+ */
+export function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}

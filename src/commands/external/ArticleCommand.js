@@ -8,7 +8,8 @@ import {
     codeBlock,
     EmbedBuilder,
     escapeBold,
-    SelectMenuBuilder, userMention,
+    StringSelectMenuBuilder,
+    userMention,
 } from 'discord.js';
 import Turndown from 'turndown';
 import icons from '../../util/icons.js';
@@ -137,7 +138,7 @@ export default class ArticleCommand extends Command {
             components: [
                 new ActionRowBuilder()
                     .addComponents(
-                        /** @type {any} */ new SelectMenuBuilder()
+                        /** @type {any} */ new StringSelectMenuBuilder()
                             .setOptions(/** @type {any} */ results)
                             .setCustomId(`article:${userId}` + (mention ? `:${mention}` : ''))
                     ),

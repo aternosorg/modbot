@@ -25,8 +25,8 @@
     "@google-cloud/vision": "^3.0.1",
     "@googleapis/youtube": "^6.0.0",
     "diff": "^5.1.0",
-    "discord-api-types": "^0.37.12",
-    "discord.js": "^14.6.0",
+    "discord-api-types": "^0.37.20",
+    "discord.js": "^14.7.1",
     "fuse.js": "^6.6.2",
     "got": "^12.5.1",
     "mysql2": "^2.3.3",
@@ -36,7 +36,7 @@
   "devDependencies": {
     "@types/node": "^18.8.3",
     "eslint": "^8.25.0",
-    "eslint-plugin-jsdoc": "^39.3.6",
+    "eslint-plugin-jsdoc": "^39.6.4",
     "eslint-plugin-json": "^3.1.0"
   },
   "lint-staged": {

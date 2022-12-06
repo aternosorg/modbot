@@ -1,12 +1,18 @@
-import {ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle} from 'discord.js';
+import {
+    ActionRowBuilder,
+    ChannelSelectMenuBuilder,
+    ChannelType,
+    ModalBuilder,
+    TextInputBuilder,
+    TextInputStyle
+} from 'discord.js';
 import Confirmation from '../../../database/Confirmation.js';
 import {parseTime, timeAfter} from '../../../util/timeutils.js';
 import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
-import ChannelWrapper from '../../../discord/ChannelWrapper.js';
-import {channelSelectMenu} from '../../../util/channels.js';
 import colors from '../../../util/colors.js';
 import AddAutoResponseCommand from '../auto-response/AddAutoResponseCommand.js';
 import BadWord from '../../../database/BadWord.js';
+import {SELECT_MENU_OPTIONS_LIMIT} from '../../../util/apiLimits.js';
 
 export default class AddBadWordCommand extends AddAutoResponseCommand {
 
@@ -71,10 +77,13 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                     .addComponents(
                         /** @type {*} */
                         new TextInputBuilder()
+                            .setRequired(false)
                             .setCustomId('response')
                             .setStyle(TextInputStyle.Paragraph)
                             .setPlaceholder('Hi there :wave:')
                             .setLabel('Response')
+                            .setMinLength(1)
+                            .setMaxLength(4000)
                     ),
                 /** @type {*} */
                 new ActionRowBuilder()
@@ -86,6 +95,8 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                             .setStyle(TextInputStyle.Paragraph)
                             .setPlaceholder('0')
                             .setLabel('Priority')
+                            .setMinLength(1)
+                            .setMaxLength(10)
                     )
             );
 
@@ -96,11 +107,13 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                     .addComponents(
                         /** @type {*} */
                         new TextInputBuilder()
-                            .setRequired(true)
+                            .setRequired(false)
                             .setCustomId('duration')
                             .setStyle(TextInputStyle.Short)
                             .setPlaceholder('Punishment duration')
                             .setLabel('duration')
+                            .setMinLength(2)
+                            .setMaxLength(4000)
                     )
             );
         }
@@ -155,17 +168,21 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
             confirmation.data.priority = priority;
             confirmation.expires = timeAfter('30 min');
 
-            const channels = (await interaction.guild.channels.fetch())
-                .map(channel => new ChannelWrapper(channel));
-
             await interaction.reply({
                 ephemeral: true,
                 content: 'Select channels for the bad-word',
                 components: [
                     /** @type {ActionRowBuilder} */
-                    new ActionRowBuilder().addComponents(/** @type {*} */
-                        channelSelectMenu(channels)
-                            .setCustomId(`bad-word:add:${await confirmation.save()}`)
+                    new ActionRowBuilder().addComponents(/** @type {*} */new ChannelSelectMenuBuilder()
+                        .addChannelTypes(/** @type {*} */[
+                            ChannelType.GuildText,
+                            ChannelType.GuildForum,
+                            ChannelType.GuildAnnouncement,
+                            ChannelType.GuildStageVoice,
+                        ])
+                        .setMinValues(1)
+                        .setMaxValues(SELECT_MENU_OPTIONS_LIMIT)
+                        .setCustomId(`bad-word:add:${await confirmation.save()}`)
                     ),
                 ]
             });

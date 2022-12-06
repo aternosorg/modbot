@@ -137,7 +137,7 @@ export default class BadWord extends ChatTriggeredFeature {
             punishment: new Punishment({action: punishment ?? 'none', duration: duration}),
             global,
             channels,
-            response: response ?? 'disabled',
+            response: response || 'disabled',
             priority,
         });
         await badWord.save();

@@ -1,12 +1,19 @@
 import CompletingAutoResponseCommand from './CompletingAutoResponseCommand.js';
 import Confirmation from '../../../database/Confirmation.js';
 import {timeAfter} from '../../../util/timeutils.js';
-import {ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle} from 'discord.js';
+import {
+    ActionRowBuilder,
+    channelMention,
+    ChannelSelectMenuBuilder,
+    ChannelType,
+    ModalBuilder,
+    TextInputBuilder,
+    TextInputStyle
+} from 'discord.js';
 import AutoResponse from '../../../database/AutoResponse.js';
 import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
-import ChannelWrapper from '../../../discord/ChannelWrapper.js';
-import {channelSelectMenu} from '../../../util/channels.js';
 import colors from '../../../util/colors.js';
+import {SELECT_MENU_OPTIONS_LIMIT} from '../../../util/apiLimits.js';
 
 export default class EditAutoResponseCommand extends CompletingAutoResponseCommand {
 
@@ -78,6 +85,11 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
         global ??= autoResponse.global;
         type ??= autoResponse.trigger.type;
 
+        let trigger = autoResponse.trigger;
+        if (type === 'regex') {
+            trigger = trigger.toRegex();
+        }
+
         const confirmation = new Confirmation({global, type, id: autoResponse.id}, timeAfter('1 hour'));
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Edit Auto-response #${autoResponse.id}`)
@@ -93,7 +105,7 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
                             .setStyle(TextInputStyle.Short)
                             .setPlaceholder(AutoResponse.getTriggerPlaceholder(type))
                             .setLabel('Trigger')
-                            .setValue(autoResponse.trigger.asContentString()),
+                            .setValue(trigger.asContentString()),
                     ),
                 /** @type {*} */
                 new ActionRowBuilder()
@@ -154,23 +166,23 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
             confirmation.data.trigger = trigger;
             confirmation.data.response = response;
             confirmation.expires = timeAfter('30 min');
-            const channels = (await interaction.guild.channels.fetch())
-                .map(channel => new ChannelWrapper(channel));
 
             await interaction.reply({
                 ephemeral: true,
-                content: 'Select channels for the auto-response',
+                content: `Select channels for the auto-response. Currently selected channels: ${
+                    autoResponse.channels.map(c => channelMention(c)).join(', ')}`,
                 components: [
                     /** @type {ActionRowBuilder} */
-                    new ActionRowBuilder().addComponents(/** @type {*} */
-                        channelSelectMenu(channels, autoResponse.channels)
-                            .setCustomId('noop')
-                            .setDisabled(true)
-                    ),
-                    /** @type {ActionRowBuilder} */
-                    new ActionRowBuilder().addComponents(/** @type {*} */
-                        channelSelectMenu(channels)
-                            .setCustomId(`auto-response:edit:${await confirmation.save()}`)
+                    new ActionRowBuilder().addComponents(/** @type {*} */new ChannelSelectMenuBuilder()
+                        .addChannelTypes(/** @type {*} */[
+                            ChannelType.GuildText,
+                            ChannelType.GuildForum,
+                            ChannelType.GuildAnnouncement,
+                            ChannelType.GuildStageVoice,
+                        ])
+                        .setMinValues(1)
+                        .setMaxValues(SELECT_MENU_OPTIONS_LIMIT)
+                        .setCustomId(`auto-response:edit:${await confirmation.save()}`)
                     )
                 ]
             });
