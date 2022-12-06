@@ -1,4 +1,5 @@
 import {inlineCode} from 'discord.js';
+import {escapeRegExp} from '../util/util.js';
 
 export default class Trigger {
     /**
@@ -55,10 +56,10 @@ export default class Trigger {
         let content;
         switch (this.type) {
             case 'include':
-                content = this.content;
+                content = escapeRegExp(this.content);
                 break;
             case 'match':
-                content = `^${this.content}$`;
+                content = `^${escapeRegExp(this.content)}$`;
                 break;
 
             default:
