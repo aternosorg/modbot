@@ -95,3 +95,5 @@ export const BULK_DELETE_MAX_AGE = 14 * 24 * 60 * 60 * 1000;
  * @type {number}
  */
 export const FETCH_BAN_PAGE_SIZE = 1000;
+
+export const MESSAGE_FILE_LIMIT = 10;
