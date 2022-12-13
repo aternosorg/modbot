@@ -1,9 +1,7 @@
 import bot from '../bot/Bot.js';
 import {
-    ApplicationCommandPermissionType,
     ApplicationCommandType,
     hyperlink,
-    PermissionFlagsBits,
     RESTJSONErrorCodes
 } from 'discord.js';
 import {AUTOCOMPLETE_OPTIONS_LIMIT} from '../util/apiLimits.js';
@@ -16,7 +14,6 @@ import ExportCommand from './bot/ExportCommand.js';
 import ImportCommand from './bot/ImportCommand.js';
 import InfoCommand, {GITHUB_REPOSITORY} from './bot/InfoCommand.js';
 import UserInfoCommand from './user/UserInfoCommand.js';
-import MemberWrapper from '../discord/MemberWrapper.js';
 import BanCommand from './user/BanCommand.js';
 import UnbanCommand from './user/UnbanCommand.js';
 import VideoCommand from './external/VideoCommand.js';
@@ -43,6 +40,7 @@ import BadWordCommand from './settings/BadWordCommand.js';
 import {replyOrFollowUp} from '../util/interaction.js';
 import logger from '../bot/Logger.js';
 import SafeSearchCommand from './settings/SafeSearchCommand.js';
+import SlashCommandPermissionManagers from '../discord/permissions/SlashCommandPermissionManagers.js';
 
 const cooldowns = new Cache();
 
@@ -399,126 +397,9 @@ export class CommandManager {
      * @return {Promise<boolean>}
      */
     async hasPermission(interaction, command) {
-        const member = await (new MemberWrapper(interaction.user, interaction.guild)).fetchMember();
-
-        if (interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
-            return true;
-        }
-
-        if (!interaction.memberPermissions.has(PermissionFlagsBits.UseApplicationCommands)) {
-            return false;
-        }
-
-        // Check permissions for specific command if they exist
-        const commandPermissions = await this.fetchCommandOverrides(interaction.guild, command.id);
-        if (commandPermissions.length) {
-            return this.hasPermissionInOverrides(member, interaction.channel, commandPermissions);
-        }
-
-        // Fallback to global permissions if they exist
-        const globalPermissions = await this.fetchCommandOverrides(interaction.guild, bot.client.user.id);
-        if (globalPermissions.length) {
-            return this.hasPermissionInOverrides(member, interaction.channel, globalPermissions);
-        }
-
-        // Fallback to default permissions
-        switch (command.getDefaultMemberPermissions()) {
-            case null:
-                return true;
-            case 0:
-                return false;
-            default:
-                return interaction.memberPermissions.has(command.getDefaultMemberPermissions());
-        }
-    }
-
-    /**
-     *
-     * @param {import('discord.js').GuildMember} member
-     * @param {import('discord.js').GuildTextBasedChannel} channel
-     * @param {import('discord.js').ApplicationCommandPermissions[]} overrides
-     * @return {Promise<?boolean>}
-     */
-    async hasPermissionInOverrides(member, channel, overrides) {
-        let permission = null;
-        // https://discord.com/developers/docs/interactions/application-commands#application-command-permissions-object-application-command-permissions-constants
-        const everyoneRoleId = member.guild.id;
-        const allChannelsId = (BigInt(member.guild.id) - 1n).toString();
-
-        const everyoneOverride = overrides.find(override =>
-            override.type === ApplicationCommandPermissionType.Role
-            && override.id === everyoneRoleId
-        ) ?? null;
-
-        const roleOverrides = overrides.filter(override =>
-            override.type === ApplicationCommandPermissionType.Role
-            && override.id !== everyoneRoleId
-            && member.roles.resolve(override.id)
-        );
-
-        const memberOverride = overrides.find(override =>
-            override.type === ApplicationCommandPermissionType.User
-            && override.id === member.id
-        );
-
-        const globalChannelOverride = overrides.find(override =>
-            override.type === ApplicationCommandPermissionType.Channel
-            && override.id === allChannelsId
-        ) ?? null;
-
-        const channelOverride = overrides.find(override =>
-            override.type === ApplicationCommandPermissionType.Channel
-            && override.id === channel.id
-        ) ?? null;
-
-        // check channel permissions
-        if (channelOverride && !channelOverride.permission) {
-            return false;
-        }
-        if (!channelOverride && globalChannelOverride && !globalChannelOverride.permission) {
-            return false;
-        }
-
-        // Apply permissions for the default role (@everyone).
-        if (everyoneOverride) {
-            permission = everyoneOverride.permission;
-        }
-
-        // Apply denies for all additional roles the guild member has at once.
-        if (roleOverrides.some(override => !override.permission)) {
-            permission = false;
-        }
-
-        // Apply allows for all additional roles the guild member has at once.
-        if (roleOverrides.some(override => override.permission)) {
-            permission = true;
-        }
-
-        // Apply permissions for the specific guild member if they exist.
-        if (memberOverride) {
-            permission = memberOverride.permission;
-        }
-
-        return permission;
-    }
-
-    /**
-     *
-     * @param {import('discord.js').Guild} guild
-     * @param {import('discord.js').Snowflake} commandId
-     * @return {Promise<import('discord.js').ApplicationCommandPermissions[]>}
-     */
-    async fetchCommandOverrides(guild, commandId) {
-        try {
-            return await guild.commands.permissions.fetch({command: commandId});
-        }
-        catch (e) {
-            if (e.code === RESTJSONErrorCodes.UnknownApplicationCommandPermissions) {
-                return [];
-            } else {
-                throw e;
-            }
-        }
+        return SlashCommandPermissionManagers
+            .getManager(interaction)
+            .hasPermission(interaction, command);
     }
 }
 
