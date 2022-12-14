@@ -185,7 +185,7 @@ export default class GuildWrapper {
 
     /**
      * send this message to the guild's log channel
-     * @param {import('discord.js').MessagePayload|import('discord.js').MessageOptions} options
+     * @param {import('discord.js').MessagePayload|import('discord.js').MessageCreateOptions} options
      * @return {Promise<?Message>} Discord message (if it was sent)
      */
     async log(options) {
@@ -195,7 +195,7 @@ export default class GuildWrapper {
 
     /**
      * send this message to the guild's message log channel
-     * @param {import('discord.js').MessagePayload|import('discord.js').MessageOptions} options
+     * @param {import('discord.js').MessagePayload|import('discord.js').MessageCreateOptions} options
      * @return {Promise<?Message>} Discord message (if it was sent)
      */
     async logMessage(options) {
@@ -205,7 +205,7 @@ export default class GuildWrapper {
 
     /**
      * send this message to the guild's join log channel
-     * @param {import('discord.js').MessagePayload|import('discord.js').MessageOptions} options
+     * @param {import('discord.js').MessagePayload|import('discord.js').MessageCreateOptions} options
      * @return {Promise<?Message>} Discord message (if it was sent)
      */
     async logJoin(options) {

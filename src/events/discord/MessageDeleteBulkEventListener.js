@@ -1,8 +1,8 @@
 import EventListener from '../EventListener.js';
-import {EmbedBuilder, escapeMarkdown} from 'discord.js';
+import {AttachmentBuilder, EmbedBuilder, userMention} from 'discord.js';
 import colors from '../../util/colors.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
-import {EMBED_DESCRIPTION_LIMIT} from '../../util/apiLimits.js';
+import {EMBED_DESCRIPTION_LIMIT, MESSAGE_FILE_LIMIT} from '../../util/apiLimits.js';
 
 export default class MessageDeleteBulkEventListener extends EventListener {
     get name() {
@@ -18,11 +18,29 @@ export default class MessageDeleteBulkEventListener extends EventListener {
         const embed = new EmbedBuilder()
             .setTitle(`${messages.size} messages were deleted in ${channel.name}`)
             .setColor(colors.RED);
+        const attachments = [];
         for (const message of messages.sort((m1, m2) => m1.createdTimestamp - m2.createdTimestamp).values()) {
-            if (!message.content) {
+            for (const attachment of message.attachments.values()) {
+                attachments.push(new AttachmentBuilder(attachment.attachment)
+                    .setDescription(attachment.description)
+                    .setName(attachment.name)
+                    .setSpoiler(true));
+            }
+
+            let content = message.content.replaceAll('\n', ' ').trim();
+            let attachmentCount = message.attachments.size;
+
+            if (!content && attachmentCount === 0) {
                 continue;
             }
-            const data = `${escapeMarkdown(message.author.tag)} (${message.author.id}): ${message.content.replaceAll('\n', ' ').trim()}\n`;
+
+            let data = `${userMention(message.author.id)} (${message.id})`;
+            if (attachmentCount) {
+                data += `${attachmentCount} file${attachmentCount === 1 ? '' : 's'}`;
+            }
+            if (content) {
+                data += `: ${content}\n`;
+            }
 
             const description = embed.data.description ?? '';
             embed.setDescription((description + data).substring(0, EMBED_DESCRIPTION_LIMIT));
@@ -39,6 +57,7 @@ export default class MessageDeleteBulkEventListener extends EventListener {
         const guild = new GuildWrapper(channel.guild);
         await guild.logMessage({
             embeds: [embed],
+            files: attachments.slice(0, MESSAGE_FILE_LIMIT)
         });
     }
 }
