@@ -170,7 +170,7 @@ export default class MemberWrapper {
         }
 
         const mutedRole = await this.getMutedRole();
-        if (mutedRole && this.member && this.member.roles.cache.get(mutedRole)) {
+        if (mutedRole && this.member && this.member.roles.cache.get(mutedRole.id)) {
             return {
                 muted: true,
                 reason: 'Unknown (muted-role)',
@@ -376,6 +376,9 @@ export default class MemberWrapper {
      * @return {Promise<void>}
      */
     async unban(reason, moderator){
+        await database.query(
+            'UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'ban\'',
+            this.guild.guild.id, this.user.id);
         try {
             await this.guild.guild.members.unban(this.user, this._shortenReason(`${moderator.tag} | ${reason}`));
         }
@@ -384,9 +387,6 @@ export default class MemberWrapper {
                 throw e;
             }
         }
-        await database.query(
-            'UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'ban\'',
-            this.guild.guild.id, this.user.id);
         const id = await database.addModeration(this.guild.guild.id, this.user.id, 'unban', reason, null, moderator.id);
         await this.#logModeration(moderator, reason, id, 'unban');
     }
@@ -468,7 +468,7 @@ export default class MemberWrapper {
         if (!this.member) await this.fetchMember();
         if (this.member) {
             const mutedRole = await this.getMutedRole();
-            if (mutedRole && this.member.roles.cache.has(mutedRole)) {
+            if (mutedRole && this.member.roles.cache.has(mutedRole.id)) {
                 await this.member.roles.remove(mutedRole, this._shortenReason(`${moderator.tag} | ${reason}`));
             }
             await this.member.timeout(null);
