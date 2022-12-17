@@ -53,7 +53,7 @@ export default class SlashCommandPermissionOverrides {
 
     /**
      * get the overrides for the @everyone role
-     * @return {?import('discord.js').ApplicationCommandPermissions} // TODO: not null?
+     * @return {?import('discord.js').ApplicationCommandPermissions}
      */
     get everyoneOverride() {
         return this.roleOverrides.find(override => override.id === this.#guild.id) ?? null;
