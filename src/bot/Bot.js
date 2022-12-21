@@ -13,7 +13,7 @@ import MessageDeleteEmbed from '../embeds/MessageDeleteEmbed.js';
 
 export class Bot {
     /**
-     * @type {Client}
+     * @type {import('discord.js').Client}
      */
     #client;
 
@@ -44,6 +44,9 @@ export class Bot {
         });
     }
 
+    /**
+     * @return {import('discord.js').Client}
+     */
     get client() {
         return this.#client;
     }
