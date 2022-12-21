@@ -1,4 +1,5 @@
 import SlashCommandPermissionManager from './SlashCommandPermissionManager.js';
+import {PermissionFlagsBits} from 'discord.js';
 
 export default class SlashCommandPermissionManagerV3 extends SlashCommandPermissionManager {
     /**
@@ -11,6 +12,10 @@ export default class SlashCommandPermissionManagerV3 extends SlashCommandPermiss
      * @return {Promise<boolean>}
      */
     async hasPermission(interaction, command) {
+        if (interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+            return true;
+        }
+
         const commandOverrides = await this.fetchOverrides(interaction, command.id);
         const appOverrides = await this.fetchOverrides(interaction);
         return this.hasCommandLevelChannelPermission(commandOverrides, appOverrides, interaction, command);
