@@ -111,9 +111,9 @@ Configuration for using the cloud vision API to detect inappropriate images.
 ## Feature Whitelist (optional)
 Array of server ids that are allowed to use special features (e.g. `/purge-invites`).
 
-| type     | config file        | environment                |
-|----------|--------------------|----------------------------|
-| string[] | `featureWhitelist` | `MODBOT_FEATURE_WHITELIST` |
+| type    | config file        | environment                |
+|---------|--------------------|----------------------------|
+| string  | `featureWhitelist` | `MODBOT_FEATURE_WHITELIST` |
 
 ## Emoji (optional)
 Snowflakes of discord custom Emojis. The bot must be on the server the emoji is registered on. Emoji IDs are strings and
