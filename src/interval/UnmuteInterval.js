@@ -3,6 +3,9 @@ import database from '../bot/Database.js';
 import bot from '../bot/Bot.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
 import MemberWrapper from '../discord/MemberWrapper.js';
+import {RESTJSONErrorCodes} from 'discord.js';
+import ErrorEmbed from '../embeds/ErrorEmbed.js';
+import logger from '../bot/Logger.js';
 
 export default class UnmuteInterval extends Interval {
     getInterval() {
@@ -21,8 +24,22 @@ export default class UnmuteInterval extends Interval {
 
             const user = await bot.client.users.fetch(result.userid);
             const member = new MemberWrapper(user, guild);
-            await member.unmute('Temporary mute completed!', bot.client.user);
-
+            try {
+                await member.unmute('Temporary mute completed!', bot.client.user);
+            }
+            catch (e) {
+                if (e.code === RESTJSONErrorCodes.MissingPermissions) {
+                    await database.query('UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'mute\'',
+                        guild.guild.id, user.id);
+                    await guild.log(new ErrorEmbed('Missing permissions to unmute user!')
+                        .setAuthor({name: user.tag, iconURL: user.avatarURL()})
+                        .setFooter({text: user.id})
+                        .toMessage(false));
+                }
+                else {
+                    await logger.error(`Failed to unmute user ${user.id} in guild ${guild.guild.id}`, e);
+                }
+            }
         }
     }
 }
