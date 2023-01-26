@@ -16,9 +16,14 @@ export default class RestoreMutedRoleEventListener extends GuildMemberAddEventLi
             member.id,member.guild.id);
 
         if (mute) {
-            const guildConfig = await GuildSettings.get(member.guild.id);
+            const guildSettings = await GuildSettings.get(member.guild.id);
+
+            if (!guildSettings.mutedRole) {
+                return;
+            }
+
             try {
-                await member.roles.add(guildConfig.mutedRole);
+                await member.roles.add(guildSettings.mutedRole);
             }
             catch (e) {
                 if ([RESTJSONErrorCodes.UnknownMember, RESTJSONErrorCodes.UnknownRole].includes(e.code)) {
