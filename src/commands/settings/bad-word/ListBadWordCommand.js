@@ -6,6 +6,7 @@ import BadWord from '../../../database/BadWord.js';
 export default class ListBadWordCommand extends SubCommand {
 
     async execute(interaction) {
+        await interaction.deferReply( {ephemeral});
         const messages = await BadWord.getGuildOverview(interaction.guild, 'Bad-word')
             ?? new LineEmbed();
         await interaction.reply({
