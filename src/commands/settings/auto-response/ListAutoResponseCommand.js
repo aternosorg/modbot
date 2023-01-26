@@ -6,6 +6,7 @@ import SubCommand from '../../SubCommand.js';
 export default class ListAutoResponseCommand extends SubCommand {
 
     async execute(interaction) {
+        await interaction.deferReply( {ephemeral});
         const messages = await AutoResponse.getGuildOverview(interaction.guild, 'Auto-response')
             ?? new LineEmbed();
         await interaction.reply({
