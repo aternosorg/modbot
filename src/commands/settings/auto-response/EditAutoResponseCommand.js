@@ -68,7 +68,7 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
     async executeButton(interaction) {
         const parts = interaction.customId.split(':');
         const autoResponse = /** @type {?AutoResponse} */
-            await AutoResponse.getByID(parts[3], interaction.guildId);
+            await AutoResponse.getByID(parts[2], interaction.guildId);
 
         if (!autoResponse) {
             await interaction.update({
