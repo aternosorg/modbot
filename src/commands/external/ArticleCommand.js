@@ -133,7 +133,7 @@ export default class ArticleCommand extends Command {
         results[index].default = true;
 
         return {
-            content: mention ? `${userMention(mention)} this article from our help-center might help you:` : null,
+            content: mention ? `${userMention(mention)} this article from our help center might help you:` : null,
             embeds: [this.createEmbed(results[index], article.body)],
             components: [
                 new ActionRowBuilder()
