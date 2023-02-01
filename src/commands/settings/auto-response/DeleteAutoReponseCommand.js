@@ -34,7 +34,7 @@ export default class DeleteAutoReponseCommand extends CompletingAutoResponseComm
 
     async executeButton(interaction) {
         const parts = interaction.customId.split(':');
-        const id = parts[3];
+        const id = parts[2];
         const autoResponse = /** @type {?AutoResponse} */
             await AutoResponse.getByID(id, interaction.guildId);
 

@@ -34,7 +34,7 @@ export default class DeleteBadWordCommand extends CompletingBadWordCommand {
 
     async executeButton(interaction) {
         const parts = interaction.customId.split(':');
-        const id = parts[3];
+        const id = parts[2];
         const badWord = /** @type {?BadWord} */
             await BadWord.getByID(id, interaction.guildId);
 
