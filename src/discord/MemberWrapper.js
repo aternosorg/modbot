@@ -271,7 +271,7 @@ export default class MemberWrapper {
      */
     async strike(reason, moderator, amount = 1){
         await this.dmPunishedUser('striked', reason, null, 'in');
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'strike', reason, null, moderator.id, amount);
+        const id = await this.addModeration('strike', reason, null, moderator.id, amount);
         const total = await this.getStrikeSum();
         await Promise.all([
             this.#logModeration(moderator, reason, id, 'strike', null, amount, total),
@@ -342,7 +342,7 @@ export default class MemberWrapper {
     async pardon(reason, moderator, amount = 1){
         await this.guild.sendDM(this.user, `${amount} strikes have been pardoned in ${bold(this.guild.guild.name)} | ${reason}`);
 
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'pardon', reason, null, moderator.id, -amount);
+        const id = await this.addModeration('pardon', reason, null, moderator.id, -amount);
         await this.#logModeration(moderator, reason, id, 'pardon', null, amount, await this.getStrikeSum());
     }
 
@@ -365,7 +365,7 @@ export default class MemberWrapper {
             reason: this._shortenReason(`${moderator.tag} ${duration ? `(${formatTime(duration)}) ` : ''}| ${reason}`),
             deleteMessageSeconds,
         });
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'ban', reason, duration, moderator.id);
+        const id = await this.addModeration('ban', reason, duration, moderator.id);
         await this.#logModeration(moderator, reason, id, 'ban', formatTime(duration));
     }
 
@@ -376,9 +376,7 @@ export default class MemberWrapper {
      * @return {Promise<void>}
      */
     async unban(reason, moderator){
-        await database.query(
-            'UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'ban\'',
-            this.guild.guild.id, this.user.id);
+        await this.disableActiveModerations('ban');
         try {
             await this.guild.guild.members.unban(this.user, this._shortenReason(`${moderator.tag} | ${reason}`));
         }
@@ -387,7 +385,7 @@ export default class MemberWrapper {
                 throw e;
             }
         }
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'unban', reason, null, moderator.id);
+        const id = await this.addModeration('unban', reason, null, moderator.id);
         await this.#logModeration(moderator, reason, id, 'unban');
     }
 
@@ -410,7 +408,7 @@ export default class MemberWrapper {
             reason: this._shortenReason(`${moderator.tag} | ${reason}`)
         });
         await this.guild.guild.members.unban(this.user.id, 'softban');
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'softban', reason, null, moderator.id);
+        const id = await this.addModeration('softban', reason, null, moderator.id);
         await this.#logModeration(moderator, reason, id, 'softban');
     }
 
@@ -424,7 +422,7 @@ export default class MemberWrapper {
         await this.dmPunishedUser('kicked', reason, null, 'from');
         if (!this.member && await this.fetchMember() === null) return;
         await this.member.kick(this._shortenReason(`${moderator.tag} | ${reason}`));
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'kick', reason, null, moderator.id);
+        const id = await this.addModeration('kick', reason, null, moderator.id);
         await this.#logModeration(moderator, reason, id, 'kick');
     }
 
@@ -454,7 +452,7 @@ export default class MemberWrapper {
                 await this.member.roles.add(mutedRole, shortedReason);
             }
         }
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'mute', reason, duration, moderator.id);
+        const id = await this.addModeration('mute', reason, duration, moderator.id);
         await this.#logModeration(moderator, reason, id, 'mute', formatTime(duration));
     }
 
@@ -473,11 +471,40 @@ export default class MemberWrapper {
             }
             await this.member.timeout(null);
         }
-        await database.query(
-            'UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'mute\'',
-            this.guild.guild.id, this.user.id);
-        const id = await database.addModeration(this.guild.guild.id, this.user.id, 'unmute', reason, null, moderator.id);
+        await this.disableActiveModerations('mute');
+        const id = await this.addModeration('unmute', reason, null, moderator.id);
         await this.#logModeration(moderator, reason, id, 'unmute');
+    }
+
+    /**
+     * add a moderation
+     * @param {String}                                  action        moderation type (e.g. 'ban')
+     * @param {String}                                  reason        reason for the moderation
+     * @param {Number}                                  [duration]    duration of the moderation
+     * @param {import('discord.js').Snowflake}          [moderatorId] id of the moderator
+     * @param {Number}                                  [value]       strike count
+     * @return {Promise<Number>} the id of the moderation
+     */
+    async addModeration(action, reason, duration, moderatorId, value= 0) {
+        await this.disableActiveModerations(action);
+
+        const now = Math.floor(Date.now()/1000);
+        /** @property {Number} insertId*/
+        const insert = await database.queryAll(
+            'INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value) VALUES (?,?,?,?,?,?,?,?)',
+            this.guild.guild.id, this.user.id, action, now, duration ? now + duration : null, reason, moderatorId, value);
+        return insert.insertId;
+    }
+
+    /**
+     * disable all active moderations of a specific type
+     * @param {string} type
+     * @returns {Promise<void>}
+     */
+    async disableActiveModerations(type) {
+        await database.query(
+            'UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = ?',
+            this.guild.guild.id, this.user.id, type);
     }
 
     /**

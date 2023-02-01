@@ -138,27 +138,6 @@ export class Database {
     escapeId(ids) {
         return this.#connection.escapeId(ids);
     }
-
-    /**
-     * add a moderation
-     * @param {import('discord.js').Snowflake}          guildId       id of the guild
-     * @param {import('discord.js').Snowflake}          userId        id of the moderated user
-     * @param {String}                                  action        moderation type (e.g. 'ban')
-     * @param {String}                                  reason        reason for the moderation
-     * @param {Number}                                  [duration]    duration of the moderation
-     * @param {import('discord.js').Snowflake}          [moderatorId] id of the moderator
-     * @param {Number}                                  [value]       strike count
-     * @return {Promise<Number>} the id of the moderation
-     */
-    async addModeration(guildId, userId, action, reason, duration, moderatorId, value= 0) {
-        //disable old moderations
-        await this.query('UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = ?', guildId, userId, action);
-
-        const now = Math.floor(Date.now()/1000);
-        /** @property {Number} insertId*/
-        const insert = await this.queryAll('INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value) VALUES (?,?,?,?,?,?,?,?)',guildId, userId, action, now, duration ? now + duration : null, reason, moderatorId, value);
-        return insert.insertId;
-    }
 }
 
 export default new Database();
