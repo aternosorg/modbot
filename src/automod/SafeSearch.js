@@ -43,7 +43,7 @@ export default class SafeSearch {
      */
     async detect(message) {
         /** @type {import('discord.js').Collection<string, import('discord.js').Attachment>} */
-        const images = message.attachments.filter(attachment => attachment.contentType.startsWith('image/'));
+        const images = message.attachments.filter(attachment => attachment.contentType?.startsWith('image/'));
         if (!images.size) {
             return null;
         }
