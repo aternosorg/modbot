@@ -67,6 +67,17 @@ export default class PardonCommand extends Command {
     async pardon(interaction, member, reason, moderator, count) {
         await deferReplyOnce(interaction);
         count = inLimits(count, 1, 100);
+        count = Math.min(count, await member.getStrikeSum());
+
+        if (count === 0) {
+            await replyOrEdit(interaction, new EmbedWrapper()
+                .setDescription(inlineEmojiIfExists('pardon') +
+                    `${bold(escapeMarkdown(member.user.tag))} has no strikes to pardon`)
+                .setColor(colors.RED)
+                .toMessage()
+            );
+            return;
+        }
 
         reason = reason || 'No reason provided';
         await member.pardon(reason, moderator, count);
