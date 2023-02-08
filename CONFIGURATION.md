@@ -1,6 +1,6 @@
 # Configuration
 ModBot offers two different ways to configure it, a config file or environment variables. To use the config file
-just copy the example.config.json to a new file called config.json and modify the options in it.
+just copy the [minimal configuration example](#minimal-configuration-file) to a new file called config.json and modify the options in it.
 If you chose to use environment variables then you first need to set the environment variable `MODBOT_USE_ENV`.
 
 Environment variables use `SCREAMING_SNAKE_CASE`, the configuration file uses `camelCase`.
@@ -54,6 +54,19 @@ Database port
 |--------|-----------------|------------------------|
 | number | `database.port` | `MODBOT_DATABASE_PORT` |
 
+### Database JSON Example
+```json
+{
+  "database": {
+    "host": "localhost",
+    "user": "modbot",
+    "password": "password",
+    "database": "modbot",
+    "port": 3306
+  }
+}
+```
+
 ## Google API Key (optional)
 Google cloud API Key. Currently used for the YouTube v3 API (`/video` and `/playlist`).
 
@@ -81,6 +94,18 @@ These credentials are used for the following apis if you enabled them in the con
 |--------|---------------------------------------|-----------------------------------------------|
 | string | `googleCloud.credentials.private_key` | `MODBOT_GOOGLE_CLOUD_CREDENTIALS_PRIVATE_KEY` |
 
+#### Credentials JSON Example
+```json
+{
+  "googleCloud": {
+    "credentials": {
+      "client_email": "example@example-project.iam.gserviceaccount.com",
+      "private_key": "-----BEGIN PRIVATE KEY-----\nkeydata\n-----END PRIVATE KEY-----\n"
+    }
+  }
+}
+```
+
 ### Logging
 Configuration for logging messages to the Google cloud using the Google cloud logging api. 
 If you don't want to use Google cloud logging just ignore this.
@@ -100,6 +125,19 @@ If you don't want to use Google cloud logging just ignore this.
 |--------|-------------------------------|----------------------------------------|
 | string | `googleCloud.logging.logName` | `MODBOT_GOOGLE_CLOUD_LOGGING_LOG_NAME` |
 
+#### Logging JSON Example
+```json
+{
+  "googleCloud": {
+    "logging": {
+      "enabled": true,
+      "projectId": "example-project",
+      "logName": "modbot"
+    }
+  }
+}
+```
+
 ### Vision
 Configuration for using the cloud vision API to detect inappropriate images.
 
@@ -108,12 +146,52 @@ Configuration for using the cloud vision API to detect inappropriate images.
 |---------|------------------------------|--------------------------------------|
 | boolean | `googleCloud.vision.enabled` | `MODBOT_GOOGLE_CLOUD_VISION_ENABLED` |
 
+#### Vision JSON Example
+```json
+{
+  "googleCloud": {
+    "vision": {
+      "enabled": true
+    }
+  }
+}
+```
+
+### Google Cloud JSON Example
+```json
+{
+  "googleCloud": {
+    "credentials": {
+      "client_email": "example@example-project.iam.gserviceaccount.com",
+      "private_key": "-----BEGIN PRIVATE KEY-----\nkeydata\n-----END PRIVATE KEY-----\n"
+    },
+    "logging": {
+      "enabled": true,
+      "projectId": "example-project",
+      "logName": "modbot"
+    },
+    "vision": {
+      "enabled": true
+    }
+  }
+}
+```
+
 ## Feature Whitelist (optional)
 Array of server ids that are allowed to use special features (e.g. `/purge-invites`).
 
 | type     | config file        | environment                |
 |----------|--------------------|----------------------------|
 | string[] | `featureWhitelist` | `MODBOT_FEATURE_WHITELIST` |
+
+### Feature Whitelist JSON Example
+```json
+{
+  "featureWhitelist": [
+    "123456789012345678"
+  ]
+}
+```
 
 ## Emoji (optional)
 Snowflakes of discord custom Emojis. The bot must be on the server the emoji is registered on. Emoji IDs are strings and
@@ -149,3 +227,99 @@ Currently, the following emojis are used:
 - userJoined
 
 As environment variables these would follow the standard of `MDOBOT_EMOJI_LAST_PAGE`.
+
+### Emoji JSON Example
+```json
+{
+  "emoji": {
+    "source": "123456789012345678",
+    "privacy": "123456789012345678",
+    "invite": "123456789012345678",
+    "discord": "123456789012345678",
+    "youtube": "123456789012345678"
+  }
+}
+```
+
+
+# Minimal Configuration File
+Below you can find an example of a minimal configuration. This is the bare minimum you need to run the bot.
+For details on the configuration options see above.
+
+**Please note**: These are example values. The bot will not work correctly with them.
+```json
+{
+  "authToken": "AUTH TOKEN",
+  "database": {
+    "host": "localhost",
+    "user": "modbot",
+    "password": "password",
+    "database": "modbot",
+    "port": 3306
+  }
+}
+```
+
+# Full Configuration File
+Below you can find an example of a full configuration. This is the full configuration with all options.
+For details on the configuration options see above.
+
+**Please note**: These are example values. The bot will not work correctly with them.
+```json
+{
+  "authToken":"AUTH TOKEN",
+  "database": {
+      "host": "localhost",
+      "user": "modbot",
+      "password": "password",
+      "database": "modbot"
+  },
+  "googleApiKey": "google api key",
+  "googleCloud": {
+    "credentials": {
+      "client_email": "example@example-project.iam.gserviceaccount.com",
+      "private_key": "-----BEGIN PRIVATE KEY-----\nkey data\n----- END PRIVATE KEY -----\n"
+    },
+    "logging": {
+      "enabled": true,
+      "projectId": "example-project",
+      "logName": "modbot"
+    },
+    "vision": {
+      "enabled": true
+    }
+  },
+  "featureWhitelist": [
+    "123456789012345678"
+  ],
+  "emoji": {
+        "source": "123456789012345678",
+        "privacy": "123456789012345678",
+        "invite": "123456789012345678",
+        "discord": "123456789012345678",
+        "youtube": "123456789012345678",
+        "zendesk": "123456789012345678",
+        "firstPage": "123456789012345678",
+        "previousPage": "123456789012345678",
+        "refresh": "123456789012345678",
+        "nextPage": "123456789012345678",
+        "lastPage": "123456789012345678",
+        "announcement": "123456789012345678",
+        "channel": "123456789012345678",
+        "forum": "123456789012345678",
+        "stage": "123456789012345678",
+        "thread": "123456789012345678",
+        "voice": "123456789012345678",
+        "avatar": "123456789012345678",
+        "ban": "123456789012345678",
+        "moderations": "123456789012345678",
+        "mute": "123456789012345678",
+        "pardon": "123456789012345678",
+        "strike": "123456789012345678",
+        "kick": "123456789012345678",
+        "userCreated": "123456789012345678",
+        "userId": "123456789012345678",
+        "userJoined": "123456789012345678"
+  }
+}
+```
