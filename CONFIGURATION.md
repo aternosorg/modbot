@@ -1,6 +1,6 @@
 # Configuration
 ModBot offers two different ways to configure it, a config file or environment variables. To use the config file
-just copy the example.config.json to a new file called config.json and modify the options in it.
+just copy the [minimal configuration example](#minimal-configuration-file) to a new file called config.json and modify the options in it.
 If you chose to use environment variables then you first need to set the environment variable `MODBOT_USE_ENV`.
 
 Environment variables use `SCREAMING_SNAKE_CASE`, the configuration file uses `camelCase`.
