@@ -97,14 +97,14 @@ export default class SafeSearch {
         let safeSearchAnnotation = null;
         try {
             [{safeSearchAnnotation}] = await this.annotatorClient.safeSearchDetection(image.url);
+
+            if (safeSearchAnnotation) {
+                this.#cache.set(hash, safeSearchAnnotation, CACHE_DURATION);
+                await database.query('INSERT INTO safeSearch (hash, data) VALUES (?, ?)', hash, JSON.stringify(safeSearchAnnotation));
+            }
         }
         catch (error) {
             await logger.error(error);
-        }
-
-        if (safeSearchAnnotation) {
-            this.#cache.set(hash, safeSearchAnnotation, CACHE_DURATION);
-            await database.query('INSERT INTO safeSearch (hash, data) VALUES (?, ?)', hash, JSON.stringify(safeSearchAnnotation));
         }
 
         for (const resolve of this.#requesting.get(hash)) {
