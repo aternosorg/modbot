@@ -4,6 +4,7 @@ import vision from '@google-cloud/vision';
 import Cache from '../bot/Cache.js';
 import Request from '../bot/Request.js';
 import database from '../bot/Database.js';
+import logger from '../bot/Logger.js';
 
 const CACHE_DURATION = 60 * 60 * 1000;
 
@@ -80,27 +81,37 @@ export default class SafeSearch {
     async request(image) {
         const hash = await new Request(image.proxyURL).getHash();
 
-        if (this.#requesting.has(hash)) {
-            await new Promise(resolve => {
-                this.#requesting.get(hash).push(resolve);
-            });
-        }
-
         const cached = this.#cache.get(hash) ?? await this.#getFromDatabase(hash);
         if (cached) {
             return cached;
         }
 
+        if (this.#requesting.has(hash)) {
+            return await new Promise(resolve => {
+                this.#requesting.get(hash).push(resolve);
+            });
+        }
+
         this.#requesting.set(hash, []);
-        const [{safeSearchAnnotation}] = await this.annotatorClient.safeSearchDetection(image.url);
+
+        let safeSearchAnnotation = null;
+        try {
+            [{safeSearchAnnotation}] = await this.annotatorClient.safeSearchDetection(image.url);
+        }
+        catch (error) {
+            await logger.error(error);
+        }
+
         if (safeSearchAnnotation) {
             this.#cache.set(hash, safeSearchAnnotation, CACHE_DURATION);
-            for (const resolve of this.#requesting.get(hash)) {
-                resolve();
-            }
-            this.#requesting.delete(hash);
             await database.query('INSERT INTO safeSearch (hash, data) VALUES (?, ?)', hash, JSON.stringify(safeSearchAnnotation));
         }
+
+        for (const resolve of this.#requesting.get(hash)) {
+            resolve(safeSearchAnnotation);
+        }
+        this.#requesting.delete(hash);
+
         return safeSearchAnnotation;
     }
 
