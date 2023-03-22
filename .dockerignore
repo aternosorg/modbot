@@ -1,0 +1,8 @@
+.git
+.github
+.idea
+.eslintrc.json
+.gitignore
+config.json
+LICENSE
+*.md
