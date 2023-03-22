@@ -92,9 +92,9 @@ export class Config {
                 authToken: process.env.MODBOT_AUTH_TOKEN,
                 database: {
                     host: process.env.MODBOT_DATABASE_HOST,
-                    user: process.env.MODBOT_DATABASE_USER,
+                    user: process.env.MODBOT_DATABASE_USER ?? 'modbot',
                     password: process.env.MODBOT_DATABASE_PASSWORD,
-                    database: process.env.MODBOT_DATABASE_DATABASE,
+                    database: process.env.MODBOT_DATABASE_DATABASE ?? 'modbot',
                     port: parseInt(process.env.MODBOT_DATABASE_PORT ?? '3306'),
                 },
                 googleApiKey:  process.env.MODBOT_GOOGLE_API_KEY,
