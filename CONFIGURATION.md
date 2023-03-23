@@ -27,7 +27,7 @@ Database hostname or IP
 | string | `database.host` | `MODBOT_DATABASE_HOST` |
 
 ### User
-Database username
+Database username (Default: `modbot`)
 
 | type   | config file     | environment            |
 |--------|-----------------|------------------------|
@@ -41,14 +41,14 @@ Database password
 | string | `database.password` | `MODBOT_DATABASE_PASSWORD` |
 
 ### Database
-Database name
+Database name (Default: `modbot`)
 
 | type   | config file         | environment                |
 |--------|---------------------|----------------------------|
 | string | `database.database` | `MODBOT_DATABASE_DATABASE` |
 
 ### Port
-Database port
+Database port (Default: `3306`)
 
 | type   | config file     | environment            |
 |--------|-----------------|------------------------|
@@ -252,10 +252,7 @@ For details on the configuration options see above.
   "authToken": "AUTH TOKEN",
   "database": {
     "host": "localhost",
-    "user": "modbot",
-    "password": "password",
-    "database": "modbot",
-    "port": 3306
+    "password": "password"
   }
 }
 ```

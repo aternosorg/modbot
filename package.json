@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "lint": "eslint"
+    "lint": "eslint",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -18,25 +19,25 @@
   },
   "homepage": "https://github.com/aternosorg/modbot#readme",
   "engines": {
-    "node": ">=16.9.0"
+    "node": ">=18.0.0"
   },
   "dependencies": {
-    "@google-cloud/logging": "^10.1.10",
-    "@google-cloud/vision": "^3.0.1",
-    "@googleapis/youtube": "^6.0.0",
+    "@google-cloud/logging": "^10.4.0",
+    "@google-cloud/vision": "^3.1.2",
+    "@googleapis/youtube": "^8.0.2",
     "diff": "^5.1.0",
-    "discord-api-types": "^0.37.20",
-    "discord.js": "^14.7.1",
+    "discord-api-types": "^0.37.36",
+    "discord.js": "^14.8.0",
     "fuse.js": "^6.6.2",
-    "got": "^12.5.1",
-    "mysql2": "^2.3.3",
+    "got": "^12.6.0",
+    "mysql2": "^3.2.0",
     "string-similarity": "^4.0.4",
-    "turndown": "^7.1.1"
+    "turndown": "^7.1.2"
   },
   "devDependencies": {
-    "@types/node": "^18.8.3",
-    "eslint": "^8.25.0",
-    "eslint-plugin-jsdoc": "^39.6.4",
+    "@types/node": "^18.15.5",
+    "eslint": "^8.36.0",
+    "eslint-plugin-jsdoc": "^40.1.0",
     "eslint-plugin-json": "^3.1.0"
   },
   "lint-staged": {

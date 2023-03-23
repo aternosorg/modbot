@@ -44,6 +44,10 @@ async function getPackageVersion() {
 
 export const COMMIT = await getGitCommit();
 async function getGitCommit() {
+    if (process.env.MODBOT_COMMIT_HASH) {
+        return process.env.MODBOT_COMMIT_HASH;
+    }
+
     try {
         return (await promisify(exec)('git rev-parse --short HEAD'))?.stdout?.replaceAll?.('\n', '');
     } catch {
