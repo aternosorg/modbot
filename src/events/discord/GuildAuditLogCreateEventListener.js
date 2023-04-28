@@ -55,7 +55,7 @@ export default class GuildAuditLogCreateEventListener extends EventListener {
                             action = wasMuted ? 'unmute' : null;
                         } else {
                             action = 'mute';
-                            duration = Math.floor((new Date(/** @type {string}*/ change.new) - Date.now()) / 1000);
+                            duration = Math.floor((new Date(/** @type {string}*/ change.new) - entry.createdAt) / 1000);
                         }
                     }
                 }
