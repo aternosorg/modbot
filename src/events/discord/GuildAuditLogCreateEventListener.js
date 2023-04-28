@@ -4,6 +4,7 @@ import {AuditLogEvent, userMention} from 'discord.js';
 import colors from '../../util/colors.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
+import UserWrapper from '../../discord/UserWrapper.js';
 
 export default class GuildAuditLogCreateEventListener extends EventListener {
 
@@ -13,6 +14,11 @@ export default class GuildAuditLogCreateEventListener extends EventListener {
      * @return {Promise<void>}
      */
     async execute(entry, guild) {
+        if (!entry.executorId) {
+            return;
+        }
+
+        entry.executor ??= await (new UserWrapper(entry.executorId)).fetchUser();
         if (!entry.executor || entry.executor.bot) {
             return;
         }
@@ -50,7 +56,7 @@ export default class GuildAuditLogCreateEventListener extends EventListener {
                 for (const change of entry.changes) {
                     if (change.key === 'communication_disabled_until') {
                         wasMuted ??= change.old !== null;
-                        if (change.new === null) {
+                        if (!change.new) {
                             // ignore mutes that were instantly reverted
                             action = wasMuted ? 'unmute' : null;
                         } else {
