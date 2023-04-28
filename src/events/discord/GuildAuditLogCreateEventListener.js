@@ -1,7 +1,6 @@
 import EventListener from '../EventListener.js';
-import {AuditLogEvent} from 'discord-api-types/v10.mjs';
 import KeyValueEmbed from '../../embeds/KeyValueEmbed.js';
-import {userMention} from 'discord.js';
+import {AuditLogEvent, userMention} from 'discord.js';
 import colors from '../../util/colors.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
