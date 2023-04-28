@@ -18,21 +18,60 @@ export default class GuildAuditLogCreateEventListener extends EventListener {
         }
 
         const embed = new KeyValueEmbed().setTimestamp(entry.createdTimestamp);
-        const reason = entry.reason ?? 'No reason provided';
-        let action = null;
         switch (entry.action) {
-            case AuditLogEvent.MemberBanAdd:
-                action ??= 'ban';
-            // eslint-disable-next-line no-fallthrough
-            case AuditLogEvent.MemberBanRemove:
-                action ??= 'unban';
-            // eslint-disable-next-line no-fallthrough
-            case AuditLogEvent.MemberKick: {
-                action ??= 'kick';
-                const member = new MemberWrapper(entry.target, guild);
-                await (await member.createModeration(action, reason, null, entry.executor.id)).log();
+            case AuditLogEvent.MemberRoleUpdate: {
+                /** @type {?string} */
+                let action = null;
+                const mutedRole = (await new GuildWrapper(guild).getSettings()).getMutedRole();
+                for (const change of entry.changes) {
+                    // ignore role changes that were reverted in the same event
+                    if (change.key === '$add' && change.new?.some(role => role.id === mutedRole)) {
+                        action = action === 'unmute' ? null : 'mute';
+                    }
+
+                    // you might think that removing a role would place the removed role in the "old" property.
+                    // you would be wrong.
+                    if (change.key === '$remove' && change.new?.some(role => role.id === mutedRole)) {
+                        action = action === 'mute' ? null : 'unmute';
+                    }
+                }
+
+                if (action !== null) {
+                    await this.createModeration(action, entry, guild);
+                }
                 return;
             }
+            case AuditLogEvent.MemberUpdate: {
+                /** @type {?string} */
+                let action = null;
+                /** @type {?number} */
+                let duration = null;
+                let wasMuted = null;
+                for (const change of entry.changes) {
+                    if (change.key === 'communication_disabled_until') {
+                        wasMuted ??= change.old !== null;
+                        if (change.new === null) {
+                            action = 'mute';
+                            duration = new Date(/** @type {string}*/ change.new) - Date.now();
+                        }
+                        else {
+                            // ignore mutes that were instantly reverted
+                            action = wasMuted ? 'unmute' : null;
+                        }
+                    }
+                }
+
+                if (action !== null) {
+                    await this.createModeration(action, entry, guild, duration);
+                }
+                return;
+            }
+            case AuditLogEvent.MemberBanAdd:
+                return await this.createModeration('ban', entry, guild);
+            case AuditLogEvent.MemberBanRemove:
+                return await this.createModeration('unban', entry, guild);
+            case AuditLogEvent.MemberKick:
+                return await this.createModeration('kick', entry, guild);
 
             case AuditLogEvent.MemberPrune:
                 embed.setColor(colors.RED)
@@ -57,5 +96,17 @@ export default class GuildAuditLogCreateEventListener extends EventListener {
 
     get name() {
         return 'guildAuditLogEntryCreate';
+    }
+
+    /**
+     * @param {string} action
+     * @param {import('discord.js').GuildAuditLogsEntry} entry
+     * @param {import('discord.js').Guild} guild
+     * @param {?number} [duration]
+     * @return {Promise<void>}
+     */
+    async createModeration(action, entry, guild, duration = null) {
+        const member = new MemberWrapper(entry.target, guild);
+        await (await member.createModeration(action, entry.reason, duration, entry.executor.id)).log();
     }
 }
