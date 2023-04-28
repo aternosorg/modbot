@@ -2,6 +2,13 @@ import TypeChecker from '../settings/TypeChecker.js';
 import database from '../bot/Database.js';
 import UserWrapper from '../discord/UserWrapper.js';
 import WhereParameter from './WhereParameter.js';
+import KeyValueEmbed from '../embeds/KeyValueEmbed.js';
+import {resolveColor} from '../util/colors.js';
+import {toTitleCase} from '../util/format.js';
+import {userMention} from 'discord.js';
+import {formatTime} from '../util/timeutils.js';
+import MemberWrapper from '../discord/MemberWrapper.js';
+import GuildWrapper from '../discord/GuildWrapper.js';
 
 export default class Moderation {
 
@@ -223,6 +230,32 @@ export default class Moderation {
     }
 
     /**
+     * log this moderation to the guild's log channel
+     * @param {?number} total total strike count
+     * @return {Promise<Moderation>}
+     */
+    async log(total = null) {
+        const user = await this.getUser();
+        return (await this.getGuildWrapper()).log({
+            embeds: [
+                new KeyValueEmbed()
+                    .setColor(resolveColor(this.action))
+                    .setAuthor({
+                        name: `Case ${this.id} | ${toTitleCase(this.action)} | ${user.tag}`,
+                        iconURL: user.avatarURL()
+                    })
+                    .setFooter({text: user.id})
+                    .addPair('User', userMention(user.id))
+                    .addPair('Moderator', userMention((await this.getModerator()).id))
+                    .addPairIf(this.expireTime, 'Duration', formatTime(this.expireTime - this.created))
+                    .addPairIf(this.value, 'Amount', this.value)
+                    .addPairIf(total, 'Total Strikes', total)
+                    .addPair('Reason', this.reason.substring(0, 1024))
+            ]
+        });
+    }
+
+    /**
      * Delete this moderation from the database
      * @return {Promise}
      */
@@ -244,6 +277,22 @@ export default class Moderation {
      */
     async getUser() {
         return await (new UserWrapper(this.userid)).fetchUser();
+    }
+
+    /**
+     * fetch the guild this moderation was executed in.
+     * @return {Promise<GuildWrapper>}
+     */
+    async getGuildWrapper() {
+        return await GuildWrapper.fetch(this.guildid);
+    }
+
+    /**
+     * fetch the user targeted by this moderation.
+     * @return {Promise<MemberWrapper>}
+     */
+    async getMemberWrapper() {
+        return new MemberWrapper(await this.getUser(), await GuildWrapper.fetch(this.guildid));
     }
 
     /**
