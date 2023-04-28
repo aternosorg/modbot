@@ -51,12 +51,11 @@ export default class GuildAuditLogCreateEventListener extends EventListener {
                     if (change.key === 'communication_disabled_until') {
                         wasMuted ??= change.old !== null;
                         if (change.new === null) {
-                            action = 'mute';
-                            duration = new Date(/** @type {string}*/ change.new) - Date.now();
-                        }
-                        else {
                             // ignore mutes that were instantly reverted
                             action = wasMuted ? 'unmute' : null;
+                        } else {
+                            action = 'mute';
+                            duration = new Date(/** @type {string}*/ change.new) - Date.now();
                         }
                     }
                 }
