@@ -15,6 +15,7 @@ import WarnEventListener from './WarnEventListener.js';
 import CommandEventListener from './interactionCreate/CommandEventListener.js';
 import DeleteConfirmationEventListener from './interactionCreate/DeleteConfirmationEventListener.js';
 import AutoModMessageEditEventListener from './messageUpdate/AutoModMessageEditEventListener.js';
+import GuildAuditLogCreateEventListener from './GuildAuditLogCreateEventListener.js';
 
 export default class DiscordEventManager extends EventManager {
 
@@ -31,6 +32,7 @@ export default class DiscordEventManager extends EventManager {
             new BanRemoveEventListener(),
             new GuildDeleteEventListener(),
             new WarnEventListener(),
+            new GuildAuditLogCreateEventListener(),
 
             // members
             // join

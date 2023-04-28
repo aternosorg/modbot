@@ -24,7 +24,7 @@ export class Bot {
             intents: [
                 GatewayIntentBits.Guilds,
                 GatewayIntentBits.GuildMembers,
-                GatewayIntentBits.GuildBans,
+                GatewayIntentBits.GuildModeration,
                 GatewayIntentBits.GuildMessages,
                 GatewayIntentBits.GuildMessageReactions,
                 GatewayIntentBits.DirectMessages,

@@ -1,14 +1,11 @@
 import GuildSettings from '../settings/GuildSettings.js';
-import {bold, Guild, RESTJSONErrorCodes, userMention} from 'discord.js';
+import {bold, Guild, RESTJSONErrorCodes} from 'discord.js';
 import {formatTime, parseTime} from '../util/timeutils.js';
 import database from '../bot/Database.js';
 import GuildWrapper from './GuildWrapper.js';
-import {resolveColor} from '../util/colors.js';
-import {toTitleCase} from '../util/format.js';
 import {BAN_MESSAGE_DELETE_LIMIT, TIMEOUT_LIMIT} from '../util/apiLimits.js';
 import Moderation from '../database/Moderation.js';
 import UserWrapper from './UserWrapper.js';
-import KeyValueEmbed from '../embeds/KeyValueEmbed.js';
 import ErrorEmbed from '../embeds/ErrorEmbed.js';
 
 export default class MemberWrapper {
@@ -271,12 +268,11 @@ export default class MemberWrapper {
      */
     async strike(reason, moderator, amount = 1){
         await this.dmPunishedUser('striked', reason, null, 'in');
-        const id = await this.addModeration('strike', reason, null, moderator.id, amount);
+        const moderation = await this.createModeration('strike', reason, null, moderator.id, amount);
         const total = await this.getStrikeSum();
-        await Promise.all([
-            this.#logModeration(moderator, reason, id, 'strike', null, amount, total),
-            this.executePunishment((await this.getGuildSettings()).findPunishment(total), `Reaching ${total} strikes`, true)
-        ]);
+        await moderation.log(total);
+        const punishment = (await this.getGuildSettings()).findPunishment(total);
+        await this.executePunishment(punishment, `Reaching ${total} strikes`, true);
     }
 
     /**
@@ -342,8 +338,7 @@ export default class MemberWrapper {
     async pardon(reason, moderator, amount = 1){
         await this.guild.sendDM(this.user, `${amount} strikes have been pardoned in ${bold(this.guild.guild.name)} | ${reason}`);
 
-        const id = await this.addModeration('pardon', reason, null, moderator.id, -amount);
-        await this.#logModeration(moderator, reason, id, 'pardon', null, amount, await this.getStrikeSum());
+        await (await this.createModeration('pardon', reason, null, moderator.id, -amount)).log();
     }
 
     /**
@@ -365,8 +360,7 @@ export default class MemberWrapper {
             reason: this._shortenReason(`${moderator.tag} ${duration ? `(${formatTime(duration)}) ` : ''}| ${reason}`),
             deleteMessageSeconds,
         });
-        const id = await this.addModeration('ban', reason, duration, moderator.id);
-        await this.#logModeration(moderator, reason, id, 'ban', formatTime(duration));
+        await (await this.createModeration('ban', reason, duration, moderator.id)).log();
     }
 
     /**
@@ -385,8 +379,7 @@ export default class MemberWrapper {
                 throw e;
             }
         }
-        const id = await this.addModeration('unban', reason, null, moderator.id);
-        await this.#logModeration(moderator, reason, id, 'unban');
+        await (await this.createModeration('unban', reason, null, moderator.id)).log();
     }
 
     /**
@@ -408,8 +401,7 @@ export default class MemberWrapper {
             reason: this._shortenReason(`${moderator.tag} | ${reason}`)
         });
         await this.guild.guild.members.unban(this.user.id, 'softban');
-        const id = await this.addModeration('softban', reason, null, moderator.id);
-        await this.#logModeration(moderator, reason, id, 'softban');
+        await (await this.createModeration('softban', reason, null, moderator.id)).log();
     }
 
     /**
@@ -422,8 +414,7 @@ export default class MemberWrapper {
         await this.dmPunishedUser('kicked', reason, null, 'from');
         if (!this.member && await this.fetchMember() === null) return;
         await this.member.kick(this._shortenReason(`${moderator.tag} | ${reason}`));
-        const id = await this.addModeration('kick', reason, null, moderator.id);
-        await this.#logModeration(moderator, reason, id, 'kick');
+        await (await this.createModeration('kick', reason, null, moderator.id)).log();
     }
 
     /**
@@ -452,8 +443,7 @@ export default class MemberWrapper {
                 await this.member.roles.add(mutedRole, shortedReason);
             }
         }
-        const id = await this.addModeration('mute', reason, duration, moderator.id);
-        await this.#logModeration(moderator, reason, id, 'mute', formatTime(duration));
+        await (await this.createModeration('mute', reason, duration, moderator.id)).log();
     }
 
     /**
@@ -472,28 +462,36 @@ export default class MemberWrapper {
             await this.member.timeout(null);
         }
         await this.disableActiveModerations('mute');
-        const id = await this.addModeration('unmute', reason, null, moderator.id);
-        await this.#logModeration(moderator, reason, id, 'unmute');
+        await (await this.createModeration('unmute', reason, null, moderator.id)).log();
     }
 
     /**
-     * add a moderation
-     * @param {String}                                  action        moderation type (e.g. 'ban')
-     * @param {String}                                  reason        reason for the moderation
-     * @param {Number}                                  [duration]    duration of the moderation
-     * @param {import('discord.js').Snowflake}          [moderatorId] id of the moderator
-     * @param {Number}                                  [value]       strike count
-     * @return {Promise<Number>} the id of the moderation
+     * create a new moderation and save it to the database
+     * @param {string}                         action moderation type (e.g. 'ban')
+     * @param {?String}                        reason reason for the moderation
+     * @param {?number}                        duration duration of the moderation
+     * @param {import('discord.js').Snowflake} moderatorId id of the moderator
+     * @param {number} [value] value of the moderation (e.g. strike count)
+     * @return {Promise<Moderation>}
      */
-    async addModeration(action, reason, duration, moderatorId, value= 0) {
+    async createModeration(action, reason, duration, moderatorId, value = 0) {
         await this.disableActiveModerations(action);
 
-        const now = Math.floor(Date.now()/1000);
-        /** @property {Number} insertId*/
-        const insert = await database.queryAll(
-            'INSERT INTO moderations (guildid, userid, action, created, expireTime, reason, moderator, value) VALUES (?,?,?,?,?,?,?,?)',
-            this.guild.guild.id, this.user.id, action, now, duration ? now + duration : null, reason, moderatorId, value);
-        return insert.insertId;
+        const created = Math.floor(Date.now() / 1000);
+        const moderation = new Moderation({
+            guildid: this.guild.guild.id,
+            userid: this.user.id,
+            action,
+            created,
+            value,
+            reason,
+            expireTime: duration ? created + duration : null,
+            moderator: moderatorId,
+            active: true,
+        });
+
+        await moderation.save();
+        return moderation;
     }
 
     /**
@@ -505,37 +503,6 @@ export default class MemberWrapper {
         await database.query(
             'UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = ?',
             this.guild.guild.id, this.user.id, type);
-    }
-
-    /**
-     *
-     * @param {import('discord.js').User} moderator
-     * @param {string} reason
-     * @param {number} id
-     * @param {string} type
-     * @param {?string} time
-     * @param {?number} amount
-     * @param {?number} total
-     * @return {Promise<?Message>}
-     */
-    async #logModeration(moderator, reason, id, type, time = null, amount = null, total = null) {
-        return this.guild.log({
-            embeds: [
-                new KeyValueEmbed()
-                    .setColor(resolveColor(type))
-                    .setAuthor({
-                        name: `Case ${id} | ${toTitleCase(type)} | ${this.user.tag}`,
-                        iconURL: this.user.avatarURL()
-                    })
-                    .setFooter({text: this.user.id})
-                    .addPair('User', userMention(this.user.id))
-                    .addPair('Moderator', userMention(moderator.id))
-                    .addPairIf(time, 'Duration', time)
-                    .addPairIf(amount, 'Amount', amount)
-                    .addPairIf(amount, 'Total Strikes', total)
-                    .addPair('Reason', reason.substring(0, 1024))
-            ]
-        });
     }
 
     /**

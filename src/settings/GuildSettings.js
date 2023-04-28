@@ -369,6 +369,13 @@ export default class GuildSettings extends Settings {
         return new YouTubePlaylist(this.playlist);
     }
 
+    /**
+     * @return {null|import('discord.js').Snowflake}
+     */
+    getMutedRole() {
+        return this.mutedRole ?? null;
+    }
+
     getDataObject(o = this) {
         //copy to new object
         const cleanObject = {};
