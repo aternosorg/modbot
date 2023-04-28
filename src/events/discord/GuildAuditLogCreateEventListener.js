@@ -13,7 +13,7 @@ export default class GuildAuditLogCreateEventListener extends EventListener {
      * @return {Promise<void>}
      */
     async execute(entry, guild) {
-        if (entry.executor.bot) {
+        if (!entry.executor || entry.executor.bot) {
             return;
         }
 
@@ -55,7 +55,7 @@ export default class GuildAuditLogCreateEventListener extends EventListener {
                             action = wasMuted ? 'unmute' : null;
                         } else {
                             action = 'mute';
-                            duration = new Date(/** @type {string}*/ change.new) - Date.now();
+                            duration = Math.floor((new Date(/** @type {string}*/ change.new) - Date.now()) / 1000);
                         }
                     }
                 }
