@@ -25,7 +25,7 @@ has punished this user in the last 5 minutes.
 
 ### Add ModBot to your server
 By adding the bot to your server you agree to our [privacy policy](https://aternos.gmbh/en/modbot/privacy). <br>
-Invite: [Click me](https://discord.com/oauth2/authorize?client_id=790967448111153153&scope=bot&permissions=268446806)
+Invite: [Click me](https://discord.com/oauth2/authorize?client_id=790967448111153153&scope=bot%20applications.commands&permissions=1099780074646)
 
 You can view all commands by typing a slash `/` in the text input field. 
 All commands and options have clear descriptions.
@@ -57,7 +57,7 @@ In both cases you will need a [MySQL](https://dev.mysql.com/downloads/mysql/) da
 2. Add a bot to the application and copy the auth token
 3. Configure the bot (see [CONFIGURATION.md](./CONFIGURATION.md))
 4. To invite the bot to your server replace `ID` with the client ID of your application
-https://discord.com/oauth2/authorize?client_id=ID&scope=bot%20applications.commands&permissions=1099780074518 and open the link
+   https://discord.com/oauth2/authorize?client_id=ID&scope=bot%20applications.commands&permissions=1099780074646 and open the link
 5. Follow the instructions for the installation method you want to use
 
 #### Docker

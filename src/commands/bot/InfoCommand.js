@@ -28,8 +28,9 @@ export const PERMISSIONS = new PermissionsBitField()
     .add(PermissionFlagsBits.BanMembers)
     .add(PermissionFlagsBits.ModerateMembers)
     .add(PermissionFlagsBits.ManageMessages)
-    .add(PermissionFlagsBits.SendMessages);
-export const INVITE_LINK = `https://discordapp.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=${SCOPES.join('%20')}&permissions=${PERMISSIONS.bitfield}`;
+    .add(PermissionFlagsBits.SendMessages)
+    .add(PermissionFlagsBits.ViewAuditLog);
+export const INVITE_LINK = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=${SCOPES.join('%20')}&permissions=${PERMISSIONS.bitfield}`;
 
 export const VERSION = await getPackageVersion();
 async function getPackageVersion() {
