@@ -221,8 +221,8 @@ export default class Moderation {
                 ...this.getParameters(), this.id);
         }
         else {
-            const result = await database.query(
-                `INSERT INTO moderations (${fields.join(', ')}) VALUES ${'?'.repeat(fields.length)}`,
+            const result = await database.queryAll(
+                `INSERT INTO moderations (${fields.join(', ')}) VALUES (${fields.map(() => '?').join(', ')})`,
                 ...this.getParameters());
             this.id = result.insertId;
         }
