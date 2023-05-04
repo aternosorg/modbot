@@ -87,6 +87,18 @@ export class Config {
 
     async load() {
         if (process.env.MODBOT_USE_ENV) {
+            let googleCloudCredentials = process.env.MODBOT_GOOGLE_CLOUD_CREDENTIALS;
+            if (googleCloudCredentials) {
+                googleCloudCredentials = JSON.parse((new Buffer(googleCloudCredentials, 'base64')).toString('ascii'));
+            }
+            else {
+                googleCloudCredentials = {
+                    client_email: process.env.MODBOT_GOOGLE_CLOUD_CREDENTIALS_CLIENT_EMAIL,
+                    private_key: process.env.MODBOT_GOOGLE_CLOUD_CREDENTIALS_PRIVATE_KEY?.replaceAll('\\n', '\n'),
+                };
+            }
+
+
             // load settings from env
             this.#data = {
                 authToken: process.env.MODBOT_AUTH_TOKEN,
@@ -99,10 +111,7 @@ export class Config {
                 },
                 googleApiKey:  process.env.MODBOT_GOOGLE_API_KEY,
                 googleCloud: {
-                    credentials: {
-                        client_email: process.env.MODBOT_GOOGLE_CLOUD_CREDENTIALS_CLIENT_EMAIL,
-                        private_key: process.env.MODBOT_GOOGLE_CLOUD_CREDENTIALS_PRIVATE_KEY
-                    },
+                    credentials: googleCloudCredentials,
                     vision: {
                         enabled: this.#parseBooleanFromEnv(process.env.MODBOT_GOOGLE_CLOUD_VISION_ENABLED)
                     },
