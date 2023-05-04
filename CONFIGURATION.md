@@ -84,6 +84,10 @@ These credentials are used for the following apis if you enabled them in the con
 - Cloud Vision
 - Cloud Logging
 
+### Base64 Encoded
+If you're using environment variables it is recommended to base64 encode the credentials JSON object and set them in the
+environment variable `MODBOT_GOOGLE_CLOUD_CREDENTIALS`. If this variable is set ModBot will ignore the other variables.
+
 #### Client Email
 | type   | config file                            | environment                                    |
 |--------|----------------------------------------|------------------------------------------------|
