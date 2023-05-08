@@ -1,4 +1,4 @@
-import {BaseGuildTextChannel, Collection, RESTJSONErrorCodes} from 'discord.js';
+import {BaseGuildTextChannel, Collection, DiscordjsErrorCodes, RESTJSONErrorCodes} from 'discord.js';
 import RateLimiter from './RateLimiter.js';
 import bot from '../bot/Bot.js';
 import GuildSettings from '../settings/GuildSettings.js';
@@ -118,7 +118,10 @@ export default class GuildWrapper {
             return await this.guild.channels.fetch(id);
         }
         catch (e) {
-            if ([RESTJSONErrorCodes.UnknownChannel, RESTJSONErrorCodes.MissingAccess].includes(e.code)) {
+            if ([RESTJSONErrorCodes.UnknownChannel,
+                RESTJSONErrorCodes.MissingAccess,
+                DiscordjsErrorCodes.GuildChannelUnowned,
+            ].includes(e.code)) {
                 return null;
             }
             else {
