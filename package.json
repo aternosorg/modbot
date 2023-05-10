@@ -1,6 +1,6 @@
 {
   "name": "modbot",
-  "version": "3.3.2",
+  "version": "3.3.3",
   "description": "Discord Bot for the Aternos Discord server",
   "main": "index.js",
   "type": "module",
