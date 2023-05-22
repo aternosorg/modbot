@@ -6,6 +6,7 @@ import BadWord from '../BadWord.js';
 import Moderation from '../Moderation.js';
 import {EmbedBuilder} from 'discord.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
+import {asyncFilter} from '../../util/util.js';
 
 export default class ModBotImporter extends Importer {
 
@@ -87,6 +88,13 @@ export default class ModBotImporter extends Importer {
                 this.data.guildConfig[key] = null;
             }
         }
+
+        if (!await guildWrapper.fetchRole(this.data.guildConfig.mutedRole)) {
+            this.data.guildConfig.mutedRole = null;
+        }
+        this.data.guildConfig.protectedRoles = await asyncFilter(this.data.guildConfig.protectedRoles, async id => {
+            return !!await guildWrapper.fetchRole(id);
+        });
 
         const guildConfig = new GuildSettings(this.guildID, this.data.guildConfig);
         await guildConfig.save();

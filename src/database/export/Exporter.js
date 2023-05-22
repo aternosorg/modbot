@@ -12,7 +12,7 @@ export default class Exporter {
     dataType = 'modbot-1.0.0';
 
     /**
-     * @type {GuildSettings}
+     * @type {GuildSettingsJSON}
      */
     guildConfig;
 

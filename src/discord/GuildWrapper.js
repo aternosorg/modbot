@@ -61,7 +61,10 @@ export default class GuildWrapper {
             return await this.guild.members.fetch({user: id, force});
         }
         catch (e) {
-            if ([RESTJSONErrorCodes.UnknownMember, RESTJSONErrorCodes.UnknownUser].includes(e.code)) {
+            if ([
+                RESTJSONErrorCodes.UnknownMember,
+                RESTJSONErrorCodes.UnknownUser
+            ].includes(e.code)) {
                 return null;
             }
             else {
@@ -80,7 +83,10 @@ export default class GuildWrapper {
             return await this.guild.roles.fetch(id);
         }
         catch (e) {
-            if (e.code === RESTJSONErrorCodes.UnknownRole) {
+            if ([
+                RESTJSONErrorCodes.UnknownRole,
+                RESTJSONErrorCodes.MissingAccess,
+            ].includes(e.code)) {
                 return null;
             }
             else {
@@ -118,7 +124,8 @@ export default class GuildWrapper {
             return await this.guild.channels.fetch(id);
         }
         catch (e) {
-            if ([RESTJSONErrorCodes.UnknownChannel,
+            if ([
+                RESTJSONErrorCodes.UnknownChannel,
                 RESTJSONErrorCodes.MissingAccess,
                 DiscordjsErrorCodes.GuildChannelUnowned,
             ].includes(e.code)) {
@@ -171,7 +178,8 @@ export default class GuildWrapper {
                 return await channel.send(options);
             }
             catch (e) {
-                if ([RESTJSONErrorCodes.MissingPermissions,
+                if ([
+                    RESTJSONErrorCodes.MissingPermissions,
                     RESTJSONErrorCodes.MissingAccess,
                     RESTJSONErrorCodes.UnknownChannel,
                 ].includes(e.code)) {
