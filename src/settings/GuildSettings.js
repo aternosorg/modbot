@@ -18,6 +18,26 @@ import {deepMerge} from '../util/util.js';
  */
 
 /**
+ * @typedef {Object} GuildSettingsJSON
+ * @property  {import('discord.js').Snowflake}   [logChannel]         id of the log channel
+ * @property  {import('discord.js').Snowflake}   [messageLogChannel]  id of the message log channel
+ * @property  {import('discord.js').Snowflake}   [joinLogChannel]     id of the join log channel
+ * @property  {import('discord.js').Snowflake}   [mutedRole]          id of the muted role
+ * @property  {import('discord.js').Snowflake[]} [modRoles]           role ids that can execute commands
+ * @property  {import('discord.js').Snowflake[]} [protectedRoles]     role ids that can't be targeted by moderations
+ * @property  {Object}                           [punishments]        automatic punishments for strikes
+ * @property  {String}                           [playlist]           id of YouTube playlist for tutorials
+ * @property  {String}                           [helpcenter]         subdomain of the zendesk help center
+ * @property  {Boolean}                          [invites]            allow invites (can be overwritten per channel)
+ * @property  {Number}                           [linkCooldown]       cooldown on links in s (user based)
+ * @property  {Number}                           [attachmentCooldown] cooldown on attachments in s (user based)
+ * @property  {Boolean}                          [caps]               should caps be automatically deleted
+ * @property  {Number}                           [antiSpam]           should message spam detection be enabled
+ * @property  {Number}                           [similarMessages]    should similar message detection be enabled
+ * @property  {?SafeSearchSettings}              [safeSearch]         safe search configuration
+ */
+
+/**
  * @classdesc settings of a guild
  */
 export default class GuildSettings extends Settings {
@@ -54,23 +74,7 @@ export default class GuildSettings extends Settings {
 
     /**
      * @param  {import('discord.js').Snowflake}   id                        guild id
-     * @param  {Object}                           [json]                    options
-     * @param  {import('discord.js').Snowflake}   [json.logChannel]         id of the log channel
-     * @param  {import('discord.js').Snowflake}   [json.messageLogChannel]  id of the message log channel
-     * @param  {import('discord.js').Snowflake}   [json.joinLogChannel]     id of the join log channel
-     * @param  {import('discord.js').Snowflake}   [json.mutedRole]          id of the muted role
-     * @param  {import('discord.js').Snowflake[]} [json.modRoles]           role ids that can execute commands
-     * @param  {import('discord.js').Snowflake[]} [json.protectedRoles]     role ids that can't be targeted by moderations
-     * @param  {Object}                           [json.punishments]        automatic punishments for strikes
-     * @param  {String}                           [json.playlist]           id of YouTube playlist for tutorials
-     * @param  {String}                           [json.helpcenter]         subdomain of the zendesk help center
-     * @param  {Boolean}                          [json.invites]            allow invites (can be overwritten per channel)
-     * @param  {Number}                           [json.linkCooldown]       cooldown on links in s (user based)
-     * @param  {Number}                           [json.attachmentCooldown] cooldown on attachments in s (user based)
-     * @param  {Boolean}                          [json.caps]               should caps be automatically deleted
-     * @param  {Number}                           [json.antiSpam]           should message spam detection be enabled
-     * @param  {Number}                           [json.similarMessages]    should similar message detection be enabled
-     * @param  {?SafeSearchSettings}              [json.safeSearch]         safe search configuration
+     * @param  {GuildSettingsJSON}                [json={}]                 json object
      * @return {GuildSettings}
      */
     constructor(id, json = {}) {

@@ -6,6 +6,7 @@ import BadWord from '../BadWord.js';
 import Moderation from '../Moderation.js';
 import {EmbedBuilder} from 'discord.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
+import {asyncFilter} from '../../util/util.js';
 
 export default class ModBotImporter extends Importer {
 
@@ -88,13 +89,25 @@ export default class ModBotImporter extends Importer {
             }
         }
 
+        if (!await guildWrapper.fetchRole(this.data.guildConfig.mutedRole)) {
+            this.data.guildConfig.mutedRole = null;
+        }
+        this.data.guildConfig.protectedRoles = await asyncFilter(this.data.guildConfig.protectedRoles, async id => {
+            return !!await guildWrapper.fetchRole(id);
+        });
+
         const guildConfig = new GuildSettings(this.guildID, this.data.guildConfig);
-        return guildConfig.save();
+        await guildConfig.save();
+        GuildSettings.getCache().set(this.guildID, guildConfig);
     }
 
     async _importChannelConfigs() {
         const channels = this.data.channels;
-        return this.data.channels = await Promise.all(channels.map(c => ChannelSettings.import(this.guildID, c)));
+        this.data.channels = await Promise.all(channels.map(c => ChannelSettings.import(this.guildID, c)));
+
+        for (const channel of this.data.channels) {
+            ChannelSettings.getCache().set(channel.id, channel);
+        }
     }
 
     _importModerations() {
@@ -105,14 +118,24 @@ export default class ModBotImporter extends Importer {
         }));
     }
 
-    _importResponses() {
+    async _importResponses() {
         const responses = this.data.responses;
-        return Promise.all(responses.map(r => (new AutoResponse(this.guildID, r)).save()));
+        await Promise.all(responses.map(r => (new AutoResponse(this.guildID, r)).save()));
+        AutoResponse.getGuildCache().delete(this.guildID);
+        const channelCache = AutoResponse.getChannelCache();
+        for (const channel of responses.map(r => r.channels).flat()) {
+            channelCache.delete(channel);
+        }
     }
 
-    _importBadWords() {
+    async _importBadWords() {
         const badWords = this.data.badWords;
-        return Promise.all(badWords.map(b => (new BadWord(this.guildID, b)).save()));
+        await Promise.all(badWords.map(b => (new BadWord(this.guildID, b)).save()));
+        BadWord.getGuildCache().delete(this.guildID);
+        const channelCache = BadWord.getChannelCache();
+        for (const channel of badWords.map(b => b.channels).flat()) {
+            channelCache.delete(channel);
+        }
     }
 
     generateEmbed() {
