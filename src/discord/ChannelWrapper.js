@@ -23,6 +23,8 @@ export const CHANNEL_LOCK_PERMISSIONS = [
     PermissionFlagsBits.SendMessages,
     PermissionFlagsBits.AddReactions,
     PermissionFlagsBits.SendMessagesInThreads,
+    PermissionFlagsBits.CreatePublicThreads,
+    PermissionFlagsBits.CreatePrivateThreads,
 ];
 
 export default class ChannelWrapper {
