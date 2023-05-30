@@ -54,7 +54,7 @@ export default class SetPunishmentsCommand extends SubCommand {
             duration
         }));
         await interaction.reply(new EmbedWrapper()
-            .setDescription(`Set punishment for ${count} ${count === 1 ? 'strike': 'strikes'} to ${action} ${duration ? `for ${formatTime(duration)}` : ''}.`)
+            .setDescription(`Set punishment for ${count} ${count === 1 ? 'strike': 'strikes'} to ${action}${duration ? ` for ${formatTime(duration)}` : ''}.`)
             .setColor(colors.RED)
             .toMessage());
     }
