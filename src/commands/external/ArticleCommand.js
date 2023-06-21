@@ -171,11 +171,20 @@ export default class ArticleCommand extends Command {
             //convert headings to bold
             .addRule('headings', {
                 filter: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-                replacement(content) {
+                replacement(content, node) {
                     if (!content) {
                         return '';
                     }
-                    return bold(escapeBold(content)) + '\n';
+                    switch (node.localName) {
+                        case 'h1':
+                            return '# ' + content + '\n';
+                        case 'h2':
+                            return '## ' + content + '\n';
+                        case 'h3':
+                            return '### ' + content + '\n';
+                        default:
+                            return bold(escapeBold(content)) + '\n';
+                    }
                 }
             })
             //ignore pre tags
