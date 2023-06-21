@@ -215,6 +215,17 @@ export default class ArticleCommand extends Command {
                         return '';
                     }
                 }
+            })
+            .addRule('links', {
+                filter: ['a'],
+                replacement(content, node) {
+                    const href = node._attrsByQName.href.data;
+                    if (href === content) {
+                        return href;
+                    }
+
+                    return `${content} (${href})`;
+                }
             });
         //convert string
         let string = turndown.turndown(body);
