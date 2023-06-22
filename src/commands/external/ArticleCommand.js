@@ -10,6 +10,7 @@ import {
     escapeBold,
     StringSelectMenuBuilder,
     userMention,
+    hyperlink
 } from 'discord.js';
 import Turndown from 'turndown';
 import icons from '../../util/icons.js';
@@ -224,7 +225,7 @@ export default class ArticleCommand extends Command {
                         return href;
                     }
 
-                    return `${content} (${href})`;
+                    return hyperlink(content, href);
                 }
             });
         //convert string
