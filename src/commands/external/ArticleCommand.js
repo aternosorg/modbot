@@ -10,6 +10,7 @@ import {
     escapeBold,
     StringSelectMenuBuilder,
     userMention,
+    hyperlink
 } from 'discord.js';
 import Turndown from 'turndown';
 import icons from '../../util/icons.js';
@@ -171,11 +172,20 @@ export default class ArticleCommand extends Command {
             //convert headings to bold
             .addRule('headings', {
                 filter: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-                replacement(content) {
+                replacement(content, node) {
                     if (!content) {
                         return '';
                     }
-                    return bold(escapeBold(content)) + '\n';
+                    switch (node.localName) {
+                        case 'h1':
+                            return '# ' + content + '\n';
+                        case 'h2':
+                            return '## ' + content + '\n';
+                        case 'h3':
+                            return '### ' + content + '\n';
+                        default:
+                            return bold(escapeBold(content)) + '\n';
+                    }
                 }
             })
             //ignore pre tags
@@ -205,6 +215,17 @@ export default class ArticleCommand extends Command {
                     else {
                         return '';
                     }
+                }
+            })
+            .addRule('links', {
+                filter: ['a'],
+                replacement(content, node) {
+                    const href = node._attrsByQName.href.data;
+                    if (href === content) {
+                        return href;
+                    }
+
+                    return hyperlink(content, href);
                 }
             });
         //convert string
