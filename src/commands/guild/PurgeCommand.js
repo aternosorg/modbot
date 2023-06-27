@@ -74,7 +74,7 @@ export default class PurgeCommand extends Command {
                     return false;
                 }
 
-                return !(content && this.matches(message, s => s.toLowerCase().includes(content)));
+                return (content && this.matches(message, s => s.toLowerCase().includes(content)));
             });
 
         if (messages.size === 0) {
