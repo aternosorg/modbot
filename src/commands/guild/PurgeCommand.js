@@ -2,8 +2,11 @@ import Command from '../Command.js';
 import {inlineCode, PermissionFlagsBits, PermissionsBitField} from 'discord.js';
 import ChannelWrapper from '../../discord/ChannelWrapper.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
-import {BULK_DELETE_MAX_AGE} from '../../util/apiLimits.js';
 import PurgeLogEmbed from '../../embeds/PurgeLogEmbed.js';
+import PurgeContentFilter from '../../purge/PurgeContentFilter.js';
+import {PurgeUserFilter} from '../../purge/PurgeUserFilter.js';
+import PurgeRegexFilter from '../../purge/PurgeRegexFilter.js';
+import PurgeAgeFilter from '../../purge/PurgeAgeFilter.js';
 
 const REGEX_REGEX = /^\/(.*)\/([gimsuy]*)$/;
 
@@ -43,39 +46,42 @@ export default class PurgeCommand extends Command {
 
     async execute(interaction) {
         await interaction.deferReply({ephemeral: true});
-        const content = interaction.options.getString('content'),
-            user = interaction.options.getUser('author'),
-            limit = Math.min(interaction.options.getInteger('limit') ?? 100, 1000),
-            rawRegex = interaction.options.getString('regex');
+
+        /** @type {PurgeFilter[]} */
+        const filters = [
+            new PurgeAgeFilter(),
+        ];
+
+        let content = interaction.options.getString('content');
+        if (content) {
+            filters.push(new PurgeContentFilter(content));
+        }
+
+        let user = interaction.options.getUser('author');
+        if (user) {
+            filters.push(new PurgeUserFilter(user));
+        }
 
         let regex = null;
-        if (rawRegex) {
-            const match = rawRegex.match(REGEX_REGEX);
-            try {
-                regex = new RegExp(match[1], match[2]);
-            } catch {
-                await interaction.editReply(`Invalid regex: ${inlineCode(rawRegex)}`);
-                return;
+        {
+            let rawRegex = interaction.options.getString('regex');
+            if (rawRegex) {
+                const match = rawRegex.match(REGEX_REGEX);
+                try {
+                    const regex = new RegExp(match[1], match[2]);
+                    filters.push(new PurgeRegexFilter(regex));
+                } catch {
+                    await interaction.editReply(`Invalid regex: ${inlineCode(rawRegex)}`);
+                    return;
+                }
             }
         }
 
+        const limit = Math.min(interaction.options.getInteger('limit') ?? 100, 1000);
+
         const channel = new ChannelWrapper(/** @type {import('discord.js').GuildChannel}*/ interaction.channel);
         const messages = (await channel.getMessages(limit))
-            .filter(message => {
-                if (Date.now() - message.createdTimestamp > BULK_DELETE_MAX_AGE) {
-                    return false;
-                }
-
-                if (user && user.id !== message.author.id) {
-                    return false;
-                }
-
-                if (regex && !this.matches(message, regex.test)) {
-                    return false;
-                }
-
-                return !(content && this.matches(message, s => s.toLowerCase().includes(content)));
-            });
+            .filter(message => filters.every(filter => filter.matches(message)));
 
         if (messages.size === 0) {
             await interaction.editReply('No messages matched your filters.');
