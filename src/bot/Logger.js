@@ -97,13 +97,7 @@ export class Logger {
             severity
         };
 
-        message = this.getData(message);
-
-        if (typeof message !== 'string') {
-            JSON.stringify(message);
-        }
-
-        return this.cloudLog.write(this.cloudLog.entry(metadata, message));
+        return this.cloudLog.write(this.cloudLog.entry(metadata, this.getData(message)));
     }
     
     getData(object) {
