@@ -11,11 +11,12 @@ export default class ModerationEmbed extends KeyValueEmbed {
      */
     constructor(moderation, user) {
         super();
-        this.setTitle(`Moderation #${moderation.id} | ${moderation.action.toUpperCase()}`)
+        this.setTitle(`Moderation #${moderation.id} | ${moderation.action.toUpperCase()} | ${user.displayName}`)
             .setColor(resolveColor(moderation.action))
-            .setFooter({text: `${user.tag} - ${moderation.userid}`, iconURL: user.avatarURL()});
+            .setFooter({text: `${user.displayName} - ${moderation.userid}`, iconURL: user.avatarURL()})
+            .addPair('User ID', moderation.userid)
+            .addPair('Created at',  time(moderation.created, TimestampStyles.LongDate));
 
-        this.addPair('Created at',  time(moderation.created, TimestampStyles.LongDate));
         if (moderation.action === 'strike') {
             this.addPair('Strikes', moderation.value);
         } else if (moderation.action === 'pardon') {

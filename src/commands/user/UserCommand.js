@@ -84,14 +84,15 @@ export default class UserCommand extends Command {
         const confirmation = new Confirmation(data, Math.floor(Date.now() / 1000) + CONFIRMATION_DURATION);
         const embed = new ConfirmationEmbed(this.getName(), await confirmation.save())
             .setAuthor({
-                name: `${member.user.tag} has already been moderated in the last ${formatTime(MODERATION_WARN_DURATION)}.`,
+                name: `${await member.displayName()} has already been moderated in the last ${formatTime(MODERATION_WARN_DURATION)}.`,
                 iconURL: member.user.avatarURL()
             });
 
         for (const result of results.slice(-3)) {
             const moderator = await new UserWrapper(result.moderator).fetchUser();
             embed
-                .addPairIf(moderator, 'Moderator', moderator.tag)
+                .addPairIf(moderator, 'Moderator', moderator.displayName)
+                .addPairIf(moderator, 'Moderator ID', moderator.id)
                 .addPair('Type', toTitleCase(result.action))
                 .addPair('Timestamp', time(result.created, TimestampStyles.ShortTime))
                 .addPairIf(result.expireTime, 'Duration', formatTime(result.getDuration()))

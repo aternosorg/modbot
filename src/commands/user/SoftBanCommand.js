@@ -114,7 +114,7 @@ export default class SoftBanCommand extends UserCommand {
         }
 
         await interaction.showModal(new ModalBuilder()
-            .setTitle(`Soft-ban ${member.user.tag}`.substring(0, MODAL_TITLE_LIMIT))
+            .setTitle(`Soft-ban ${await member.displayName()}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`soft-ban:${member.user.id}`)
             .addComponents(
                 /** @type {*} */

@@ -31,7 +31,7 @@ export default class CompletingModerationCommand extends SubCommand {
                     ]);
 
                     options.push({
-                        name: `#${moderation.id} - ${moderation.action} ${user?.tag ?? 'unknown'} by ${moderator?.tag ?? 'unknown'}`,
+                        name: `#${moderation.id} - ${moderation.action} ${user?.displayName ?? 'unknown'} by ${moderator?.displayName ?? 'unknown'}`,
                         value: moderation.id
                     });
                 }

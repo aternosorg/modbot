@@ -66,7 +66,7 @@ export default class UserInfoCommand extends Command {
     async generateUserMessage(user, interaction) {
         const memberWrapper = new MemberWrapper(user, new GuildWrapper(interaction.guild));
         const member = await memberWrapper.fetchMember();
-        const embed = new UserEmbed(user)
+        const embed = new UserEmbed(member ?? user)
             .setColor(colors.GREEN)
             .addPair(inlineEmojiIfExists('userId') + 'Discord ID', user.id)
             .addPair(inlineEmojiIfExists('userCreated') + 'Created', time(user.createdAt, TimestampStyles.LongDate));

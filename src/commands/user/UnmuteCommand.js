@@ -90,7 +90,7 @@ export default class UnmuteCommand extends Command {
         }
 
         await interaction.showModal(new ModalBuilder()
-            .setTitle(`Unmute ${member.user.tag}`.substring(0, MODAL_TITLE_LIMIT))
+            .setTitle(`Unmute ${await member.displayName()}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`unmute:${member.user.id}`)
             .addComponents(
                 /** @type {*} */

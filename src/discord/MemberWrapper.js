@@ -79,6 +79,15 @@ export default class MemberWrapper {
     }
 
     /**
+     * get the display name of this member
+     * @return {Promise<string>}
+     */
+    async displayName() {
+        if (!this.member) await this.fetchMember();
+        return this.member?.displayName ?? this.user.displayName;
+    }
+
+    /**
      * get all moderations for this member
      * @return {Promise<Moderation[]>}
      */
@@ -357,7 +366,7 @@ export default class MemberWrapper {
 
         await this.dmPunishedUser('banned', reason, duration, 'from');
         await this.guild.guild.members.ban(this.user.id, {
-            reason: this._shortenReason(`${moderator.tag} ${duration ? `(${formatTime(duration)}) ` : ''}| ${reason}`),
+            reason: this._shortenReason(reason),
             deleteMessageSeconds,
         });
         await (await this.createModeration('ban', reason, duration, moderator.id)).log();
@@ -372,7 +381,7 @@ export default class MemberWrapper {
     async unban(reason, moderator){
         await this.disableActiveModerations('ban');
         try {
-            await this.guild.guild.members.unban(this.user, this._shortenReason(`${moderator.tag} | ${reason}`));
+            await this.guild.guild.members.unban(this.user, this._shortenReason(reason));
         }
         catch (e) {
             if (e.code !== RESTJSONErrorCodes.UnknownBan) {
@@ -398,7 +407,7 @@ export default class MemberWrapper {
         await this.dmPunishedUser('softbanned', reason, null, 'from');
         await this.guild.guild.members.ban(this.user.id, {
             deleteMessageSeconds,
-            reason: this._shortenReason(`${moderator.tag} | ${reason}`)
+            reason: this._shortenReason(reason)
         });
         await this.guild.guild.members.unban(this.user.id, 'softban');
         await (await this.createModeration('softban', reason, null, moderator.id)).log();
@@ -413,7 +422,7 @@ export default class MemberWrapper {
     async kick(reason, moderator){
         await this.dmPunishedUser('kicked', reason, null, 'from');
         if (!this.member && await this.fetchMember() === null) return;
-        await this.member.kick(this._shortenReason(`${moderator.tag} | ${reason}`));
+        await this.member.kick(this._shortenReason(reason));
         await (await this.createModeration('kick', reason, null, moderator.id)).log();
     }
 
@@ -436,7 +445,7 @@ export default class MemberWrapper {
         await this.dmPunishedUser('muted', reason, duration, 'in');
         if (!this.member) await this.fetchMember();
         if (this.member) {
-            const shortedReason = this._shortenReason(`${moderator.tag} ${duration ? `(${formatTime(duration)}) ` : ''}| ${reason}`);
+            const shortedReason = this._shortenReason(reason);
             if (timeout) {
                 await this.member.timeout(duration*1000, shortedReason);
             } else {
@@ -457,7 +466,7 @@ export default class MemberWrapper {
         if (this.member) {
             const mutedRole = await this.getMutedRole();
             if (mutedRole && this.member.roles.cache.has(mutedRole.id)) {
-                await this.member.roles.remove(mutedRole, this._shortenReason(`${moderator.tag} | ${reason}`));
+                await this.member.roles.remove(mutedRole, this._shortenReason(reason));
             }
             await this.member.timeout(null);
         }

@@ -90,7 +90,7 @@ export default class UnbanCommand extends Command {
         }
 
         await interaction.showModal(new ModalBuilder()
-            .setTitle(`Unban ${member.user.tag}`.substring(0, MODAL_TITLE_LIMIT))
+            .setTitle(`Unban ${await member.displayName()}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`unban:${member.user.id}`)
             .addComponents(
                 /** @type {*} */

@@ -1,8 +1,9 @@
 import GuildMemberAddEventListener from './GuildMemberAddEventListener.js';
 import GuildSettings from '../../../settings/GuildSettings.js';
 import GuildWrapper from '../../../discord/GuildWrapper.js';
-import {EmbedBuilder, escapeMarkdown, RESTJSONErrorCodes} from 'discord.js';
+import {escapeMarkdown, RESTJSONErrorCodes} from 'discord.js';
 import database from '../../../bot/Database.js';
+import KeyValueEmbed from '../../../embeds/KeyValueEmbed.js';
 
 export default class RestoreMutedRoleEventListener extends GuildMemberAddEventListener {
 
@@ -33,8 +34,9 @@ export default class RestoreMutedRoleEventListener extends GuildMemberAddEventLi
             }
 
             const guild = await GuildWrapper.fetch(member.guild.id);
-            const embed = new EmbedBuilder()
-                .setTitle(`Restored mute | ${escapeMarkdown(member.user.tag)}`)
+            const embed = new KeyValueEmbed()
+                .setTitle(`Restored mute | ${escapeMarkdown(member.displayName)}`)
+                .addPair('User ID', member.id)
                 .setDescription(`Mute ID: ${mute.id}`)
                 .setFooter({text: member.id});
             await guild.log({embeds: [embed]});

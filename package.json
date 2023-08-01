@@ -27,7 +27,7 @@
     "@googleapis/youtube": "^8.0.2",
     "diff": "^5.1.0",
     "discord-api-types": "^0.37.37",
-    "discord.js": "^14.9.0",
+    "discord.js": "^14.12.1",
     "fuse.js": "^6.6.2",
     "got": "^12.6.0",
     "mysql2": "^3.2.0",

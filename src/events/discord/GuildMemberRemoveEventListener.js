@@ -1,7 +1,8 @@
 import EventListener from '../EventListener.js';
-import {bold, EmbedBuilder, time, TimestampStyles} from 'discord.js';
+import {time, TimestampStyles} from 'discord.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import colors from '../../util/colors.js';
+import KeyValueEmbed from '../../embeds/KeyValueEmbed.js';
 
 export default class GuildMemberRemoveEventListener extends EventListener {
     get name() {
@@ -13,19 +14,19 @@ export default class GuildMemberRemoveEventListener extends EventListener {
      * @return {Promise<unknown>}
      */
     async execute(member) {
-        let description = `${bold('ID:')} ${member.id}\n` +
-            `${bold('Created Account:')} ${time(member.user.createdAt, TimestampStyles.RelativeTime)}\n`;
-
-        if (member.joinedTimestamp) {
-            description += `${bold('Joined:')} ${time(member.joinedAt, TimestampStyles.RelativeTime)}`;
-        }
-        const embed = new EmbedBuilder()
-            .setTitle(`${member.user.tag} left this server`)
+        const embed = new KeyValueEmbed()
+            .setTitle(`${member.displayName} left this server`)
             .setColor(colors.RED)
-            .setThumbnail(member.user.avatarURL())
-            .setDescription(description)
+            .setThumbnail(member.avatarURL())
+            .addPair('User ID', member.user.id)
+            .addPair('Created Account', time(member.user.createdAt, TimestampStyles.RelativeTime))
             .setTimestamp()
             .setFooter({text: `Members: ${member.guild.memberCount}`});
+
+        if (member.joinedTimestamp) {
+            embed.addPair('Joined', time(member.joinedTimestamp, TimestampStyles.RelativeTime));
+        }
+
         const guild = await GuildWrapper.fetch(member.guild.id);
         await guild.logJoin({embeds: [embed]});
     }

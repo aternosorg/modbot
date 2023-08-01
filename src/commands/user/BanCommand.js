@@ -132,7 +132,7 @@ export default class BanCommand extends UserCommand {
         }
 
         await interaction.showModal(new ModalBuilder()
-            .setTitle(`Ban ${member.user.tag}`.substring(0, MODAL_TITLE_LIMIT))
+            .setTitle(`Ban ${await member.displayName()}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`ban:${member.user.id}`)
             .addComponents(
                 /** @type {*} */

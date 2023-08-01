@@ -1,6 +1,6 @@
 import KeyValueEmbed from './KeyValueEmbed.js';
 import colors from '../util/colors.js';
-import {channelMention, codeBlock, userMention} from 'discord.js';
+import {bold, channelMention, codeBlock, userMention} from 'discord.js';
 
 export default class PurgeLogEmbed extends KeyValueEmbed {
     /**
@@ -13,11 +13,14 @@ export default class PurgeLogEmbed extends KeyValueEmbed {
     constructor(interaction, count, limit, user = null, regex = null) {
         super();
         this.setColor(colors.RED)
-            .setAuthor({name: `${interaction.user.tag} purged ${count} messages`})
+            .setAuthor({name: `${interaction.member.displayName} purged ${count} messages`})
+            .addPair('Moderator ID', interaction.user.id)
+            .addPair('Tested messages', limit)
+            .newLine()
+            .addLine(bold('Filters:'))
             .addPair('Channel', channelMention(interaction.channel.id))
             .addPairIf(user, 'User', userMention(user?.id))
             .addPairIf(regex, 'Regex', codeBlock(regex))
-            .addPair('Tested messages', limit)
             .setFooter({text: interaction.user.id.toString()});
     }
 }

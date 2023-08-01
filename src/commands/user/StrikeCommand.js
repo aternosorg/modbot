@@ -91,7 +91,7 @@ export default class StrikeCommand extends UserCommand {
         await member.strike(reason, interaction.user, count);
         await replyOrEdit(interaction, new EmbedWrapper()
             .setDescription(inlineEmojiIfExists('strike') +
-                `${bold(escapeMarkdown(member.user.tag))} has received ${formatNumber(count, 'strike')}: ${reason}`)
+                `${bold(escapeMarkdown(await member.displayName))} has received ${formatNumber(count, 'strike')}: ${reason}`)
             .setColor(colors.RED)
             .toMessage()
         );
@@ -136,7 +136,7 @@ export default class StrikeCommand extends UserCommand {
         }
 
         await interaction.showModal(new ModalBuilder()
-            .setTitle(`Strike ${member.user.tag}`.substring(0, MODAL_TITLE_LIMIT))
+            .setTitle(`Strike ${await member.displayName()}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`strike:${member.user.id}`)
             .addComponents(
                 /** @type {*} */

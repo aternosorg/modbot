@@ -14,29 +14,21 @@ export default class IDCommand extends Command {
 
     buildOptions(builder) {
         builder.addStringOption(option => option
-            .setName('username')
-            .setDescription('(partial) username to search for')
+            .setName('query')
+            .setDescription('Username to search for (you can also provide a discrim for legacy users using #)')
             .setRequired(true)
             .setMinLength(2)
-            .setMaxLength(32));
-        builder.addIntegerOption(option => option
-            .setName('discriminator')
-            .setDescription('Full discriminator to search for')
-            .setRequired(false)
-            .setMinValue(1)
-            .setMaxValue(9999));
+            .setMaxLength(37));
         return super.buildOptions(builder);
     }
 
     async execute(interaction) {
-        const name = interaction.options.getString('username', true),
-            discrim = interaction.options.getInteger('discriminator'),
-            query = `${name}${discrim ? '#' + discrim : ''}`;
+        const query = interaction.options.getString('query', true);
 
         await interaction.deferReply({ephemeral: true});
 
         /** @type {Collection<import('discord.js').Snowflake, (import('discord.js').GuildMember|import('discord.js').GuildBan)>} */
-        const users = await interaction.guild.members.fetch({query: name});
+        const users = await interaction.guild.members.fetch({query});
 
         if (users.size) {
             await interaction.editReply(this.#generateResultEmbed(
@@ -46,7 +38,7 @@ export default class IDCommand extends Command {
             ));
         }
 
-        const bans = await this.#fetchAndFilterBans(interaction, name, discrim?.toString?.());
+        const bans = await this.#fetchAndFilterBans(interaction, query);
         if (!bans.size && !users.size) {
             return await interaction.editReply(ErrorEmbed.message('No users found'));
         }
@@ -70,7 +62,7 @@ export default class IDCommand extends Command {
         }
 
         for (const result of results) {
-            embed.addLine(`${escapeMarkdown(result.user.tag)}: ${result.user.id}`);
+            embed.addLine(`${escapeMarkdown(result.user.displayName)}: ${result.user.id}`);
         }
 
         const count = embed.getLineCount(), complete = count === results.length;
@@ -82,12 +74,11 @@ export default class IDCommand extends Command {
     /**
      * @param {import('discord.js').Interaction} interaction
      * @param {string} user
-     * @param {string} discrim
      * @return {Promise<Collection<import('discord.js').Snowflake, import('discord.js').GuildBan>>}
      */
-    async #fetchAndFilterBans(interaction, user, discrim) {
+    async #fetchAndFilterBans(interaction, user) {
         return (await this.#fetchAllBans(interaction))
-            .filter(banInfo => this.#matches(banInfo.user, user, discrim));
+            .filter(banInfo => this.#matches(banInfo.user, user));
     }
 
     /**
@@ -120,13 +111,17 @@ export default class IDCommand extends Command {
     /**
      *
      * @param {User} user
-     * @param {string} name
-     * @param {string} discriminator
+     * @param {string} query
      * @returns {boolean}
      * @private
      */
-    #matches(user, name, discriminator) {
-        return user.username.toLowerCase().includes(name.toLowerCase()) && (!discriminator || user.discriminator === discriminator);
+    #matches(user, query) {
+        let names = [
+            user.tag,
+            user.globalName,
+        ].filter(name => name).map(name => name.toLowerCase());
+
+        return names.some(name => name.includes(query));
     }
 
     getDescription() {

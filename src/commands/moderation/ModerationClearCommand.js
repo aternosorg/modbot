@@ -32,7 +32,7 @@ export default class ModerationClearCommand extends SubCommand {
 
         const confirmation = new Confirmation({user: user.id}, timeAfter('15 minutes'));
         await interaction.editReply(new ConfirmationEmbed('moderation:clear', await confirmation.save(), ButtonStyle.Danger)
-            .setDescription(`Delete ${moderationCount} Moderations for ${escapeMarkdown(user.tag)}`)
+            .setDescription(`Delete ${moderationCount} Moderations for ${escapeMarkdown(user.displayName)}?`)
             .toMessage());
     }
 

@@ -14,7 +14,7 @@ export default class UserActionEmbed extends EmbedWrapper {
      */
     constructor(user, reason, action, color, emoji, duration = null) {
         super();
-        let description = `${bold(escapeMarkdown(user.tag))} has been ${action}`;
+        let description = `${bold(escapeMarkdown(user.displayName))} has been ${action}`;
         if (duration) {
             description += ` for ${formatTime(duration)}`;
         }

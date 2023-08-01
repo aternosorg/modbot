@@ -236,17 +236,21 @@ export default class Moderation {
      */
     async log(total = null) {
         const user = await this.getUser();
+        const moderator = await this.getModerator();
+
         return (await this.getGuildWrapper()).log({
             embeds: [
                 new KeyValueEmbed()
                     .setColor(resolveColor(this.action))
                     .setAuthor({
-                        name: `Case ${this.id} | ${toTitleCase(this.action)} | ${user.tag}`,
+                        name: `Case ${this.id} | ${toTitleCase(this.action)} | ${user.displayName}`,
                         iconURL: user.avatarURL()
                     })
                     .setFooter({text: user.id})
                     .addPair('User', userMention(user.id))
-                    .addPair('Moderator', userMention((await this.getModerator()).id))
+                    .addPair('User ID', user.id)
+                    .addPair('Moderator', userMention(moderator.id))
+                    .addPair('Moderator ID', moderator.id)
                     .addPairIf(this.expireTime, 'Duration', formatTime(this.expireTime - this.created))
                     .addPairIf(this.value, 'Amount', this.value)
                     .addPairIf(total, 'Total Strikes', total)

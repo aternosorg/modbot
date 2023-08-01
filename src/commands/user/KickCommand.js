@@ -113,7 +113,7 @@ export default class KickCommand extends UserCommand {
         }
 
         await interaction.showModal(new ModalBuilder()
-            .setTitle(`Kick ${member.user.tag}`.substring(0, MODAL_TITLE_LIMIT))
+            .setTitle(`Kick ${await member.displayName()}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`kick:${member.user.id}`)
             .addComponents(
                 /** @type {*} */

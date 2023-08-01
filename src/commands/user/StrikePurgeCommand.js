@@ -129,7 +129,7 @@ export default class StrikePurgeCommand extends StrikeCommand {
         }
 
         await interaction.showModal(new ModalBuilder()
-            .setTitle(`Strike-purge ${member.user.tag}`.substring(0, MODAL_TITLE_LIMIT))
+            .setTitle(`Strike-purge ${await member.displayName()}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`strike-purge:${member.user.id}`)
             .addComponents(
                 /** @type {*} */

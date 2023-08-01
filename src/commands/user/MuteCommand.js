@@ -142,7 +142,7 @@ export default class MuteCommand extends UserCommand {
         }
 
         await interaction.showModal(new ModalBuilder()
-            .setTitle(`Mute ${member.user.tag}`.substring(0, MODAL_TITLE_LIMIT))
+            .setTitle(`Mute ${await member.displayName()}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`mute:${member.user.id}`)
             .addComponents(
                 /** @type {*} */
