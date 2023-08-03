@@ -15,9 +15,11 @@ export default class MessageDeleteEmbed extends EmbedWrapper {
             });
         }
         else {
+            /** @type {import('discord.js').GuildMember|import('discord.js').User} */
+            const author = message.member ?? message.author;
             this.setAuthor({
-                name: `Message by ${escapeMarkdown(message.member.displayName)} was deleted in #${message.channel.name}`,
-                iconURL: message.member.avatarURL()
+                name: `Message by ${escapeMarkdown(author.displayName)} was deleted in #${message.channel.name}`,
+                iconURL: author.avatarURL()
             }).setFooter({text:
                     `Message ID: ${message.id}\n` +
                     `Channel ID: ${message.channel.id}\n` +
