@@ -91,7 +91,7 @@ export default class StrikeCommand extends UserCommand {
         await member.strike(reason, interaction.user, count);
         await replyOrEdit(interaction, new EmbedWrapper()
             .setDescription(inlineEmojiIfExists('strike') +
-                `${bold(escapeMarkdown(await member.displayName))} has received ${formatNumber(count, 'strike')}: ${reason}`)
+                `${bold(escapeMarkdown(await member.displayName()))} has received ${formatNumber(count, 'strike')}: ${reason}`)
             .setColor(colors.RED)
             .toMessage()
         );

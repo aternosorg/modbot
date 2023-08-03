@@ -72,7 +72,7 @@ export default class PardonCommand extends Command {
         if (count === 0) {
             await replyOrEdit(interaction, new EmbedWrapper()
                 .setDescription(inlineEmojiIfExists('pardon') +
-                    `${bold(escapeMarkdown(await member.displayName))} has no strikes to pardon`)
+                    `${bold(escapeMarkdown(await member.displayName()))} has no strikes to pardon`)
                 .setColor(colors.RED)
                 .toMessage()
             );
@@ -83,7 +83,7 @@ export default class PardonCommand extends Command {
         await member.pardon(reason, moderator, count);
         await replyOrEdit(interaction, new EmbedWrapper()
             .setDescription(inlineEmojiIfExists('pardon') +
-                `${formatNumber(count, 'strike')} were pardoned for ${bold(escapeMarkdown(await member.displayName))}: ${reason}`)
+                `${formatNumber(count, 'strike')} were pardoned for ${bold(escapeMarkdown(await member.displayName()))}: ${reason}`)
             .setColor(colors.GREEN)
             .toMessage()
         );
