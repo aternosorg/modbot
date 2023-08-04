@@ -38,7 +38,7 @@ export default class IDCommand extends Command {
             ));
         }
 
-        const bans = await this.#fetchAndFilterBans(interaction, query);
+        const bans = await this.#fetchAndFilterBans(interaction, query.toLowerCase());
         if (!bans.size && !users.size) {
             return await interaction.editReply(ErrorEmbed.message('No users found'));
         }
