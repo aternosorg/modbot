@@ -25,9 +25,10 @@ export default class ModerationShowCommand extends CompletingModerationCommand {
             return;
         }
 
+        const user = await (await moderation.getMemberWrapper()).fetchMember() ?? await moderation.getUser();
         await interaction.reply({
             ephemeral: true,
-            embeds: [new ModerationEmbed(moderation, await moderation.getUser())],
+            embeds: [new ModerationEmbed(moderation, user)],
             components: [
                 new ActionRowBuilder()
                     .addComponents(

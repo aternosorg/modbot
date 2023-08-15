@@ -237,14 +237,15 @@ export default class Moderation {
     async log(total = null) {
         const user = await this.getUser();
         const moderator = await this.getModerator();
+        const member = await this.getMemberWrapper();
 
         return (await this.getGuildWrapper()).log({
             embeds: [
                 new KeyValueEmbed()
                     .setColor(resolveColor(this.action))
                     .setAuthor({
-                        name: `Case ${this.id} | ${toTitleCase(this.action)} | ${user.displayName}`,
-                        iconURL: user.avatarURL()
+                        name: `Case ${this.id} | ${toTitleCase(this.action)} | ${await member.displayName}`,
+                        iconURL: await member.displayAvatarURL()
                     })
                     .setFooter({text: user.id})
                     .addPair('User', userMention(user.id))
@@ -296,7 +297,7 @@ export default class Moderation {
      * @return {Promise<MemberWrapper>}
      */
     async getMemberWrapper() {
-        return new MemberWrapper(await this.getUser(), await GuildWrapper.fetch(this.guildid));
+        return new MemberWrapper(await this.getUser(), await this.getGuildWrapper());
     }
 
     /**

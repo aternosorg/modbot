@@ -17,7 +17,7 @@ export default class GuildMemberRemoveEventListener extends EventListener {
         const embed = new KeyValueEmbed()
             .setTitle(`${member.displayName} left this server`)
             .setColor(colors.RED)
-            .setThumbnail(member.avatarURL())
+            .setThumbnail(member.displayAvatarURL())
             .addPair('User ID', member.user.id)
             .addPair('Created Account', time(member.user.createdAt, TimestampStyles.RelativeTime))
             .setTimestamp()

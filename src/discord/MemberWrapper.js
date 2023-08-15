@@ -79,12 +79,27 @@ export default class MemberWrapper {
     }
 
     /**
+     * get the member or user object
+     * @return {Promise<import('discord.js').GuildMember|import('discord.js').User>}
+     */
+    async getMemberOrUser() {
+        return this.member ?? await this.fetchMember() ?? this.user;
+    }
+
+    /**
      * get the display name of this member
      * @return {Promise<string>}
      */
     async displayName() {
-        if (!this.member) await this.fetchMember();
-        return this.member?.displayName ?? this.user.displayName;
+        return (await this.getMemberOrUser()).displayName;
+    }
+
+    /**
+     * get the avatar url of this member
+     * @return {Promise<?string>}
+     */
+    async displayAvatarURL() {
+        return (await this.getMemberOrUser()).displayAvatarURL();
     }
 
     /**

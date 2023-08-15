@@ -19,7 +19,7 @@ export default class MessageDeleteEmbed extends EmbedWrapper {
             const author = message.member ?? message.author;
             this.setAuthor({
                 name: `Message by ${escapeMarkdown(author.displayName)} was deleted in #${message.channel.name}`,
-                iconURL: author.avatarURL()
+                iconURL: author.displayAvatarURL()
             }).setFooter({text:
                     `Message ID: ${message.id}\n` +
                     `Channel ID: ${message.channel.id}\n` +

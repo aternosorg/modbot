@@ -26,7 +26,8 @@ export default class ModerationDeleteCommand extends CompletingModerationCommand
         }
 
         await moderation.delete();
-        const embed = new ModerationEmbed(moderation, await moderation.getUser())
+        const user = await (await moderation.getMemberWrapper()).getMemberOrUser();
+        const embed = new ModerationEmbed(moderation, user)
             .setTitle(`Deleted Moderation #${moderation.id} | ${moderation.action.toUpperCase()}`)
             .setColor(colors.RED);
         await interaction.reply({
@@ -48,7 +49,8 @@ export default class ModerationDeleteCommand extends CompletingModerationCommand
         }
 
         await moderation.delete();
-        const embed = new ModerationEmbed(moderation, await moderation.getUser())
+        const user = await (await moderation.getMemberWrapper()).getMemberOrUser();
+        const embed = new ModerationEmbed(moderation, user)
             .setTitle(`Deleted Moderation #${moderation.id} | ${moderation.action.toUpperCase()}`)
             .setColor(colors.RED);
         await interaction.update({

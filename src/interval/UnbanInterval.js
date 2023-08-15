@@ -32,7 +32,7 @@ export default class UnbanInterval extends Interval {
                     await database.query('UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'ban\'',
                         guild.guild.id, user.id);
                     await guild.log(new ErrorEmbed('Missing permissions to unban user!')
-                        .setAuthor({name: user.displayName, iconURL: user.avatarURL()})
+                        .setAuthor({name: user.displayName, iconURL: user.displayAvatarURL()})
                         .setFooter({text: user.id})
                         .toMessage(false));
                 }

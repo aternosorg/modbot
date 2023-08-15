@@ -85,7 +85,7 @@ export default class UserCommand extends Command {
         const embed = new ConfirmationEmbed(this.getName(), await confirmation.save())
             .setAuthor({
                 name: `${await member.displayName()} has already been moderated in the last ${formatTime(MODERATION_WARN_DURATION)}.`,
-                iconURL: member.user.avatarURL()
+                iconURL: await member.displayAvatarURL()
             });
 
         for (const result of results.slice(-3)) {

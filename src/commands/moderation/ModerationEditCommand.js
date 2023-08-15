@@ -77,7 +77,8 @@ export default class ModerationEditCommand extends CompletingModerationCommand {
         }
 
         await moderation.save();
-        await interaction.reply(new ModerationEmbed(moderation, await moderation.getUser()).toMessage());
+        const user = await (await moderation.getMemberWrapper()).getMemberOrUser();
+        await interaction.reply(new ModerationEmbed(moderation, user).toMessage());
     }
 
     getDescription() {

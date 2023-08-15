@@ -7,13 +7,13 @@ export default class ModerationEmbed extends KeyValueEmbed {
 
     /**
      * @param {Moderation} moderation
-     * @param {import('discord.js').User} user
+     * @param {import('discord.js').GuildMember|import('discord.js').User} user
      */
     constructor(moderation, user) {
         super();
         this.setTitle(`Moderation #${moderation.id} | ${moderation.action.toUpperCase()} | ${user.displayName}`)
             .setColor(resolveColor(moderation.action))
-            .setFooter({text: `${user.displayName} - ${moderation.userid}`, iconURL: user.avatarURL()})
+            .setFooter({text: `${user.displayName} - ${moderation.userid}`, iconURL: user.displayAvatarURL()})
             .addPair('User ID', moderation.userid)
             .addPair('Created at',  time(moderation.created, TimestampStyles.LongDate));
 

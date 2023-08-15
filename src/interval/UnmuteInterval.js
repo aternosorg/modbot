@@ -32,7 +32,7 @@ export default class UnmuteInterval extends Interval {
                     await database.query('UPDATE moderations SET active = FALSE WHERE active = TRUE AND guildid = ? AND userid = ? AND action = \'mute\'',
                         guild.guild.id, user.id);
                     await guild.log(new ErrorEmbed('Missing permissions to unmute user!')
-                        .setAuthor({name: (member.member ?? user).displayName, iconURL: user.avatarURL()})
+                        .setAuthor({name: await member.displayAvatarURL(), iconURL: await member.displayAvatarURL()})
                         .setFooter({text: user.id})
                         .toMessage(false));
                 }

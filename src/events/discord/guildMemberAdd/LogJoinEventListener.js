@@ -10,7 +10,7 @@ export default class LogJoinEventListener extends GuildMemberAddEventListener {
         const embed = new KeyValueEmbed()
             .setTitle(`${member.displayName} joined this server`)
             .setColor(colors.GREEN)
-            .setThumbnail(member.user.avatarURL())
+            .setThumbnail(member.displayAvatarURL())
             .addPair('User ID', member.user.id)
             .addPair('Created Account', time(member.user.createdAt, TimestampStyles.RelativeTime))
             .setTimestamp()
