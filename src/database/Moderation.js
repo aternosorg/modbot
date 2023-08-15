@@ -244,7 +244,7 @@ export default class Moderation {
                 new KeyValueEmbed()
                     .setColor(resolveColor(this.action))
                     .setAuthor({
-                        name: `Case ${this.id} | ${toTitleCase(this.action)} | ${await member.displayName}`,
+                        name: `Case ${this.id} | ${toTitleCase(this.action)} | ${await member.displayName()}`,
                         iconURL: await member.displayAvatarURL()
                     })
                     .setFooter({text: user.id})
