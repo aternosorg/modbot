@@ -24,7 +24,7 @@ export default class GuildMemberRemoveEventListener extends EventListener {
             .setFooter({text: `Members: ${member.guild.memberCount}`});
 
         if (member.joinedTimestamp) {
-            embed.addPair('Joined', time(member.joinedTimestamp, TimestampStyles.RelativeTime));
+            embed.addPair('Joined', time(member.joinedAt, TimestampStyles.RelativeTime));
         }
 
         const guild = await GuildWrapper.fetch(member.guild.id);
