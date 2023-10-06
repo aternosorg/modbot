@@ -225,6 +225,10 @@ export default class ArticleCommand extends Command {
                         return href;
                     }
 
+                    if (content.includes('https://') || content.includes('http://')) {
+                        return href;
+                    }
+
                     return hyperlink(content, href);
                 }
             });
