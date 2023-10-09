@@ -188,7 +188,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                             .setStyle(TextInputStyle.Short)
                             .setPlaceholder('Punishment duration')
                             .setLabel('duration')
-                            .setMinLength(1)
+                            .setMinLength(0)
                             .setMaxLength(4000)
                             .setValue(formatTime(badWord.punishment.duration))
                     )
