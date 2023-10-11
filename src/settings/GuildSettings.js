@@ -66,7 +66,7 @@ export default class GuildSettings extends Settings {
         safeSearch: {
             enabled: true,
             strikes: 1,
-            likelihood: 1,
+            likelihood: 2,
         },
     };
 
