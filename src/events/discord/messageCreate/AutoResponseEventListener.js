@@ -26,12 +26,12 @@ export default class AutoResponseEventListener extends MessageCreateEventListene
             const response = triggered[Math.floor(Math.random() * triggered.length)];
             if (recentAutoresponse.has(message.channel.id)) { // checks if a tag has been used in this channel in the last <cooldown time>
             	message.react('⏲️') // react with timer emoji to show that there is currently a cooldown active
-    		} else {
-		    await message.reply({content: response.response});
-        	    recentAutoresponse.add(message.channel.id);
-        	    setTimeout(() => {
-          	        recentAutoresponse.delete(message.channel.id); // removes the cooldown after <cooldown time>
-        	    }, tagCooldown);
+    	    } else {
+		await message.reply({content: response.response});
+        	recentAutoresponse.add(message.channel.id);
+        	setTimeout(() => {
+          	    recentAutoresponse.delete(message.channel.id); // removes the cooldown after <cooldown time>
+        	}, tagCooldown);
     	    }
         }
     }
