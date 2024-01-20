@@ -1,5 +1,5 @@
 import Command from '../Command.js';
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle, PermissionFlagsBits, PermissionsBitField, time, TimestampStyles} from 'discord.js';
+import {ActionRowBuilder, ButtonStyle, PermissionFlagsBits, PermissionsBitField, time, TimestampStyles} from 'discord.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import UserWrapper from '../../discord/UserWrapper.js';
@@ -7,6 +7,7 @@ import colors from '../../util/colors.js';
 import UserEmbed from '../../embeds/UserEmbed.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 import {componentEmojiIfExists, inlineEmojiIfExists} from '../../util/format.js';
+import BetterButtonBuilder from '../../embeds/BetterButtonBuilder.js';
 
 export default class UserInfoCommand extends Command {
 
@@ -74,39 +75,39 @@ export default class UserInfoCommand extends Command {
         /** @type {ActionRowBuilder<ButtonBuilder>} */
         const actionRow = new ActionRowBuilder()
             .addComponents(
-                /** @type {*} */ new ButtonBuilder()
+                /** @type {*} */ new BetterButtonBuilder()
                     .setLabel('Strike')
                     .setCustomId(`strike:${user.id}`)
                     .setStyle(ButtonStyle.Danger)
-                    .setEmoji(componentEmojiIfExists('strike')),
+                    .setEmojiIfPresent(componentEmojiIfExists('strike')),
             );
         const informationRow = new ActionRowBuilder()
             .addComponents(
-                /** @type {*} */ new ButtonBuilder()
+                /** @type {*} */ new BetterButtonBuilder()
                     .setLabel('Refresh')
                     .setCustomId(`user:refresh:${user.id}`)
                     .setStyle(ButtonStyle.Secondary)
-                    .setEmoji(componentEmojiIfExists('refresh')),
-                /** @type {*} */ new ButtonBuilder()
+                    .setEmojiIfPresent(componentEmojiIfExists('refresh')),
+                /** @type {*} */ new BetterButtonBuilder()
                     .setLabel('Avatar')
                     .setCustomId(`avatar:${user.id}`)
                     .setStyle(ButtonStyle.Secondary)
-                    .setEmoji(componentEmojiIfExists('avatar')),
-                /** @type {*} */ new ButtonBuilder()
+                    .setEmojiIfPresent(componentEmojiIfExists('avatar')),
+                /** @type {*} */ new BetterButtonBuilder()
                     .setLabel('Moderations')
                     .setCustomId(`moderation:list:${user.id}`)
                     .setStyle(ButtonStyle.Secondary)
-                    .setEmoji(componentEmojiIfExists('moderations')),
+                    .setEmojiIfPresent(componentEmojiIfExists('moderations')),
             );
 
         if (member) {
             embed.addPair(inlineEmojiIfExists('userJoined') + 'Joined', time(member.joinedAt, TimestampStyles.LongDate));
             actionRow.addComponents(
-                /** @type {*} */ new ButtonBuilder()
+                /** @type {*} */ new BetterButtonBuilder()
                     .setLabel('Kick')
                     .setCustomId(`kick:${user.id}`)
                     .setStyle(ButtonStyle.Danger)
-                    .setEmoji(componentEmojiIfExists('kick'))
+                    .setEmojiIfPresent(componentEmojiIfExists('kick'))
             );
         }
 
@@ -116,11 +117,11 @@ export default class UserInfoCommand extends Command {
                 .addPair(inlineEmojiIfExists('strike') + ' Strike count', strikeCount);
             if (strikeCount) {
                 actionRow.addComponents(
-                    /** @type {*} */ new ButtonBuilder()
+                    /** @type {*} */ new BetterButtonBuilder()
                         .setLabel('Pardon')
                         .setCustomId(`pardon:${user.id}`)
                         .setStyle(ButtonStyle.Success)
-                        .setEmoji(componentEmojiIfExists('pardon'))
+                        .setEmojiIfPresent(componentEmojiIfExists('pardon'))
                 );
             }
         }
@@ -133,21 +134,21 @@ export default class UserInfoCommand extends Command {
                     embed.addPair(inlineEmojiIfExists('mute') + 'Muted until', time(Math.floor(mute.end / 1_000)));
                 }
                 actionRow.addComponents(
-                    /** @type {*} */ new ButtonBuilder()
+                    /** @type {*} */ new BetterButtonBuilder()
                         .setLabel('Unmute')
                         .setCustomId(`unmute:${user.id}`)
                         .setStyle(ButtonStyle.Success)
-                        .setEmoji(componentEmojiIfExists('mute'))
+                        .setEmojiIfPresent(componentEmojiIfExists('mute'))
                 );
                 embed.setColor(colors.ORANGE);
             }
             else {
                 actionRow.addComponents(
-                    /** @type {*} */ new ButtonBuilder()
+                    /** @type {*} */ new BetterButtonBuilder()
                         .setLabel('Mute')
                         .setCustomId(`mute:${user.id}`)
                         .setStyle(ButtonStyle.Danger)
-                        .setEmoji(componentEmojiIfExists('mute'))
+                        .setEmojiIfPresent(componentEmojiIfExists('mute'))
                 );
             }
         }
@@ -160,21 +161,21 @@ export default class UserInfoCommand extends Command {
                     embed.addPair(inlineEmojiIfExists('ban') + 'Banned until', time(Math.floor(ban.end / 1_000)));
                 }
                 actionRow.addComponents(
-                    /** @type {*} */ new ButtonBuilder()
+                    /** @type {*} */ new BetterButtonBuilder()
                         .setLabel('Unban')
                         .setCustomId(`unban:${user.id}`)
                         .setStyle(ButtonStyle.Success)
-                        .setEmoji(componentEmojiIfExists('ban'))
+                        .setEmojiIfPresent(componentEmojiIfExists('ban'))
                 );
                 embed.setColor(colors.RED);
             }
             else {
                 actionRow.addComponents(
-                    /** @type {*} */ new ButtonBuilder()
+                    /** @type {*} */ new BetterButtonBuilder()
                         .setLabel('Ban')
                         .setCustomId(`ban:${user.id}`)
                         .setStyle(ButtonStyle.Danger)
-                        .setEmoji(componentEmojiIfExists('ban'))
+                        .setEmojiIfPresent(componentEmojiIfExists('ban'))
                 );
             }
         }

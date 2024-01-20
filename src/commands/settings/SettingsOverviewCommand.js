@@ -1,7 +1,8 @@
 import SubCommand from '../SubCommand.js';
 import GuildSettings from '../../settings/GuildSettings.js';
 import {ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js';
-import config from '../../bot/Config.js';
+import {componentEmojiIfExists} from '../../util/format.js';
+import icons from '../../util/icons.js';
 
 export default class SettingsOverviewCommand extends SubCommand {
 
@@ -35,7 +36,7 @@ export default class SettingsOverviewCommand extends SubCommand {
                             .setLabel('Refresh')
                             .setStyle(ButtonStyle.Secondary)
                             .setCustomId('settings:overview')
-                            .setEmoji(config.data.emoji.refresh ?? {})
+                            .setEmoji(componentEmojiIfExists('refresh', icons.refresh))
                     )
             ]
         };

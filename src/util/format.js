@@ -47,16 +47,19 @@ export function formatNumber(number, name) {
 }
 
 /**
- * @param {string} configKey
- * @param {?string} fallback
- * @return {import('discord.js').APIMessageComponentEmoji}
+ * @param {string} configKey name of the emoji in the config
+ * @param {?string} fallback emoji character to use if the config key is not set
+ * @return {?import('discord.js').APIMessageComponentEmoji}
  */
 export function componentEmojiIfExists(configKey, fallback = null) {
     const emoji = config.data.emoji[configKey];
-    if (!emoji) {
-        return {name: fallback ?? undefined};
-    }
-    else {
+    if (emoji) {
         return {id: emoji};
     }
+
+    if (fallback) {
+        return {name: fallback};
+    }
+
+    return null;
 }
