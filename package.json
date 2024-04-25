@@ -22,8 +22,8 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@google-cloud/logging": "^10.4.0",
-    "@google-cloud/vision": "^3.1.2",
+    "@google-cloud/logging": "^11.0.0",
+    "@google-cloud/vision": "^4.2.1",
     "@googleapis/youtube": "^8.0.2",
     "diff": "^5.1.0",
     "discord-api-types": "^0.37.37",
