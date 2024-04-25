@@ -111,7 +111,7 @@ export default class ChatTriggeredFeature {
             case 'regex':
                 return '/regex/flags';
 
-            case 'phising':
+            case 'phishing':
                 return 'domain.com(other,tlds):similarity';
 
             default:
