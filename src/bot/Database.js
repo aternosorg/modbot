@@ -116,7 +116,12 @@ export class Database {
      */
     async queryAll(sql, ...values) {
         await this.waitForConnection();
-        return (await this.#connection.query(sql, values))[0];
+        try {
+            return (await this.#connection.query(sql, values))[0];
+        } catch (e) {
+            this.#handleConnectionError(e);
+            throw e;
+        }
     }
 
     /**
