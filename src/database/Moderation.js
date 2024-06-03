@@ -60,9 +60,14 @@ export default class Moderation {
     expireTime;
 
     /**
-     * @type {String}
+     * @type {?String}
      */
     reason;
+
+    /**
+     * @type {?String}
+     */
+    comment;
 
     /**
      * @type {import('discord.js').Snowflake}
@@ -83,6 +88,7 @@ export default class Moderation {
      * @param {?string|number} [data.created]
      * @param {Number} [data.value]
      * @param {String} [data.reason]
+     * @param {String} [data.comment]
      * @param {?string|number} [data.expireTime]
      * @param {import('discord.js').Snowflake} data.moderator
      * @param {boolean} [data.active]
@@ -95,6 +101,7 @@ export default class Moderation {
         this.created = parseInt(data.created) || Math.floor(Date.now()/1000);
         this.value = data.value;
         this.reason = data.reason || 'No reason provided.';
+        this.comment = data.comment;
         this.expireTime = parseInt(data.expireTime) || null;
         this.moderator = data.moderator;
         this.active = !!data.active;
@@ -114,6 +121,7 @@ export default class Moderation {
         TypeChecker.assertOfTypes(data.created, ['number','string','undefined'], 'Created', true);
         TypeChecker.assertNumberUndefinedOrNull(data.value, 'Value');
         TypeChecker.assertStringUndefinedOrNull(data.reason, 'Reason');
+        TypeChecker.assertStringUndefinedOrNull(data.comment, 'Comment');
         TypeChecker.assertOfTypes(data.expireTime, ['number','string','undefined'], 'Expire time', true);
         TypeChecker.assertStringUndefinedOrNull(data.moderator, 'Moderator');
         TypeChecker.assertOfTypes(data.active, ['boolean', 'undefined'], 'Active');
@@ -124,7 +132,7 @@ export default class Moderation {
      * @return {string[]}
      */
     static getFields() {
-        return ['id', 'guildid', 'userid', 'action', 'created', 'value', 'expireTime', 'reason', 'moderator', 'active']
+        return ['id', 'guildid', 'userid', 'action', 'created', 'value', 'expireTime', 'reason', 'comment', 'moderator', 'active']
             .map(field => database.escapeId(field));
     }
 
@@ -232,7 +240,7 @@ export default class Moderation {
     /**
      * log this moderation to the guild's log channel
      * @param {?number} total total strike count
-     * @return {Promise<Moderation>}
+     * @return {Promise<Message>}
      */
     async log(total = null) {
         const user = await this.getUser();
@@ -255,7 +263,8 @@ export default class Moderation {
                     .addPairIf(this.expireTime, 'Duration', formatTime(this.expireTime - this.created))
                     .addPairIf(this.value, 'Amount', this.value)
                     .addPairIf(total, 'Total Strikes', total)
-                    .addPair('Reason', this.reason.substring(0, 1024))
+                    .addPairIf(this.reason, 'Reason', this.reason?.substring(0, 1024))
+                    .addPairIf(this.comment, 'Comment', this.comment?.substring(0, 1024))
             ]
         });
     }
@@ -273,7 +282,7 @@ export default class Moderation {
      * @return {(import('discord.js').Snowflake|String|Number)[]}
      */
     getParameters() {
-        return [this.guildid, this.userid, this.action, this.created, this.value, this.expireTime, this.reason, this.moderator, this.active];
+        return [this.guildid, this.userid, this.action, this.created, this.value, this.expireTime, this.reason, this.comment, this.moderator, this.active];
     }
 
     /**

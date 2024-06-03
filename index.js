@@ -14,6 +14,7 @@ async function start() {
     await database.connect();
     await logger.info('Creating database tables');
     await database.createTables();
+    await database.runMigrations();
     await logger.notice('Logging into discord');
     await bot.start();
     await logger.info('Online');

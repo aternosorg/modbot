@@ -133,6 +133,7 @@ export default class UserInfoCommand extends Command {
                 if (mute.end) {
                     embed.addPair(inlineEmojiIfExists('mute') + 'Muted until', time(Math.floor(mute.end / 1_000)));
                 }
+                embed.addPairIf(mute.comment, inlineEmojiIfExists('mute') + 'Mute comment', mute.comment);
                 actionRow.addComponents(
                     /** @type {*} */ new BetterButtonBuilder()
                         .setLabel('Unmute')
@@ -160,6 +161,7 @@ export default class UserInfoCommand extends Command {
                 if (ban.end) {
                     embed.addPair(inlineEmojiIfExists('ban') + 'Banned until', time(Math.floor(ban.end / 1_000)));
                 }
+                embed.addPairIf(ban.comment, inlineEmojiIfExists('ban') + 'Ban comment', ban.comment);
                 actionRow.addComponents(
                     /** @type {*} */ new BetterButtonBuilder()
                         .setLabel('Unban')

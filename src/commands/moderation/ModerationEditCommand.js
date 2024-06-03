@@ -20,6 +20,11 @@ export default class ModerationEditCommand extends CompletingModerationCommand {
                 .setRequired(false)
         );
         builder.addStringOption(option =>
+            option.setName('comment')
+                .setDescription('New moderation comment')
+                .setRequired(false)
+        );
+        builder.addStringOption(option =>
             option.setName('duration')
                 .setDescription('New moderation duration (since moderation creation)')
                 .setRequired(false)
@@ -41,17 +46,22 @@ export default class ModerationEditCommand extends CompletingModerationCommand {
             return;
         }
 
-        const reason = interaction.options.getString('reason');
-        let duration = interaction.options.getString('duration'),
-            count = interaction.options.getInteger('count');
+        const reason = interaction.options.getString('reason'),
+            comment = interaction.options.getString('comment'),
+            duration = interaction.options.getString('duration');
+        let count = interaction.options.getInteger('count');
 
-        if (!reason && !duration && !count) {
+        if (!reason && !duration && !count && !comment) {
             await interaction.reply(ErrorEmbed.message('You need to provide at least one option you want to change'));
             return;
         }
 
         if (reason) {
             moderation.reason = reason;
+        }
+
+        if (comment) {
+            moderation.comment = comment;
         }
 
         if (duration) {

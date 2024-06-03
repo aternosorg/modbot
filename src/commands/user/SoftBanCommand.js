@@ -19,24 +19,13 @@ import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
 export default class SoftBanCommand extends UserCommand {
 
     buildOptions(builder) {
-        builder.addUserOption(option =>
-            option
-                .setName('user')
-                .setDescription('The user you want to soft-ban')
-                .setRequired(true)
-        );
-        builder.addStringOption(option =>
-            option.setName('reason')
-                .setDescription('Soft-ban reason')
-                .setRequired(false)
-                .setAutocomplete(true)
-        );
+        super.buildOptions(builder);
         builder.addStringOption(option =>
             option.setName('delete')
                 .setDescription('Delete message history for this time frame')
                 .setRequired(false)
         );
-        return super.buildOptions(builder);
+        return builder;
     }
 
     getDefaultMemberPermissions() {

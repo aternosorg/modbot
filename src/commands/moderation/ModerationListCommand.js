@@ -99,9 +99,9 @@ export default class ModerationListCommand extends SubCommand {
             }
 
             const limit = Math.min(
-                EMBED_TOTAL_LIMIT / MODERATIONS_PER_PAGE - lines.join('\n').length,
+                EMBED_TOTAL_LIMIT / MODERATIONS_PER_PAGE,
                 EMBED_FIELD_LIMIT
-            );
+            ) - lines.join('\n').length;
             const reason = moderation.reason.length < limit ? moderation.reason
                 : moderation.reason.slice(0, limit - 3) + '...';
             lines.push(`Reason: ${reason}`);
