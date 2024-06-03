@@ -292,10 +292,10 @@ export default class MemberWrapper {
 
     /**
      * strike this member
-     * @param {String}                              reason
-     * @param {String}                              comment
+     * @param {String}                               reason
+     * @param {?String}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
-     * @param {number}                              amount
+     * @param {number}                               amount
      * @return {Promise<void>}
      */
     async strike(reason, comment, moderator, amount = 1){
@@ -304,7 +304,7 @@ export default class MemberWrapper {
         const total = await this.getStrikeSum();
         await moderation.log(total);
         const punishment = (await this.getGuildSettings()).findPunishment(total);
-        await this.executePunishment(punishment, `Reaching ${total} strikes`,  comment, true);
+        await this.executePunishment(punishment, `Reaching ${total} strikes`,  null, true);
     }
 
     /**
@@ -322,7 +322,7 @@ export default class MemberWrapper {
      * execute this punishment
      * @param {Punishment} punishment
      * @param {String} reason
-     * @param {string} comment
+     * @param {?string} comment
      * @param {boolean} [allowEmpty] return if there is no punishment instead of throwing an exception
      * @return {Promise<void>}
      */
@@ -364,10 +364,10 @@ export default class MemberWrapper {
 
     /**
      * pardon strikes from this member
-     * @param {String}                              reason
-     * @param {String}                              comment
+     * @param {String}                               reason
+     * @param {?String}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
-     * @param {number}                              amount
+     * @param {number}                               amount
      * @return {Promise<void>}
      */
     async pardon(reason, comment, moderator, amount = 1){
@@ -378,8 +378,8 @@ export default class MemberWrapper {
 
     /**
      * ban this user from this guild
-     * @param {String}                              reason
-     * @param {String}                              comment
+     * @param {String}                               reason
+     * @param {?String}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
      * @param {?number}                              [duration]
      * @param {?number}                              [deleteMessageSeconds]
@@ -401,8 +401,8 @@ export default class MemberWrapper {
 
     /**
      * unban this member
-     * @param {String}                              reason
-     * @param {String}                              comment
+     * @param {String}                               reason
+     * @param {?String}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
      * @return {Promise<void>}
      */
@@ -421,10 +421,10 @@ export default class MemberWrapper {
 
     /**
      * softban this user from this guild
-     * @param {String}                                  reason
-     * @param {String}                                  comment
+     * @param {String}                       reason
+     * @param {?String}                      comment
      * @param {import('discord.js').User}    moderator
-     * @param {?number}                                 [deleteMessageSeconds]
+     * @param {?number}                      [deleteMessageSeconds]
      * @return {Promise<void>}
      */
     async softban(reason, comment, moderator, deleteMessageSeconds){
@@ -444,8 +444,8 @@ export default class MemberWrapper {
 
     /**
      * kick this user from this guild
-     * @param {String}                              reason
-     * @param {String}                              comment
+     * @param {String}                               reason
+     * @param {?String}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
      * @return {Promise<void>}
      */
@@ -458,10 +458,10 @@ export default class MemberWrapper {
 
     /**
      * mute this user in this guild
-     * @param {String}                              reason
-     * @param {String}                              comment
+     * @param {String}                               reason
+     * @param {?String}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
-     * @param {Number}                              [duration]
+     * @param {Number}                               [duration]
      * @return {Promise<void>}
      */
     async mute(reason, comment, moderator, duration){
@@ -489,8 +489,8 @@ export default class MemberWrapper {
 
     /**
      * unmute this user in this guild
-     * @param {String}                              reason
-     * @param {String}                              comment
+     * @param {String}                               reason
+     * @param {?String}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
      * @return {Promise<void>}
      */
