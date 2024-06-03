@@ -33,5 +33,6 @@ export default class ModerationEmbed extends KeyValueEmbed {
         }
 
         this.addPair('Reason', moderation.reason);
+        this.addPairIf(moderation.comment, 'Comment', moderation.comment);
     }
 }

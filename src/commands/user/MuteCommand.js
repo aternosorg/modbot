@@ -21,25 +21,14 @@ export default class MuteCommand extends UserCommand {
 
 
     buildOptions(builder) {
-        builder.addUserOption(option =>
-            option
-                .setName('user')
-                .setDescription('The user you want to mute')
-                .setRequired(true)
-        );
-        builder.addStringOption(option =>
-            option.setName('reason')
-                .setDescription('Mute reason')
-                .setRequired(false)
-                .setAutocomplete(true)
-        );
+        super.buildOptions(builder);
         builder.addStringOption(option =>
             option.setName('duration')
                 .setDescription('Mute duration')
                 .setRequired(false)
                 .setAutocomplete(true)
         );
-        return super.buildOptions(builder);
+        return builder;
     }
 
     getDefaultMemberPermissions() {

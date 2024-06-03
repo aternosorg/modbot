@@ -19,18 +19,7 @@ import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
 export default class BanCommand extends UserCommand {
 
     buildOptions(builder) {
-        builder.addUserOption(option =>
-            option
-                .setName('user')
-                .setDescription('The user you want to ban')
-                .setRequired(true)
-        );
-        builder.addStringOption(option =>
-            option.setName('reason')
-                .setDescription('Ban reason')
-                .setRequired(false)
-                .setAutocomplete(true)
-        );
+        super.buildOptions(builder);
         builder.addStringOption(option =>
             option.setName('duration')
                 .setDescription('Ban duration')
@@ -42,7 +31,7 @@ export default class BanCommand extends UserCommand {
                 .setDescription('Delete message history for this time frame')
                 .setRequired(false)
         );
-        return super.buildOptions(builder);
+        return builder;
     }
 
     getDefaultMemberPermissions() {

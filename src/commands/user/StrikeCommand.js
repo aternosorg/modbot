@@ -26,18 +26,7 @@ export default class StrikeCommand extends UserCommand {
      * @return {import('discord.js').SlashCommandBuilder}
      */
     buildOptions(builder) {
-        builder.addUserOption(option =>
-            option
-                .setName('user')
-                .setDescription('The user you want to strike')
-                .setRequired(true)
-        );
-        builder.addStringOption(option =>
-            option.setName('reason')
-                .setDescription('Strike reason')
-                .setRequired(false)
-                .setAutocomplete(true)
-        );
+        super.buildOptions(builder);
         builder.addIntegerOption(option =>
             option.setName('count')
                 .setDescription('Strike count')
@@ -45,7 +34,7 @@ export default class StrikeCommand extends UserCommand {
                 .setMinValue(1)
                 .setMaxValue(100)
         );
-        return super.buildOptions(builder);
+        return builder;
     }
 
     getDefaultMemberPermissions() {

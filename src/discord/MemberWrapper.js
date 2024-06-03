@@ -130,7 +130,7 @@ export default class MemberWrapper {
 
     /**
      * get ban status, end timestamp and reason
-     * @return {Promise<{banned: boolean, end: ?number, reason: string}>}
+     * @return {Promise<{banned: boolean, end: ?number, reason: string, comment: ?string}>}
      */
     async getBanInfo() {
         const ban = await this.getActiveModeration('ban');
@@ -138,6 +138,7 @@ export default class MemberWrapper {
             return {
                 banned: true,
                 reason: ban.reason,
+                comment: ban.comment,
                 end: ban.expireTime ? ban.expireTime * 1000 : null,
             };
         }
@@ -147,6 +148,7 @@ export default class MemberWrapper {
             return {
                 banned: true,
                 reason: banInfo.reason ?? 'Unknown',
+                comment: null,
                 end: null,
             };
         }
@@ -154,6 +156,7 @@ export default class MemberWrapper {
         return {
             banned: false,
             reason: '',
+            comment: null,
             end: null
         };
     }
@@ -168,7 +171,7 @@ export default class MemberWrapper {
 
     /**
      * get muted status, end timestamp and reason
-     * @return {Promise<{muted: boolean, end: ?number, reason: string}>}
+     * @return {Promise<{muted: boolean, end: ?number, reason: string, comment: ?string}>}
      */
     async getMuteInfo() {
         if (!this.member) await this.fetchMember(true);
@@ -178,6 +181,7 @@ export default class MemberWrapper {
             return {
                 muted: true,
                 reason: mute.reason,
+                comment: mute.comment,
                 end: mute.expireTime ? mute.expireTime * 1000 : null,
             };
         }
@@ -186,6 +190,7 @@ export default class MemberWrapper {
             return {
                 muted: true,
                 reason: 'Unknown (time-out)',
+                comment: null,
                 end: this.member.communicationDisabledUntilTimestamp,
             };
         }
@@ -195,6 +200,7 @@ export default class MemberWrapper {
             return {
                 muted: true,
                 reason: 'Unknown (muted-role)',
+                comment: null,
                 end: null
             };
         }
@@ -202,6 +208,7 @@ export default class MemberWrapper {
         return {
             muted: false,
             reason: '',
+            comment: null,
             end: null
         };
     }

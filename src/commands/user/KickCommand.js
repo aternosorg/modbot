@@ -17,22 +17,6 @@ import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
 
 export default class KickCommand extends UserCommand {
 
-    buildOptions(builder) {
-        builder.addUserOption(option =>
-            option
-                .setName('user')
-                .setDescription('The user you want to kick')
-                .setRequired(true)
-        );
-        builder.addStringOption(option =>
-            option.setName('reason')
-                .setDescription('Kick reason')
-                .setRequired(false)
-                .setAutocomplete(true)
-        );
-        return super.buildOptions(builder);
-    }
-
     getDefaultMemberPermissions() {
         return new PermissionsBitField()
             .add(PermissionFlagsBits.KickMembers);
