@@ -1,12 +1,9 @@
 import {
-    ActionRowBuilder,
     bold,
     escapeMarkdown,
     ModalBuilder,
     PermissionFlagsBits,
     PermissionsBitField,
-    TextInputBuilder,
-    TextInputStyle
 } from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
@@ -17,6 +14,14 @@ import {inLimits} from '../../util/util.js';
 import EmbedWrapper from '../../embeds/EmbedWrapper.js';
 import {formatNumber, inlineEmojiIfExists} from '../../util/format.js';
 import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
+import ReasonInput from '../../modals/inputs/ReasonInput.js';
+import CommentInput from '../../modals/inputs/CommentInput.js';
+import CountInput from '../../modals/inputs/CountInput.js';
+
+/**
+ * @typedef {ConfirmationData} StrikeConfirmationData
+ * @property {?number} count
+ */
 
 export default class StrikeCommand extends UserCommand {
 
@@ -91,7 +96,7 @@ export default class StrikeCommand extends UserCommand {
     async executeButton(interaction) {
         const parts = interaction.customId.split(':');
         if (parts[1] === 'confirm') {
-            /** @type {Confirmation<{reason: ?string, comment: ?string, count: number, user: import('discord.js').Snowflake}>}*/
+            /** @type {Confirmation<StrikeConfirmationData>}*/
             const data = await Confirmation.get(parts[2]);
             if (!data) {
                 await interaction.update({content: 'This confirmation has expired.', embeds: [], components: []});
@@ -131,30 +136,9 @@ export default class StrikeCommand extends UserCommand {
             .setTitle(`Strike ${await member.displayName()}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`strike:${member.user.id}`)
             .addComponents(
-                /** @type {*} */
-                new ActionRowBuilder()
-                    .addComponents(/** @type {*} */ new TextInputBuilder()
-                        .setRequired(false)
-                        .setLabel('Reason')
-                        .setCustomId('reason')
-                        .setStyle(TextInputStyle.Paragraph)
-                        .setPlaceholder('No reason provided')),
-                /** @type {*} */
-                new ActionRowBuilder()
-                    .addComponents(/** @type {*} */ new TextInputBuilder()
-                        .setRequired(false)
-                        .setLabel('Comment')
-                        .setCustomId('comment')
-                        .setStyle(TextInputStyle.Paragraph)
-                        .setPlaceholder('No internal comment')),
-                /** @type {*} */
-                new ActionRowBuilder()
-                    .addComponents(/** @type {*} */ new TextInputBuilder()
-                        .setRequired(false)
-                        .setLabel('Count')
-                        .setCustomId('count')
-                        .setStyle(TextInputStyle.Short)
-                        .setPlaceholder('1')),
+                new ReasonInput().toActionRow(),
+                new CommentInput().toActionRow(),
+                new CountInput().toActionRow(),
             ));
     }
 

@@ -1,10 +1,7 @@
 import {
-    ActionRowBuilder,
     ModalBuilder,
     PermissionFlagsBits,
     PermissionsBitField,
-    TextInputBuilder,
-    TextInputStyle
 } from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
@@ -14,6 +11,8 @@ import Confirmation from '../../database/Confirmation.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
 import config from '../../bot/Config.js';
 import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
+import ReasonInput from '../../modals/inputs/ReasonInput.js';
+import CommentInput from '../../modals/inputs/CommentInput.js';
 
 export default class KickCommand extends UserCommand {
 
@@ -65,7 +64,7 @@ export default class KickCommand extends UserCommand {
     async executeButton(interaction) {
         const parts = interaction.customId.split(':');
         if (parts[1] === 'confirm') {
-            /** @type {Confirmation<{reason: ?string, comment: ?string, user: import('discord.js').Snowflake}>}*/
+            /** @type {Confirmation<ConfirmationData>}*/
             const data = await Confirmation.get(parts[2]);
             if (!data) {
                 await interaction.update({content: 'This confirmation has expired.', embeds: [], components: []});
@@ -103,22 +102,8 @@ export default class KickCommand extends UserCommand {
             .setTitle(`Kick ${await member.displayName()}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`kick:${member.user.id}`)
             .addComponents(
-                /** @type {*} */
-                new ActionRowBuilder()
-                    .addComponents(/** @type {*} */ new TextInputBuilder()
-                        .setRequired(false)
-                        .setLabel('Reason')
-                        .setCustomId('reason')
-                        .setStyle(TextInputStyle.Paragraph)
-                        .setPlaceholder('No reason provided')),
-                /** @type {*} */
-                new ActionRowBuilder()
-                    .addComponents(/** @type {*} */ new TextInputBuilder()
-                        .setRequired(false)
-                        .setLabel('Comment')
-                        .setCustomId('comment')
-                        .setStyle(TextInputStyle.Paragraph)
-                        .setPlaceholder('No internal comment')),
+                new ReasonInput().toActionRow(),
+                new CommentInput().toActionRow(),
             ));
     }
 

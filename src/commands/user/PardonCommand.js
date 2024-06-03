@@ -1,10 +1,8 @@
 import {
-    ActionRowBuilder, bold, escapeMarkdown,
+    bold, escapeMarkdown,
     ModalBuilder,
     PermissionFlagsBits,
-    PermissionsBitField,
-    TextInputBuilder,
-    TextInputStyle
+    PermissionsBitField
 } from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
@@ -14,6 +12,9 @@ import EmbedWrapper from '../../embeds/EmbedWrapper.js';
 import {formatNumber, inlineEmojiIfExists} from '../../util/format.js';
 import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
 import UserCommand from './UserCommand.js';
+import ReasonInput from '../../modals/inputs/ReasonInput.js';
+import CommentInput from '../../modals/inputs/CommentInput.js';
+import CountInput from '../../modals/inputs/CountInput.js';
 
 export default class PardonCommand extends UserCommand {
 
@@ -99,30 +100,9 @@ export default class PardonCommand extends UserCommand {
             .setTitle(`Pardon ${await member.displayName()}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`pardon:${member.user.id}`)
             .addComponents(
-                /** @type {*} */
-                new ActionRowBuilder()
-                    .addComponents(/** @type {*} */ new TextInputBuilder()
-                        .setRequired(false)
-                        .setLabel('Reason')
-                        .setCustomId('reason')
-                        .setStyle(TextInputStyle.Paragraph)
-                        .setPlaceholder('No reason provided')),
-                /** @type {*} */
-                new ActionRowBuilder()
-                    .addComponents(/** @type {*} */ new TextInputBuilder()
-                        .setRequired(false)
-                        .setLabel('Comment')
-                        .setCustomId('comment')
-                        .setStyle(TextInputStyle.Paragraph)
-                        .setPlaceholder('No internal comment')),
-                /** @type {*} */
-                new ActionRowBuilder()
-                    .addComponents(/** @type {*} */ new TextInputBuilder()
-                        .setRequired(false)
-                        .setLabel('Count')
-                        .setCustomId('count')
-                        .setStyle(TextInputStyle.Short)
-                        .setPlaceholder('1')),
+                new ReasonInput().toActionRow(),
+                new CommentInput().toActionRow(),
+                new CountInput().toActionRow(),
             ));
     }
 

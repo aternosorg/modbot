@@ -1,9 +1,8 @@
 import StrikeCommand from './StrikeCommand.js';
 import {
-    ActionRowBuilder,
     ModalBuilder,
     PermissionFlagsBits,
-    TextInputBuilder, TextInputStyle
+    TextInputStyle
 } from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import Confirmation from '../../database/Confirmation.js';
@@ -12,6 +11,15 @@ import ChannelWrapper from '../../discord/ChannelWrapper.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import PurgeLogEmbed from '../../embeds/PurgeLogEmbed.js';
 import {deferReplyOnce} from '../../util/interaction.js';
+import ReasonInput from '../../modals/inputs/ReasonInput.js';
+import CommentInput from '../../modals/inputs/CommentInput.js';
+import CountInput from '../../modals/inputs/CountInput.js';
+import TextInput from '../../modals/inputs/TextInput.js';
+
+/**
+ * @typedef {StrikeConfirmationData} StrikePurgeConfirmationData
+ * @property {number} limit
+ */
 
 export default class StrikePurgeCommand extends StrikeCommand {
     buildOptions(builder) {
@@ -99,7 +107,7 @@ export default class StrikePurgeCommand extends StrikeCommand {
     async executeButton(interaction) {
         const parts = interaction.customId.split(':');
         if (parts[1] === 'confirm') {
-            /** @type {Confirmation<{reason: ?string, comment: ?string, count: number, user: import('discord.js').Snowflake, limit: number}>}*/
+            /** @type {Confirmation<StrikePurgeConfirmationData>}*/
             const data = await Confirmation.get(parts[2]);
             if (!data) {
                 await interaction.update({content: 'This confirmation has expired.', embeds: [], components: []});
@@ -135,38 +143,15 @@ export default class StrikePurgeCommand extends StrikeCommand {
             .setTitle(`Strike-purge ${await member.displayName()}`.substring(0, MODAL_TITLE_LIMIT))
             .setCustomId(`strike-purge:${member.user.id}`)
             .addComponents(
-                /** @type {*} */
-                new ActionRowBuilder()
-                    .addComponents(/** @type {*} */ new TextInputBuilder()
-                        .setRequired(false)
-                        .setLabel('Reason')
-                        .setCustomId('reason')
-                        .setStyle(TextInputStyle.Paragraph)
-                        .setPlaceholder('No reason provided')),
-                /** @type {*} */
-                new ActionRowBuilder()
-                    .addComponents(/** @type {*} */ new TextInputBuilder()
-                        .setRequired(false)
-                        .setLabel('Comment')
-                        .setCustomId('comment')
-                        .setStyle(TextInputStyle.Paragraph)
-                        .setPlaceholder('No internal comment')),
-                /** @type {*} */
-                new ActionRowBuilder()
-                    .addComponents(/** @type {*} */ new TextInputBuilder()
-                        .setRequired(false)
-                        .setLabel('Count')
-                        .setCustomId('count')
-                        .setStyle(TextInputStyle.Short)
-                        .setPlaceholder('1')),
-                /** @type {*} */
-                new ActionRowBuilder()
-                    .addComponents(/** @type {*} */ new TextInputBuilder()
-                        .setRequired(false)
-                        .setLabel('Message deletion limit')
-                        .setCustomId('limit')
-                        .setStyle(TextInputStyle.Short)
-                        .setPlaceholder('100')),
+                new ReasonInput().toActionRow(),
+                new CommentInput().toActionRow(),
+                new CountInput().toActionRow(),
+                new TextInput().setRequired(false)
+                    .setLabel('Message deletion limit')
+                    .setCustomId('limit')
+                    .setStyle(TextInputStyle.Short)
+                    .setPlaceholder('100')
+                    .toActionRow(),
             ));
     }
 

@@ -26,6 +26,18 @@ const MODERATION_WARN_DURATION = 5 * 60;
 const CONFIRMATION_DURATION = 15 * 60;
 
 /**
+ * @typedef {object} ConfirmationData
+ * @property {?string} reason
+ * @property {?string} comment
+ * @property {import('discord.js').Snowflake} [user]
+ */
+
+/**
+ * @typedef {ConfirmationData} DurationConfirmationData
+ * @property {number} [duration]
+ */
+
+/**
  * @abstract
  */
 export default class UserCommand extends Command {
@@ -79,7 +91,7 @@ export default class UserCommand extends Command {
     /**
      * @param {import('discord.js').Interaction} interaction
      * @param {MemberWrapper} member
-     * @param {Object} data data that will be saved for the confirmation
+     * @param {ConfirmationData} data data that will be saved for the confirmation
      * @return {Promise<boolean>} should the punishment be executed now
      */
     async preventDuplicateModeration(interaction, member, data = {}) {
