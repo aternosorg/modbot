@@ -21,7 +21,7 @@ export default class MemberWrapper {
     guild;
 
     /**
-     * @type {GuildMember|null}
+     * @type {import('discord.js').GuildMember|null}
      */
     member;
 
@@ -235,11 +235,11 @@ export default class MemberWrapper {
      */
     async getMutedRole() {
         const settings = await this.getGuildSettings();
-        if (!settings.mutedRole) {
+        if (!settings.getMutedRole()) {
             return null;
         }
 
-        return await this.guild.fetchRole(settings.mutedRole);
+        return await this.guild.fetchRole(settings.getMutedRole());
     }
 
     /**
@@ -293,17 +293,18 @@ export default class MemberWrapper {
     /**
      * strike this member
      * @param {String}                              reason
+     * @param {String}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
      * @param {number}                              amount
      * @return {Promise<void>}
      */
-    async strike(reason, moderator, amount = 1){
+    async strike(reason, comment, moderator, amount = 1){
         await this.dmPunishedUser('striked', reason, null, 'in');
-        const moderation = await this.createModeration('strike', reason, null, moderator.id, amount);
+        const moderation = await this.createModeration('strike', reason, comment, null, moderator.id, amount);
         const total = await this.getStrikeSum();
         await moderation.log(total);
         const punishment = (await this.getGuildSettings()).findPunishment(total);
-        await this.executePunishment(punishment, `Reaching ${total} strikes`, true);
+        await this.executePunishment(punishment, `Reaching ${total} strikes`,  comment, true);
     }
 
     /**
@@ -321,10 +322,11 @@ export default class MemberWrapper {
      * execute this punishment
      * @param {Punishment} punishment
      * @param {String} reason
+     * @param {string} comment
      * @param {boolean} [allowEmpty] return if there is no punishment instead of throwing an exception
      * @return {Promise<void>}
      */
-    async executePunishment(punishment, reason, allowEmpty = false) {
+    async executePunishment(punishment, reason, comment, allowEmpty = false) {
         if (!punishment) {
             if (allowEmpty)
                 return;
@@ -337,22 +339,23 @@ export default class MemberWrapper {
 
         switch (punishment.action.toLowerCase()) {
             case 'ban':
-                return this.ban(reason, this.user.client.user, punishment.duration);
+                return this.ban(reason, comment, this.user.client.user, punishment.duration);
 
             case 'kick':
-                return this.kick(reason, this.user.client.user);
+                return this.kick(reason, comment, this.user.client.user);
 
             case 'mute':
-                return this.mute(reason, this.user.client.user, punishment.duration);
+                return this.mute(reason, comment, this.user.client.user, punishment.duration);
 
             case 'softban':
-                return this.softban(reason, this.user.client.user);
+                return this.softban(reason, comment, this.user.client.user);
 
             case 'strike':
-                return this.strike(reason, this.user.client.user);
+                return this.strike(reason, comment, this.user.client.user);
 
             case 'dm':
-                return this.guild.sendDM(this.user, `Your message in ${bold(this.guild.guild.name)} was removed: ` + punishment.message);
+                await this.guild.sendDM(this.user, `Your message in ${bold(this.guild.guild.name)} was removed: ` + punishment.message);
+                return;
 
             default:
                 throw `Unknown punishment action ${punishment.action}`;
@@ -362,25 +365,27 @@ export default class MemberWrapper {
     /**
      * pardon strikes from this member
      * @param {String}                              reason
+     * @param {String}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
      * @param {number}                              amount
      * @return {Promise<void>}
      */
-    async pardon(reason, moderator, amount = 1){
+    async pardon(reason, comment, moderator, amount = 1){
         await this.guild.sendDM(this.user, `${amount} strikes have been pardoned in ${bold(this.guild.guild.name)} | ${reason}`);
 
-        await (await this.createModeration('pardon', reason, null, moderator.id, -amount)).log();
+        await (await this.createModeration('pardon', reason, comment, null, moderator.id, -amount)).log();
     }
 
     /**
      * ban this user from this guild
      * @param {String}                              reason
+     * @param {String}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
      * @param {?number}                              [duration]
      * @param {?number}                              [deleteMessageSeconds]
      * @return {Promise<void>}
      */
-    async ban(reason, moderator, duration, deleteMessageSeconds){
+    async ban(reason, comment, moderator, duration, deleteMessageSeconds){
         deleteMessageSeconds ??= 60 * 60;
         if (deleteMessageSeconds > BAN_MESSAGE_DELETE_LIMIT) {
             deleteMessageSeconds = BAN_MESSAGE_DELETE_LIMIT;
@@ -391,16 +396,17 @@ export default class MemberWrapper {
             reason: this._shortenReason(reason),
             deleteMessageSeconds,
         });
-        await (await this.createModeration('ban', reason, duration, moderator.id)).log();
+        await (await this.createModeration('ban', reason, comment, duration, moderator.id)).log();
     }
 
     /**
      * unban this member
      * @param {String}                              reason
+     * @param {String}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
      * @return {Promise<void>}
      */
-    async unban(reason, moderator){
+    async unban(reason, comment, moderator){
         await this.disableActiveModerations('ban');
         try {
             await this.guild.guild.members.unban(this.user, this._shortenReason(reason));
@@ -410,17 +416,18 @@ export default class MemberWrapper {
                 throw e;
             }
         }
-        await (await this.createModeration('unban', reason, null, moderator.id)).log();
+        await (await this.createModeration('unban', reason, comment, null, moderator.id)).log();
     }
 
     /**
      * softban this user from this guild
      * @param {String}                                  reason
+     * @param {String}                                  comment
      * @param {import('discord.js').User}    moderator
      * @param {?number}                                 [deleteMessageSeconds]
      * @return {Promise<void>}
      */
-    async softban(reason, moderator, deleteMessageSeconds){
+    async softban(reason, comment, moderator, deleteMessageSeconds){
         deleteMessageSeconds ??= 60 * 60;
         if (deleteMessageSeconds > BAN_MESSAGE_DELETE_LIMIT) {
             deleteMessageSeconds = BAN_MESSAGE_DELETE_LIMIT;
@@ -432,36 +439,39 @@ export default class MemberWrapper {
             reason: this._shortenReason(reason)
         });
         await this.guild.guild.members.unban(this.user.id, 'softban');
-        await (await this.createModeration('softban', reason, null, moderator.id)).log();
+        await (await this.createModeration('softban', reason, comment, null, moderator.id)).log();
     }
 
     /**
      * kick this user from this guild
      * @param {String}                              reason
+     * @param {String}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
      * @return {Promise<void>}
      */
-    async kick(reason, moderator){
+    async kick(reason, comment, moderator){
         await this.dmPunishedUser('kicked', reason, null, 'from');
         if (!this.member && await this.fetchMember() === null) return;
         await this.member.kick(this._shortenReason(reason));
-        await (await this.createModeration('kick', reason, null, moderator.id)).log();
+        await (await this.createModeration('kick', reason, comment, null, moderator.id)).log();
     }
 
     /**
      * mute this user in this guild
      * @param {String}                              reason
+     * @param {String}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
      * @param {Number}                              [duration]
      * @return {Promise<void>}
      */
-    async mute(reason, moderator, duration){
+    async mute(reason, comment, moderator, duration){
         const timeout = duration && duration <= TIMEOUT_LIMIT;
         let mutedRole;
         if (!timeout) {
             mutedRole = await this.getMutedRole();
             if (!mutedRole) {
-                return this.guild.log({content: 'Can\'t mute user because no valid muted role is specified'});
+                await this.guild.log({content: 'Can\'t mute user because no valid muted role is specified'});
+                return;
             }
         }
         await this.dmPunishedUser('muted', reason, duration, 'in');
@@ -474,16 +484,17 @@ export default class MemberWrapper {
                 await this.member.roles.add(mutedRole, shortedReason);
             }
         }
-        await (await this.createModeration('mute', reason, duration, moderator.id)).log();
+        await (await this.createModeration('mute', reason, comment, duration, moderator.id)).log();
     }
 
     /**
      * unmute this user in this guild
      * @param {String}                              reason
+     * @param {String}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
      * @return {Promise<void>}
      */
-    async unmute(reason, moderator){
+    async unmute(reason, comment, moderator){
         if (!this.member) await this.fetchMember();
         if (this.member) {
             const mutedRole = await this.getMutedRole();
@@ -493,19 +504,20 @@ export default class MemberWrapper {
             await this.member.timeout(null);
         }
         await this.disableActiveModerations('mute');
-        await (await this.createModeration('unmute', reason, null, moderator.id)).log();
+        await (await this.createModeration('unmute', reason, comment, null, moderator.id)).log();
     }
 
     /**
      * create a new moderation and save it to the database
      * @param {string}                         action moderation type (e.g. 'ban')
      * @param {?String}                        reason reason for the moderation
+     * @param {?String}                        comment internal comment for the moderation
      * @param {?number}                        duration duration of the moderation
      * @param {import('discord.js').Snowflake} moderatorId id of the moderator
      * @param {number} [value] value of the moderation (e.g. strike count)
      * @return {Promise<Moderation>}
      */
-    async createModeration(action, reason, duration, moderatorId, value = 0) {
+    async createModeration(action, reason, comment, duration, moderatorId, value = 0) {
         await this.disableActiveModerations(action);
 
         const created = Math.floor(Date.now() / 1000);
@@ -516,6 +528,7 @@ export default class MemberWrapper {
             created,
             value,
             reason,
+            comment,
             expireTime: duration ? created + duration : null,
             moderator: moderatorId,
             active: true,

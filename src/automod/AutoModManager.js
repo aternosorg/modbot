@@ -144,7 +144,7 @@ export class AutoModManager {
         await this.#deleteAndWarn(message, `Detected ${likelihood.type} image`, 'You can\'t post such images here!');
         if (likelihood.value === 2 && guildSettings.safeSearch.strikes) {
             const member = new MemberWrapper(message.author, message.guild);
-            await member.strike(`Posting images containing ${likelihood.type} content`, bot.client.user, guildSettings.safeSearch.strikes);
+            await member.strike(`Posting images containing ${likelihood.type} content`, null, bot.client.user, guildSettings.safeSearch.strikes);
         }
 
         return true;
@@ -164,14 +164,15 @@ export class AutoModManager {
             .sort((a, b) => b.priority - a.priority);
         for (let word of words.values()) {
             if (word.matches(message)) {
-                const reason = `Using forbidden words or phrases (Filter ID: ${word.id})`;
-                await bot.delete(message, reason);
+                const reason = 'Using forbidden words or phrases';
+                const comment = `(Filter ID: ${word.id})`;
+                await bot.delete(message, reason + ' ' + comment);
                 if (word.response !== 'disabled') {
                     await this.#sendWarning(message, word.getResponse());
                 }
                 if (word.punishment.action !== 'none') {
                     const member = new Member(message.author, message.guild);
-                    await member.executePunishment(word.punishment, reason);
+                    await member.executePunishment(word.punishment, reason, comment);
                 }
                 return true;
             }

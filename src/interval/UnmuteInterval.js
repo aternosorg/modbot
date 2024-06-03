@@ -25,7 +25,7 @@ export default class UnmuteInterval extends Interval {
             const user = await bot.client.users.fetch(result.userid);
             const member = new MemberWrapper(user, guild);
             try {
-                await member.unmute('Temporary mute completed!', bot.client.user);
+                await member.unmute('Temporary mute completed!', null, bot.client.user);
             }
             catch (e) {
                 if (e.code === RESTJSONErrorCodes.MissingPermissions) {

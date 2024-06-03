@@ -1,4 +1,3 @@
-import Command from '../Command.js';
 import {
     ActionRowBuilder,
     ModalBuilder,
@@ -14,24 +13,9 @@ import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
 import config from '../../bot/Config.js';
 import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
+import UserCommand from './UserCommand.js';
 
-export default class UnbanCommand extends Command {
-
-    buildOptions(builder) {
-        builder.addUserOption(option =>
-            option
-                .setName('user')
-                .setDescription('The user you want to unban')
-                .setRequired(true)
-        );
-        builder.addStringOption(option =>
-            option.setName('reason')
-                .setDescription('Unban reason')
-                .setRequired(false)
-        );
-        return super.buildOptions(builder);
-    }
-
+export default class UnbanCommand extends UserCommand {
     getDefaultMemberPermissions() {
         return new PermissionsBitField()
             .add(PermissionFlagsBits.BanMembers);
@@ -45,7 +29,8 @@ export default class UnbanCommand extends Command {
     async execute(interaction) {
         const member = new MemberWrapper(interaction.options.getUser('user', true), interaction.guild);
         const reason = interaction.options.getString('reason');
-        await this.unban(interaction, member, reason, interaction.user);
+        const comment = interaction.options.getString('comment');
+        await this.unban(interaction, member, reason, comment, interaction.user);
     }
 
     /**
@@ -53,10 +38,11 @@ export default class UnbanCommand extends Command {
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
      * @param {?string} reason
+     * @param {?string} comment
      * @param {import('discord.js').User} moderator
      * @return {Promise<void>}
      */
-    async unban(interaction, member, reason, moderator) {
+    async unban(interaction, member, reason, comment, moderator) {
         if (!member) {
             return;
         }
@@ -68,7 +54,7 @@ export default class UnbanCommand extends Command {
         }
 
         reason = reason || 'No reason provided';
-        await member.unban(reason, moderator);
+        await member.unban(reason, comment, moderator);
         await replyOrEdit(
             interaction,
             new UserActionEmbed(member.user, reason, 'unbanned', colors.GREEN, config.data.emoji.ban)
@@ -101,14 +87,33 @@ export default class UnbanCommand extends Command {
                         .setCustomId('reason')
                         .setStyle(TextInputStyle.Paragraph)
                         .setPlaceholder('No reason provided')),
+                /** @type {*} */
+                new ActionRowBuilder()
+                    .addComponents(/** @type {*} */ new TextInputBuilder()
+                        .setRequired(false)
+                        .setLabel('Comment')
+                        .setCustomId('comment')
+                        .setStyle(TextInputStyle.Paragraph)
+                        .setPlaceholder('No internal comment')),
             ));
     }
 
     async executeModal(interaction) {
-        const reason = interaction.components[0].components.find(component => component.customId === 'reason').value
-            || 'No reason provided';
+        let reason, comment;
+        for (const row of interaction.components) {
+            for (const component of row.components) {
+                switch (component.customId) {
+                    case 'reason':
+                        reason = component.value || 'No reason provided';
+                        break;
+                    case 'comment':
+                        comment = component.value || null;
+                        break;
+                }
+            }
+        }
 
-        await this.unban(interaction, await MemberWrapper.getMemberFromCustomId(interaction), reason, interaction.user);
+        await this.unban(interaction, await MemberWrapper.getMemberFromCustomId(interaction), reason, comment, interaction.user);
     }
 
     getDescription() {

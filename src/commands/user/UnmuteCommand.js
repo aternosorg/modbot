@@ -1,4 +1,3 @@
-import Command from '../Command.js';
 import {
     ActionRowBuilder,
     ModalBuilder,
@@ -14,24 +13,9 @@ import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 import UserActionEmbed from '../../embeds/UserActionEmbed.js';
 import config from '../../bot/Config.js';
 import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
+import UserCommand from './UserCommand.js';
 
-export default class UnmuteCommand extends Command {
-
-    buildOptions(builder) {
-        builder.addUserOption(option =>
-            option
-                .setName('user')
-                .setDescription('The user you want to unmute')
-                .setRequired(true)
-        );
-        builder.addStringOption(option =>
-            option.setName('reason')
-                .setDescription('Unmute reason')
-                .setRequired(false)
-        );
-        return super.buildOptions(builder);
-    }
-
+export default class UnmuteCommand extends UserCommand {
     getDefaultMemberPermissions() {
         return new PermissionsBitField()
             .add(PermissionFlagsBits.ModerateMembers);
@@ -45,7 +29,8 @@ export default class UnmuteCommand extends Command {
     async execute(interaction) {
         const member = new MemberWrapper(interaction.options.getUser('user', true), interaction.guild);
         const reason = interaction.options.getString('reason');
-        await this.unmute(interaction, member, reason, interaction.user);
+        const comment = interaction.options.getString('comment');
+        await this.unmute(interaction, member, reason, comment, interaction.user);
     }
 
     /**
@@ -53,10 +38,11 @@ export default class UnmuteCommand extends Command {
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
      * @param {?string} reason
+     * @param {?string} comment
      * @param {import('discord.js').User} moderator
      * @return {Promise<void>}
      */
-    async unmute(interaction, member, reason, moderator) {
+    async unmute(interaction, member, reason, comment, moderator) {
         if (!member) {
             return;
         }
@@ -68,7 +54,7 @@ export default class UnmuteCommand extends Command {
         }
 
         reason = reason || 'No reason provided';
-        await member.unmute(reason, moderator);
+        await member.unmute(reason, comment, moderator);
         await replyOrEdit(
             interaction,
             new UserActionEmbed(member.user, reason, 'unmuted', colors.GREEN, config.data.emoji.mute)
@@ -101,14 +87,33 @@ export default class UnmuteCommand extends Command {
                         .setCustomId('reason')
                         .setStyle(TextInputStyle.Paragraph)
                         .setPlaceholder('No reason provided')),
+                /** @type {*} */
+                new ActionRowBuilder()
+                    .addComponents(/** @type {*} */ new TextInputBuilder()
+                        .setRequired(false)
+                        .setLabel('Comment')
+                        .setCustomId('comment')
+                        .setStyle(TextInputStyle.Paragraph)
+                        .setPlaceholder('No internal comment')),
             ));
     }
 
     async executeModal(interaction) {
-        const reason = interaction.components[0].components.find(component => component.customId === 'reason').value
-            || 'No reason provided';
+        let reason, comment;
+        for (const row of interaction.components) {
+            for (const component of row.components) {
+                switch (component.customId) {
+                    case 'reason':
+                        reason = component.value || 'No reason provided';
+                        break;
+                    case 'comment':
+                        comment = component.value || null;
+                        break;
+                }
+            }
+        }
 
-        await this.unmute(interaction, await MemberWrapper.getMemberFromCustomId(interaction), reason, interaction.user);
+        await this.unmute(interaction, await MemberWrapper.getMemberFromCustomId(interaction), reason, comment, interaction.user);
     }
 
     getDescription() {

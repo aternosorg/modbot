@@ -49,6 +49,7 @@ export default class MuteCommand extends UserCommand {
         await this.mute(interaction,
             new MemberWrapper(interaction.options.getUser('user', true), interaction.guild),
             interaction.options.getString('reason'),
+            interaction.options.getString('comment'),
             parseTime(interaction.options.getString('duration')),
         );
     }
@@ -58,15 +59,16 @@ export default class MuteCommand extends UserCommand {
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
      * @param {?string} reason
+     * @param {?string} comment
      * @param {?number} duration
      * @return {Promise<void>}
      */
-    async mute(interaction, member, reason, duration) {
+    async mute(interaction, member, reason, comment, duration) {
         await deferReplyOnce(interaction);
         reason = reason || 'No reason provided';
 
         if (!await this.checkPermissions(interaction, member) ||
-            !await this.preventDuplicateModeration(interaction, member, {reason, duration})) {
+            !await this.preventDuplicateModeration(interaction, member, {reason, comment, duration})) {
             return;
         }
 
@@ -86,7 +88,7 @@ export default class MuteCommand extends UserCommand {
             }
         }
 
-        await member.mute(reason, interaction.user, duration);
+        await member.mute(reason, comment, interaction.user, duration);
         await replyOrEdit(interaction,
             new UserActionEmbed(member.user, reason, 'muted', colors.ORANGE, config.data.emoji.mute, duration)
                 .toMessage());
@@ -95,7 +97,7 @@ export default class MuteCommand extends UserCommand {
     async executeButton(interaction) {
         const parts = interaction.customId.split(':');
         if (parts[1] === 'confirm') {
-            /** @type {Confirmation<{reason: ?string, duration: ?number, user: import('discord.js').Snowflake}>}*/
+            /** @type {Confirmation<{reason: ?string, comment: ?string, duration: ?number, user: import('discord.js').Snowflake}>}*/
             const data = await Confirmation.get(parts[2]);
             if (!data) {
                 await interaction.update({content: 'This confirmation has expired.', embeds: [], components: []});
@@ -106,6 +108,7 @@ export default class MuteCommand extends UserCommand {
                 interaction,
                 await MemberWrapper.getMember(interaction, data.data.user),
                 data.data.reason,
+                data.data.comment,
                 data.data.duration,
             );
             return;
@@ -146,6 +149,14 @@ export default class MuteCommand extends UserCommand {
                 new ActionRowBuilder()
                     .addComponents(/** @type {*} */ new TextInputBuilder()
                         .setRequired(false)
+                        .setLabel('Comment')
+                        .setCustomId('comment')
+                        .setStyle(TextInputStyle.Paragraph)
+                        .setPlaceholder('No internal comment')),
+                /** @type {*} */
+                new ActionRowBuilder()
+                    .addComponents(/** @type {*} */ new TextInputBuilder()
+                        .setRequired(false)
                         .setLabel('Duration')
                         .setCustomId('duration')
                         .setStyle(TextInputStyle.Short)),
@@ -153,14 +164,19 @@ export default class MuteCommand extends UserCommand {
     }
 
     async executeModal(interaction) {
-        let reason, duration;
+        let reason, duration, comment;
         for (const row of interaction.components) {
             for (const component of row.components) {
-                if (component.customId === 'reason') {
-                    reason = component.value || 'No reason provided';
-                }
-                else if (component.customId === 'duration') {
-                    duration = parseTime(component.value);
+                switch (component.customId) {
+                    case 'reason':
+                        reason = component.value || 'No reason provided';
+                        break;
+                    case 'comment':
+                        comment = component.value || null;
+                        break;
+                    case 'duration':
+                        duration = parseTime(component.value);
+                        break;
                 }
             }
         }
@@ -169,6 +185,7 @@ export default class MuteCommand extends UserCommand {
             interaction,
             await MemberWrapper.getMemberFromCustomId(interaction),
             reason,
+            comment,
             duration
         );
     }

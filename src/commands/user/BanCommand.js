@@ -52,6 +52,7 @@ export default class BanCommand extends UserCommand {
         await this.ban(interaction,
             new MemberWrapper(interaction.options.getUser('user', true), interaction.guild),
             interaction.options.getString('reason'),
+            interaction.options.getString('comment'),
             parseTime(interaction.options.getString('duration')),
             parseTime(interaction.options.getString('delete'))
         );
@@ -62,20 +63,26 @@ export default class BanCommand extends UserCommand {
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
      * @param {?string} reason
+     * @param {?string} comment
      * @param {?number} duration
      * @param {?number} deleteMessageTime
      * @return {Promise<void>}
      */
-    async ban(interaction, member, reason, duration, deleteMessageTime) {
+    async ban(interaction, member, reason, comment, duration, deleteMessageTime) {
         reason = reason || 'No reason provided';
         await deferReplyOnce(interaction);
 
         if (!await this.checkPermissions(interaction, member) ||
-            !await this.preventDuplicateModeration(interaction, member, {reason, duration, deleteMessageTime})) {
+            !await this.preventDuplicateModeration(interaction, member, {
+                reason,
+                comment,
+                duration,
+                deleteMessageTime
+            })) {
             return;
         }
 
-        await member.ban(reason, interaction.user, duration, deleteMessageTime);
+        await member.ban(reason, comment, interaction.user, duration, deleteMessageTime);
         await replyOrEdit(
             interaction,
             new UserActionEmbed(member.user, reason, 'banned', colors.RED, config.data.emoji.ban, duration)
@@ -85,7 +92,7 @@ export default class BanCommand extends UserCommand {
     async executeButton(interaction) {
         const parts = interaction.customId.split(':');
         if (parts[1] === 'confirm') {
-            /** @type {Confirmation<{reason: ?string, duration: ?number, deleteMessageTime: ?number, user: import('discord.js').Snowflake}>}*/
+            /** @type {Confirmation<{reason: ?string, comment: ?string, duration: ?number, deleteMessageTime: ?number, user: import('discord.js').Snowflake}>}*/
             const data = await Confirmation.get(parts[2]);
             if (!data) {
                 await interaction.update({content: 'This confirmation has expired.', embeds: [], components: []});
@@ -96,6 +103,7 @@ export default class BanCommand extends UserCommand {
                 interaction,
                 await MemberWrapper.getMember(interaction, data.data.user),
                 data.data.reason,
+                data.data.comment,
                 data.data.duration,
                 data.data.deleteMessageTime,
             );
@@ -136,6 +144,14 @@ export default class BanCommand extends UserCommand {
                 new ActionRowBuilder()
                     .addComponents(/** @type {*} */ new TextInputBuilder()
                         .setRequired(false)
+                        .setLabel('Comment')
+                        .setCustomId('comment')
+                        .setStyle(TextInputStyle.Paragraph)
+                        .setPlaceholder('No internal comment')),
+                /** @type {*} */
+                new ActionRowBuilder()
+                    .addComponents(/** @type {*} */ new TextInputBuilder()
+                        .setRequired(false)
                         .setLabel('Duration')
                         .setCustomId('duration')
                         .setStyle(TextInputStyle.Short)),
@@ -151,17 +167,22 @@ export default class BanCommand extends UserCommand {
     }
 
     async executeModal(interaction) {
-        let reason, duration, deleteMessageTime;
+        let reason, duration, deleteMessageTime, comment;
         for (const row of interaction.components) {
             for (const component of row.components) {
-                if (component.customId === 'reason') {
-                    reason = component.value || 'No reason provided';
-                }
-                else if (component.customId === 'duration') {
-                    duration = parseTime(component.value);
-                }
-                else if (component.customId === 'delete') {
-                    deleteMessageTime = parseTime(component.value);
+                switch (component.customId) {
+                    case 'reason':
+                        reason = component.value || 'No reason provided';
+                        break;
+                    case 'comment':
+                        comment = component.value || null;
+                        break;
+                    case 'duration':
+                        duration = parseTime(component.value);
+                        break;
+                    case 'delete':
+                        deleteMessageTime = parseTime(component.value);
+                        break;
                 }
             }
         }
@@ -170,6 +191,7 @@ export default class BanCommand extends UserCommand {
             interaction,
             await MemberWrapper.getMemberFromCustomId(interaction),
             reason,
+            comment,
             duration,
             deleteMessageTime
         );

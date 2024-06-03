@@ -112,6 +112,6 @@ export default class GuildAuditLogCreateEventListener extends EventListener {
      */
     async createModeration(action, entry, guild, duration = null) {
         const member = new MemberWrapper(entry.target, guild);
-        await (await member.createModeration(action, entry.reason, duration, entry.executor.id)).log();
+        await (await member.createModeration(action, entry.reason, 'Executed through Discord', duration, entry.executor.id)).log();
     }
 }

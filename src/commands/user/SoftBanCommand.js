@@ -42,6 +42,7 @@ export default class SoftBanCommand extends UserCommand {
         await this.softBan(interaction,
             new MemberWrapper(interaction.options.getUser('user', true), interaction.guild),
             interaction.options.getString('reason'),
+            interaction.options.getString('comment'),
             parseTime(interaction.options.getString('delete'))
         );
     }
@@ -51,19 +52,20 @@ export default class SoftBanCommand extends UserCommand {
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
      * @param {?string} reason
+     * @param {?string} comment
      * @param {?number} deleteMessageTime
      * @return {Promise<void>}
      */
-    async softBan(interaction, member, reason, deleteMessageTime) {
+    async softBan(interaction, member, reason, comment, deleteMessageTime) {
         await deferReplyOnce(interaction);
         reason = reason || 'No reason provided';
 
         if (!await this.checkPermissions(interaction, member) ||
-            !await this.preventDuplicateModeration(interaction, member, {reason, deleteMessageTime})) {
+            !await this.preventDuplicateModeration(interaction, member, {reason, comment, deleteMessageTime})) {
             return;
         }
 
-        await member.softban(reason, interaction.user, deleteMessageTime);
+        await member.softban(reason, comment, interaction.user, deleteMessageTime);
         await replyOrEdit(interaction,
             new UserActionEmbed(member.user, reason, 'softbanned', colors.ORANGE, config.data.emoji.kick)
                 .toMessage());
@@ -72,7 +74,7 @@ export default class SoftBanCommand extends UserCommand {
     async executeButton(interaction) {
         const parts = interaction.customId.split(':');
         if (parts[1] === 'confirm') {
-            /** @type {Confirmation<{reason: ?string, user: import('discord.js').Snowflake, deleteMessageTime: ?number}>}*/
+            /** @type {Confirmation<{reason: ?string, comment: ?string, user: import('discord.js').Snowflake, deleteMessageTime: ?number}>}*/
             const data = await Confirmation.get(parts[2]);
             if (!data) {
                 await interaction.update({content: 'This confirmation has expired.', embeds: [], components: []});
@@ -83,6 +85,7 @@ export default class SoftBanCommand extends UserCommand {
                 interaction,
                 await MemberWrapper.getMember(interaction, data.data.user),
                 data.data.reason,
+                data.data.comment,
                 data.data.deleteMessageTime,
             );
             return;
@@ -118,6 +121,14 @@ export default class SoftBanCommand extends UserCommand {
                 new ActionRowBuilder()
                     .addComponents(/** @type {*} */ new TextInputBuilder()
                         .setRequired(false)
+                        .setLabel('Comment')
+                        .setCustomId('comment')
+                        .setStyle(TextInputStyle.Paragraph)
+                        .setPlaceholder('No internal comment')),
+                /** @type {*} */
+                new ActionRowBuilder()
+                    .addComponents(/** @type {*} */ new TextInputBuilder()
+                        .setRequired(false)
                         .setLabel('Delete message history')
                         .setCustomId('delete')
                         .setStyle(TextInputStyle.Short)
@@ -126,14 +137,19 @@ export default class SoftBanCommand extends UserCommand {
     }
 
     async executeModal(interaction) {
-        let reason, deleteMessageTime;
+        let reason, comment, deleteMessageTime;
         for (const row of interaction.components) {
             for (const component of row.components) {
-                if (component.customId === 'reason') {
-                    reason = component.value || 'No reason provided';
-                }
-                else if (component.customId === 'delete') {
-                    deleteMessageTime = parseTime(component.value);
+                switch (component.customId) {
+                    case 'reason':
+                        reason = component.value || 'No reason provided';
+                        break;
+                    case 'comment':
+                        comment = component.value || null;
+                        break;
+                    case 'delete':
+                        deleteMessageTime = parseTime(component.value);
+                        break;
                 }
             }
         }
@@ -142,6 +158,7 @@ export default class SoftBanCommand extends UserCommand {
             interaction,
             await MemberWrapper.getMemberFromCustomId(interaction),
             reason,
+            comment,
             deleteMessageTime
         );
     }

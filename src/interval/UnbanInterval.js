@@ -25,7 +25,7 @@ export default class UnbanInterval extends Interval {
             const user = await bot.client.users.fetch(result.userid);
             const member = new MemberWrapper(user, guild);
             try {
-                await member.unban('Temporary ban completed!', bot.client.user);
+                await member.unban('Temporary ban completed!', null, bot.client.user);
             }
             catch (e) {
                 if (e.code === RESTJSONErrorCodes.MissingPermissions) {

@@ -43,6 +43,7 @@ export default class StrikePurgeCommand extends StrikeCommand {
         await this.strikePurge(interaction,
             new MemberWrapper(interaction.options.getUser('user', true), interaction.guild),
             interaction.options.getString('reason'),
+            interaction.options.getString('comment'),
             interaction.options.getInteger('count'),
             interaction.options.getInteger('limit'),
         );
@@ -53,11 +54,12 @@ export default class StrikePurgeCommand extends StrikeCommand {
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
      * @param {?string} reason
+     * @param {?string} comment
      * @param {?number} count
      * @param {?number} limit
      * @return {Promise<void>}
      */
-    async strikePurge(interaction, member, reason, count, limit) {
+    async strikePurge(interaction, member, reason, comment, count, limit) {
         await deferReplyOnce(interaction);
         reason = reason || 'No reason provided';
 
@@ -71,10 +73,10 @@ export default class StrikePurgeCommand extends StrikeCommand {
         }
 
         if (!await this.checkPermissions(interaction, member) ||
-            !await this.preventDuplicateModeration(interaction, member, {reason, count, limit})) {
+            !await this.preventDuplicateModeration(interaction, member, {reason, comment, count, limit})) {
             return;
         }
-        await super.strike(interaction, member, reason, count);
+        await super.strike(interaction, member, reason, comment, count);
 
 
         const channel = new ChannelWrapper(/** @type {import('discord.js').GuildChannel}*/ interaction.channel);
@@ -97,7 +99,7 @@ export default class StrikePurgeCommand extends StrikeCommand {
     async executeButton(interaction) {
         const parts = interaction.customId.split(':');
         if (parts[1] === 'confirm') {
-            /** @type {Confirmation<{reason: ?string, count: number, user: import('discord.js').Snowflake, limit: number}>}*/
+            /** @type {Confirmation<{reason: ?string, comment: ?string, count: number, user: import('discord.js').Snowflake, limit: number}>}*/
             const data = await Confirmation.get(parts[2]);
             if (!data) {
                 await interaction.update({content: 'This confirmation has expired.', embeds: [], components: []});
@@ -108,6 +110,7 @@ export default class StrikePurgeCommand extends StrikeCommand {
                 interaction,
                 await MemberWrapper.getMember(interaction, data.data.user),
                 data.data.reason,
+                data.data.comment,
                 data.data.count,
                 data.data.limit,
             );
@@ -144,6 +147,14 @@ export default class StrikePurgeCommand extends StrikeCommand {
                 new ActionRowBuilder()
                     .addComponents(/** @type {*} */ new TextInputBuilder()
                         .setRequired(false)
+                        .setLabel('Comment')
+                        .setCustomId('comment')
+                        .setStyle(TextInputStyle.Paragraph)
+                        .setPlaceholder('No internal comment')),
+                /** @type {*} */
+                new ActionRowBuilder()
+                    .addComponents(/** @type {*} */ new TextInputBuilder()
+                        .setRequired(false)
                         .setLabel('Count')
                         .setCustomId('count')
                         .setStyle(TextInputStyle.Short)
@@ -160,17 +171,22 @@ export default class StrikePurgeCommand extends StrikeCommand {
     }
 
     async executeModal(interaction) {
-        let reason, count, limit;
+        let reason, comment, count, limit;
         for (const row of interaction.components) {
             for (const component of row.components) {
-                if (component.customId === 'reason') {
-                    reason = component.value || 'No reason provided';
-                }
-                else if (component.customId === 'count') {
-                    count = parseInt(component.value);
-                }
-                else if (component.customId === 'limit') {
-                    limit = parseInt(component.value);
+                switch (component.customId) {
+                    case 'reason':
+                        reason = component.value || 'No reason provided';
+                        break;
+                    case 'comment':
+                        comment = component.value || null;
+                        break;
+                    case 'count':
+                        count = parseInt(component.value);
+                        break;
+                    case 'limit':
+                        limit = parseInt(component.value);
+                        break;
                 }
             }
         }
@@ -179,6 +195,7 @@ export default class StrikePurgeCommand extends StrikeCommand {
             interaction,
             await MemberWrapper.getMemberFromCustomId(interaction),
             reason,
+            comment,
             count,
             limit
         );
