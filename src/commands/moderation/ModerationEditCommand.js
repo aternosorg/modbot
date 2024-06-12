@@ -48,7 +48,7 @@ export default class ModerationEditCommand extends CompletingModerationCommand {
 
         const reason = interaction.options.getString('reason'),
             comment = interaction.options.getString('comment'),
-            duration = interaction.options.getString('duration');
+            duration = parseTime(interaction.options.getString('duration'));
         let count = interaction.options.getInteger('count');
 
         if (!reason && !duration && !count && !comment) {
@@ -69,7 +69,7 @@ export default class ModerationEditCommand extends CompletingModerationCommand {
                 await interaction.reply(ErrorEmbed.message('You can\'t update the duration of inactive moderations!'));
                 return;
             }
-            moderation.expireTime = moderation.created + parseTime(duration);
+            moderation.expireTime = moderation.created + duration;
         }
 
         if (count) {

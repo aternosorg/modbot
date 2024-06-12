@@ -15,19 +15,17 @@ export default class LinkCoolDownCommand extends SubCommand {
     }
 
     async execute(interaction) {
-        const coolDown = interaction.options.getString('cool-down'),
+        const coolDown = parseTime(interaction.options.getString('cool-down')),
             guildSettings = await GuildSettings.get(interaction.guildId);
 
         if (coolDown) {
-            const duration = parseTime(coolDown);
-            guildSettings.linkCooldown = duration;
+            guildSettings.linkCooldown = coolDown;
             await guildSettings.save();
             await interaction.reply(new EmbedWrapper()
-                .setDescription(`Set link-cool-down to ${formatTime(duration)}`)
+                .setDescription(`Set link-cool-down to ${formatTime(coolDown)}`)
                 .setColor(colors.GREEN)
                 .toMessage());
-        }
-        else {
+        } else {
             guildSettings.linkCooldown = -1;
             await guildSettings.save();
             await interaction.reply(new EmbedWrapper()

@@ -31,7 +31,7 @@ export default class PurgeInvitesCommand extends Command {
 
     async execute(interaction) {
         await interaction.deferReply({ephemeral: true});
-        const minAge = parseTime(interaction.options.getString('minimum-age') ?? '30d');
+        const minAge = parseTime(interaction.options.getString('minimum-age')) ?? parseTime('30d');
         const maxDate = Date.now() - (minAge * 1000);
         const maxUses = interaction.options.getInteger('max-uses') ?? 10;
 

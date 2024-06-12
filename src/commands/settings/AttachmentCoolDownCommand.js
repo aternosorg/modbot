@@ -3,6 +3,7 @@ import {formatTime, parseTime} from '../../util/timeutils.js';
 import GuildSettings from '../../settings/GuildSettings.js';
 import EmbedWrapper from '../../embeds/EmbedWrapper.js';
 import colors from '../../util/colors.js';
+import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
 export default class AttachmentCoolDownCommand extends SubCommand {
 
@@ -15,19 +16,17 @@ export default class AttachmentCoolDownCommand extends SubCommand {
     }
 
     async execute(interaction) {
-        const coolDown = interaction.options.getString('cool-down'),
+        const coolDown = parseTime(interaction.options.getString('cool-down')),
             guildSettings = await GuildSettings.get(interaction.guildId);
 
         if (coolDown) {
-            const duration = parseTime(coolDown);
-            guildSettings.attachmentCooldown = duration;
+            guildSettings.attachmentCooldown = coolDown;
             await guildSettings.save();
             await interaction.reply(new EmbedWrapper()
-                .setDescription(`Set attachment-cool-down to ${formatTime(duration)}`)
+                .setDescription(`Set attachment-cool-down to ${formatTime(coolDown)}`)
                 .setColor(colors.GREEN)
                 .toMessage());
-        }
-        else {
+        } else {
             guildSettings.attachmentCooldown = -1;
             await guildSettings.save();
             await interaction.reply(new EmbedWrapper()
