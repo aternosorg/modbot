@@ -8,6 +8,7 @@ import ChannelSettings from '../settings/ChannelSettings.js';
 import {formatTime} from '../util/timeutils.js';
 import RepeatedMessage from './RepeatedMessage.js';
 import SafeSearch from './SafeSearch.js';
+import logger from '../bot/Logger.js';
 
 export class AutoModManager {
     #safeSearchCache;
@@ -109,7 +110,16 @@ export class AutoModManager {
      * @return {Promise<true>}
      */
     async #deleteAndWarn(message, reason, warning) {
-        await bot.delete(message, reason);
+        try {
+            await bot.delete(message, reason);
+        } catch (e) {
+            if (e.code !== RESTJSONErrorCodes.MissingPermissions) {
+                throw e;
+            }
+            const channel = /** @type {import('discord.js').GuildTextBasedChannel} */ message.channel;
+            await logger.warn(`Missing permissions to delete message in channel ${channel?.name} (${message.channelId}) of guild ${message.guild?.name} (${message.guildId})`, e);
+            return true;
+        }
         await this.#sendWarning(message, warning);
         return true;
     }
@@ -121,9 +131,15 @@ export class AutoModManager {
      * @return {Promise<void>}
      */
     async #sendWarning(message, warning) {
-        const response = await (/** @type {import('discord.js').TextBasedChannelFields} */ message.channel)
-            .send(userMention(message.author.id) + ' ' + warning);
-        await bot.delete(response, null, this.#RESPONSE_TIMEOUT);
+        try {
+            const response = await (/** @type {import('discord.js').TextBasedChannelFields} */ message.channel)
+                .send(userMention(message.author.id) + ' ' + warning);
+            await bot.delete(response, null, this.#RESPONSE_TIMEOUT);
+        } catch (e) {
+            if (e.code !== RESTJSONErrorCodes.MissingPermissions) {
+                throw e;
+            }
+        }
     }
 
     /**
