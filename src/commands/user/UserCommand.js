@@ -79,7 +79,7 @@ export default class UserCommand extends Command {
             return false;
         }
 
-        const moderator =  await new MemberWrapper(interaction.user, interaction.guild).fetchMember();
+        const moderator = await new MemberWrapper(interaction.user, interaction.guild).fetchMember();
         if (!await member.isModerateableBy(moderator)) {
             await replyOrEdit(interaction, ErrorEmbed.message('You can\'t moderate this member!'));
             return false;
@@ -186,7 +186,7 @@ export default class UserCommand extends Command {
             'GROUP BY value ORDER BY count DESC LIMIT 5;',
             interaction.user.id, interaction.guild.id, this.getName(), focussed.value, AUTOCOMPLETE_NAME_LIMIT);
         if (focussed.value) {
-            options.unshift({reason: focussed.value});
+            options.unshift({value: focussed.value});
         }
         return options.map(data => ({name: data.value, value: data.value}));
     }
