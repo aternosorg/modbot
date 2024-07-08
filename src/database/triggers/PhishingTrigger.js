@@ -15,7 +15,7 @@ export default class PhishingTrigger extends Trigger {
 
     test(content) {
         // Split domain and min similarity (e.g. discord.com(gg):0.5)
-        let [domain, similarity] = String(this.trigger.content).split(':');
+        let [domain, similarity] = String(this.content).split(':');
         similarity = parseFloat(similarity) || 0.5;
         domain = domain.toLowerCase();
         // Split domain into "main part", extension and alternative extensions
