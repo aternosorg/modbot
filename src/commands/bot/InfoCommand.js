@@ -1,18 +1,18 @@
 import Command from '../Command.js';
 import {
     ActionRowBuilder,
-    ButtonBuilder,
     ButtonStyle, hyperlink,
     PermissionFlagsBits,
     PermissionsBitField
 } from 'discord.js';
 import bot from '../../bot/Bot.js';
-import config from '../../bot/Config.js';
 import KeyValueEmbed from '../../embeds/KeyValueEmbed.js';
 import {formatTime} from '../../util/timeutils.js';
 import {readFile} from 'fs/promises';
 import {exec} from 'child_process';
 import {promisify} from 'util';
+import {componentEmojiIfExists} from '../../util/format.js';
+import BetterButtonBuilder from '../../embeds/BetterButtonBuilder.js';
 
 export const DISCORD_INVITE_LINK = 'https://discord.gg/zYYhgPtmxw';
 export const GITHUB_REPOSITORY = 'https://github.com/aternosorg/modbot';
@@ -97,11 +97,11 @@ export default class InfoCommand extends Command {
                 new ActionRowBuilder()
                     .addComponents(
                         /** @type {*} */ buttons.map(data =>
-                            new ButtonBuilder()
+                            new BetterButtonBuilder()
                                 .setLabel(data.name)
                                 .setStyle(ButtonStyle.Link)
                                 .setURL(data.url)
-                                .setEmoji(config.data.emoji[data.emoji] ?? {}))
+                                .setEmojiIfPresent(componentEmojiIfExists(data.emoji, null)))
                     )
             ]
         });
