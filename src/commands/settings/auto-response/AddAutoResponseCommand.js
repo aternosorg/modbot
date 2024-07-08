@@ -13,6 +13,7 @@ import AutoResponse from '../../../database/AutoResponse.js';
 import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
 import colors from '../../../util/colors.js';
 import {SELECT_MENU_OPTIONS_LIMIT} from '../../../util/apiLimits.js';
+import config from '../../../bot/Config.js';
 
 export default class AddAutoResponseCommand extends SubCommand {
 
@@ -40,14 +41,23 @@ export default class AddAutoResponseCommand extends SubCommand {
             .setName('global')
             .setDescription('Use auto-response in all channels')
             .setRequired(false));
+
+        if (config.data.googleCloud.vision.enabled) {
+            builder.addBooleanOption(option => option
+                .setName('image-detection')
+                .setDescription('Respond to images containing text that matches the trigger')
+                .setRequired(false));
+        }
+
         return super.buildOptions(builder);
     }
 
     async execute(interaction) {
-        const global = interaction.options.getBoolean('global') ?? false;
-        const type = interaction.options.getString('type') ?? 'include';
+        const global = interaction.options.getBoolean('global') ?? false,
+            type = interaction.options.getString('type') ?? 'include',
+            vision = interaction.options.getBoolean('image-detection') ?? false;
 
-        const confirmation = new Confirmation({global, type}, timeAfter('1 hour'));
+        const confirmation = new Confirmation({global, type, vision}, timeAfter('1 hour'));
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Create new Auto-response of type ${type}`)
             .setCustomId(`auto-response:add:${await confirmation.save()}`)
@@ -109,7 +119,8 @@ export default class AddAutoResponseCommand extends SubCommand {
                 [],
                 confirmation.data.type,
                 trigger,
-                response
+                response,
+                confirmation.data.vision,
             );
         }
         else {
@@ -154,6 +165,7 @@ export default class AddAutoResponseCommand extends SubCommand {
             confirmation.data.type,
             confirmation.data.trigger,
             confirmation.data.response,
+            confirmation.data.vision,
         );
     }
 
@@ -165,10 +177,27 @@ export default class AddAutoResponseCommand extends SubCommand {
      * @param {string} type
      * @param {string} trigger
      * @param {string} response
+     * @param {?boolean} enableVision
      * @return {Promise<*>}
      */
-    async create(interaction, global, channels, type, trigger, response) {
-        const result = await AutoResponse.new(interaction.guild.id, global, channels, type, trigger, response);
+    async create(
+        interaction,
+        global,
+        channels,
+        type,
+        trigger,
+        response,
+        enableVision,
+    ) {
+        const result = await AutoResponse.new(
+            interaction.guild.id,
+            global,
+            channels,
+            type,
+            trigger,
+            response,
+            enableVision,
+        );
         if (!result.success) {
             return interaction.reply(ErrorEmbed.message(result.message));
         }

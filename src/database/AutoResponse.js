@@ -1,10 +1,8 @@
 import ChatTriggeredFeature from './ChatTriggeredFeature.js';
 import TypeChecker from '../settings/TypeChecker.js';
 import {channelMention} from 'discord.js';
-import KeyValueEmbed from '../embeds/KeyValueEmbed.js';
-import {yesNo} from '../util/format.js';
-import {EMBED_FIELD_LIMIT} from '../util/apiLimits.js';
 import colors from '../util/colors.js';
+import ChatFeatureEmbed from '../embeds/ChatFeatureEmbed.js';
 
 /**
  * Class representing an auto response
@@ -13,7 +11,7 @@ export default class AutoResponse extends ChatTriggeredFeature {
 
     static tableName = 'responses';
 
-    static columns = ['guildid', 'trigger', 'response', 'global', 'channels'];
+    static columns = ['guildid', 'trigger', 'response', 'global', 'channels', 'enableVision'];
 
     /**
      * constructor - create an auto response
@@ -23,6 +21,7 @@ export default class AutoResponse extends ChatTriggeredFeature {
      * @param {String} json.response message to send to the channel
      * @param {Boolean} json.global does this apply to all channels in this guild
      * @param {import('discord.js').Snowflake[]} [json.channels] channels that this applies to
+     * @param {boolean} [json.enableVision] enable vision api for this auto response
      * @param {Number} [id] id in DB
      * @return {AutoResponse} the auto response
      */
@@ -34,6 +33,7 @@ export default class AutoResponse extends ChatTriggeredFeature {
             this.response = json.response;
             this.global = json.global;
             this.channels = json.channels;
+            this.enableVision = json.enableVision ?? false;
         }
 
         if (!this.channels) {
@@ -60,6 +60,8 @@ export default class AutoResponse extends ChatTriggeredFeature {
         }
         TypeChecker.assertString(json.trigger.content, 'Content');
         TypeChecker.assertStringUndefinedOrNull(json.trigger.flags, 'Flags');
+
+        TypeChecker.assertBooleanOrNull(json.enableVision, 'Enable Vision');
     }
 
     /**
@@ -67,7 +69,7 @@ export default class AutoResponse extends ChatTriggeredFeature {
      * @returns {(*|string)[]}
      */
     serialize() {
-        return [this.gid, JSON.stringify(this.trigger), this.response, this.global, this.channels.join(',')];
+        return [this.gid, JSON.stringify(this.trigger), this.response, this.global, this.channels.join(','), this.enableVision];
     }
 
     /**
@@ -77,19 +79,7 @@ export default class AutoResponse extends ChatTriggeredFeature {
      * @returns {EmbedWrapper}
      */
     embed(title = 'Auto-response', color = colors.GREEN) {
-        return new KeyValueEmbed()
-            .setTitle(title + ` [${this.id}]`)
-            .setColor(color)
-            .addPair('Trigger', this.trigger.asString())
-            .addPair('Global', yesNo(this.global))
-            .addPairIf(!this.global, 'Channels', this.channels.map(channelMention).join(', '))
-            .addFields(
-                /** @type {any} */
-                {
-                    name: 'Response',
-                    value: this.response.substring(0, EMBED_FIELD_LIMIT)
-                },
-            );
+        return new ChatFeatureEmbed(this, title, color);
     }
 
     /**
@@ -100,9 +90,18 @@ export default class AutoResponse extends ChatTriggeredFeature {
      * @param {String} triggerType
      * @param {String} triggerContent
      * @param {String} responseText
+     * @param {?boolean} enableVision
      * @returns {Promise<{success:boolean, response: ?AutoResponse, message: ?string}>}
      */
-    static async new(guildID, global, channels, triggerType, triggerContent, responseText) {
+    static async new(
+        guildID,
+        global,
+        channels,
+        triggerType,
+        triggerContent,
+        responseText,
+        enableVision
+    ) {
         let trigger = this.getTrigger(triggerType, triggerContent);
         if (!trigger.success)
             return {success: false, response: null, message: trigger.message};
@@ -111,7 +110,8 @@ export default class AutoResponse extends ChatTriggeredFeature {
             trigger: trigger.trigger,
             global,
             channels,
-            response: responseText
+            response: responseText,
+            enableVision,
         });
         await response.save();
         return {success: true, response: response, message: null};

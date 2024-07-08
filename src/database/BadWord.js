@@ -2,10 +2,9 @@ import ChatTriggeredFeature from './ChatTriggeredFeature.js';
 import TypeChecker from '../settings/TypeChecker.js';
 import {channelMention} from 'discord.js';
 import Punishment from './Punishment.js';
-import {yesNo} from '../util/format.js';
 import {EMBED_FIELD_LIMIT} from '../util/apiLimits.js';
 import colors from '../util/colors.js';
-import KeyValueEmbed from '../embeds/KeyValueEmbed.js';
+import ChatFeatureEmbed from '../embeds/ChatFeatureEmbed.js';
 
 /**
  * Class representing a bad word
@@ -18,7 +17,7 @@ export default class BadWord extends ChatTriggeredFeature {
 
     static tableName = 'badWords';
 
-    static columns = ['guildid', 'trigger', 'punishment', 'response', 'global', 'channels', 'priority'];
+    static columns = ['guildid', 'trigger', 'punishment', 'response', 'global', 'channels', 'priority', 'enableVision'];
 
     /**
      * constructor - create a bad word
@@ -30,6 +29,7 @@ export default class BadWord extends ChatTriggeredFeature {
      * @param {Boolean} json.global does this apply to all channels in this guild
      * @param {import('discord.js').Snowflake[]} [json.channels] channels that this applies to
      * @param {Number} [json.priority] badword priority (higher -> more important)
+     * @param {boolean} [json.enableVision] enable vision api for this badword
      * @param {Number} [id] id in DB
      * @return {BadWord}
      */
@@ -50,6 +50,7 @@ export default class BadWord extends ChatTriggeredFeature {
             this.global = json.global;
             this.channels = json.channels;
             this.priority = json.priority || 0;
+            this.enableVision = json.enableVision ?? false;
         }
 
         if (!this.channels) {
@@ -79,6 +80,7 @@ export default class BadWord extends ChatTriggeredFeature {
         TypeChecker.assertStringUndefinedOrNull(json.trigger.flags, 'Flags');
 
         TypeChecker.assertNumberUndefinedOrNull(json.priority, 'Priority');
+        TypeChecker.assertBooleanOrNull(json.enableVision, 'Enable Vision');
     }
 
     /**
@@ -86,7 +88,7 @@ export default class BadWord extends ChatTriggeredFeature {
      * @returns {(*|string)[]}
      */
     serialize() {
-        return [this.gid, JSON.stringify(this.trigger), JSON.stringify(this.punishment), this.response, this.global, this.channels.join(','), this.priority];
+        return [this.gid, JSON.stringify(this.trigger), JSON.stringify(this.punishment), this.response, this.global, this.channels.join(','), this.priority, this.enableVision];
     }
 
     /**
@@ -97,21 +99,9 @@ export default class BadWord extends ChatTriggeredFeature {
      */
     embed(title = 'Bad-word', color = colors.GREEN) {
         const duration = this.punishment.duration;
-        return new KeyValueEmbed()
-            .setTitle(title + ` [${this.id}]`)
-            .setColor(color)
-            .addPair('Trigger', this.trigger.asString())
-            .addPair('Global', yesNo(this.global))
-            .addPairIf(!this.global, 'Channels', this.channels.map(channelMention).join(', '))
+        return new ChatFeatureEmbed(this, title, color)
             .addPair('Punishment', `${this.punishment.action} ${duration ? `for ${duration}` : ''}`)
-            .addPair('Priority', this.priority)
-            .addFields(
-                /** @type {any} */
-                {
-                    name: 'Response',
-                    value: this.response.substring(0, EMBED_FIELD_LIMIT)
-                },
-            );
+            .addPair('Priority', this.priority);
     }
 
     /**
@@ -125,9 +115,21 @@ export default class BadWord extends ChatTriggeredFeature {
      * @param {?string} punishment
      * @param {?number} duration
      * @param {?number} priority
+     * @param {?boolean} enableVision
      * @returns {Promise<{success:boolean, badWord: ?BadWord, message: ?string}>}
      */
-    static async new(guildID, global, channels, triggerType, triggerContent, response, punishment, duration, priority) {
+    static async new(
+        guildID,
+        global,
+        channels,
+        triggerType,
+        triggerContent,
+        response,
+        punishment,
+        duration,
+        priority,
+        enableVision,
+    ) {
         let trigger = this.getTrigger(triggerType, triggerContent);
         if (!trigger.success)
             return {success: false, badWord: null, message: trigger.message};
@@ -139,6 +141,7 @@ export default class BadWord extends ChatTriggeredFeature {
             channels,
             response: response || 'disabled',
             priority,
+            enableVision,
         });
         await badWord.save();
         return {success: true, badWord, message: null};

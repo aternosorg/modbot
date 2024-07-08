@@ -52,9 +52,10 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
     async execute(interaction) {
         const global = interaction.options.getBoolean('global') ?? false,
             type = interaction.options.getString('type') ?? 'include',
-            punishment = interaction.options.getString('punishment') ?? 'none';
+            punishment = interaction.options.getString('punishment') ?? 'none',
+            vision = interaction.options.getBoolean('image-detection') ?? false;
 
-        const confirmation = new Confirmation({global, punishment, type}, timeAfter('1 hour'));
+        const confirmation = new Confirmation({global, punishment, type, vision}, timeAfter('1 hour'));
         const modal = new ModalBuilder()
             .setTitle(`Create new Bad-word of type ${type}`)
             .setCustomId(`bad-word:add:${await confirmation.save()}`)
@@ -159,9 +160,9 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                 confirmation.data.punishment,
                 duration,
                 priority,
+                confirmation.data.vision,
             );
-        }
-        else {
+        } else {
             confirmation.data.trigger = trigger;
             confirmation.data.response = response;
             confirmation.data.duration = duration;
@@ -208,9 +209,11 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
             confirmation.data.punishment,
             confirmation.data.duration,
             confirmation.data.priority,
+            confirmation.data.vision,
         );
     }
 
+    // noinspection JSCheckFunctionSignatures
     /**
      * create the bad word
      * @param {import('discord.js').Interaction} interaction
@@ -219,14 +222,36 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
      * @param {string} type
      * @param {string} trigger
      * @param {string} response
-     * @param {string} punishment
+     * @param {?string} punishment
      * @param {?number} duration
-     * @param {number} priority
+     * @param {?number} priority
+     * @param {?boolean} enableVision
      * @return {Promise<*>}
      */
-    async create(interaction, global, channels, type, trigger, response, punishment, duration, priority) {
-        const result = await BadWord.new(interaction.guild.id, global, channels, type,
-            trigger, response, punishment, duration, priority);
+    async create(
+        interaction,
+        global,
+        channels,
+        type,
+        trigger,
+        response,
+        punishment,
+        duration,
+        priority,
+        enableVision,
+    ) {
+        const result = await BadWord.new(
+            interaction.guild.id,
+            global,
+            channels,
+            type,
+            trigger,
+            response,
+            punishment,
+            duration,
+            priority,
+            enableVision,
+        );
         if (!result.success) {
             return interaction.reply(ErrorEmbed.message(result.message));
         }

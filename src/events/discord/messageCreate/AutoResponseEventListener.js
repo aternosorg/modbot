@@ -3,6 +3,9 @@ import AutoResponse from '../../../database/AutoResponse.js';
 import {RESTJSONErrorCodes, ThreadChannel} from 'discord.js';
 import {MESSAGE_LENGTH_LIMIT} from '../../../util/apiLimits.js';
 import logger from '../../../bot/Logger.js';
+import {asyncFilter} from '../../../util/util.js';
+import cloudVision from '../../../apis/CloudVision.js';
+import GuildSettings from '../../../settings/GuildSettings.js';
 
 export default class AutoResponseEventListener extends MessageCreateEventListener {
 
@@ -16,9 +19,29 @@ export default class AutoResponseEventListener extends MessageCreateEventListene
             channel = (/** @type {import('discord.js').ThreadChannel} */ channel).parent;
         }
 
-        /** @type {IterableIterator<AutoResponse>} */
-        const responses = (await AutoResponse.get(channel.id, message.guild.id)).values();
-        const triggered = Array.from(responses).filter(response => response.matches(message));
+        let texts = null;
+        const responses = /** @type {AutoResponse[]} */ Array.from((
+            await AutoResponse.get(channel.id, message.guild.id)
+        ).values());
+        const triggered = /** @type {AutoResponse[]} */ await asyncFilter(responses,
+            /** @param {AutoResponse} response */
+            async response => {
+                if (response.matches(message.content)) {
+                    return true;
+                }
+
+                if (!cloudVision.isEnabled
+                    || !(await GuildSettings.get(message.guild.id)).isFeatureWhitelisted
+                    || !response.enableVision
+                    || !response.trigger.supportsImages()
+                ) {
+                    return false;
+                }
+
+                texts ??= await cloudVision.getImageText(message);
+                return texts.some(t => response.matches(t));
+            }
+        );
 
         if (triggered.length) {
             const response = triggered[Math.floor(Math.random() * triggered.length)];

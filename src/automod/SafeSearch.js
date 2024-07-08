@@ -1,10 +1,9 @@
-import config from '../bot/Config.js';
 import GuildSettings from '../settings/GuildSettings.js';
-import vision from '@google-cloud/vision';
 import Cache from '../bot/Cache.js';
 import Request from '../bot/Request.js';
 import database from '../bot/Database.js';
 import logger from '../bot/Logger.js';
+import cloudVision from '../apis/CloudVision.js';
 
 const CACHE_DURATION = 60 * 60 * 1000;
 
@@ -17,25 +16,13 @@ export default class SafeSearch {
      */
     #requesting = new Map();
 
-    constructor() {
-        if (this.isEnabled) {
-            this.annotatorClient = new vision.ImageAnnotatorClient({
-                credentials: config.data.googleCloud.credentials
-            });
-        }
-    }
-
-    get isEnabled() {
-        return config.data.googleCloud.vision?.enabled;
-    }
-
     /**
      * is safe search filtering enabled in this guild
      * @param {import('discord.js').Guild} guild
      * @return {Promise<boolean>}
      */
     async isEnabledInGuild(guild) {
-        if (!this.isEnabled) {
+        if (!cloudVision.isEnabled) {
             return false;
         }
 
@@ -50,7 +37,7 @@ export default class SafeSearch {
      */
     async detect(message) {
         /** @type {import('discord.js').Collection<string, import('discord.js').Attachment>} */
-        const images = message.attachments.filter(attachment => attachment.contentType?.startsWith('image/'));
+        const images = cloudVision.getImages(message);
         if (!images.size) {
             return null;
         }
@@ -96,7 +83,7 @@ export default class SafeSearch {
 
         let safeSearchAnnotation = null;
         try {
-            [{safeSearchAnnotation}] = await this.annotatorClient.safeSearchDetection(image.url);
+            [{safeSearchAnnotation}] = await cloudVision.annotatorClient.safeSearchDetection(image.url);
 
             if (safeSearchAnnotation) {
                 this.#cache.set(hash, safeSearchAnnotation, CACHE_DURATION);

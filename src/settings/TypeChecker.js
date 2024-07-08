@@ -52,4 +52,8 @@ export default class TypeChecker {
     static assertString(value, name) {
         return this.assertOfTypes(value, ['string'], name);
     }
+
+    static assertBooleanOrNull(value, name) {
+        return this.assertOfTypes(value, ['boolean'], name, true);
+    }
 }

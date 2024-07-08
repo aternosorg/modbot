@@ -14,6 +14,7 @@ import AutoResponse from '../../../database/AutoResponse.js';
 import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
 import colors from '../../../util/colors.js';
 import {SELECT_MENU_OPTIONS_LIMIT} from '../../../util/apiLimits.js';
+import config from '../../../bot/Config.js';
 
 export default class EditAutoResponseCommand extends CompletingAutoResponseCommand {
 
@@ -48,6 +49,14 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
             .setName('global')
             .setDescription('Use auto-response in all channels')
             .setRequired(false));
+
+        if (config.data.googleCloud.vision.enabled) {
+            builder.addBooleanOption(option => option
+                .setName('image-detection')
+                .setDescription('Respond to images containing text that matches the trigger')
+                .setRequired(false));
+        }
+
         return super.buildOptions(builder);
     }
 
@@ -60,9 +69,10 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
             return;
         }
 
-        const global = interaction.options.getBoolean('global');
-        const type = interaction.options.getString('type');
-        await this.showModal(interaction, autoResponse, global, type);
+        const global = interaction.options.getBoolean('global'),
+            type = interaction.options.getString('type'),
+            vision = interaction.options.getBoolean('image-detection');
+        await this.showModal(interaction, autoResponse, global, type, vision);
     }
 
     async executeButton(interaction) {
@@ -78,19 +88,29 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
             return;
         }
 
-        await this.showModal(interaction, autoResponse, null, null);
+        await this.showModal(interaction, autoResponse, null, null, null);
     }
 
-    async showModal(interaction, autoResponse, global, type) {
+    /**
+     *
+     * @param {import('discord.js').Interaction} interaction
+     * @param {AutoResponse} autoResponse
+     * @param {?boolean} global
+     * @param {?string} type
+     * @param {?boolean} vision
+     * @return {Promise<void>}
+     */
+    async showModal(interaction, autoResponse, global, type, vision) {
         global ??= autoResponse.global;
         type ??= autoResponse.trigger.type;
+        vision ??= autoResponse.enableVision;
 
         let trigger = autoResponse.trigger;
         if (type === 'regex') {
             trigger = trigger.toRegex();
         }
 
-        const confirmation = new Confirmation({global, type, id: autoResponse.id}, timeAfter('1 hour'));
+        const confirmation = new Confirmation({global, type, id: autoResponse.id, vision}, timeAfter('1 hour'));
         await interaction.showModal(new ModalBuilder()
             .setTitle(`Edit Auto-response #${autoResponse.id}`)
             .setCustomId(`auto-response:edit:${await confirmation.save()}`)
@@ -159,10 +179,10 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
                 [],
                 confirmation.data.type,
                 trigger,
-                response
+                response,
+                confirmation.data.vision,
             );
-        }
-        else {
+        } else {
             confirmation.data.trigger = trigger;
             confirmation.data.response = response;
             confirmation.expires = timeAfter('30 min');
@@ -206,6 +226,7 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
             confirmation.data.type,
             confirmation.data.trigger,
             confirmation.data.response,
+            confirmation.data.vision,
         );
     }
 
@@ -218,9 +239,19 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
      * @param {string} type
      * @param {string} trigger
      * @param {string} response
+     * @param {?boolean} vision
      * @return {Promise<*>}
      */
-    async update(interaction, id, global, channels, type, trigger, response) {
+    async update(
+        interaction,
+        id,
+        global,
+        channels,
+        type,
+        trigger,
+        response,
+        vision,
+    ) {
         const autoResponse =
             /** @type {?AutoResponse} */
             await AutoResponse.getByID(id, interaction.guildId);
@@ -232,6 +263,7 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
 
         autoResponse.global = global;
         autoResponse.channels = channels;
+        autoResponse.enableVision = vision;
         const triggerResponse = AutoResponse.getTrigger(type, trigger);
         if (!triggerResponse.success) {
             return interaction.reply(ErrorEmbed.message(triggerResponse.message));
