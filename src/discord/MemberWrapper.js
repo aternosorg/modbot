@@ -353,12 +353,8 @@ export default class MemberWrapper {
             case 'strike':
                 return this.strike(reason, comment, this.user.client.user);
 
-            case 'dm':
-                await this.guild.sendDM(this.user, `Your message in ${bold(this.guild.guild.name)} was removed: ` + punishment.message);
-                return;
-
             default:
-                throw `Unknown punishment action ${punishment.action}`;
+                throw new Error(`Unknown punishment action ${punishment.action}`);
         }
     }
 

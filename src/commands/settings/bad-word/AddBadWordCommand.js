@@ -40,9 +40,6 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                 }, {
                     name: 'Strike user',
                     value: 'strike'
-                }, {
-                    name: 'Send direct message',
-                    value: 'DM'
                 }
             )
         );
@@ -93,12 +90,25 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                         new TextInputBuilder()
                             .setRequired(false)
                             .setCustomId('priority')
-                            .setStyle(TextInputStyle.Paragraph)
+                            .setStyle(TextInputStyle.Short)
                             .setPlaceholder('0')
                             .setLabel('Priority')
                             .setMinLength(1)
                             .setMaxLength(10)
-                    )
+                    ),
+                /** @type {*} */
+                new ActionRowBuilder()
+                    .addComponents(
+                        /** @type {*} */
+                        new TextInputBuilder()
+                            .setRequired(false)
+                            .setCustomId('dm')
+                            .setStyle(TextInputStyle.Paragraph)
+                            .setPlaceholder('This is a direct message sent to the user when their message was deleted')
+                            .setLabel('Direct Message')
+                            .setMinLength(1)
+                            .setMaxLength(3000)
+                    ),
             );
 
         if (['ban', 'mute'].includes(punishment)) {
@@ -131,20 +141,25 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
             return;
         }
 
-        let trigger, response = null, duration = null, priority = 0;
+        let trigger, response = null, duration = null, priority = 0, dm = null;
         for (let component of interaction.components) {
             component = component.components[0];
-            if (component.customId === 'trigger') {
-                trigger = component.value;
-            }
-            else if (component.customId === 'response') {
-                response = component.value?.substring?.(0, 4000);
-            }
-            else if (component.customId === 'duration') {
-                duration = parseTime(component.value) || null;
-            }
-            else if (component.customId === 'priority') {
-                priority = parseInt(component.value) || 0;
+            switch (component.customId) {
+                case 'trigger':
+                    trigger = component.value;
+                    break;
+                case 'response':
+                    response = component.value?.substring?.(0, 4000);
+                    break;
+                case 'duration':
+                    duration = parseTime(component.value) || null;
+                    break;
+                case 'priority':
+                    priority = parseInt(component.value) || 0;
+                    break;
+                case 'dm':
+                    dm = component.value?.substring?.(0, 3000);
+                    break;
             }
         }
 
@@ -160,6 +175,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                 confirmation.data.punishment,
                 duration,
                 priority,
+                dm,
                 confirmation.data.vision,
             );
         } else {
@@ -167,6 +183,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
             confirmation.data.response = response;
             confirmation.data.duration = duration;
             confirmation.data.priority = priority;
+            confirmation.data.dm = dm;
             confirmation.expires = timeAfter('30 min');
 
             await interaction.reply({
@@ -209,6 +226,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
             confirmation.data.punishment,
             confirmation.data.duration,
             confirmation.data.priority,
+            confirmation.data.dm,
             confirmation.data.vision,
         );
     }
@@ -225,6 +243,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
      * @param {?string} punishment
      * @param {?number} duration
      * @param {?number} priority
+     * @param {?string} dm
      * @param {?boolean} enableVision
      * @return {Promise<*>}
      */
@@ -238,6 +257,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
         punishment,
         duration,
         priority,
+        dm,
         enableVision,
     ) {
         const result = await BadWord.new(
@@ -250,6 +270,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
             punishment,
             duration,
             priority,
+            dm,
             enableVision,
         );
         if (!result.success) {

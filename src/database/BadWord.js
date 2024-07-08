@@ -1,22 +1,30 @@
 import ChatTriggeredFeature from './ChatTriggeredFeature.js';
 import TypeChecker from '../settings/TypeChecker.js';
 import {channelMention} from 'discord.js';
-import Punishment from './Punishment.js';
+import Punishment, {PunishmentAction} from './Punishment.js';
 import colors from '../util/colors.js';
 import ChatFeatureEmbed from '../embeds/ChatFeatureEmbed.js';
+import {EMBED_FIELD_LIMIT} from '../util/apiLimits.js';
 
 /**
  * Class representing a bad word
  */
 export default class BadWord extends ChatTriggeredFeature {
-
-    static punishmentTypes = ['none', 'ban', 'kick', 'mute', 'softban', 'strike', 'dm'];
-
     static defaultResponse = 'Your message includes words/phrases that are not allowed here!';
 
     static tableName = 'badWords';
 
-    static columns = ['guildid', 'trigger', 'punishment', 'response', 'global', 'channels', 'priority', 'enableVision'];
+    static columns = [
+        'guildid',
+        'trigger',
+        'punishment',
+        'response',
+        'global',
+        'channels',
+        'priority',
+        'enableVision',
+        'dm',
+    ];
 
     /**
      * constructor - create a bad word
@@ -28,6 +36,7 @@ export default class BadWord extends ChatTriggeredFeature {
      * @param {Boolean} json.global does this apply to all channels in this guild
      * @param {import('discord.js').Snowflake[]} [json.channels] channels that this applies to
      * @param {Number} [json.priority] badword priority (higher -> more important)
+     * @param {?string} [json.dm] direct message to send to the user
      * @param {boolean} [json.enableVision] enable vision api for this badword
      * @param {Number} [id] id in DB
      * @return {BadWord}
@@ -39,21 +48,28 @@ export default class BadWord extends ChatTriggeredFeature {
         if (json) {
             this.punishment = typeof (json.punishment) === 'string' ? JSON.parse(json.punishment) : json.punishment;
             this.response = json.response;
-            if (this.punishment?.action?.toUpperCase?.() === 'DM' && this.response && this.response !== 'disabled') {
-                if (this.response === 'default') {
-                    this.punishment.message = BadWord.defaultResponse;
-                } else {
-                    this.punishment.message = this.response;
-                }
-            }
             this.global = json.global;
             this.channels = json.channels;
             this.priority = json.priority || 0;
             this.enableVision = json.enableVision ?? false;
+            this.dm = json.dm;
         }
 
         if (!this.channels) {
             this.channels = [];
+        }
+
+        // Temporary for migrating dm 'punishments' to the new dm field
+        if (this.punishment?.action?.toUpperCase?.() === 'DM') {
+            this.dm = this.punishment.message;
+            if (this.response === 'default') {
+                this.dm ??= BadWord.defaultResponse;
+            } else {
+                this.dm ??= this.response;
+            }
+            this.punishment.message = undefined;
+            this.punishment.action = PunishmentAction.NONE;
+            this.response = 'disabled';
         }
     }
 
@@ -87,7 +103,17 @@ export default class BadWord extends ChatTriggeredFeature {
      * @returns {(*|string)[]}
      */
     serialize() {
-        return [this.gid, JSON.stringify(this.trigger), JSON.stringify(this.punishment), this.response, this.global, this.channels.join(','), this.priority, this.enableVision];
+        return [
+            this.gid,
+            JSON.stringify(this.trigger),
+            JSON.stringify(this.punishment),
+            this.response,
+            this.global,
+            this.channels.join(','),
+            this.priority,
+            this.enableVision,
+            this.dm,
+        ];
     }
 
     /**
@@ -100,7 +126,8 @@ export default class BadWord extends ChatTriggeredFeature {
         const duration = this.punishment.duration;
         return new ChatFeatureEmbed(this, title, color)
             .addPair('Punishment', `${this.punishment.action} ${duration ? `for ${duration}` : ''}`)
-            .addPair('Priority', this.priority);
+            .addPair('Priority', this.priority)
+            .addFieldIf(this.dm, 'DM', this.dm?.substring(0, EMBED_FIELD_LIMIT));
     }
 
     /**
@@ -114,6 +141,7 @@ export default class BadWord extends ChatTriggeredFeature {
      * @param {?string} punishment
      * @param {?number} duration
      * @param {?number} priority
+     * @param {?string} dm
      * @param {?boolean} enableVision
      * @returns {Promise<{success:boolean, badWord: ?BadWord, message: ?string}>}
      */
@@ -127,6 +155,7 @@ export default class BadWord extends ChatTriggeredFeature {
         punishment,
         duration,
         priority,
+        dm,
         enableVision,
     ) {
         let trigger = this.getTrigger(triggerType, triggerContent);
@@ -140,6 +169,7 @@ export default class BadWord extends ChatTriggeredFeature {
             channels,
             response: response || 'disabled',
             priority,
+            dm,
             enableVision,
         });
         await badWord.save();

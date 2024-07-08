@@ -1,4 +1,4 @@
-import {Collection, PermissionFlagsBits, RESTJSONErrorCodes, ThreadChannel, userMention} from 'discord.js';
+import {bold, Collection, PermissionFlagsBits, RESTJSONErrorCodes, ThreadChannel, userMention} from 'discord.js';
 import GuildSettings from '../settings/GuildSettings.js';
 import bot from '../bot/Bot.js';
 import MemberWrapper from '../discord/MemberWrapper.js';
@@ -217,12 +217,16 @@ export class AutoModManager {
         const reason = 'Using forbidden words or phrases';
         const comment = `(Filter ID: ${word.id})`;
         await bot.delete(message, reason + ' ' + comment);
-        if (word.response !== 'disabled' && word.punishment.action.toLowerCase() !== 'dm') {
+        if (word.response !== 'disabled') {
             await this.#sendWarning(message, word.getResponse());
         }
+
+        const member = new Member(message.author, message.guild);
         if (word.punishment.action !== 'none') {
-            const member = new Member(message.author, message.guild);
             await member.executePunishment(word.punishment, reason, comment);
+        }
+        if (word.dm) {
+            await member.guild.sendDM(member.user, `Your message in ${bold(message.guild.name)} was removed: ` + word.dm);
         }
     }
 

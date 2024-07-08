@@ -71,9 +71,6 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                 }, {
                     name: 'Strike user',
                     value: 'strike'
-                }, {
-                    name: 'Send direct message',
-                    value: 'DM'
                 }
             )
         );
@@ -186,13 +183,26 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                         new TextInputBuilder()
                             .setRequired(false)
                             .setCustomId('priority')
-                            .setStyle(TextInputStyle.Paragraph)
+                            .setStyle(TextInputStyle.Short)
                             .setPlaceholder('0')
                             .setLabel('Priority')
                             .setValue(badWord.priority.toString())
                             .setMinLength(1)
                             .setMaxLength(10)
-                    )
+                    ),
+                /** @type {*} */
+                new ActionRowBuilder()
+                    .addComponents(
+                        /** @type {*} */
+                        new TextInputBuilder()
+                            .setRequired(false)
+                            .setCustomId('dm')
+                            .setStyle(TextInputStyle.Paragraph)
+                            .setPlaceholder('This is a direct message sent to the user when their message was deleted')
+                            .setLabel('Direct Message')
+                            .setMinLength(1)
+                            .setMaxLength(3000)
+                    ),
             );
 
         if (['ban', 'mute'].includes(punishment)) {
@@ -234,20 +244,25 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
             return;
         }
 
-        let trigger, response, duration = null, priority;
+        let trigger, response, duration = null, priority = null, dm = null;
         for (let component of interaction.components) {
             component = component.components[0];
-            if (component.customId === 'trigger') {
-                trigger = component.value;
-            }
-            else if (component.customId === 'response') {
-                response = component.value;
-            }
-            else if (component.customId === 'duration') {
-                duration = parseTime(component.value) || null;
-            }
-            else if (component.customId === 'priority') {
-                priority = parseInt(component.value) || 0;
+            switch (component.customId) {
+                case 'trigger':
+                    trigger = component.value;
+                    break;
+                case 'response':
+                    response = component.value?.substring?.(0, 4000);
+                    break;
+                case 'duration':
+                    duration = parseTime(component.value) || null;
+                    break;
+                case 'priority':
+                    priority = parseInt(component.value) || 0;
+                    break;
+                case 'dm':
+                    dm = component.value?.substring?.(0, 3000);
+                    break;
             }
         }
 
@@ -264,6 +279,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                 confirmation.data.punishment,
                 duration,
                 priority,
+                dm,
                 confirmation.data.vision,
             );
         } else {
@@ -331,6 +347,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
      * @param {PunishmentAction} punishment
      * @param {?number} duration
      * @param {number} priority
+     * @param {?string} dm
      * @param {?boolean} vision
      * @return {Promise<*>}
      */
@@ -345,6 +362,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
         punishment,
         duration,
         priority,
+        dm,
         vision,
     ) {
         const badWord = /** @type {?BadWord} */
@@ -364,6 +382,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
         }
         badWord.trigger = triggerResponse.trigger;
         badWord.response = response || 'disabled';
+        badWord.dm = dm || 'disabled';
         badWord.punishment = new Punishment({action: punishment, duration});
         badWord.priority = priority;
         await badWord.save();

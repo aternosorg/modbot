@@ -15,6 +15,7 @@ export default class Migration {
     /**
      * Does the migration need to run?
      * @returns {Promise<boolean>}
+     * @abstract
      */
     async check() {
         return false;
@@ -23,6 +24,7 @@ export default class Migration {
     /**
      * Run the migration
      * @returns {Promise<void>}
+     * @abstract
      */
     async run() {
         throw new Error('Migration not implemented');

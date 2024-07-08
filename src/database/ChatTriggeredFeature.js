@@ -212,7 +212,7 @@ export default class ChatTriggeredFeature {
             for (const column of columns) {
                 assignments.push(`${database.escapeId(column)}=?`);
             }
-            if (data.length !== columns.length) throw 'Unable to update, lengths differ!';
+            if (data.length !== columns.length) throw new Error('Unable to update, lengths differ!');
             data.push(this.id);
             await database.queryAll(`UPDATE ${this.constructor.escapedTableName}
                                      SET ${assignments.join(', ')}
@@ -267,15 +267,10 @@ export default class ChatTriggeredFeature {
      * @returns {this}
      */
     static fromData(data) {
-        return new this(data.guildid, {
-            trigger: JSON.parse(data.trigger),
-            punishment: data.punishment,
-            response: data.response,
-            global: data.global === 1,
-            channels: data.channels.split(','),
-            priority: data.priority,
-            enableVision: data.enableVision,
-        }, data.id);
+        data.trigger = JSON.parse(data.trigger);
+        data.global = data.global === 1;
+        data.channels = data.channels.split(',');
+        return new this(data.guildid, data, data.id);
     }
 
     /**

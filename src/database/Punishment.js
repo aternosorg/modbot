@@ -13,6 +13,7 @@ export default class Punishment {
 
     /**
      * @type {?string}
+     * @deprecated
      */
     message = null;
 
@@ -49,4 +50,5 @@ export const PunishmentAction = {
     MUTE: 'mute',
     SOFTBAN: 'softban',
     STRIKE: 'strike',
+    NONE: 'none',
 };

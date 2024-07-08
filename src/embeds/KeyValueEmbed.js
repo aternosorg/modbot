@@ -51,4 +51,30 @@ export default class KeyValueEmbed extends LineEmbed {
         }
         return this;
     }
+
+    /**
+     * Add a field - but don't be stupid about types
+     * @param {string} name
+     * @param {string} value
+     * @param {boolean} inline
+     * @returns {KeyValueEmbed}
+     */
+    addField(name, value, inline = false) {
+        return this.addFields(/** @type {*} */ {name, value, inline});
+    }
+
+    /**
+     * Add a field if a condition is met
+     * @param {*} condition
+     * @param {string} name
+     * @param {string} value
+     * @param {boolean} inline
+     * @returns {KeyValueEmbed}
+     */
+    addFieldIf(condition, name, value, inline = false) {
+        if (condition) {
+            this.addField(name, value, inline);
+        }
+        return this;
+    }
 }
