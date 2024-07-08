@@ -217,7 +217,7 @@ export class AutoModManager {
         const reason = 'Using forbidden words or phrases';
         const comment = `(Filter ID: ${word.id})`;
         await bot.delete(message, reason + ' ' + comment);
-        if (word.response !== 'disabled') {
+        if (word.response !== 'disabled' && word.punishment.action !== 'dm') {
             await this.#sendWarning(message, word.getResponse());
         }
         if (word.punishment.action !== 'none') {
