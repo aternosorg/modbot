@@ -20,12 +20,12 @@ export default class AddProtectedRoleCommand extends SubCommand {
         const guildSettings = await GuildSettings.get(interaction.guildId);
         const embed = new EmbedWrapper();
 
-        if (guildSettings.isProtectedRole(role.id)) {
+        if (guildSettings.protectedRoles.has(role.id)) {
             embed.setColor(colors.RED)
                 .setDescription(`${roleMention(role.id)} is already a protected role!`);
         }
         else {
-            guildSettings.addProtectedRole(role.id);
+            guildSettings.protectedRoles.add(role.id);
             await guildSettings.save();
             embed.setColor(colors.GREEN)
                 .setDescription(`Added ${roleMention(role.id)} to the protected roles!`);

@@ -2,6 +2,7 @@ import SubCommand from '../../SubCommand.js';
 import GuildSettings from '../../../settings/GuildSettings.js';
 import LineEmbed from '../../../embeds/LineEmbed.js';
 import {roleMention} from 'discord.js';
+import GuildWrapper from '../../../discord/GuildWrapper.js';
 
 export default class ListProtectedRolesCommand extends SubCommand {
 
@@ -11,8 +12,18 @@ export default class ListProtectedRolesCommand extends SubCommand {
             .setTitle('Protected roles')
             .setDescription('This server has no protected roles');
 
-        for (const role of guildSettings.getProtectedRoles()) {
+        const guild = new GuildWrapper(interaction.guild);
+
+        const validRoles = new Set();
+        for (const role of guildSettings.protectedRoles) {
+            if (await guild.fetchRole(role)) {
+                validRoles.add(role);
+            }
             embed.addLine(`- ${roleMention(role)}`);
+        }
+        if (validRoles !== guildSettings.protectedRoles) {
+            guildSettings.protectedRoles = validRoles;
+            await guildSettings.save();
         }
 
         await interaction.reply(embed.toMessage());

@@ -20,8 +20,8 @@ export default class RemoveProtectedRoleCommand extends SubCommand {
         const guildSettings = await GuildSettings.get(interaction.guildId);
         const embed = new EmbedWrapper();
 
-        if (guildSettings.isProtectedRole(role.id)) {
-            guildSettings.removeProtectedRole(role.id);
+        if (guildSettings.protectedRoles.has(role.id)) {
+            guildSettings.protectedRoles.delete(role.id);
             await guildSettings.save();
             embed.setColor(colors.RED)
                 .setDescription(`Removed ${roleMention(role.id)} from the protected roles!`);

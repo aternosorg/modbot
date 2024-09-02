@@ -70,7 +70,11 @@ export default class GuildSettings extends Settings {
         },
     };
 
-    #protectedRoles = [];
+    /**
+     * A list of role ids that can't be targeted by moderations
+     * @type {Set<import('discord.js').Snowflake>}
+     */
+    protectedRoles = new Set();
 
     /**
      * @param  {import('discord.js').Snowflake}   id                        guild id
@@ -104,9 +108,9 @@ export default class GuildSettings extends Settings {
         }
 
         if (json.protectedRoles instanceof Array)
-            this.#protectedRoles = json.protectedRoles;
+            this.protectedRoles = new Set(json.protectedRoles);
         if (json.modRoles instanceof Array)
-            this.#protectedRoles.push(...json.modRoles);
+            json.modRoles.forEach(role => this.protectedRoles.add(role));
 
         this.#punishments = json.punishments ?? this.#punishments;
     }
@@ -176,13 +180,13 @@ export default class GuildSettings extends Settings {
      * @returns {string}
      */
     getModerationSettings() {
-        const protectedRoles = this.getProtectedRoles().map(role => '- ' + roleMention(role)).join('\n') || 'None';
+        const protectedRoles = Array.from(this.protectedRoles).map(role => '- ' + roleMention(role)).join('\n') || 'None';
 
         return `Log: ${this.logChannel ? channelMention(this.logChannel) : 'disabled'}\n` +
             `Message Log: ${this.messageLogChannel ? channelMention(this.messageLogChannel) : 'disabled'}\n` +
             `Join Log: ${this.joinLogChannel ? channelMention(this.joinLogChannel) : 'disabled'}\n` +
             `Muted role: ${this.mutedRole ? roleMention(this.mutedRole) : 'disabled'}\n` +
-            `Protected roles: ${this.getProtectedRoles().length ? '\n' : ''}${protectedRoles}\n`;
+            `Protected roles: ${this.protectedRoles.size ? '\n' : ''}${protectedRoles}\n`;
     }
 
     /**
@@ -241,15 +245,6 @@ export default class GuildSettings extends Settings {
     }
 
     /**
-     * Is this a protected role?
-     * @param  {import('discord.js').Snowflake} role role id
-     * @return {Boolean}
-     */
-    isProtectedRole(role) {
-        return this.#protectedRoles.includes(role);
-    }
-
-    /**
      * Is this member protected?
      * @async
      * @param {import('discord.js').GuildMember} member member object of the user in the specific guild
@@ -257,41 +252,10 @@ export default class GuildSettings extends Settings {
      */
     isProtected(member) {
         for (let [key] of member.roles.cache) {
-            if (this.isProtectedRole(key))
+            if (this.protectedRoles.has(key))
                 return true;
         }
         return false;
-    }
-
-    /**
-     * Add this role to the protected roles
-     * @param  {import('discord.js').Snowflake} role role id
-     */
-    addProtectedRole(role) {
-        if (!this.isProtectedRole(role)) {
-            this.#protectedRoles.push(role);
-        }
-    }
-
-    /**
-     * Remove this role from the protected roles
-     * @param  {import('discord.js').Snowflake} role role id
-     */
-    removeProtectedRole(role) {
-        let newRoles = [];
-        for (let protectedRole of this.#protectedRoles) {
-            if (protectedRole !== role)
-                newRoles.push(role);
-        }
-        this.#protectedRoles = newRoles;
-    }
-
-    /**
-     * get all protected roles
-     * @return {import('discord.js').Snowflake[]}
-     */
-    getProtectedRoles() {
-        return this.#protectedRoles;
     }
 
     /**
@@ -387,7 +351,9 @@ export default class GuildSettings extends Settings {
 
         //copy private properties
         cleanObject.punishments = this.#punishments;
-        cleanObject.protectedRoles = this.#protectedRoles;
+
+        //convert set to array
+        cleanObject.protectedRoles = Array.from(this.protectedRoles);
 
         return super.getDataObject(cleanObject);
     }
