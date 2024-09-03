@@ -4,6 +4,11 @@ import Moderation from '../Moderation.js';
 import AutoResponse from '../AutoResponse.js';
 import BadWord from '../BadWord.js';
 
+/**
+ * @import {ChatTriggeredFeature} from '../ChatTriggeredFeature.js';
+ * @import {GuildSettingsJSON} from '../../settings/GuildSettings.js';
+ */
+
 export default class Exporter {
 
     /**
@@ -50,7 +55,7 @@ export default class Exporter {
 
     /**
      * get all data of this guild as a JSON string
-     * @return {Promise<string>}
+     * @returns {Promise<string>}
      */
     async export() {
         await Promise.all([

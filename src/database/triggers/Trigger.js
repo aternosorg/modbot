@@ -5,25 +5,25 @@ import {inlineCode} from 'discord.js';
  */
 export default class Trigger {
     /**
-     * @type {String}
+     * @type {string}
      */
     type;
 
     /**
-     * @type {String}
+     * @type {string}
      */
     content;
 
     /**
-     * @type {String}
+     * @type {string}
      */
     flags;
 
     /**
-     * @param {Object} data
-     * @property {String} type
-     * @property {String} content
-     * @property {String} [flags]
+     * @param {object} data
+     * @property {string} type
+     * @property {string} content
+     * @property {string} [flags]
      */
     constructor(data) {
         this.type = data.type;
@@ -39,7 +39,7 @@ export default class Trigger {
     }
 
     /**
-     * @return {string}
+     * @returns {string}
      */
     asContentString() {
         return this.content;
@@ -48,7 +48,7 @@ export default class Trigger {
     /**
      * Convert this trigger to a regex trigger.
      * This is only supported for include and match types.
-     * @return {Trigger}
+     * @returns {Trigger}
      * @abstract
      */
     toRegex() {
@@ -56,7 +56,7 @@ export default class Trigger {
     }
 
     /**
-     * @param {String} content
+     * @param {string} content
      * @returns {boolean}
      * @abstract
      */

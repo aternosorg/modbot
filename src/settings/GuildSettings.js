@@ -11,29 +11,29 @@ import config from '../bot/Config.js';
 import {deepMerge} from '../util/util.js';
 
 /**
- * @typedef {Object} SafeSearchSettings
+ * @typedef {object} SafeSearchSettings
  * @property {boolean} enabled
  * @property {number} strikes
  * @property {number} likelihood likelihood required for a message deletion (-3 to 2)
  */
 
 /**
- * @typedef {Object} GuildSettingsJSON
+ * @typedef {object} GuildSettingsJSON
  * @property  {import('discord.js').Snowflake}   [logChannel]         id of the log channel
  * @property  {import('discord.js').Snowflake}   [messageLogChannel]  id of the message log channel
  * @property  {import('discord.js').Snowflake}   [joinLogChannel]     id of the join log channel
  * @property  {import('discord.js').Snowflake}   [mutedRole]          id of the muted role
  * @property  {import('discord.js').Snowflake[]} [modRoles]           role ids that can execute commands
  * @property  {import('discord.js').Snowflake[]} [protectedRoles]     role ids that can't be targeted by moderations
- * @property  {Object}                           [punishments]        automatic punishments for strikes
- * @property  {String}                           [playlist]           id of YouTube playlist for tutorials
- * @property  {String}                           [helpcenter]         subdomain of the zendesk help center
- * @property  {Boolean}                          [invites]            allow invites (can be overwritten per channel)
- * @property  {Number}                           [linkCooldown]       cooldown on links in s (user based)
- * @property  {Number}                           [attachmentCooldown] cooldown on attachments in s (user based)
- * @property  {Boolean}                          [caps]               should caps be automatically deleted
- * @property  {Number}                           [antiSpam]           should message spam detection be enabled
- * @property  {Number}                           [similarMessages]    should similar message detection be enabled
+ * @property  {object}                           [punishments]        automatic punishments for strikes
+ * @property  {string}                           [playlist]           id of YouTube playlist for tutorials
+ * @property  {string}                           [helpcenter]         subdomain of the zendesk help center
+ * @property  {boolean}                          [invites]            allow invites (can be overwritten per channel)
+ * @property  {number}                           [linkCooldown]       cooldown on links in s (user based)
+ * @property  {number}                           [attachmentCooldown] cooldown on attachments in s (user based)
+ * @property  {boolean}                          [caps]               should caps be automatically deleted
+ * @property  {number}                           [antiSpam]           should message spam detection be enabled
+ * @property  {number}                           [similarMessages]    should similar message detection be enabled
  * @property  {?SafeSearchSettings}              [safeSearch]         safe search configuration
  */
 
@@ -78,8 +78,8 @@ export default class GuildSettings extends Settings {
 
     /**
      * @param  {import('discord.js').Snowflake}   id                        guild id
-     * @param  {GuildSettingsJSON}                [json={}]                 json object
-     * @return {GuildSettings}
+     * @param  {GuildSettingsJSON}                [json]                 json object
+     * @returns {GuildSettings}
      */
     constructor(id, json = {}) {
         super(id);
@@ -117,7 +117,7 @@ export default class GuildSettings extends Settings {
 
     /**
      * check if the types of this object are a valid guild settings
-     * @param {Object} json
+     * @param {object} json
      * @throws {TypeError} incorrect types
      */
     static checkTypes(json) {
@@ -154,8 +154,8 @@ export default class GuildSettings extends Settings {
     }
 
     /**
-     * @param {String} id
-     * @return {Promise<GuildSettings>}
+     * @param {string} id
+     * @returns {Promise<GuildSettings>}
      */
     static async get(id) {
         return super.get(id);
@@ -201,7 +201,7 @@ export default class GuildSettings extends Settings {
 
     /**
      * generate an overview of automod settings
-     * @returns {String}
+     * @returns {string}
      */
     getAutomodSettings() {
         const lines = [
@@ -238,7 +238,7 @@ export default class GuildSettings extends Settings {
 
     /**
      * is this guild in the feature whitelist
-     * @return {boolean}
+     * @returns {boolean}
      */
     get isFeatureWhitelisted() {
         return config.data.featureWhitelist.includes(this.id);
@@ -248,7 +248,7 @@ export default class GuildSettings extends Settings {
      * Is this member protected?
      * @async
      * @param {import('discord.js').GuildMember} member member object of the user in the specific guild
-     * @return {Boolean}
+     * @returns {boolean}
      */
     isProtected(member) {
         for (let [key] of member.roles.cache) {
@@ -260,8 +260,8 @@ export default class GuildSettings extends Settings {
 
     /**
      * get a specific punishment
-     * @param {Number} strikes
-     * @return {?Punishment}
+     * @param {number} strikes
+     * @returns {?Punishment}
      */
     getPunishment(strikes) {
         if (!this.#punishments[strikes]) {
@@ -273,8 +273,8 @@ export default class GuildSettings extends Settings {
 
     /**
      * find the last punishment
-     * @param {Number} strikes
-     * @return {Punishment}
+     * @param {number} strikes
+     * @returns {Punishment}
      */
     findPunishment(strikes) {
         let punishment;
@@ -287,9 +287,9 @@ export default class GuildSettings extends Settings {
 
     /**
      * set a punishment
-     * @param {Number} strikes
+     * @param {number} strikes
      * @param {?Punishment} punishment
-     * @return {Promise<>}
+     * @returns {Promise<void>}
      */
     setPunishment(strikes, punishment) {
         if (punishment === null)
@@ -301,7 +301,7 @@ export default class GuildSettings extends Settings {
 
     /**
      * get all punishments
-     * @return {Collection<Number, Punishment>}
+     * @returns {Collection<number, Punishment>}
      */
     getPunishments() {
         const punishments = new Collection();
@@ -315,7 +315,7 @@ export default class GuildSettings extends Settings {
 
     /**
      * get the zendesk instance for this guild
-     * @return {Zendesk}
+     * @returns {Zendesk}
      */
     getZendesk() {
         if (!this.helpcenter) {
@@ -327,7 +327,7 @@ export default class GuildSettings extends Settings {
 
     /**
      * get the YouTube playlist for this guild
-     * @return {YouTubePlaylist}
+     * @returns {YouTubePlaylist}
      */
     getPlaylist() {
         if (!this.playlist) {
@@ -338,7 +338,7 @@ export default class GuildSettings extends Settings {
     }
 
     /**
-     * @return {null|import('discord.js').Snowflake}
+     * @returns {null|import('discord.js').Snowflake}
      */
     getMutedRole() {
         return this.mutedRole ?? null;

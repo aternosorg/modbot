@@ -5,6 +5,10 @@ import {componentEmojiIfExists} from '../../util/format.js';
 import icons from '../../util/icons.js';
 import BetterButtonBuilder from '../../embeds/BetterButtonBuilder.js';
 
+/**
+ * @import {ButtonBuilder} from 'discord.js';
+ */
+
 export default class SettingsOverviewCommand extends SubCommand {
 
     async execute(interaction) {
@@ -18,7 +22,7 @@ export default class SettingsOverviewCommand extends SubCommand {
     /**
      *
      * @param {import('discord.js').Interaction} interaction
-     * @return {Promise<{components: ActionRowBuilder<ButtonBuilder>[], ephemeral: boolean, embeds: import('discord.js').EmbedBuilder[]}>}
+     * @returns {Promise<{components: ActionRowBuilder<ButtonBuilder>[], ephemeral: boolean, embeds: import('discord.js').EmbedBuilder[]}>}
      */
     async buildMessage(interaction) {
         const guildSettings = await GuildSettings.get(interaction.guildId);

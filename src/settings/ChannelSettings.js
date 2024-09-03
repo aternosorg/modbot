@@ -17,10 +17,10 @@ export default class ChannelSettings extends Settings {
 
     /**
      * @param  {import('discord.js').Snowflake}  id             channel id
-     * @param  {Object}                         [json]          options
-     * @param  {Boolean}                        [json.invites]  allow invites
-     * @param  {Object}                         [json.lock]     permissions before locking (only affected perms)
-     * @return {ChannelSettings} the settings of the channel
+     * @param  {object}                         [json]          options
+     * @param  {boolean}                        [json.invites]  allow invites
+     * @param  {object}                         [json.lock]     permissions before locking (only affected perms)
+     * @returns {ChannelSettings} the settings of the channel
      */
     constructor(id, json = {}) {
         super(id);
@@ -31,7 +31,7 @@ export default class ChannelSettings extends Settings {
 
     /**
      * check if the types of this object are a valid guild settings
-     * @param {Object} json
+     * @param {object} json
      * @throws {TypeError} incorrect types
      */
     static checkTypes(json) {
@@ -44,7 +44,7 @@ export default class ChannelSettings extends Settings {
     /**
      * get all channel configs from this guild
      * @param {import('discord.js').Snowflake} guildID
-     * @return {Promise<ChannelSettings[]>}
+     * @returns {Promise<ChannelSettings[]>}
      */
     static async getForGuild(guildID) {
         const result = [];
@@ -56,7 +56,7 @@ export default class ChannelSettings extends Settings {
 
     /**
      * get the guildID of this channel
-     * @return {Promise<null|string>}
+     * @returns {Promise<null|string>}
      */
     async getGuildID() {
         try {
@@ -79,14 +79,14 @@ export default class ChannelSettings extends Settings {
     /**
      * @param {import('discord.js').Snowflake} guildID
      * @param {Settings} data
-     * @return {Promise<?ChannelSettings>}
+     * @returns {Promise<?ChannelSettings>}
      */
     static async import(guildID, data) {
         let channel;
         try {
             channel = await bot.client.channels.fetch(data.id);
         }
-        catch (e) {
+        catch {
             return null;
         }
 

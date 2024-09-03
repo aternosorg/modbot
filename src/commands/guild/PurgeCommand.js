@@ -8,6 +8,11 @@ import {PurgeUserFilter} from '../../purge/PurgeUserFilter.js';
 import PurgeRegexFilter from '../../purge/PurgeRegexFilter.js';
 import PurgeAgeFilter from '../../purge/PurgeAgeFilter.js';
 
+/**
+ * @import PurgeFilter from '../../purge/PurgeFilter.js';
+ * @import {Message} from 'discord.js';
+ */
+
 const REGEX_REGEX = /^\/(.*)\/([gimsuy]*)$/;
 
 export default class PurgeCommand extends Command {
@@ -102,24 +107,6 @@ export default class PurgeCommand extends Command {
         await interaction.editReply({
             content: `Deleted ${messages.size} messages!`
         });
-    }
-
-    /**
-     * check if any contents of the message trigger this function
-     * @param {Message} message
-     * @param {(string) => boolean} fn
-     * @return {boolean}
-     */
-    matches(message, fn) {
-        const contents = [];
-        contents.push(message.content);
-        for (const embed of message.embeds) {
-            contents.push(embed.description, embed.title, embed.footer?.text, embed.author?.name);
-            for (const field of embed.fields) {
-                contents.push(field.name, field.value);
-            }
-        }
-        return contents.filter(s => !!s).some(fn);
     }
 
     getDescription() {

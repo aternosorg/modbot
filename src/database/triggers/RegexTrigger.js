@@ -9,7 +9,7 @@ export default class RegexTrigger extends Trigger {
     }
 
     /**
-     * @return {string}
+     * @returns {string}
      */
     asContentString() {
         return `/${this.content}/${this.flags ?? ''}`;

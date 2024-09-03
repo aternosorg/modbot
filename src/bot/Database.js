@@ -7,6 +7,10 @@ import BadWordVisionMigration from '../database/migrations/BadWordVisionMigratio
 import AutoResponseVisionMigration from '../database/migrations/AutoResponseVisionMigration.js';
 import DMMigration from '../database/migrations/DMMigration.js';
 
+/**
+ * @import {QueryError} from 'mysql2';
+ */
+
 export class Database {
     /**
      * @type {import('mysql2').Connection}
@@ -14,7 +18,7 @@ export class Database {
     #connection = null;
 
     /**
-     * @type {{resolve: function, reject: function}[]}
+     * @type {{resolve: Function, reject: Function}[]}
      */
     #waiting = [];
 
@@ -35,7 +39,6 @@ export class Database {
 
     /**
      * Wait until a working MySQL connection is available
-     *
      * @returns {Promise<void>}
      */
     waitForConnection() {
@@ -61,7 +64,7 @@ export class Database {
             }
             this.#waiting = [];
         } catch (error) {
-            return this.#handleFatalError(error);
+            this.#handleFatalError(error);
         }
     }
 
@@ -76,8 +79,7 @@ export class Database {
 
     /**
      * Handle connection error
-     *
-     * @param err
+     * @param {QueryError} err
      * @private
      */
     #handleFatalError(err) {
@@ -96,8 +98,7 @@ export class Database {
 
     /**
      * Create required tables
-     *
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async createTables() {
         await this.query('CREATE TABLE IF NOT EXISTS `channels` (`id` VARCHAR(20) NOT NULL, `config` TEXT NOT NULL, PRIMARY KEY (`id`), `guildid` VARCHAR(20))');
@@ -134,10 +135,9 @@ export class Database {
 
     /**
      * Execute query and return all results
-     *
      * @param {string} sql
      * @param {string|number|null} values
-     * @returns {Promise<Object[]>}
+     * @returns {Promise<object[]>}
      */
     async queryAll(sql, ...values) {
         await this.waitForConnection();
@@ -151,10 +151,9 @@ export class Database {
 
     /**
      * Execute query and return the first result
-     *
      * @param {string} sql
      * @param {*} values
-     * @returns {Promise<Object|null>}
+     * @returns {Promise<object|null>}
      */
     async query(sql, ...values) {
         return (await this.queryAll(sql, ...values))[0] ?? null;
@@ -163,7 +162,7 @@ export class Database {
     /**
      * Escape table/column names
      * @param {string|string[]} ids
-     * @return {string}
+     * @returns {string}
      */
     escapeId(ids) {
         return this.#connection.escapeId(ids);

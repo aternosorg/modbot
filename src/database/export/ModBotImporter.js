@@ -8,6 +8,11 @@ import {EmbedBuilder} from 'discord.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import {asyncFilter} from '../../util/util.js';
 
+/**
+ * @import {Client, Snowflake} from 'discord.js';
+ * @import {Exporter} from './Exporter.js';
+ */
+
 export default class ModBotImporter extends Importer {
 
     /**
@@ -68,7 +73,7 @@ export default class ModBotImporter extends Importer {
 
     /**
      * import all data to the DB
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async import() {
         await Promise.all([

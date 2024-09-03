@@ -39,7 +39,7 @@ export default class UnbanCommand extends UserCommand {
      * @param {?string} reason
      * @param {?string} comment
      * @param {import('discord.js').User} moderator
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async unban(interaction, member, reason, comment, moderator) {
         if (!member) {
@@ -67,7 +67,7 @@ export default class UnbanCommand extends UserCommand {
     /**
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async promptForData(interaction, member) {
         if (!member) {

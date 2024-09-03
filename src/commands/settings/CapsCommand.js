@@ -27,7 +27,7 @@ export default class CapsCommand extends SubCommand {
      *
      * @param {import('discord.js').Interaction} interaction
      * @param {boolean} enabled
-     * @return {Promise<{components: ActionRowBuilder<ButtonBuilder>[], embeds: EmbedWrapper[]}>}
+     * @returns {Promise<{components: ActionRowBuilder<ButtonBuilder>[], embeds: EmbedWrapper[]}>}
      */
     async change(interaction, enabled) {
         const guildSettings = await GuildSettings.get(interaction.guild.id);

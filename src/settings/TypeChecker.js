@@ -1,9 +1,9 @@
 export default class TypeChecker {
     /**
      * check if value has correct type, otherwise throw a type error
-     * @param value
+     * @param {*} value
      * @param {("undefined"|"object"|"boolean"|"number"|"string"|"function"|"symbol"|"bigint")[]} types
-     * @param {String} name
+     * @param {string} name
      * @param {boolean} [allowNull]
      * @throws {TypeError}
      */
@@ -18,42 +18,42 @@ export default class TypeChecker {
 
     /**
      * check if value is a number or undefined
-     * @param value
-     * @param {String} name
+     * @param {*} value
+     * @param {string} name
      */
     static assertNumberUndefinedOrNull(value, name) {
-        return this.assertOfTypes(value, ['number', 'undefined'], name, true);
+        this.assertOfTypes(value, ['number', 'undefined'], name, true);
     }
 
     /**
      * check if value is a number
-     * @param value
-     * @param {String} name
+     * @param {*} value
+     * @param {string} name
      */
     static assertNumber(value, name) {
-        return this.assertOfTypes(value, ['number'], name);
+        this.assertOfTypes(value, ['number'], name);
     }
 
     /**
      * check if value is a string or undefined
-     * @param value
-     * @param {String} name
+     * @param {*} value
+     * @param {string} name
      */
     static assertStringUndefinedOrNull(value, name) {
-        return this.assertOfTypes(value, ['string', 'undefined'], name, true);
+        this.assertOfTypes(value, ['string', 'undefined'], name, true);
     }
 
 
     /**
      * check if value is a string
-     * @param value
-     * @param {String} name
+     * @param {*} value
+     * @param {string} name
      */
     static assertString(value, name) {
-        return this.assertOfTypes(value, ['string'], name);
+        this.assertOfTypes(value, ['string'], name);
     }
 
     static assertBooleanOrNull(value, name) {
-        return this.assertOfTypes(value, ['boolean'], name, true);
+        this.assertOfTypes(value, ['boolean'], name, true);
     }
 }

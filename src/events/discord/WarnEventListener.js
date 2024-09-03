@@ -8,7 +8,7 @@ export default class WarnEventListener extends EventListener {
 
     /**
      * @param {string} warning
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async execute(warning) {
         await logger.warn({

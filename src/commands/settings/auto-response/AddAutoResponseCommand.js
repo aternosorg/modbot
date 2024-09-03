@@ -178,7 +178,7 @@ export default class AddAutoResponseCommand extends SubCommand {
      * @param {string} trigger
      * @param {string} response
      * @param {?boolean} enableVision
-     * @return {Promise<*>}
+     * @returns {Promise<*>}
      */
     async create(
         interaction,

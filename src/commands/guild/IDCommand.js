@@ -5,6 +5,11 @@ import colors from '../../util/colors.js';
 import {FETCH_BAN_PAGE_SIZE} from '../../util/apiLimits.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
+/**
+ * @import {User} from 'discord.js';
+ * @import EmbedWrapper from '../../embeds/EmbedWrapper.js';
+ */
+
 export default class IDCommand extends Command {
 
     getDefaultMemberPermissions() {
@@ -40,7 +45,7 @@ export default class IDCommand extends Command {
 
         const bans = await this.#fetchAndFilterBans(interaction, query.toLowerCase());
         if (!bans.size && !users.size) {
-            return await interaction.editReply(ErrorEmbed.message('No users found'));
+            return void await interaction.editReply(ErrorEmbed.message('No users found'));
         }
 
         await interaction.editReply(this.#generateResultEmbed(query, Array.from(users.concat(bans).values())));
@@ -48,10 +53,10 @@ export default class IDCommand extends Command {
 
     /**
      * generate an embed of results
-     * @param {String} query
+     * @param {string} query
      * @param {(import('discord.js').GuildMember|import('discord.js').GuildBan)[]} results
      * @param {boolean} [stillSearching]
-     * @return {{embeds: EmbedWrapper[]}}
+     * @returns {{embeds: EmbedWrapper[]}}
      */
     #generateResultEmbed(query, results, stillSearching = false) {
         const embed = new LineEmbed()
@@ -74,7 +79,7 @@ export default class IDCommand extends Command {
     /**
      * @param {import('discord.js').Interaction} interaction
      * @param {string} user
-     * @return {Promise<Collection<import('discord.js').Snowflake, import('discord.js').GuildBan>>}
+     * @returns {Promise<Collection<import('discord.js').Snowflake, import('discord.js').GuildBan>>}
      */
     async #fetchAndFilterBans(interaction, user) {
         return (await this.#fetchAllBans(interaction))
@@ -84,7 +89,7 @@ export default class IDCommand extends Command {
     /**
      * fetch all bans
      * @param {import('discord.js').Interaction} interaction
-     * @return {Promise<Collection<import('discord.js').Snowflake, import('discord.js').GuildBan>>}
+     * @returns {Promise<Collection<import('discord.js').Snowflake, import('discord.js').GuildBan>>}
      */
     async #fetchAllBans(interaction) {
         let bans = new Collection();

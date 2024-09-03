@@ -30,7 +30,7 @@ export default class AbstractMutedRoleCommand extends SubCommand {
     /**
      * @param {import('discord.js').ChatInputCommandInteraction} interaction
      * @param {import('discord.js').Role} role
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async setMutedRole(interaction, role) {
         if (!role.editable) {
@@ -57,7 +57,7 @@ export default class AbstractMutedRoleCommand extends SubCommand {
     /**
      * @param {import('discord.js').Interaction} interaction
      * @param {import('discord.js').Role} role
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async updatePermissionOverrides(interaction, role) {
         await interaction.reply({
@@ -81,7 +81,7 @@ export default class AbstractMutedRoleCommand extends SubCommand {
      * @param {GuildSettings} guildSettings
      * @param {import('discord.js').Interaction} interaction
      * @param {import('discord.js').Role} role
-     * @return {Promise<boolean>} has an error occurred
+     * @returns {Promise<boolean>} has an error occurred
      */
     async transferOldMutes(guildSettings, interaction, role) {
         const guild = new GuildWrapper(interaction.guild);

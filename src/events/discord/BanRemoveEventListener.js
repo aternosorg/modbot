@@ -12,7 +12,7 @@ export default class BanRemoveEventListener extends EventListener {
 
     /**
      * @param {import('discord.js').GuildBan} ban
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async execute(ban) {
         const databaseBan = await database.query(

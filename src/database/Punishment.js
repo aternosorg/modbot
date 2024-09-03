@@ -18,7 +18,7 @@ export default class Punishment {
     message = null;
 
     /**
-     * @param {Object} raw
+     * @param {object} raw
      * @param {PunishmentAction} raw.action
      * @param {?number|string} [raw.duration]
      * @param {?string} [raw.message]
@@ -34,6 +34,7 @@ export default class Punishment {
      * @param {PunishmentAction} action
      * @param {?string} duration
      * @param {?string} message
+     * @returns {Punishment}
      */
     static from(action, duration = null, message = null) {
         return new this({action, duration: parseTime(duration), message});

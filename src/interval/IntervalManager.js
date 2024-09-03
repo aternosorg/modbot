@@ -6,7 +6,7 @@ import CleanupConfirmationInterval from './CleanupConfirmationInterval.js';
 
 export default class IntervalManager {
     /**
-     * @type {Interval[]}
+     * @type {import('Interval.js')[]}
      */
     #intervals = [
         new UnbanInterval(),
@@ -22,7 +22,7 @@ export default class IntervalManager {
     }
 
     /**
-     * @param {Interval} interval
+     * @param {import('Interval.js')} interval
      */
     async runInterval(interval) {
         try {

@@ -6,6 +6,10 @@ import {gunzip as gunzipCb} from 'zlib';
 import VortexImporter from '../../database/export/VortexImporter.js';
 import ModBotImporter from '../../database/export/ModBotImporter.js';
 
+/**
+ * @import Importer from '../../database/export/Importer.js';
+ */
+
 const gunzip = promisify(gunzipCb);
 
 export default class ImportCommand extends Command {
@@ -39,7 +43,7 @@ export default class ImportCommand extends Command {
             try {
                 data = await gunzip(data.buffer);
             }
-            catch (e) {
+            catch {
                 await interaction.editReply('Failed to decompress gzip data. Make sure the file you\'re trying to upload is valid gzip.');
                 return;
             }
@@ -54,7 +58,7 @@ export default class ImportCommand extends Command {
         try {
             data = JSON.parse(data.toString());
         }
-        catch (e) {
+        catch {
             await interaction.editReply('Failed to parse JSON data. Make sure the file you\'re trying to upload is valid JSON.');
             return;
         }
@@ -87,9 +91,9 @@ export default class ImportCommand extends Command {
 
     /**
      * get the correct importer for this datatype
-     * @param {Object} data
+     * @param {object} data
      * @param {import('discord.js').Interaction} interaction
-     * @return {Importer|null}
+     * @returns {Importer|null}
      */
     getImporter(data, interaction) {
         if (!data.dataType)

@@ -4,7 +4,7 @@ export default class ExecutableCommand {
 
     /**
      * @abstract
-     * @return {string}
+     * @returns {string}
      */
     getName() {
         return 'unknown';
@@ -12,7 +12,7 @@ export default class ExecutableCommand {
 
     /**
      * @abstract
-     * @return {string}
+     * @returns {string}
      */
     getDescription() {
         return 'unknown';
@@ -20,7 +20,7 @@ export default class ExecutableCommand {
 
     /**
      * get command cool down in seconds
-     * @return {number}
+     * @returns {number}
      */
     getCoolDown() {
         return 0;
@@ -28,14 +28,14 @@ export default class ExecutableCommand {
 
     /**
      * is this command available in direct messages
-     * @return {boolean}
+     * @returns {boolean}
      */
     isAvailableInDMs() {
         return false;
     }
 
     /**
-     * @return {import('discord.js').PermissionsBitField}
+     * @returns {import('discord.js').PermissionsBitField}
      */
     getRequiredBotPermissions() {
         return new PermissionsBitField();
@@ -47,7 +47,7 @@ export default class ExecutableCommand {
 
     /**
      * @param {import('discord.js').AutocompleteInteraction} interaction
-     * @return {Promise<import('discord.js').ApplicationCommandOptionChoiceData[]>}
+     * @returns {Promise<import('discord.js').ApplicationCommandOptionChoiceData[]>}
      */
     async complete(interaction) {
         return [];
@@ -57,7 +57,7 @@ export default class ExecutableCommand {
      * execute a slash command
      * @abstract
      * @param {import('discord.js').ChatInputCommandInteraction} interaction
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async execute(interaction) {
 
@@ -66,7 +66,7 @@ export default class ExecutableCommand {
     /**
      * handle a button press
      * @param {import('discord.js').ButtonInteraction} interaction
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async executeButton(interaction) {
 
@@ -75,7 +75,7 @@ export default class ExecutableCommand {
     /**
      * handle data submitted from a modal
      * @param {import('discord.js').ModalSubmitInteraction} interaction
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async executeModal(interaction) {
 
@@ -84,7 +84,7 @@ export default class ExecutableCommand {
     /**
      * handle data submitted from a modal
      * @param {import('discord.js').AnySelectMenuInteraction} interaction
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async executeSelectMenu(interaction) {
 

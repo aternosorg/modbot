@@ -67,7 +67,7 @@ export default class UserCommand extends Command {
      * check if this member can be moderated by this moderator
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async checkPermissions(interaction, member) {
         if (!member) {
@@ -92,7 +92,7 @@ export default class UserCommand extends Command {
      * @param {import('discord.js').Interaction} interaction
      * @param {MemberWrapper} member
      * @param {ConfirmationData} data data that will be saved for the confirmation
-     * @return {Promise<boolean>} should the punishment be executed now
+     * @returns {Promise<boolean>} should the punishment be executed now
      */
     async preventDuplicateModeration(interaction, member, data = {}) {
         const customIdParts = (interaction.customId ?? '').split(':');

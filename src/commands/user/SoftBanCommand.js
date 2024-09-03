@@ -17,6 +17,10 @@ import CommentInput from '../../modals/inputs/CommentInput.js';
 import DeleteMessageHistoryInput from '../../modals/inputs/DeleteMessageHistoryInput.js';
 
 /**
+ * @import {ConfirmationData} from './UserCommand.js';
+ */
+
+/**
  * @typedef {ConfirmationData} SoftBanConfirmationData
  * @property {?number} deleteMessageTime
  */
@@ -59,7 +63,7 @@ export default class SoftBanCommand extends UserCommand {
      * @param {?string} reason
      * @param {?string} comment
      * @param {?number} deleteMessageTime
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async softBan(interaction, member, reason, comment, deleteMessageTime) {
         await deferReplyOnce(interaction);
@@ -103,7 +107,7 @@ export default class SoftBanCommand extends UserCommand {
      * prompt user for soft-ban reason and more
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async promptForData(interaction, member) {
         if (!member) {

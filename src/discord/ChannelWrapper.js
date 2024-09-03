@@ -37,7 +37,7 @@ export default class ChannelWrapper {
 
     /**
      * @param {import("discord.js").Snowflake} id
-     * @return {Promise<ChannelWrapper>}
+     * @returns {Promise<ChannelWrapper>}
      */
     static async fetch(id) {
         try {
@@ -94,7 +94,7 @@ export default class ChannelWrapper {
 
     /**
      * get the emoji for this channel type
-     * @return {import('discord.js').APIMessageComponentEmoji}
+     * @returns {import('discord.js').APIMessageComponentEmoji}
      */
     getChannelEmoji() {
         const id = this.getChannelEmojiId();
@@ -102,7 +102,7 @@ export default class ChannelWrapper {
     }
 
     /**
-     * @return {import('discord.js').Snowflake|null}
+     * @returns {import('discord.js').Snowflake|null}
      */
     getChannelEmojiId() {
         const emojis = config.data.emoji;
@@ -134,7 +134,7 @@ export default class ChannelWrapper {
      * Fetch messages (even more than 100) from a channel
      * @param {number} count
      * @param {import('discord.js').Snowflake|null} before
-     * @return {Promise<Collection<import('discord.js').Snowflake, import('discord.js').Message>>} fetched messages
+     * @returns {Promise<Collection<import('discord.js').Snowflake, import('discord.js').Message>>} fetched messages
      */
     async getMessages(count = 100, before = null) {
         let messages = new Collection();
@@ -156,7 +156,7 @@ export default class ChannelWrapper {
     /**
      *
      * @param {import('discord.js').Snowflake[]} messages
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async bulkDelete(messages) {
         while (messages.length) {

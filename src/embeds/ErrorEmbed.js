@@ -13,7 +13,7 @@ export default class ErrorEmbed extends EmbedWrapper {
 
     /**
      * @param {string} description
-     * @return {{embeds: EmbedWrapper[]}}
+     * @returns {{embeds: EmbedWrapper[]}}
      */
     static message(description) {
         return new this(description).toMessage();

@@ -5,6 +5,10 @@ import GuildSettings from '../settings/GuildSettings.js';
 import database from '../bot/Database.js';
 import logger from '../bot/Logger.js';
 
+/**
+ * @import {Guild, Role, Message} from 'discord.js';
+ */
+
 export default class GuildWrapper {
 
     /**
@@ -20,7 +24,7 @@ export default class GuildWrapper {
     guild;
 
     /**
-     * @param {import(discord.js).Guild} guild
+     * @param {Guild} guild
      */
     constructor(guild) {
         this.guild = guild;
@@ -28,7 +32,7 @@ export default class GuildWrapper {
 
     /**
      * @param {import("discord.js").Snowflake} id
-     * @return {Promise<GuildWrapper>}
+     * @returns {Promise<GuildWrapper>}
      */
     static async fetch(id) {
         try {
@@ -44,7 +48,7 @@ export default class GuildWrapper {
 
     /**
      * get the guild settings of this guild
-     * @return {Promise<GuildSettings>}
+     * @returns {Promise<GuildSettings>}
      */
     async getSettings() {
         return GuildSettings.get(this.guild.id);
@@ -54,7 +58,7 @@ export default class GuildWrapper {
      * fetch a guild member
      * @param {import('discord.js').Snowflake} id user id
      * @param {boolean} [force] bypass cache
-     * @return {Promise<import('discord.js').GuildMember|null>}
+     * @returns {Promise<import('discord.js').GuildMember|null>}
      */
     async fetchMember(id, force = false) {
         try {
@@ -76,7 +80,7 @@ export default class GuildWrapper {
     /**
      * fetch a role
      * @param {import('discord.js').Snowflake} id role id
-     * @return {Promise<null|Role>}
+     * @returns {Promise<null|Role>}
      */
     async fetchRole(id) {
         try {
@@ -98,7 +102,7 @@ export default class GuildWrapper {
     /**
      * fetch a ban
      * @param {import('discord.js').Snowflake} id user id
-     * @return {Promise<null|import('discord.js').GuildBan>}
+     * @returns {Promise<null|import('discord.js').GuildBan>}
      */
     async fetchBan(id) {
         try {
@@ -117,7 +121,7 @@ export default class GuildWrapper {
     /**
      * fetch a channel
      * @param {import("discord.js").Snowflake} id channel id
-     * @return {Promise<null|import("discord.js").GuildChannel>}
+     * @returns {Promise<null|import("discord.js").GuildChannel>}
      */
     async fetchChannel(id) {
         try {
@@ -140,8 +144,8 @@ export default class GuildWrapper {
     /**
      * try to send a dm
      * @param {import("discord.js").User} user
-     * @param {String} message
-     * @return {Promise<boolean>} was this successful
+     * @param {string} message
+     * @returns {Promise<boolean>} was this successful
      */
     async sendDM(user, message) {
         if (!await this.fetchMember(user.id)) return false;
@@ -164,7 +168,7 @@ export default class GuildWrapper {
      * send a message to a channel
      * @param {import('discord.js').Snowflake} channelId
      * @param {import('discord.js').MessagePayload|import('discord.js').MessageOptions} options
-     * @return {Promise<?Message>} Discord message (if it was sent)
+     * @returns {Promise<?Message>} Discord message (if it was sent)
      */
     async sendMessageToChannel(channelId, options) {
         if (!channelId) {
@@ -197,7 +201,7 @@ export default class GuildWrapper {
     /**
      * send this message to the guild's log channel
      * @param {import('discord.js').MessagePayload|import('discord.js').MessageCreateOptions} options
-     * @return {Promise<?Message>} Discord message (if it was sent)
+     * @returns {Promise<?Message>} Discord message (if it was sent)
      */
     async log(options) {
         const settings = await this.getSettings();
@@ -207,7 +211,7 @@ export default class GuildWrapper {
     /**
      * send this message to the guild's message log channel
      * @param {import('discord.js').MessagePayload|import('discord.js').MessageCreateOptions} options
-     * @return {Promise<?Message>} Discord message (if it was sent)
+     * @returns {Promise<?Message>} Discord message (if it was sent)
      */
     async logMessage(options) {
         const settings = await this.getSettings();
@@ -217,7 +221,7 @@ export default class GuildWrapper {
     /**
      * send this message to the guild's join log channel
      * @param {import('discord.js').MessagePayload|import('discord.js').MessageCreateOptions} options
-     * @return {Promise<?Message>} Discord message (if it was sent)
+     * @returns {Promise<?Message>} Discord message (if it was sent)
      */
     async logJoin(options) {
         const settings = await this.getSettings();
@@ -226,7 +230,7 @@ export default class GuildWrapper {
 
     /**
      * delete ALL data for this guild
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async deleteData() {
         return Promise.all([
@@ -240,8 +244,8 @@ export default class GuildWrapper {
 
     /**
      * get a guild from cache or create a new one
-     * @param {import("discord.js".Guild)} guild
-     * @return {GuildWrapper}
+     * @param {Guild} guild
+     * @returns {GuildWrapper}
      * @deprecated
      */
     static get(guild) {

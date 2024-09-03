@@ -9,7 +9,7 @@ import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 export default class AbstractChannelCommand extends SubCommand {
     /**
      * @param {import('discord.js').Interaction} interaction
-     * @return {Promise<import('discord.js').GuildChannel|null|false>}
+     * @returns {Promise<import('discord.js').GuildChannel|null|false>}
      */
     async getChannel(interaction) {
         const channelId = interaction.options.getChannel('channel')?.id;

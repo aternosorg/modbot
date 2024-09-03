@@ -9,6 +9,10 @@ import icons from '../../util/icons.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 
 /**
+ * @import EmbedWrapper from '../../embeds/EmbedWrapper.js';
+ */
+
+/**
  * number of moderations that will be displayed on a single page
  * keep embed length limitations in mind when changing this number!
  * @type {number}
@@ -59,7 +63,7 @@ export default class ModerationListCommand extends SubCommand {
      * @param {MemberWrapper} member
      * @param {Moderation[]} moderations
      * @param {number} page
-     * @return {Promise<{ephemeral: boolean, embeds: EmbedWrapper[]}>}
+     * @returns {Promise<{ephemeral: boolean, embeds: EmbedWrapper[]}>}
      */
     async generateMessage(member, moderations, page = 1) {
         const lastPage = Math.ceil(moderations.length / MODERATIONS_PER_PAGE);

@@ -92,7 +92,7 @@ export default class VideoCommand extends Command {
      * @param {import('discord.js').Snowflake} userId id of the user that executed this command
      * @param {number} [index]
      * @param {?import('discord.js').Snowflake} mention user to mention in the message
-     * @return {{content: string, components: ActionRowBuilder[], fetchReply: boolean}}
+     * @returns {{content: string, components: ActionRowBuilder[], fetchReply: boolean}}
      */
     generateMessage(videos, userId, index = 0, mention = null) {
         for (const result of videos) {

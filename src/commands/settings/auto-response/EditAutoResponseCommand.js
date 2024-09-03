@@ -98,7 +98,7 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
      * @param {?boolean} global
      * @param {?string} type
      * @param {?boolean} vision
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async showModal(interaction, autoResponse, global, type, vision) {
         global ??= autoResponse.global;
@@ -240,7 +240,7 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
      * @param {string} trigger
      * @param {string} response
      * @param {?boolean} vision
-     * @return {Promise<*>}
+     * @returns {Promise<*>}
      */
     async update(
         interaction,

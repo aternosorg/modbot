@@ -5,8 +5,8 @@ export default {RED, ORANGE, GREEN};
 
 /**
  * Resolves an action to a color
- * @param  {String} action name of the action to resolve
- * @return {Number|null}  hex color code or null
+ * @param  {string} action name of the action to resolve
+ * @returns {number|null}  hex color code or null
  */
 export function resolveColor(action) {
     switch (action.toLowerCase()) {

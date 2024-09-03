@@ -19,6 +19,10 @@ import CommentInput from '../../modals/inputs/CommentInput.js';
 import CountInput from '../../modals/inputs/CountInput.js';
 
 /**
+ * @import {ConfirmationData} from './UserCommand.js';
+ */
+
+/**
  * @typedef {ConfirmationData} StrikeConfirmationData
  * @property {?number} count
  */
@@ -28,7 +32,7 @@ export default class StrikeCommand extends UserCommand {
     /**
      * add options to slash command builder
      * @param {import('discord.js').SlashCommandBuilder} builder
-     * @return {import('discord.js').SlashCommandBuilder}
+     * @returns {import('discord.js').SlashCommandBuilder}
      */
     buildOptions(builder) {
         super.buildOptions(builder);
@@ -72,7 +76,7 @@ export default class StrikeCommand extends UserCommand {
      * @param {?string} reason
      * @param {?string} comment
      * @param {?number} count
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async strike(interaction, member, reason, comment, count) {
         await deferReplyOnce(interaction);
@@ -125,7 +129,7 @@ export default class StrikeCommand extends UserCommand {
      * prompt user for strike reason and count
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async promptForData(interaction, member) {
         if (!member) {

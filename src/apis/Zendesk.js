@@ -1,7 +1,7 @@
 import got from 'got';
 
 /**
- * @typedef {Object} ZendeskArticle
+ * @typedef {object} ZendeskArticle
  * @property {number} id article id
  * @property {string} url api url
  * @property {string} html_url url to public article page
@@ -11,7 +11,7 @@ import got from 'got';
  */
 
 /**
- * @typedef {Object} ZendeskArticleSuggestion
+ * @typedef {object} ZendeskArticleSuggestion
  * @property {string} title
  * @property {string} category_title
  * @property {string} url
@@ -29,7 +29,7 @@ export default class Zendesk {
     /**
      * search articles
      * @param {string} query
-     * @return {Promise<{count: number, results: ZendeskArticle[]}>}
+     * @returns {Promise<{count: number, results: ZendeskArticle[]}>}
      */
     async searchArticles(query) {
         return this.#request(`api/v2/help_center/articles/search.json?query=${encodeURIComponent(query)}`);
@@ -38,7 +38,7 @@ export default class Zendesk {
     /**
      * get article suggestions
      * @param {string} query
-     * @return {Promise<ZendeskArticleSuggestion[]>}
+     * @returns {Promise<ZendeskArticleSuggestion[]>}
      */
     async getArticleSuggestions(query) {
         const data = await this.#request(`hc/api/internal/instant_search.json?query=${encodeURIComponent(query)}`);
@@ -48,7 +48,7 @@ export default class Zendesk {
     /**
      * get a single article
      * @param {string|number} id
-     * @return {Promise<?ZendeskArticle>}
+     * @returns {Promise<?ZendeskArticle>}
      */
     async getArticle(id) {
         /** @type {{article: ZendeskArticle}} */
@@ -58,7 +58,7 @@ export default class Zendesk {
 
     /**
      * @param {number} [results] maximum number of articles that will be returned
-     * @return {Promise<ZendeskArticle[]>}
+     * @returns {Promise<ZendeskArticle[]>}
      */
     async getArticles(results = 100) {
         /** @type {{articles: ZendeskArticle[]}} */
@@ -68,7 +68,7 @@ export default class Zendesk {
 
     /**
      * get promoted articles
-     * @return {Promise<ZendeskArticle[]>}
+     * @returns {Promise<ZendeskArticle[]>}
      */
     async getPromotedArticles() {
         const articles = await this.getArticles();

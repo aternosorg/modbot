@@ -49,7 +49,7 @@ export default class ModerationClearCommand extends SubCommand {
                 return;
             }
 
-            /** @property {Number} affectedRows */
+            /** @property {number} affectedRows */
             const deletion = await database.queryAll('DELETE FROM moderations WHERE guildid = ? AND userid = ?',
                 interaction.guildId, member.user.id);
             await interaction.update({

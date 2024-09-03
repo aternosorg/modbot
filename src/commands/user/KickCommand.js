@@ -14,6 +14,10 @@ import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
 import ReasonInput from '../../modals/inputs/ReasonInput.js';
 import CommentInput from '../../modals/inputs/CommentInput.js';
 
+/**
+ * @import {ConfirmationData} from './UserCommand.js';
+ */
+
 export default class KickCommand extends UserCommand {
 
     getDefaultMemberPermissions() {
@@ -44,7 +48,7 @@ export default class KickCommand extends UserCommand {
      * @param {?MemberWrapper} member
      * @param {?string} reason
      * @param {?string} comment
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async kick(interaction, member, reason, comment) {
         await deferReplyOnce(interaction);
@@ -91,7 +95,7 @@ export default class KickCommand extends UserCommand {
     /**
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async promptForData(interaction, member) {
         if (!member) {

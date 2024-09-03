@@ -3,7 +3,6 @@ import {formatTime, parseTime} from '../../util/timeutils.js';
 import GuildSettings from '../../settings/GuildSettings.js';
 import EmbedWrapper from '../../embeds/EmbedWrapper.js';
 import colors from '../../util/colors.js';
-import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
 export default class AttachmentCoolDownCommand extends SubCommand {
 

@@ -5,10 +5,20 @@ import {channelMention} from 'discord.js';
 import colors from '../../../util/colors.js';
 import ChannelSettings from '../../../settings/ChannelSettings.js';
 
+/**
+ * Get the string representation of the allowed status
+ * @param {boolean} boolean
+ * @returns {string}
+ */
 function allowed(boolean) {
     return boolean ? 'allowed' : 'forbidden';
 }
 
+/**
+ * Get the color representation of the allowed status
+ * @param {boolean} boolean
+ * @returns {number}
+ */
 function color(boolean) {
     return boolean ? colors.GREEN : colors.RED;
 }
@@ -17,7 +27,7 @@ function color(boolean) {
  * generate an invite embed
  * @param {import('discord.js').Snowflake} guildId
  * @param {?import('discord.js').Channel} channel
- * @return {Promise<{ephemeral: boolean, embeds: EmbedWrapper[]}>}
+ * @returns {Promise<{ephemeral: boolean, embeds: EmbedWrapper[]}>}
  */
 export async function getEmbed(guildId, channel = null) {
     const embed = new EmbedWrapper(),

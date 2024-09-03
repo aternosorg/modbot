@@ -1,13 +1,18 @@
 import {PermissionFlagsBits} from 'discord.js';
 import SlashCommandPermissionManager from './SlashCommandPermissionManager.js';
 
+/**
+ * @import {Command} from '../commands/Command.js';
+ * @import {SlashCommandPermissionOverrides} from './SlashCommandPermissionOverrides.js';
+ */
+
 export default class SlashCommandPermissionManagerV2 extends SlashCommandPermissionManager {
     /**
      * Calculates if a member has the permission to execute a command in a guild
      * Uses the older V2 Permission system: https://discord.com/developers/docs/change-log#updated-command-permissions
      * @param {import('discord.js').Interaction<"cached">} interaction
      * @param {Command} command
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async hasPermission(interaction, command) {
         if (interaction.memberPermissions.has(PermissionFlagsBits.Administrator)) {
@@ -43,7 +48,7 @@ export default class SlashCommandPermissionManagerV2 extends SlashCommandPermiss
 
     /**
      * @param {SlashCommandPermissionOverrides} overrides
-     * @return {Promise<?boolean>}
+     * @returns {Promise<?boolean>}
      */
     async hasPermissionInOverrides(overrides) {
         let permission = null;

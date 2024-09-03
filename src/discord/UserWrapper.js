@@ -23,7 +23,7 @@ export default class UserWrapper {
 
     /**
      * fetch this user
-     * @return {Promise<import('discord.js').User>}
+     * @returns {Promise<import('discord.js').User>}
      */
     async fetchUser() {
         try {

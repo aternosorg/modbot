@@ -17,7 +17,7 @@ export default class Cache {
     /**
      * get the value of a cache entry
      * @param {K} key
-     * @return {?V}
+     * @returns {?V}
      */
     get(key) {
         return this.getEntry(key)?.value;
@@ -26,7 +26,7 @@ export default class Cache {
     /**
      * get a cache entry
      * @param {K} key
-     * @return {?CacheEntry<V>}
+     * @returns {?CacheEntry<V>}
      */
     getEntry(key) {
         return this.#cache.get(key);

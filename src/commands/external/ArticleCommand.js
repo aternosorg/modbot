@@ -18,6 +18,11 @@ import {SELECT_MENU_OPTIONS_LIMIT, SELECT_MENU_TITLE_LIMIT} from '../../util/api
 import Cache from '../../bot/Cache.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
+/**
+ * @import {ZendeskArticle} from '../../apis/Zendesk.js';
+ */
+
+
 const completions = new Cache();
 const CACHE_DURATION = 60 * 60 * 1000;
 const ARTICLE_EMBED_PREVIEW_LENGTH = 1000;
@@ -125,7 +130,7 @@ export default class ArticleCommand extends Command {
      * @param {import('discord.js').Snowflake} userId id of the user that executed the command
      * @param {number} [index]
      * @param {?import('discord.js').Snowflake} mention user to mention in the message
-     * @return {{embeds: EmbedBuilder[], components: ActionRowBuilder[], fetchReply: boolean, content: ?string}}
+     * @returns {{embeds: EmbedBuilder[], components: ActionRowBuilder[], fetchReply: boolean, content: ?string}}
      */
     generateMessage(results, article, userId, index = 0, mention = null) {
         for (const result of results) {
@@ -159,7 +164,7 @@ export default class ArticleCommand extends Command {
      * get a description from the HTML body of an article
      * @param {import('discord.js').APISelectMenuOption} result
      * @param {string} body website body
-     * @return {EmbedBuilder}
+     * @returns {EmbedBuilder}
      */
     createEmbed(result, body) {
         const embed = new EmbedBuilder()

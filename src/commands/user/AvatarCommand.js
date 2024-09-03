@@ -52,7 +52,7 @@ export default class AvatarCommand extends Command {
      * @param {import('discord.js').User} user
      * @param {import('discord.js').Guild|null} guild
      * @param {boolean} useServerProfile
-     * @return {Promise<{ephemeral: boolean, embeds: EmbedBuilder[]}>}
+     * @returns {Promise<{ephemeral: boolean, embeds: EmbedBuilder[]}>}
      */
     async buildMessage(user, guild, useServerProfile = true) {
         let url = user.displayAvatarURL(IMAGE_OPTIONS);

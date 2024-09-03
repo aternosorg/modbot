@@ -24,7 +24,7 @@ export default class LineEmbed extends EmbedWrapper {
     /**
      * add a line
      * @param {string} content
-     * @return {this}
+     * @returns {this}
      */
     addLine(content) {
         this.#lines.push(content);
@@ -34,7 +34,7 @@ export default class LineEmbed extends EmbedWrapper {
 
     /**
      * add an empty line
-     * @return {this}
+     * @returns {this}
      */
     newLine() {
         this.#lines.push('');

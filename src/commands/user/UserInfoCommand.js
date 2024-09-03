@@ -9,6 +9,10 @@ import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 import {componentEmojiIfExists, inlineEmojiIfExists} from '../../util/format.js';
 import BetterButtonBuilder from '../../embeds/BetterButtonBuilder.js';
 
+/**
+ * @import {EmbedBuilder, ButtonBuilder} from 'discord.js';
+ */
+
 export default class UserInfoCommand extends Command {
 
     getDefaultMemberPermissions() {
@@ -62,7 +66,7 @@ export default class UserInfoCommand extends Command {
      * generate user message with embed and buttons
      * @param {import('discord.js').User} user
      * @param {import('discord.js').Interaction} interaction
-     * @return {Promise<{embeds: EmbedBuilder[], components: ActionRowBuilder[]}>}
+     * @returns {Promise<{embeds: EmbedBuilder[], components: ActionRowBuilder[]}>}
      */
     async generateUserMessage(user, interaction) {
         const memberWrapper = new MemberWrapper(user, new GuildWrapper(interaction.guild));

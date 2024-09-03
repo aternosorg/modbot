@@ -10,7 +10,7 @@ import commandManager from './CommandManager.js';
 export default class ParentCommand extends Command {
     /**
      * @abstract
-     * @return {(SubCommand|SubCommandGroup)[]}
+     * @returns {(SubCommand|SubCommandGroup)[]}
      */
     getChildren() {
         return [];
@@ -18,7 +18,7 @@ export default class ParentCommand extends Command {
 
     /**
      * build this slash command
-     * @return {SlashCommandBuilder}
+     * @returns {SlashCommandBuilder}
      */
     buildSlashCommand() {
         const builder = new SlashCommandBuilder()
@@ -42,7 +42,7 @@ export default class ParentCommand extends Command {
      * find a child by the custom id of the moderation
      * must use syntax 'command:subcommand:other-data'
      * @param {import('discord.js').Interaction} interaction
-     * @return {SubCommand|SubCommandGroup|null}
+     * @returns {SubCommand|SubCommandGroup|null}
      */
     #findChildByCustomId(interaction) {
         const name = interaction.customId.split(':')[1];
@@ -53,7 +53,7 @@ export default class ParentCommand extends Command {
     /**
      * find a child by the sub command name
      * @param {import('discord.js').Interaction} interaction
-     * @return {SubCommand|SubCommandGroup|null}
+     * @returns {SubCommand|SubCommandGroup|null}
      */
     #findChildByName(interaction) {
         const name = interaction.options.getSubcommandGroup()

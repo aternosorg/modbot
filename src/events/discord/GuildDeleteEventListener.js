@@ -8,7 +8,7 @@ export default class GuildDeleteEventListener extends EventListener {
 
     /**
      * @param {import('discord.js').Guild} guild
-     * @return {Promise<Awaited<Object|null>[]>}
+     * @returns {Promise<Awaited<object|null>[]>}
      */
     async execute(guild) {
         const wrapper = new GuildWrapper(guild);

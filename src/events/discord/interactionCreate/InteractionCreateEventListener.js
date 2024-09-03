@@ -7,7 +7,7 @@ export default class InteractionCreateEventListener extends EventListener {
 
     /**
      * @param {import('discord.js').Interaction} interaction
-     * @return {Promise<unknown>}
+     * @returns {Promise<unknown>}
      * @abstract
      */
     async execute(interaction) {

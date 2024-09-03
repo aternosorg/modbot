@@ -19,7 +19,7 @@ export default class Command extends ExecutableCommand {
      *
      * For slash commands this is not checked by ModBot and is only used to register commands on Discord
      * For context menus, buttons and other interactions ModBot emulate Discord's permission system
-     * @return {?import('discord.js').PermissionsBitField}
+     * @returns {?import('discord.js').PermissionsBitField}
      */
     getDefaultMemberPermissions() {
         return null;
@@ -28,7 +28,7 @@ export default class Command extends ExecutableCommand {
     /**
      * add options to slash command builder
      * @param {import('discord.js').SlashCommandBuilder} builder
-     * @return {import('discord.js').SlashCommandBuilder}
+     * @returns {import('discord.js').SlashCommandBuilder}
      */
     buildOptions(builder) {
         return super.buildOptions(builder);
@@ -36,7 +36,7 @@ export default class Command extends ExecutableCommand {
 
     /**
      * build this slash command
-     * @return {SlashCommandBuilder}
+     * @returns {SlashCommandBuilder}
      */
     buildSlashCommand() {
         const builder = new SlashCommandBuilder()
@@ -51,7 +51,7 @@ export default class Command extends ExecutableCommand {
 
     /**
      * does this command support user context menus
-     * @return {boolean}
+     * @returns {boolean}
      */
     supportsUserCommands() {
         return false;
@@ -59,7 +59,7 @@ export default class Command extends ExecutableCommand {
 
     /**
      * build user context menu
-     * @return {ContextMenuCommandBuilder}
+     * @returns {ContextMenuCommandBuilder}
      */
     buildUserCommand() {
         return new ContextMenuCommandBuilder()
@@ -72,7 +72,7 @@ export default class Command extends ExecutableCommand {
     /**
      * execute a user context menu
      * @param {import('discord.js').UserContextMenuCommandInteraction} interaction
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async executeUserMenu(interaction) {
 
@@ -80,7 +80,7 @@ export default class Command extends ExecutableCommand {
 
     /**
      * does this command support message context menus
-     * @return {boolean}
+     * @returns {boolean}
      */
     supportsMessageCommands() {
         return false;
@@ -88,7 +88,7 @@ export default class Command extends ExecutableCommand {
 
     /**
      * build message context menu
-     * @return {ContextMenuCommandBuilder}
+     * @returns {ContextMenuCommandBuilder}
      */
     buildMessageCommand() {
         return new ContextMenuCommandBuilder()
@@ -101,7 +101,7 @@ export default class Command extends ExecutableCommand {
     /**
      * execute a message context menu
      * @param {import('discord.js').MessageContextMenuCommandInteraction} interaction
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async executeMessageMenu(interaction) {
 
@@ -110,7 +110,7 @@ export default class Command extends ExecutableCommand {
     /**
      * is this command available in all guilds?
      * if not this command will manually be registered in all guilds where
-     * @return {boolean}
+     * @returns {boolean}
      */
     isAvailableInAllGuilds() {
         return true;
@@ -119,7 +119,7 @@ export default class Command extends ExecutableCommand {
     /**
      * is this command available in this guild?
      * @param {import('discord.js').Guild} guild
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async isAvailableIn(guild) {
         return false;

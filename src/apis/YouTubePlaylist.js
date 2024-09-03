@@ -10,39 +10,39 @@ const CACHE_DURATION = 10 * 60 * 1000;
 const cache = new Cache();
 
 /**
- * @typedef {Object} PlaylistResponse
+ * @typedef {object} PlaylistResponse
  * @property {PlaylistResponseData} data
  * @property {string} etag
  * @property {string} nextPageToken
  */
 
 /**
- * @typedef {Object} PlaylistResponseData
+ * @typedef {object} PlaylistResponseData
  * @property {PageInfo} pageInfo
  * @property {YouTubeVideo[]} items
  */
 
 /**
- * @typedef {Object} PageInfo
+ * @typedef {object} PageInfo
  * @property {number} totalResults
  * @property {number} resultsPerPage
  */
 
 /**
- * @typedef {Object} YouTubeVideo
+ * @typedef {object} YouTubeVideo
  * @property {string} etag
  * @property {YouTubeVideoSnippet} snippet
  */
 
 /**
- * @typedef {Object} YouTubeVideoSnippet
+ * @typedef {object} YouTubeVideoSnippet
  * @property {string} title
  * @property {string} description
  * @property {SnippetResourceId} resourceId
  */
 
 /**
- * @typedef {Object} SnippetResourceId
+ * @typedef {object} SnippetResourceId
  * @property {string} videoId
  */
 
@@ -56,7 +56,7 @@ export default class YouTubePlaylist {
     /**
      * is this a valid playlist id
      * @param {string} id
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     static async isValidPlaylist(id) {
         const response = await youtube.playlists.list({
@@ -77,7 +77,7 @@ export default class YouTubePlaylist {
 
     /**
      * get all videos in this playlist
-     * @return {Promise<YouTubeVideo[]>}
+     * @returns {Promise<YouTubeVideo[]>}
      */
     async getVideos() {
         const cacheEntry = cache.getEntry(this.#id);
@@ -109,7 +109,7 @@ export default class YouTubePlaylist {
      * search for videos in this playlist
      * searches in title and description
      * @param {string} query
-     * @return {Promise<(import('fuse.js').Fuse.FuseResult<YouTubeVideo>)[]>}
+     * @returns {Promise<(import('fuse.js').Fuse.FuseResult<YouTubeVideo>)[]>}
      */
     async searchVideos(query) {
         const videos = await this.getVideos();

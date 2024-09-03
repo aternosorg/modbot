@@ -2,7 +2,7 @@ import logger from './Logger.js';
 import {exists, readJSON} from '../util/fsutils.js';
 
 /**
- * @typedef {Object} ConfigData
+ * @typedef {object} ConfigData
  * @property {string} authToken
  * @property {DatabaseConfig} database
  * @property {?string} googleApiKey
@@ -13,36 +13,41 @@ import {exists, readJSON} from '../util/fsutils.js';
  */
 
 /**
- * @typedef {Object} GoogleCloudConfig
+ * @typedef {object} GoogleCloudConfig
  * @property {GoogleCloudCredentials} credentials
  * @property {CloudLoggingConfig} logging
  * @property {VisionConfig} vision
  */
 
 /**
- * @typedef {Object} DatabaseConfig
+ * @typedef {object} DatabaseConfig
+ * @property {string} host
+ * @property {string} user
+ * @property {string} password
+ * @property {string} database
+ * @property {number} port
  */
 
 /**
- * @typedef {Object} VisionConfig
+ * @typedef {object} VisionConfig
  * @property {boolean} enabled
  */
 
 /**
- * @typedef {Object} CloudLoggingConfig google cloud monitoring
+ * @typedef {object} CloudLoggingConfig google cloud monitoring
  * @property {boolean} enabled
  * @property {string} projectId
  * @property {string} logName
  */
 
 /**
- * @typedef {Object} GoogleCloudCredentials
+ * @typedef {object} GoogleCloudCredentials
  * @property {string} client_email
  * @property {string} private_key
  */
 
 /**
- * @typedef {Object} Emojis
+ * @typedef {object} Emojis
  * @property {?string} source
  * @property {?string} privacy
  * @property {?string} invite
@@ -79,7 +84,7 @@ export class Config {
     #data;
 
     /**
-     * @return {ConfigData}
+     * @returns {ConfigData}
      */
     get data() {
         return this.#data;
@@ -184,7 +189,7 @@ export class Config {
     /**
      * parse an environment variable as a boolean
      * @param {string} string
-     * @return {boolean}
+     * @returns {boolean}
      */
     #parseBooleanFromEnv(string) {
         return ['1', 'true', 'y'].includes(string?.toLowerCase?.());

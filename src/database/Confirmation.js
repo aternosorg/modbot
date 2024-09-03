@@ -20,7 +20,7 @@ export default class Confirmation {
     /**
      * @template T
      * @param {number|string} id
-     * @return {Promise<Confirmation<T>|null>}
+     * @returns {Promise<Confirmation<T>|null>}
      */
     static async get(id) {
         if (typeof id === 'string') {
@@ -37,7 +37,7 @@ export default class Confirmation {
 
     /**
      * save this confirmation
-     * @return {Promise<number>}
+     * @returns {Promise<number>}
      */
     async save() {
         if (this.id) {
@@ -53,7 +53,7 @@ export default class Confirmation {
 
     /**
      * delete this confirmation
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async delete() {
         if (this.id) {

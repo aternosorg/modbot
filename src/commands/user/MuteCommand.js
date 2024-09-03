@@ -17,6 +17,10 @@ import ReasonInput from '../../modals/inputs/ReasonInput.js';
 import CommentInput from '../../modals/inputs/CommentInput.js';
 import DurationInput from '../../modals/inputs/DurationInput.js';
 
+/**
+ * @import {DurationConfirmationData} from './UserCommand.js';
+ */
+
 export default class MuteCommand extends UserCommand {
 
 
@@ -61,7 +65,7 @@ export default class MuteCommand extends UserCommand {
      * @param {?string} reason
      * @param {?string} comment
      * @param {?number} duration
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async mute(interaction, member, reason, comment, duration) {
         await deferReplyOnce(interaction);
@@ -126,7 +130,7 @@ export default class MuteCommand extends UserCommand {
      * prompt user for mute reason and duration
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async promptForData(interaction, member) {
         if (!member) {

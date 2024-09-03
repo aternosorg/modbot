@@ -10,7 +10,7 @@ export default class MessageDeleteEventListener extends EventListener {
 
     /**
      * @param {import('discord.js').Message} message
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async execute(message) {
         if (!message.guild || message.author.bot) {

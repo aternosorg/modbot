@@ -12,7 +12,7 @@ export default class MessageDeleteBulkEventListener extends EventListener {
     /**
      * @param {import('discord.js').Collection<import('discord.js').Snowflake, import('discord.js').Message>} messages
      * @param {import('discord.js').GuildTextBasedChannel} channel
-     * @return {Promise<unknown>}
+     * @returns {Promise<unknown>}
      */
     async execute(messages, channel) {
         const embed = new EmbedBuilder()

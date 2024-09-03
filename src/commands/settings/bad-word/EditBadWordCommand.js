@@ -16,6 +16,10 @@ import Punishment from '../../../database/Punishment.js';
 import {SELECT_MENU_OPTIONS_LIMIT} from '../../../util/apiLimits.js';
 import config from '../../../bot/Config.js';
 
+/**
+ * @import {PunishmentAction} from '../../../database/Punishment.js';
+ */
+
 export default class EditBadWordCommand extends CompletingBadWordCommand {
 
     buildOptions(builder) {
@@ -125,7 +129,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
      * @param {?string} type
      * @param {?string} punishment
      * @param {?boolean} vision
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async showModal(
         interaction,
@@ -349,7 +353,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
      * @param {number} priority
      * @param {?string} dm
      * @param {?boolean} vision
-     * @return {Promise<*>}
+     * @returns {Promise<*>}
      */
     async update(
         interaction,

@@ -10,8 +10,8 @@ export default class GuildMemberAddEventListener extends EventListener {
 
     /**
      * @abstract
-     * @param {GuildMember} member
-     * @return {Promise<unknown>}
+     * @param {import('discord.js').GuildMember} member
+     * @returns {Promise<unknown>}
      */
     async execute(member) {
         member.id;

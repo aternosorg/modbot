@@ -1,10 +1,14 @@
 import logger from '../bot/Logger.js';
 
+/**
+ * @import {EventListener} from '../../events/EventListener.js';
+ */
+
 export default class EventManager {
 
     /**
      * @abstract
-     * @return {EventListener[]}
+     * @returns {EventListener[]}
      */
     getEventListeners() {
 
@@ -21,7 +25,7 @@ export default class EventManager {
     /**
      * @param {EventListener} eventListener
      * @param {*} args
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async notifyEventListener(eventListener, ...args) {
         try {

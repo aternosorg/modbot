@@ -8,7 +8,7 @@ export default class SlashCommandPermissionManagers {
 
     /**
      * @param {import('discord.js').Interaction<"cached">} interaction
-     * @return {SlashCommandPermissionManagerV2|SlashCommandPermissionManagerV3}
+     * @returns {SlashCommandPermissionManagerV2|SlashCommandPermissionManagerV3}
      */
     static getManager(interaction) {
         if (interaction.guild.features.includes(GuildFeature.ApplicationCommandPermissionsV2)) {

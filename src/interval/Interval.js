@@ -6,7 +6,7 @@
 export default class Interval {
     /**
      * @abstract
-     * @return {number} timeout in ms
+     * @returns {number} timeout in ms
      */
     getInterval() {
         return 1000;
@@ -15,7 +15,7 @@ export default class Interval {
     /**
      * run the task
      * @abstract
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async run() {
 

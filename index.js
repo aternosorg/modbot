@@ -7,6 +7,9 @@ import RestEventManagerEventManager from './src/events/rest/RestEventManager.js'
 import commandManager from './src/commands/CommandManager.js';
 import IntervalManager from './src/interval/IntervalManager.js';
 
+/**
+ *
+ */
 async function start() {
     await logger.debug('Loading settings');
     await config.load();
@@ -34,7 +37,7 @@ start().catch(async (error) => {
         await logger.critical('Bot crashed', error);
     }
     catch (e) {
-        console.error('Failed to send fatal error to monitoring');
+        console.error('Failed to send fatal error to monitoring', e);
     }
     console.error(error);
     process.exit(1);

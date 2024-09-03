@@ -4,7 +4,7 @@ import {formatEmoji} from 'discord.js';
 /**
  * convert a string to title case
  * @param {string} s
- * @return {string}
+ * @returns {string}
  */
 export function toTitleCase(s) {
     return s.toLowerCase().replace(/^(\w)|\s(\w)/g, c => c.toUpperCase());
@@ -12,7 +12,7 @@ export function toTitleCase(s) {
 
 /**
  * @param {*} bool
- * @return {string}
+ * @returns {string}
  */
 export function yesNo(bool) {
     return bool ? 'Yes' : 'No';
@@ -20,7 +20,7 @@ export function yesNo(bool) {
 
 /**
  * @param {string} configKey
- * @return {string}
+ * @returns {string}
  */
 export function inlineEmojiIfExists(configKey) {
     const emoji = config.data.emoji[configKey];
@@ -37,7 +37,7 @@ export function inlineEmojiIfExists(configKey) {
  * Add s if number is not 1
  * @param {number} number
  * @param {string} name
- * @return {*}
+ * @returns {*}
  */
 export function formatNumber(number, name) {
     if (number === 1) {
@@ -49,7 +49,7 @@ export function formatNumber(number, name) {
 /**
  * @param {string} configKey name of the emoji in the config
  * @param {?string} fallback emoji character to use if the config key is not set
- * @return {?import('discord.js').APIMessageComponentEmoji}
+ * @returns {?import('discord.js').APIMessageComponentEmoji}
  */
 export function componentEmojiIfExists(configKey, fallback = null) {
     const emoji = config.data.emoji[configKey];

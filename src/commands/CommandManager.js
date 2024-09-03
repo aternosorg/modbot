@@ -42,6 +42,11 @@ import logger from '../bot/Logger.js';
 import SafeSearchCommand from './settings/SafeSearchCommand.js';
 import SlashCommandPermissionManagers from '../discord/permissions/SlashCommandPermissionManagers.js';
 
+/**
+ * @import Command from './Command.js';
+ * @import ExecutableCommand from './ExecutableCommand.js';
+ */
+
 const cooldowns = new Cache();
 
 export class CommandManager {
@@ -91,7 +96,7 @@ export class CommandManager {
     ];
 
     /**
-     * @return {Command[]}
+     * @returns {Command[]}
      */
     getCommands() {
         return this.#commands;
@@ -99,7 +104,7 @@ export class CommandManager {
 
     /**
      * register all slash commands
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async register() {
         const globalCommands = this.#commands.filter(command => command.isAvailableInAllGuilds());
@@ -133,7 +138,7 @@ export class CommandManager {
     /**
      *
      * @param {Command[]} commands
-     * @return {import('discord.js').ApplicationCommandDataResolvable[]}
+     * @returns {import('discord.js').ApplicationCommandDataResolvable[]}
      */
     buildCommands(commands) {
         const result = [];
@@ -152,7 +157,7 @@ export class CommandManager {
     /**
      * find a command with this name
      * @param {string} name
-     * @return {Command}
+     * @returns {Command}
      */
     findCommand(name) {
         return this.getCommands().find(c => c.getName() === name.toLowerCase()) ?? null;
@@ -162,7 +167,7 @@ export class CommandManager {
      * check if this command can be executed in this context
      * @param {?ExecutableCommand} command
      * @param {import('discord.js').Interaction} interaction
-     * @return {Promise<boolean>} is command executable
+     * @returns {Promise<boolean>} is command executable
      */
     async checkCommandAvailability(command, interaction) {
         if (!command) {
@@ -199,7 +204,7 @@ export class CommandManager {
     /**
      * @param {import('discord.js').Interaction} interaction
      * @param {Error|import('discord.js').DiscordAPIError} error
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async handleCommandError(interaction, error) {
         const name = [
@@ -219,7 +224,7 @@ export class CommandManager {
 
     /**
      * @param {import('discord.js').ChatInputCommandInteraction} interaction
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async execute(interaction) {
         const command = this.findCommand(interaction.commandName);
@@ -237,7 +242,7 @@ export class CommandManager {
 
     /**
      * @param {import('discord.js').AutocompleteInteraction} interaction
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async autocomplete(interaction) {
         const command = this.findCommand(interaction.commandName);
@@ -262,7 +267,7 @@ export class CommandManager {
 
     /**
      * @param {import('discord.js').UserContextMenuCommandInteraction} interaction
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async executeUserMenu(interaction) {
         const command = this.findCommand(interaction.commandName);
@@ -280,7 +285,7 @@ export class CommandManager {
 
     /**
      * @param {import('discord.js').MessageContextMenuCommandInteraction} interaction
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async executeMessageMenu(interaction) {
         const command = this.findCommand(interaction.commandName);
@@ -298,7 +303,7 @@ export class CommandManager {
 
     /**
      * @param {import('discord.js').ButtonInteraction} interaction
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async executeButton(interaction) {
         if (!interaction.customId) {
@@ -324,7 +329,7 @@ export class CommandManager {
 
     /**
      * @param {import('discord.js').ModalSubmitInteraction} interaction
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async executeModal(interaction) {
         const command = this.findCommandByCustomId(interaction.customId);
@@ -346,7 +351,7 @@ export class CommandManager {
 
     /**
      * @param {import('discord.js').AnySelectMenuInteraction} interaction
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async executeSelectMenu(interaction) {
         const command = this.findCommandByCustomId(interaction.customId);
@@ -368,7 +373,7 @@ export class CommandManager {
 
     /**
      * @param {?string} id
-     * @return {?Command}
+     * @returns {?Command}
      */
     findCommandByCustomId(id) {
         if (!id) {
@@ -381,7 +386,7 @@ export class CommandManager {
     /**
      * @param {import('discord.js').Interaction} interaction
      * @param {Command} command
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async checkMemberPermissions(interaction, command) {
         const permission = await this.hasPermission(interaction, command);
@@ -394,7 +399,7 @@ export class CommandManager {
     /**
      * @param {import('discord.js').Interaction} interaction
      * @param {Command} command
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async hasPermission(interaction, command) {
         return SlashCommandPermissionManagers

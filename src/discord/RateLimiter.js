@@ -2,6 +2,10 @@ import {Collection} from 'discord.js';
 import database from '../bot/Database.js';
 import logger from '../bot/Logger.js';
 
+/**
+ * @import {Guild, User, GuildMember} from 'discord.js';
+ */
+
 export default class RateLimiter {
     static #modCountCache = new Collection();
     static #modCountTimeouts = new Collection();
@@ -10,8 +14,8 @@ export default class RateLimiter {
      * send a user a direct message
      * @param {Guild} guild
      * @param {User|GuildMember} user
-     * @param {String} message
-     * @return {Promise<void>}
+     * @param {string} message
+     * @returns {Promise<void>}
      */
     static async sendDM(guild, user, message) {
         let count = this.#modCountCache.get(guild.id);

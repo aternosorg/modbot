@@ -3,6 +3,10 @@ import {resolveColor} from '../util/colors.js';
 import {formatTime} from '../util/timeutils.js';
 import KeyValueEmbed from './KeyValueEmbed.js';
 
+/**
+ * @import {Moderation} from '../models/Moderation.js';
+ */
+
 export default class ModerationEmbed extends KeyValueEmbed {
 
     /**

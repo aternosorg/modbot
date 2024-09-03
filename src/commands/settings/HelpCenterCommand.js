@@ -70,7 +70,7 @@ export default class HelpCenterCommand extends SubCommand {
 
     /**
      * @param {string} domain
-     * @return {?string}
+     * @returns {?string}
      */
     findDomain(domain) {
         const match = domain.match(/^(?:https?:\/\/)?([\w.]+)(?:[/?].*)?$/i);
@@ -84,7 +84,7 @@ export default class HelpCenterCommand extends SubCommand {
     /**
      * resolve the zendesk help center name
      * @param {string} domain
-     * @return {Promise<?string>}
+     * @returns {Promise<?string>}
      */
     async findHelpCenterName(domain) {
         if (domain.includes('.') && !ZENDESK_REGEX.test(domain)) {
@@ -106,14 +106,14 @@ export default class HelpCenterCommand extends SubCommand {
     /**
      * find a CNAME record pointing to a zendesk help center
      * @param {string} domain
-     * @return {Promise<?string>}
+     * @returns {Promise<?string>}
      */
     async resolveCNAME(domain) {
         try {
             const result = await resolveCname(domain);
             return result.find(entry => entry.endsWith('.zendesk.com')) ?? null;
         }
-        catch (e) {
+        catch {
             return null;
         }
     }

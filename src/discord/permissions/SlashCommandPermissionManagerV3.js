@@ -1,6 +1,11 @@
 import SlashCommandPermissionManager from './SlashCommandPermissionManager.js';
 import {PermissionFlagsBits} from 'discord.js';
 
+/**
+ * @import {Command} from '../commands/Command.js';
+ * @import {SlashCommandPermissionOverrides} from './SlashCommandPermissionOverrides.js';
+ */
+
 export default class SlashCommandPermissionManagerV3 extends SlashCommandPermissionManager {
     /**
      * Check if the user has permission to execute the command.
@@ -9,7 +14,7 @@ export default class SlashCommandPermissionManagerV3 extends SlashCommandPermiss
      * Flowchart: ![](https://media.discordapp.net/attachments/697138785317814292/1042878162901672048/flowchart-for-new-permissions.png)
      * @param {import('discord.js').Interaction<"cached">} interaction
      * @param {Command} command
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async hasPermission(interaction, command) {
         if (interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
@@ -29,7 +34,7 @@ export default class SlashCommandPermissionManagerV3 extends SlashCommandPermiss
      * @param {SlashCommandPermissionOverrides} appOverrides
      * @param {import('discord.js').Interaction<"cached">} interaction
      * @param {Command} command
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async hasCommandLevelChannelPermission(commandOverrides, appOverrides, interaction, command) {
         if (commandOverrides.channelOverride) {
@@ -59,7 +64,7 @@ export default class SlashCommandPermissionManagerV3 extends SlashCommandPermiss
      * @param {SlashCommandPermissionOverrides} appOverrides
      * @param {import('discord.js').Interaction<"cached">} interaction
      * @param {Command} command
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async hasAppLevelChannelPermission(commandOverrides, appOverrides, interaction, command) {
         if (appOverrides.channelOverride) {
@@ -84,7 +89,7 @@ export default class SlashCommandPermissionManagerV3 extends SlashCommandPermiss
      * @param {SlashCommandPermissionOverrides} appOverrides
      * @param {import('discord.js').Interaction<"cached">} interaction
      * @param {Command} command
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async hasCommandLevelUserRolePermission(commandOverrides, appOverrides, interaction, command) {
         if (commandOverrides.memberOverride) {
@@ -110,7 +115,7 @@ export default class SlashCommandPermissionManagerV3 extends SlashCommandPermiss
      * @param {SlashCommandPermissionOverrides} appOverrides
      * @param {import('discord.js').Interaction<"cached">} interaction
      * @param {Command} command
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async hasAppLevelUserRolePermission(commandOverrides, appOverrides, interaction, command) {
         if (appOverrides.memberOverride) {
@@ -145,7 +150,7 @@ export default class SlashCommandPermissionManagerV3 extends SlashCommandPermiss
      * @param {SlashCommandPermissionOverrides} appOverrides
      * @param {import('discord.js').Interaction<"cached">} interaction
      * @param {Command} command
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async hasDefaultPermission(commandOverrides, appOverrides, interaction, command) {
         switch (command.getDefaultMemberPermissions()) {

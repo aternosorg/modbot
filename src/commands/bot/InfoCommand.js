@@ -33,6 +33,9 @@ export const PERMISSIONS = new PermissionsBitField()
 export const INVITE_LINK = `https://discord.com/oauth2/authorize?client_id=${CLIENT_ID}&scope=${SCOPES.join('%20')}&permissions=${PERMISSIONS.bitfield}`;
 
 export const VERSION = await getPackageVersion();
+/**
+ * @returns {Promise<?string>}
+ */
 async function getPackageVersion() {
     try {
         const pkgJson = JSON.parse((await readFile('package.json')).toString());
@@ -44,9 +47,13 @@ async function getPackageVersion() {
 }
 
 export const COMMIT = await getGitCommit();
+
+/**
+ * @returns {Promise<?string>}
+ */
 async function getGitCommit() {
     if (process.env.MODBOT_COMMIT_HASH) {
-        return process.env.MODBOT_COMMIT_HASH;
+        return /** @type {string} */ process.env.MODBOT_COMMIT_HASH;
     }
 
     try {

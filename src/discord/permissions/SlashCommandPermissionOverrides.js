@@ -37,7 +37,7 @@ export default class SlashCommandPermissionOverrides {
 
     /**
      * get the raw overrides
-     * @return {import('discord.js').ApplicationCommandPermissions[]}
+     * @returns {import('discord.js').ApplicationCommandPermissions[]}
      */
     get rawOverrides() {
         return this.#overrides;
@@ -45,7 +45,7 @@ export default class SlashCommandPermissionOverrides {
 
     /**
      * get all role overrides
-     * @return {import('discord.js').ApplicationCommandPermissions[]}
+     * @returns {import('discord.js').ApplicationCommandPermissions[]}
      */
     get roleOverrides() {
         return this.#overrides.filter(override => override.type === ApplicationCommandPermissionType.Role);
@@ -53,7 +53,7 @@ export default class SlashCommandPermissionOverrides {
 
     /**
      * get the overrides for the @everyone role
-     * @return {?import('discord.js').ApplicationCommandPermissions}
+     * @returns {?import('discord.js').ApplicationCommandPermissions}
      */
     get everyoneOverride() {
         return this.roleOverrides.find(override => override.id === this.#guild.id) ?? null;
@@ -61,7 +61,7 @@ export default class SlashCommandPermissionOverrides {
 
     /**
      * get the overrides for all roles this member has
-     * @return {import('discord.js').ApplicationCommandPermissions[]}
+     * @returns {import('discord.js').ApplicationCommandPermissions[]}
      */
     get memberRoleOverrides() {
         return this.roleOverrides.filter(override => this.#member.roles.resolve(override.id));
@@ -69,7 +69,7 @@ export default class SlashCommandPermissionOverrides {
 
     /**
      * get the overrides for all members
-     * @return {import('discord.js').ApplicationCommandPermissions[]}
+     * @returns {import('discord.js').ApplicationCommandPermissions[]}
      */
     get memberOverrides() {
         return this.#overrides.filter(override => override.type === ApplicationCommandPermissionType.User);
@@ -77,7 +77,7 @@ export default class SlashCommandPermissionOverrides {
 
     /**
      * get the override value for a single member
-     * @return {?import('discord.js').ApplicationCommandPermissions}
+     * @returns {?import('discord.js').ApplicationCommandPermissions}
      */
     get memberOverride() {
         return this.memberOverrides.find(override => override.id === this.#member.id) ?? null;
@@ -85,7 +85,7 @@ export default class SlashCommandPermissionOverrides {
 
     /**
      * get the overrides for all channels
-     * @return {import('discord.js').ApplicationCommandPermissions[]}
+     * @returns {import('discord.js').ApplicationCommandPermissions[]}
      */
     get channelOverrides() {
         return this.#overrides.filter(override => override.type === ApplicationCommandPermissionType.Channel);
@@ -93,7 +93,7 @@ export default class SlashCommandPermissionOverrides {
 
     /**
      * get the default channel override value
-     * @return {?import('discord.js').ApplicationCommandPermissions}
+     * @returns {?import('discord.js').ApplicationCommandPermissions}
      */
     get allChannelsOverride() {
         // https://discord.com/developers/docs/interactions/application-commands#application-command-permissions-object-application-command-permissions-constants
@@ -102,7 +102,7 @@ export default class SlashCommandPermissionOverrides {
 
     /**
      * get the override value for a single channel
-     * @return {?import('discord.js').ApplicationCommandPermissions}
+     * @returns {?import('discord.js').ApplicationCommandPermissions}
      */
     get channelOverride() {
         return this.channelOverrides.find(override => override.id === this.#channel.id) ?? null;

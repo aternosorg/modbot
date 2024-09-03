@@ -7,6 +7,12 @@ import ChatFeatureEmbed from '../embeds/ChatFeatureEmbed.js';
 import {EMBED_FIELD_LIMIT} from '../util/apiLimits.js';
 
 /**
+ * @import {Trigger} from './triggers/Trigger.js';
+ * @import {Punishment} from './Punishment.js';
+ * @import {EmbedWrapper} from '../embeds/EmbedWrapper.js';
+ */
+
+/**
  * Class representing a bad word
  */
 export default class BadWord extends ChatTriggeredFeature {
@@ -29,17 +35,17 @@ export default class BadWord extends ChatTriggeredFeature {
     /**
      * constructor - create a bad word
      * @param {import('discord.js').Snowflake} gid guild ID
-     * @param {Object} json options
+     * @param {object} json options
      * @param {Trigger} json.trigger filter that triggers the bad word
-     * @param {String|Punishment} json.punishment punishment for the members which trigger this
-     * @param {String} [json.response] a message that is sent by this filter. It's automatically deleted after 5 seconds
-     * @param {Boolean} json.global does this apply to all channels in this guild
+     * @param {string|Punishment} json.punishment punishment for the members which trigger this
+     * @param {string} [json.response] a message that is sent by this filter. It's automatically deleted after 5 seconds
+     * @param {boolean} json.global does this apply to all channels in this guild
      * @param {import('discord.js').Snowflake[]} [json.channels] channels that this applies to
-     * @param {Number} [json.priority] badword priority (higher -> more important)
+     * @param {number} [json.priority] badword priority (higher -> more important)
      * @param {?string} [json.dm] direct message to send to the user
      * @param {boolean} [json.enableVision] enable vision api for this badword
-     * @param {Number} [id] id in DB
-     * @return {BadWord}
+     * @param {number} [id] id in DB
+     * @returns {BadWord}
      */
     constructor(gid, json, id) {
         super(id, json.trigger);
@@ -76,7 +82,7 @@ export default class BadWord extends ChatTriggeredFeature {
 
     /**
      * check if the types of this object are a valid auto-response
-     * @param {Object} json
+     * @param {object} json
      */
     static checkTypes(json) {
         TypeChecker.assertOfTypes(json, ['object'], 'Data object');
@@ -118,8 +124,8 @@ export default class BadWord extends ChatTriggeredFeature {
 
     /**
      * generate an Embed displaying the info of this bad word
-     * @param {String}        title
-     * @param {Number}        color
+     * @param {string}        title
+     * @param {number}        color
      * @returns {EmbedWrapper}
      */
     embed(title = 'Bad-word', color = colors.GREEN) {
@@ -135,9 +141,9 @@ export default class BadWord extends ChatTriggeredFeature {
      * @param {import('discord.js').Snowflake} guildID
      * @param {boolean} global
      * @param {import('discord.js').Snowflake[]|null} channels
-     * @param {String} triggerType
-     * @param {String} triggerContent
-     * @param {String} [response] response to bad-word
+     * @param {string} triggerType
+     * @param {string} triggerContent
+     * @param {string} [response] response to bad-word
      * @param {?string} punishment
      * @param {?number} duration
      * @param {?number} priority

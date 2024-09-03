@@ -3,7 +3,7 @@ import {readFile} from 'fs/promises';
 
 /**
  * @param {string} path
- * @return {Promise<boolean>}
+ * @returns {Promise<boolean>}
  */
 export async function exists(path) {
     try {
@@ -21,7 +21,7 @@ export async function exists(path) {
 /**
  * read a json file
  * @param {string} path
- * @return {Promise<*>}
+ * @returns {Promise<*>}
  */
 export async function readJSON(path) {
     return JSON.parse((await readFile(path)).toString());

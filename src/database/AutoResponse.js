@@ -5,6 +5,12 @@ import colors from '../util/colors.js';
 import ChatFeatureEmbed from '../embeds/ChatFeatureEmbed.js';
 
 /**
+ * @import {Trigger} from './triggers/Trigger.js';
+ * @import {Punishment} from './Punishment.js';
+ * @import {EmbedWrapper} from '../embeds/EmbedWrapper.js';
+ */
+
+/**
  * Class representing an auto response
  */
 export default class AutoResponse extends ChatTriggeredFeature {
@@ -16,14 +22,14 @@ export default class AutoResponse extends ChatTriggeredFeature {
     /**
      * constructor - create an auto response
      * @param {import('discord.js').Snowflake} gid guild ID
-     * @param {Object} json options
+     * @param {object} json options
      * @param {Trigger} json.trigger filter that triggers the response
-     * @param {String} json.response message to send to the channel
-     * @param {Boolean} json.global does this apply to all channels in this guild
+     * @param {string} json.response message to send to the channel
+     * @param {boolean} json.global does this apply to all channels in this guild
      * @param {import('discord.js').Snowflake[]} [json.channels] channels that this applies to
      * @param {boolean} [json.enableVision] enable vision api for this auto response
-     * @param {Number} [id] id in DB
-     * @return {AutoResponse} the auto response
+     * @param {number} [id] id in DB
+     * @returns {AutoResponse} the auto response
      */
     constructor(gid, json, id) {
         super(id, json.trigger);
@@ -43,7 +49,7 @@ export default class AutoResponse extends ChatTriggeredFeature {
 
     /**
      * check if the types of this object are a valid auto-response
-     * @param {Object} json
+     * @param {object} json
      */
     static checkTypes(json) {
         TypeChecker.assertOfTypes(json, ['object'], 'Data object');
@@ -74,8 +80,8 @@ export default class AutoResponse extends ChatTriggeredFeature {
 
     /**
      * generate an Embed displaying the info of this response
-     * @param {String}        title
-     * @param {Number}        color
+     * @param {string}        title
+     * @param {number}        color
      * @returns {EmbedWrapper}
      */
     embed(title = 'Auto-response', color = colors.GREEN) {
@@ -87,9 +93,9 @@ export default class AutoResponse extends ChatTriggeredFeature {
      * @param {import('discord.js').Snowflake} guildID
      * @param {boolean} global
      * @param {import('discord.js').Snowflake[]|null} channels
-     * @param {String} triggerType
-     * @param {String} triggerContent
-     * @param {String} responseText
+     * @param {string} triggerType
+     * @param {string} triggerContent
+     * @param {string} responseText
      * @param {?boolean} enableVision
      * @returns {Promise<{success:boolean, response: ?AutoResponse, message: ?string}>}
      */

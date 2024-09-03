@@ -1,12 +1,16 @@
 import {bold} from 'discord.js';
 import LineEmbed from './LineEmbed.js';
 
+/**
+ * @import {Iterable} from '@types/node';
+ */
+
 export default class KeyValueEmbed extends LineEmbed {
     /**
      * add a line
      * @param {string} name
      * @param {string|number} value
-     * @return {this}
+     * @returns {this}
      */
     addPair(name, value) {
         return this.addLine(bold(name) + ': ' + value);
@@ -16,7 +20,7 @@ export default class KeyValueEmbed extends LineEmbed {
      * add a list of values
      * @param {string} name
      * @param {Iterable<string|number>} list
-     * @return {KeyValueEmbed}
+     * @returns {KeyValueEmbed}
      */
     addList(name, list) {
         this.addLine(bold(name) + ':');
@@ -30,7 +34,7 @@ export default class KeyValueEmbed extends LineEmbed {
      * add a list of values or a short enumeration for lists with up to 3 items
      * @param {string} name
      * @param {Array<string|number>} list
-     * @return {KeyValueEmbed}
+     * @returns {KeyValueEmbed}
      */
     addListOrShortList(name, list) {
         if (list.length > 3) {
@@ -43,7 +47,7 @@ export default class KeyValueEmbed extends LineEmbed {
      * @param {*} condition
      * @param {string} name
      * @param {string|number} value
-     * @return {this}
+     * @returns {this}
      */
     addPairIf(condition, name, value) {
         if (condition) {

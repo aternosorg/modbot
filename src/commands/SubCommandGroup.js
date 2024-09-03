@@ -1,11 +1,15 @@
 import ExecutableCommand from './ExecutableCommand.js';
 import commandManager from './CommandManager.js';
 
+/**
+ * @import SubCommand from './SubCommand.js';
+ */
+
 export default class SubCommandGroup extends ExecutableCommand {
 
     /**
      * @abstract
-     * @return {string}
+     * @returns {string}
      */
     getName() {
         return 'unknown';
@@ -13,7 +17,7 @@ export default class SubCommandGroup extends ExecutableCommand {
 
     /**
      * @abstract
-     * @return {string}
+     * @returns {string}
      */
     getDescription() {
         return 'unknown';
@@ -21,7 +25,7 @@ export default class SubCommandGroup extends ExecutableCommand {
 
     /**
      * @abstract
-     * @return {SubCommand[]}
+     * @returns {SubCommand[]}
      */
     getChildren() {
         return [];
@@ -29,7 +33,7 @@ export default class SubCommandGroup extends ExecutableCommand {
 
     /**
      * @param {import('discord.js').SlashCommandSubcommandGroupBuilder} builder
-     * @return {import('discord.js').SlashCommandSubcommandGroupBuilder}
+     * @returns {import('discord.js').SlashCommandSubcommandGroupBuilder}
      */
     buildSubCommandGroup(builder) {
         builder.setName(this.getName());
@@ -45,7 +49,7 @@ export default class SubCommandGroup extends ExecutableCommand {
     /**
      * find a child by the sub command name
      * @param {import('discord.js').Interaction} interaction
-     * @return {SubCommand|null}
+     * @returns {SubCommand|null}
      */
     #findChildByName(interaction) {
         const name = interaction.options.getSubcommand();
@@ -56,7 +60,7 @@ export default class SubCommandGroup extends ExecutableCommand {
      * find a child by the custom id of the moderation
      * must use syntax 'command:subcommand:other-data'
      * @param {import('discord.js').Interaction} interaction
-     * @return {Promise<SubCommand|null>}
+     * @returns {Promise<SubCommand|null>}
      */
     async #findChildByCustomId(interaction) {
         const name = interaction.customId.split(':')[2];

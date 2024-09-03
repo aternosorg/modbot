@@ -245,7 +245,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
      * @param {?number} priority
      * @param {?string} dm
      * @param {?boolean} enableVision
-     * @return {Promise<*>}
+     * @returns {Promise<*>}
      */
     async create(
         interaction,

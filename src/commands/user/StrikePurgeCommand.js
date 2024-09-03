@@ -17,6 +17,10 @@ import CountInput from '../../modals/inputs/CountInput.js';
 import TextInput from '../../modals/inputs/TextInput.js';
 
 /**
+ * @import {StrikeConfirmationData} from './StrikeCommand.js';
+ */
+
+/**
  * @typedef {StrikeConfirmationData} StrikePurgeConfirmationData
  * @property {number} limit
  */
@@ -65,7 +69,7 @@ export default class StrikePurgeCommand extends StrikeCommand {
      * @param {?string} comment
      * @param {?number} count
      * @param {?number} limit
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async strikePurge(interaction, member, reason, comment, count, limit) {
         await deferReplyOnce(interaction);
@@ -132,7 +136,7 @@ export default class StrikePurgeCommand extends StrikeCommand {
      * prompt user for strike reason, count and message test limit
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async promptForData(interaction, member) {
         if (!member) {

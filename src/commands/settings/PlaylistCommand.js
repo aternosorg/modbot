@@ -67,7 +67,7 @@ export default class PlaylistCommand extends SubCommand {
 
     /**
      * @param {string} url
-     * @return {?string}
+     * @returns {?string}
      */
     getPlaylistId(url) {
         const match = url.match(PLAYLIST_REGEX);

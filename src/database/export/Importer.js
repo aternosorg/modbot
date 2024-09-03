@@ -1,8 +1,14 @@
+/**
+ * @class Importer
+ * @classdesc Base class for importing data into the DB
+ * @abstract
+ */
 export default class Importer {
 
     /**
      * import all data to the DB
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
+     * @abstract
      */
     async import() {
         throw new Error('Method not implemented');
@@ -11,6 +17,7 @@ export default class Importer {
     /**
      * verify that all data is of correct types before importing
      * @throws {TypeError}
+     * @abstract
      */
     checkAllTypes() {
         throw new Error('Method not implemented');
@@ -18,9 +25,10 @@ export default class Importer {
 
     /**
      * generate an embed showing an overview of imported data
-     * @return {import('discord.js').EmbedBuilder}
+     * @returns {import('discord.js').EmbedBuilder}
+     * @abstract
      */
     generateEmbed() {
-
+        throw new Error('Method not implemented');
     }
 }

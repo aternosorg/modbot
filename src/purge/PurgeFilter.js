@@ -9,7 +9,7 @@ export default class PurgeFilter {
      * Does this message match this filter?
      * @abstract
      * @param {import('discord.js').Message} message
-     * @return {boolean}
+     * @returns {boolean}
      */
     matches(message) {
         throw new Error('Not implemented');

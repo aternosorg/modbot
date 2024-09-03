@@ -1,7 +1,7 @@
 /**
  * parse this time string to a duration in seconds
  * @param {?string} string
- * @return {?number} null if no time was included in the string
+ * @returns {?number} null if no time was included in the string
  */
 export function parseTime(string) {
     if (!string) {
@@ -52,7 +52,7 @@ export function parseTime(string) {
 /**
  * format this duration as a string
  * @param {number} duration in seconds
- * @return {string}
+ * @returns {string}
  */
 export function formatTime(duration) {
     let output = '';
@@ -79,7 +79,7 @@ export function formatTime(duration) {
 
 /**
  * current time as a unix timestamp (seconds)
- * @return {number}
+ * @returns {number}
  */
 export function timeNow() {
     return Math.floor(Date.now() / 1000);
@@ -88,7 +88,7 @@ export function timeNow() {
 /**
  * return time after duration has expired as unix timestamp (seconds)
  * @param {string} duration
- * @return {number}
+ * @returns {number}
  */
 export function timeAfter(duration) {
     return timeNow() + (parseTime(duration) ?? 0);

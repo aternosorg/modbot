@@ -10,10 +10,14 @@ import {formatTime} from '../util/timeutils.js';
 import MemberWrapper from '../discord/MemberWrapper.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
 
+/**
+ * @import {Message} from 'discord.js';
+ */
+
 export default class Moderation {
 
     /**
-     * @type {Number}
+     * @type {number}
      */
     id;
 
@@ -29,43 +33,43 @@ export default class Moderation {
 
     /**
      * moderation actions:
-     * * ban
-     * * unban
-     * * kick
-     * * mute
-     * * unmute
-     * * softban
-     * * strike
-     * * pardon
-     * @type {String}
+     * - ban
+     * - unban
+     * - kick
+     * - mute
+     * - unmute
+     * - softban
+     * - strike
+     * - pardon
+     * @type {string}
      */
     action;
 
     /**
      * UNIX timestamp of creation (in seconds)
-     * @type {Number}
+     * @type {number}
      */
     created;
 
     /**
      * e.g. strike count
-     * @type {Number}
+     * @type {number}
      */
     value;
 
     /**
      * UNIX timestamp of expiration (in seconds)
-     * @type {Number}
+     * @type {number}
      */
     expireTime;
 
     /**
-     * @type {?String}
+     * @type {?string}
      */
     reason;
 
     /**
-     * @type {?String}
+     * @type {?string}
      */
     comment;
 
@@ -80,15 +84,15 @@ export default class Moderation {
     active;
 
     /**
-     * @param {Object} data
-     * @param {Number} [data.id]
+     * @param {object} data
+     * @param {number} [data.id]
      * @param {import('discord.js').Snowflake} data.guildid
      * @param {import('discord.js').Snowflake} data.userid
-     * @param {String} data.action
+     * @param {string} data.action
      * @param {?string|number} [data.created]
-     * @param {Number} [data.value]
-     * @param {String} [data.reason]
-     * @param {String} [data.comment]
+     * @param {number} [data.value]
+     * @param {string} [data.reason]
+     * @param {string} [data.comment]
      * @param {?string|number} [data.expireTime]
      * @param {import('discord.js').Snowflake} data.moderator
      * @param {boolean} [data.active]
@@ -109,7 +113,7 @@ export default class Moderation {
 
     /**
      * check if the types of this object are a valid Moderation
-     * @param {Object} data
+     * @param {object} data
      */
     static checkTypes(data) {
         TypeChecker.assertOfTypes(data, ['object'], 'Data object');
@@ -129,7 +133,7 @@ export default class Moderation {
 
     /**
      * escaped database fields
-     * @return {string[]}
+     * @returns {string[]}
      */
     static getFields() {
         return ['id', 'guildid', 'userid', 'action', 'created', 'value', 'expireTime', 'reason', 'comment', 'moderator', 'active']
@@ -141,7 +145,7 @@ export default class Moderation {
      * @param {WhereParameter[]} params
      * @param {?number} limit
      * @param {boolean} sortAscending
-     * @return {Promise<Moderation[]>}
+     * @returns {Promise<Moderation[]>}
      */
     static async select(params, limit = null, sortAscending = true) {
         const where = params.join(' AND ');
@@ -162,7 +166,7 @@ export default class Moderation {
      * get all moderations for a guild or member
      * @param {import('discord.js').Snowflake} guildId
      * @param {import('discord.js').Snowflake} [userId]
-     * @return {Promise<Moderation[]>}
+     * @returns {Promise<Moderation[]>}
      */
     static async getAll(guildId, userId = null) {
         const params = [new WhereParameter('guildid', guildId)];
@@ -178,7 +182,7 @@ export default class Moderation {
      * get a moderation
      * @param {import('discord.js').Snowflake} guildId
      * @param {number} id
-     * @return {Promise<?Moderation>}
+     * @returns {Promise<?Moderation>}
      */
     static async get(guildId, id) {
         return (await this.select([
@@ -190,7 +194,7 @@ export default class Moderation {
     /**
      * insert multiple moderations at once
      * @param {Moderation[]} moderations
-     * @return {Promise}
+     * @returns {Promise}
      */
     static async bulkSave(moderations) {
         if(!Array.isArray(moderations) || !moderations.length) {
@@ -210,7 +214,7 @@ export default class Moderation {
 
     /**
      * get duration in seconds
-     * @return {null|number}
+     * @returns {null|number}
      */
     getDuration() {
         if (!this.expireTime) return null;
@@ -219,7 +223,7 @@ export default class Moderation {
 
     /**
      * add this moderation to the database
-     * @return {Promise<number>}
+     * @returns {Promise<number>}
      */
     async save() {
         const fields = this.constructor.getFields().slice(1);
@@ -240,7 +244,7 @@ export default class Moderation {
     /**
      * log this moderation to the guild's log channel
      * @param {?number} total total strike count
-     * @return {Promise<Message>}
+     * @returns {Promise<Message>}
      */
     async log(total = null) {
         const user = await this.getUser();
@@ -271,7 +275,7 @@ export default class Moderation {
 
     /**
      * Delete this moderation from the database
-     * @return {Promise}
+     * @returns {Promise}
      */
     async delete() {
         return database.query('DELETE FROM moderations WHERE id = ?', this.id);
@@ -279,7 +283,7 @@ export default class Moderation {
 
     /**
      * get all parameters of this moderation
-     * @return {(import('discord.js').Snowflake|String|Number)[]}
+     * @returns {(import('discord.js').Snowflake|string|number)[]}
      */
     getParameters() {
         return [this.guildid, this.userid, this.action, this.created, this.value, this.expireTime, this.reason, this.comment, this.moderator, this.active];
@@ -287,7 +291,7 @@ export default class Moderation {
 
     /**
      * fetch the user targeted by this moderation.
-     * @return {Promise<import('discord.js').User>}
+     * @returns {Promise<import('discord.js').User>}
      */
     async getUser() {
         return await (new UserWrapper(this.userid)).fetchUser();
@@ -295,7 +299,7 @@ export default class Moderation {
 
     /**
      * fetch the guild this moderation was executed in.
-     * @return {Promise<GuildWrapper>}
+     * @returns {Promise<GuildWrapper>}
      */
     async getGuildWrapper() {
         return await GuildWrapper.fetch(this.guildid);
@@ -303,7 +307,7 @@ export default class Moderation {
 
     /**
      * fetch the user targeted by this moderation.
-     * @return {Promise<MemberWrapper>}
+     * @returns {Promise<MemberWrapper>}
      */
     async getMemberWrapper() {
         return new MemberWrapper(await this.getUser(), await this.getGuildWrapper());
@@ -311,7 +315,7 @@ export default class Moderation {
 
     /**
      * fetch the moderator who executed this moderation.
-     * @return {Promise<?import('discord.js').User>}
+     * @returns {Promise<?import('discord.js').User>}
      */
     async getModerator() {
         if (!this.moderator) {

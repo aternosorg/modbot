@@ -6,8 +6,12 @@ import colors from '../util/colors.js';
 import Triggers from './triggers/Triggers.js';
 
 /**
+ * @import {Trigger} from './triggers/Trigger.js';
+ */
+
+/**
  * Config cache time (ms)
- * @type {Number}
+ * @type {number}
  */
 const cacheDuration = 10 * 60 * 1000;
 
@@ -26,19 +30,19 @@ export default class ChatTriggeredFeature {
 
     /**
      * Possible trigger types
-     * @type {String[]}
+     * @type {string[]}
      */
     static triggerTypes = ['regex', 'include', 'match', 'phishing'];
 
     /**
      * table name
-     * @type {String}
+     * @type {string}
      */
     static tableName;
 
     /**
      * column names
-     * @type {String[]}
+     * @type {string[]}
      */
     static columns;
 
@@ -69,7 +73,7 @@ export default class ChatTriggeredFeature {
     enableVision = false;
 
     /**
-     * @param {Number} id ID in the database
+     * @param {number} id ID in the database
      * @param {Trigger} trigger
      */
     constructor(id, trigger) {
@@ -109,7 +113,7 @@ export default class ChatTriggeredFeature {
     /**
      * get the placeholder text for this trigger type
      * @param {string} type
-     * @return {string}
+     * @returns {string}
      */
     static getTriggerPlaceholder(type) {
         switch (type) {
@@ -145,7 +149,7 @@ export default class ChatTriggeredFeature {
 
     /**
      * get an overview of this object
-     * @return {string}
+     * @returns {string}
      * @abstract
      */
     getOverview() {
@@ -154,7 +158,7 @@ export default class ChatTriggeredFeature {
 
     /**
      * get escaped table name
-     * @return {string}
+     * @returns {string}
      */
     static get escapedTableName() {
         return database.escapeId(this.tableName);
@@ -164,7 +168,7 @@ export default class ChatTriggeredFeature {
      * get an overview of all objects of this type for this guild
      * @param {import('discord.js').Guild} guild
      * @param {string} name feature name (e.g. Auto-responses or Bad-words).
-     * @return {Promise<LineEmbed[]>}
+     * @returns {Promise<LineEmbed[]>}
      */
     static async getGuildOverview(guild, name) {
         const objects = await this.getAll(guild.id);
@@ -202,7 +206,7 @@ export default class ChatTriggeredFeature {
     /**
      * Save to db and cache
      * @async
-     * @return {Promise<Number>} id in db
+     * @returns {Promise<number>} id in db
      */
     async save() {
         if (this.id) {
@@ -220,7 +224,7 @@ export default class ChatTriggeredFeature {
         } else {
             const columns = database.escapeId(this.constructor.columns);
             const values = ',?'.repeat(this.constructor.columns.length).slice(1);
-            /** @property {Number} insertId*/
+            /** @property {number} insertId*/
             const dbEntry = await database.queryAll(
                 `INSERT INTO ${this.constructor.escapedTableName} (${columns})
                  VALUES (${values})`, ...this.serialize());
@@ -263,7 +267,7 @@ export default class ChatTriggeredFeature {
 
     /**
      * create this object from data retrieved from the database
-     * @param data
+     * @param {object} data
      * @returns {this}
      */
     static fromData(data) {
@@ -275,7 +279,7 @@ export default class ChatTriggeredFeature {
 
     /**
      * Get a single bad word / auto response
-     * @param {String|Number} id
+     * @param {string|number} id
      * @param {import('discord.js').Snowflake} guildid
      * @returns {Promise<?this>}
      */
@@ -290,8 +294,8 @@ export default class ChatTriggeredFeature {
 
     /**
      * get a trigger
-     * @param {String} type trigger type
-     * @param {String} value trigger value
+     * @param {string} type trigger type
+     * @param {string} value trigger value
      * @returns {{trigger: ?Trigger, success: boolean, message: ?string}}
      */
     static getTrigger(type, value) {
@@ -304,7 +308,7 @@ export default class ChatTriggeredFeature {
 
         let content = value, flags;
         if (type === 'regex') {
-            /** @type {String[]}*/
+            /** @type {string[]}*/
             let parts = value.split(/(?<!\\)\//);
             if (parts.length < 2 || parts.shift()?.length) return {
                 success: false,
@@ -327,7 +331,7 @@ export default class ChatTriggeredFeature {
      * @async
      * @param {import('discord.js').Snowflake} channelId
      * @param {import('discord.js').Snowflake} guildId
-     * @return {Collection<Number, this>}
+     * @returns {Collection<number, this>}
      */
     static async get(channelId, guildId) {
 
@@ -346,7 +350,7 @@ export default class ChatTriggeredFeature {
      * Get all items for a guild
      * @async
      * @param {import('discord.js').Snowflake} guildId
-     * @return {Promise<Collection<Number, this.prototype>>}
+     * @returns {Promise<Collection<number, this.prototype>>}
      */
     static async getAll(guildId) {
         const result = await database.queryAll(

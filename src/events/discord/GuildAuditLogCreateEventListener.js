@@ -11,7 +11,7 @@ export default class GuildAuditLogCreateEventListener extends EventListener {
     /**
      * @param {import('discord.js').GuildAuditLogsEntry} entry
      * @param {import('discord.js').Guild} guild
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async execute(entry, guild) {
         if (!entry.executorId) {
@@ -108,7 +108,7 @@ export default class GuildAuditLogCreateEventListener extends EventListener {
      * @param {import('discord.js').GuildAuditLogsEntry} entry
      * @param {import('discord.js').Guild} guild
      * @param {?number} [duration]
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async createModeration(action, entry, guild, duration = null) {
         const member = new MemberWrapper(entry.target, guild);

@@ -36,9 +36,9 @@
   },
   "devDependencies": {
     "@types/node": "^22.5.2",
-    "eslint": "^8.36.0",
-    "eslint-plugin-jsdoc": "^40.1.0",
-    "eslint-plugin-json": "^3.1.0"
+    "eslint": "^9.9.1",
+    "eslint-plugin-jsdoc": "^50.2.2",
+    "eslint-plugin-json": "^4.0.1"
   },
   "lint-staged": {
     "*.js": [

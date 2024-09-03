@@ -55,7 +55,7 @@ export default class PardonCommand extends UserCommand {
      * @param {?string} comment
      * @param {import('discord.js').User} moderator
      * @param {?number} count
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async pardon(interaction, member, reason, comment, moderator, count) {
         await deferReplyOnce(interaction);
@@ -89,7 +89,7 @@ export default class PardonCommand extends UserCommand {
     /**
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async promptForData(interaction, member) {
         if (!member) {

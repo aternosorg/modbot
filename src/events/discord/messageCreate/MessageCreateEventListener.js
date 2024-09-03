@@ -9,7 +9,7 @@ export default class MessageCreateEventListener extends EventListener {
     /**
      * @abstract
      * @param {import('discord.js').Message} message
-     * @return {Promise<unknown>}
+     * @returns {Promise<unknown>}
      */
     async execute(message) {
         message.createdAt;

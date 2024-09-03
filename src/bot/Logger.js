@@ -16,7 +16,7 @@ export class Logger {
     }
 
     /**
-     * @param {String|Object} message
+     * @param {string | object} message
      * @param {Error} [error]
      * @returns {Promise}
      */
@@ -25,7 +25,7 @@ export class Logger {
     }
 
     /**
-     * @param {String|Object} message
+     * @param {string | object} message
      * @param {Error} [error]
      * @returns {Promise}
      */
@@ -34,7 +34,7 @@ export class Logger {
     }
 
     /**
-     * @param {String|Object} message
+     * @param {string | object} message
      * @param {Error} [error]
      * @returns {Promise}
      */
@@ -43,7 +43,7 @@ export class Logger {
     }
 
     /**
-     * @param {String|Object} message
+     * @param {string | object} message
      * @param {Error} [error]
      * @returns {Promise}
      */
@@ -52,7 +52,7 @@ export class Logger {
     }
 
     /**
-     * @param {String|Object} message
+     * @param {string | object} message
      * @param {Error} [error]
      * @returns {Promise}
      */
@@ -61,7 +61,7 @@ export class Logger {
     }
 
     /**
-     * @param {String|Object} message
+     * @param {string | object} message
      * @param {Error} [error]
      * @returns {Promise}
      */
@@ -70,9 +70,14 @@ export class Logger {
     }
 
     /**
+     * @callback logFunction
+     * @param {string | object} message
+     */
+
+    /**
      * @param {string} severity
-     * @param {function(string|object)} logFunction
-     * @param {String|Object} message
+     * @param {logFunction} logFunction
+     * @param {string | object} message
      * @param {Error} [error]
      * @returns {Promise}
      */

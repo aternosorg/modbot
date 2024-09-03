@@ -7,7 +7,7 @@ export default class EventListener {
     /**
      * get the event name
      * @abstract
-     * @return {string}
+     * @returns {string}
      */
     get name() {
         return 'message';

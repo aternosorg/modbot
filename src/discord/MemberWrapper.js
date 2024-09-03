@@ -8,6 +8,11 @@ import Moderation from '../database/Moderation.js';
 import UserWrapper from './UserWrapper.js';
 import ErrorEmbed from '../embeds/ErrorEmbed.js';
 
+/**
+ * @import {User} from 'discord.js';
+ * @import {Punishment} from '../database/Punishment.js';
+ */
+
 export default class MemberWrapper {
 
     /**
@@ -39,7 +44,7 @@ export default class MemberWrapper {
      * must follow the format 'action:id' or 'action:id:other-data'
      * @param {import('discord.js').Interaction} interaction
      * @param {number} position which position the user id is at. E.g. 2 for 'command:subcommand:id' or 3 for 'command:group:subcommand:id'
-     * @return {Promise<?MemberWrapper>}
+     * @returns {Promise<?MemberWrapper>}
      */
     static async getMemberFromCustomId(interaction, position = 1) {
         const id = interaction.customId.split(':').at(position);
@@ -56,7 +61,7 @@ export default class MemberWrapper {
      * get member by guild and user id
      * @param {import('discord.js').Interaction} interaction
      * @param {import('discord.js').Snowflake} id user id
-     * @return {Promise<?MemberWrapper>}
+     * @returns {Promise<?MemberWrapper>}
      */
     static async getMember(interaction, id) {
         const user = await (new UserWrapper(id)).fetchUser();
@@ -80,7 +85,7 @@ export default class MemberWrapper {
 
     /**
      * get the member or user object
-     * @return {Promise<import('discord.js').GuildMember|import('discord.js').User>}
+     * @returns {Promise<import('discord.js').GuildMember|import('discord.js').User>}
      */
     async getMemberOrUser() {
         return this.member ?? await this.fetchMember() ?? this.user;
@@ -88,7 +93,7 @@ export default class MemberWrapper {
 
     /**
      * get the display name of this member
-     * @return {Promise<string>}
+     * @returns {Promise<string>}
      */
     async displayName() {
         return (await this.getMemberOrUser()).displayName;
@@ -96,7 +101,7 @@ export default class MemberWrapper {
 
     /**
      * get the avatar url of this member
-     * @return {Promise<?string>}
+     * @returns {Promise<?string>}
      */
     async displayAvatarURL() {
         return (await this.getMemberOrUser()).displayAvatarURL();
@@ -104,7 +109,7 @@ export default class MemberWrapper {
 
     /**
      * get all moderations for this member
-     * @return {Promise<Moderation[]>}
+     * @returns {Promise<Moderation[]>}
      */
     async getModerations() {
         return await Moderation.getAll(this.guild.guild.id, this.user.id);
@@ -113,7 +118,7 @@ export default class MemberWrapper {
     /**
      * get the active moderation of this type
      * @param {string} type
-     * @return {Promise<?Moderation>}
+     * @returns {Promise<?Moderation>}
      */
     async getActiveModeration(type) {
         const moderation = await database.query(
@@ -130,7 +135,7 @@ export default class MemberWrapper {
 
     /**
      * get ban status, end timestamp and reason
-     * @return {Promise<{banned: boolean, end: ?number, reason: string, comment: ?string}>}
+     * @returns {Promise<{banned: boolean, end: ?number, reason: string, comment: ?string}>}
      */
     async getBanInfo() {
         const ban = await this.getActiveModeration('ban');
@@ -171,7 +176,7 @@ export default class MemberWrapper {
 
     /**
      * get muted status, end timestamp and reason
-     * @return {Promise<{muted: boolean, end: ?number, reason: string, comment: ?string}>}
+     * @returns {Promise<{muted: boolean, end: ?number, reason: string, comment: ?string}>}
      */
     async getMuteInfo() {
         if (!this.member) await this.fetchMember(true);
@@ -223,7 +228,7 @@ export default class MemberWrapper {
 
     /**
      * get the guild settings
-     * @return {Promise<GuildSettings>}
+     * @returns {Promise<GuildSettings>}
      */
     async getGuildSettings() {
         return GuildSettings.get(this.guild.guild.id);
@@ -231,7 +236,7 @@ export default class MemberWrapper {
 
     /**
      * fetch the muted role, return null if no muted role is set or the muted role doesn't exist.
-     * @return {Promise<import('discord.js').Role|null>}
+     * @returns {Promise<import('discord.js').Role|null>}
      */
     async getMutedRole() {
         const settings = await this.getGuildSettings();
@@ -244,7 +249,7 @@ export default class MemberWrapper {
 
     /**
      * is this member protected
-     * @return {Promise<Boolean>}
+     * @returns {Promise<boolean>}
      */
     async isProtected() {
         if (!await this.fetchMember()) {
@@ -257,7 +262,7 @@ export default class MemberWrapper {
 
     /**
      * can the bot moderate this member
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async isModerateable() {
         return this.isModerateableBy(await this.guild.guild.members.fetchMe());
@@ -266,7 +271,7 @@ export default class MemberWrapper {
     /**
      * can this member be moderated by this moderator
      * @param {import('discord.js').GuildMember} moderator
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async isModerateableBy(moderator) {
         if (await this.isProtected()) {
@@ -283,7 +288,7 @@ export default class MemberWrapper {
     /**
      * shorten a reason to a length below 512
      * @param {string} reason
-     * @return {string}
+     * @returns {string}
      * @private
      */
     _shortenReason(reason) {
@@ -292,11 +297,11 @@ export default class MemberWrapper {
 
     /**
      * strike this member
-     * @param {String}                               reason
-     * @param {?String}                              comment
+     * @param {string}                               reason
+     * @param {?string}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
      * @param {number}                               amount
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async strike(reason, comment, moderator, amount = 1){
         await this.dmPunishedUser('striked', reason, null, 'in');
@@ -309,7 +314,7 @@ export default class MemberWrapper {
 
     /**
      * get the
-     * @return {Promise<number>}
+     * @returns {Promise<number>}
      */
     async getStrikeSum() {
         return (await database.query(
@@ -321,10 +326,10 @@ export default class MemberWrapper {
     /**
      * execute this punishment
      * @param {Punishment} punishment
-     * @param {String} reason
+     * @param {string} reason
      * @param {?string} comment
      * @param {boolean} [allowEmpty] return if there is no punishment instead of throwing an exception
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async executePunishment(punishment, reason, comment, allowEmpty = false) {
         if (!punishment) {
@@ -360,11 +365,11 @@ export default class MemberWrapper {
 
     /**
      * pardon strikes from this member
-     * @param {String}                               reason
-     * @param {?String}                              comment
+     * @param {string}                               reason
+     * @param {?string}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
      * @param {number}                               amount
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async pardon(reason, comment, moderator, amount = 1){
         await this.guild.sendDM(this.user, `${amount} strikes have been pardoned in ${bold(this.guild.guild.name)} | ${reason}`);
@@ -374,12 +379,12 @@ export default class MemberWrapper {
 
     /**
      * ban this user from this guild
-     * @param {String}                               reason
-     * @param {?String}                              comment
+     * @param {string}                               reason
+     * @param {?string}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
      * @param {?number}                              [duration]
      * @param {?number}                              [deleteMessageSeconds]
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async ban(reason, comment, moderator, duration, deleteMessageSeconds){
         deleteMessageSeconds ??= 60 * 60;
@@ -397,10 +402,10 @@ export default class MemberWrapper {
 
     /**
      * unban this member
-     * @param {String}                               reason
-     * @param {?String}                              comment
+     * @param {string}                               reason
+     * @param {?string}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async unban(reason, comment, moderator){
         await this.disableActiveModerations('ban');
@@ -417,11 +422,11 @@ export default class MemberWrapper {
 
     /**
      * softban this user from this guild
-     * @param {String}                       reason
-     * @param {?String}                      comment
+     * @param {string}                       reason
+     * @param {?string}                      comment
      * @param {import('discord.js').User}    moderator
      * @param {?number}                      [deleteMessageSeconds]
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async softban(reason, comment, moderator, deleteMessageSeconds){
         deleteMessageSeconds ??= 60 * 60;
@@ -440,10 +445,10 @@ export default class MemberWrapper {
 
     /**
      * kick this user from this guild
-     * @param {String}                               reason
-     * @param {?String}                              comment
+     * @param {string}                               reason
+     * @param {?string}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async kick(reason, comment, moderator){
         await this.dmPunishedUser('kicked', reason, null, 'from');
@@ -454,11 +459,11 @@ export default class MemberWrapper {
 
     /**
      * mute this user in this guild
-     * @param {String}                               reason
-     * @param {?String}                              comment
+     * @param {string}                               reason
+     * @param {?string}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
-     * @param {Number}                               [duration]
-     * @return {Promise<void>}
+     * @param {number}                               [duration]
+     * @returns {Promise<void>}
      */
     async mute(reason, comment, moderator, duration){
         const timeout = duration && duration <= TIMEOUT_LIMIT;
@@ -485,10 +490,10 @@ export default class MemberWrapper {
 
     /**
      * unmute this user in this guild
-     * @param {String}                               reason
-     * @param {?String}                              comment
+     * @param {string}                               reason
+     * @param {?string}                              comment
      * @param {User|import('discord.js').ClientUser} moderator
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async unmute(reason, comment, moderator){
         if (!this.member) await this.fetchMember();
@@ -506,12 +511,12 @@ export default class MemberWrapper {
     /**
      * create a new moderation and save it to the database
      * @param {string}                         action moderation type (e.g. 'ban')
-     * @param {?String}                        reason reason for the moderation
-     * @param {?String}                        comment internal comment for the moderation
+     * @param {?string}                        reason reason for the moderation
+     * @param {?string}                        comment internal comment for the moderation
      * @param {?number}                        duration duration of the moderation
      * @param {import('discord.js').Snowflake} moderatorId id of the moderator
      * @param {number} [value] value of the moderation (e.g. strike count)
-     * @return {Promise<Moderation>}
+     * @returns {Promise<Moderation>}
      */
     async createModeration(action, reason, comment, duration, moderatorId, value = 0) {
         await this.disableActiveModerations(action);
@@ -547,13 +552,13 @@ export default class MemberWrapper {
 
     /**
      * send the user a dm about this punishment
-     * @param {String}  verb
-     * @param {String}  reason
-     * @param {Number}  [duration]
-     * @param {String}  [preposition] default: from
-     * @return {Promise<Boolean>} success
+     * @param {string}  verb
+     * @param {string}  reason
+     * @param {?number}  [duration]
+     * @param {string}  [preposition] default: from
+     * @returns {Promise<boolean>} success
      */
-    async dmPunishedUser(verb, reason, duration, preposition = 'from') {
+    async dmPunishedUser(verb, reason, duration = null, preposition = 'from') {
         return this.guild.sendDM(this.user,
             `You have been ${verb} ${preposition} ${bold(this.guild.guild.name)}${duration ? ` for ${formatTime(duration)}` : ''}: ${reason}`
         );

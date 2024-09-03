@@ -3,7 +3,7 @@ import database from '../bot/Database.js';
 
 /**
  * Config cache time (ms)
- * @type {Number}
+ * @type {number}
  */
 const cacheDuration = 10*60*1000;
 
@@ -20,12 +20,12 @@ export default class Settings {
 
     /**
      * table name
-     * @type {String}
+     * @type {string}
      */
     static tableName;
 
     /**
-     * @type {NodeJS.Timer}
+     * @type {number}
      */
     static clearCache = setInterval(() => {
         const cache = this.getCache();
@@ -37,17 +37,17 @@ export default class Settings {
     }, 60 * 1000);
 
     /**
-     * @type {String}
+     * @type {string}
      */
     id;
 
     /**
-     * @type {Number}
+     * @type {number}
      */
     createdAt;
 
     /**
-     * @param {String} id ID in the database
+     * @param {string} id ID in the database
      */
     constructor(id) {
         this.id = id;
@@ -55,7 +55,7 @@ export default class Settings {
     }
 
     /**
-     * @return {Collection<String, Settings>}
+     * @returns {Collection<string, Settings>}
      */
     static getCache() {
         let cache = this.cache[this.tableName];
@@ -73,7 +73,7 @@ export default class Settings {
 
     /**
      * get the escaped table name
-     * @return {string}
+     * @returns {string}
      */
     static get escapedTableName() {
         return database.escapeId(this.tableName);
@@ -81,8 +81,8 @@ export default class Settings {
 
     /**
      * create an empty settings
-     * @param {String} key
-     * @return {this}
+     * @param {string} key
+     * @returns {this}
      */
     static empty(key) {
         return new this(key);
@@ -90,8 +90,8 @@ export default class Settings {
 
     /**
      * create a settings from a database result
-     * @param result
-     * @return {this}
+     * @param {{id: string, config: string}} result
+     * @returns {this}
      */
     static create(result) {
         return new this(result.id, JSON.parse(result.config));
@@ -100,7 +100,7 @@ export default class Settings {
     /**
      * Save to db and cache
      * @async
-     * @return {Promise<>}
+     * @returns {Promise<void>}
      */
     async save() {
         const result = await this._select();
@@ -113,8 +113,9 @@ export default class Settings {
     }
 
     /**
-     * Get this settings from the DB
-     * @return {Promise}
+     * Get these settings from the DB
+     * @param {string} key
+     * @returns {Promise}
      * @private
      */
     static async _select(key) {
@@ -122,8 +123,8 @@ export default class Settings {
     }
 
     /**
-     * Get this settings from the DB
-     * @return {Promise}
+     * Get these settings from the DB
+     * @returns {Promise}
      * @private
      */
     async _select() {
@@ -132,7 +133,7 @@ export default class Settings {
 
     /**
      * Update this settings in the DB
-     * @return {Promise}
+     * @returns {Promise}
      * @private
      */
     async _update() {
@@ -142,7 +143,7 @@ export default class Settings {
 
     /**
      * Insert a settings into the DB
-     * @return {Promise}
+     * @returns {Promise}
      * @protected
      */
     async insert() {
@@ -152,8 +153,8 @@ export default class Settings {
 
     /**
      * Get settings
-     * @param {String} id
-     * @return {Promise<this>}
+     * @param {string} id
+     * @returns {Promise<this>}
      */
     static async get(id) {
         const cache = this.getCache();
@@ -169,7 +170,7 @@ export default class Settings {
 
     /**
      * convert to JSON string
-     * @return {string}
+     * @returns {string}
      */
     toJSONString() {
         return JSON.stringify(this.getDataObject());
@@ -178,7 +179,7 @@ export default class Settings {
     /**
      * get a clean data object
      * @param {this} [original]
-     * @return {this}
+     * @returns {this}
      */
     getDataObject(original = this) {
         //copy to new object

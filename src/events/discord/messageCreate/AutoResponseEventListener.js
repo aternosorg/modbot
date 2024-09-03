@@ -24,7 +24,10 @@ export default class AutoResponseEventListener extends MessageCreateEventListene
             await AutoResponse.get(channel.id, message.guild.id)
         ).values());
         const triggered = /** @type {AutoResponse[]} */ await asyncFilter(responses,
-            /** @param {AutoResponse} response */
+            /**
+             *  @param {AutoResponse} response
+             *  @returns {Promise<boolean>}
+             */
             async response => {
                 if (response.matches(message.content)) {
                     return true;

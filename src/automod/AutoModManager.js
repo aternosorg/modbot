@@ -49,7 +49,7 @@ export class AutoModManager {
     /**
      * run all checks on a message
      * @param {import('discord.js').Message} message
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async checkMessage(message) {
         await this.#runChecks(message, ...this.#CONTENT_CHECKS, ...this.#COOLDOWN_CHECKS);
@@ -58,7 +58,7 @@ export class AutoModManager {
     /**
      * run all content checks on a message, don't run any cooldown checks
      * @param {import('discord.js').Message} message
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async checkMessageEdit(message) {
         await this.#runChecks(message, ...this.#CONTENT_CHECKS);
@@ -68,7 +68,7 @@ export class AutoModManager {
      *
      * @param {import('discord.js').Message} message
      * @param {(message: import('discord.js').Message) => Promise<boolean>} checks
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async #runChecks(message, ...checks) {
         if (await this.#ignoredByAutomod(message)) {
@@ -93,7 +93,7 @@ export class AutoModManager {
 
     /**
      * @param {import('discord.js').Message} message
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async #ignoredByAutomod(message) {
         if (!message.guild || message.system || message.author.bot) {
@@ -108,7 +108,7 @@ export class AutoModManager {
      * @param {import('discord.js').Message} message
      * @param {?string} reason
      * @param {string} warning
-     * @return {Promise<true>}
+     * @returns {Promise<true>}
      */
     async #deleteAndWarn(message, reason, warning) {
         try {
@@ -129,7 +129,7 @@ export class AutoModManager {
      * send a temporary warning message mentioning the user
      * @param {import('discord.js').Message} message
      * @param {string} warning
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async #sendWarning(message, warning) {
         try {
@@ -145,7 +145,7 @@ export class AutoModManager {
 
     /**
      * @param {import('discord.js').Message} message
-     * @return {Promise<boolean>} has the message been deleted
+     * @returns {Promise<boolean>} has the message been deleted
      */
     async #safeSearchDetection(message) {
         if (!await this.#safeSearch.isEnabledInGuild(message.guild) || (/** @type {import('discord.js').TextBasedChannelFields} */ message.channel).nsfw) {
@@ -169,7 +169,7 @@ export class AutoModManager {
 
     /**
      * @param {import('discord.js').Message} message
-     * @return {Promise<boolean>} has the message been deleted
+     * @returns {Promise<boolean>} has the message been deleted
      */
     async #badWords(message) {
         let channel = message.channel;
@@ -232,7 +232,7 @@ export class AutoModManager {
 
     /**
      * @param {import('discord.js').Message} message
-     * @return {Promise<boolean>} has the message been deleted
+     * @returns {Promise<boolean>} has the message been deleted
      */
     async #caps(message) {
         const guildSettings = await GuildSettings.get(message.guild.id);
@@ -252,7 +252,7 @@ export class AutoModManager {
 
     /**
      * @param {import('discord.js').Message} message
-     * @return {Promise<boolean>} has the message been deleted
+     * @returns {Promise<boolean>} has the message been deleted
      */
     async #invites(message) {
         if (!this.includesInvite(message.content)) {
@@ -277,7 +277,7 @@ export class AutoModManager {
 
     /**
      * @param {import('discord.js').Message} message
-     * @return {Promise<boolean>} has the message been deleted
+     * @returns {Promise<boolean>} has the message been deleted
      */
     async linkCoolDown(message) {
         if (!message.content.match(/https?:\/\//i)) {
@@ -303,7 +303,7 @@ export class AutoModManager {
 
     /**
      * @param {import('discord.js').Message} message
-     * @return {Promise<boolean>} has the message been deleted
+     * @returns {Promise<boolean>} has the message been deleted
      */
     async attachmentCoolDown(message) {
         if (!message.attachments.size) {
@@ -329,7 +329,7 @@ export class AutoModManager {
 
     /**
      * @param {import('discord.js').Message} message
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async spam(message) {
         const guildSettings = await GuildSettings.get(message.guild.id);

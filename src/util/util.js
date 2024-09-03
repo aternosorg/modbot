@@ -1,12 +1,12 @@
 /**
  * Retries a function if it fails
  * @async
- * @param {function}  fn                function to retry
- * @param {Object}    thisArg           object that should execute the function
- * @param {Array}     [args=[]]         arguments to pass to the function
- * @param {Number}    [maxRetries=5]    amount of retries before throwing an error
- * @param {function}  [returnValMatch]  function to test the result on
- * @return {*} result of fn
+ * @param {Function}  fn                function to retry
+ * @param {object}    thisArg           object that should execute the function
+ * @param {Array}     [args]         arguments to pass to the function
+ * @param {number}    [maxRetries]    amount of retries before throwing an error
+ * @param {Function}  [returnValMatch]  function to test the result on
+ * @returns {*} result of fn
  */
 export async function retry(fn, thisArg, args = [], maxRetries = 5, returnValMatch = null) {
     let err;
@@ -28,12 +28,20 @@ export async function retry(fn, thisArg, args = [], maxRetries = 5, returnValMat
 }
 
 /**
+ * @template T
+ * @callback AsyncFilterCallback
+ * @param {T} element
+ * @param {...*} args
+ * @returns {Promise<boolean>}
+ */
+
+/**
  *
- * @template T, Z
+ * @template T
  * @param {T[]} array
- * @param {Function} filter
- * @param args
- * @return {Promise<T[]>}
+ * @param {AsyncFilterCallback<T>} filter
+ * @param {*} args
+ * @returns {Promise<T[]>}
  */
 export async function asyncFilter(array, filter, ...args) {
     const results = [];
@@ -53,6 +61,7 @@ export async function asyncFilter(array, filter, ...args) {
  * @param {number} value
  * @param {number} min
  * @param {number} max
+ * @returns {number}
  */
 export function inLimits(value, min, max) {
     if (isNaN(value)) {
@@ -64,9 +73,9 @@ export function inLimits(value, min, max) {
 
 /**
  * deep merge two objects
- * @param {Object} target
- * @param {Object} source
- * @return {Object}
+ * @param {object} target
+ * @param {object} source
+ * @returns {object}
  */
 export function deepMerge(target, source) {
     for (const key in source) {
@@ -84,8 +93,8 @@ export function deepMerge(target, source) {
 
 /**
  * escape a regular expression
- * @param string
- * @return {string}
+ * @param {string} string
+ * @returns {string}
  */
 export function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

@@ -1,4 +1,8 @@
 /**
+ * @import Database from '../bot/Database'
+ */
+
+/**
  * @class Migration
  * @classdesc Base class for all migrations
  * @abstract

@@ -11,7 +11,7 @@ export default class GuildMemberRemoveEventListener extends EventListener {
 
     /**
      * @param {import('discord.js').GuildMember} member
-     * @return {Promise<unknown>}
+     * @returns {Promise<unknown>}
      */
     async execute(member) {
         const embed = new KeyValueEmbed()

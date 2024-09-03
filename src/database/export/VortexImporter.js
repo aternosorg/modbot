@@ -5,7 +5,7 @@ import {EmbedBuilder} from 'discord.js';
 import bot from '../../bot/Bot.js';
 
 /**
- * @typedef {Object} VortexModeration
+ * @typedef {object} VortexModeration
  * @property {number} value
  * @property {import('discord.js').Snowflake} id
  */
@@ -14,30 +14,30 @@ export default class VortexImporter extends Importer {
     /**
      * key: userid
      * value: timestamp
-     * @type {Object}
+     * @type {object}
      */
     tempmutes;
 
     /**
      * key: userid
      * value: strike count
-     * @type {Object}
+     * @type {object}
      */
     strikes;
 
     /**
      * key: userid
      * value: timestamp
-     * @type {Object}
+     * @type {object}
      */
     tempbans;
 
     /**
      * @param {import('discord.js').Snowflake} guildID
-     * @param {Object} data JSON exported data from vortex
-     * @param {Object} data.tempmutes
-     * @param {Object} data.strikes
-     * @param {Object} data.tempbans
+     * @param {object} data JSON exported data from vortex
+     * @param {object} data.tempmutes
+     * @param {object} data.strikes
+     * @param {object} data.tempbans
      */
     constructor(guildID, data) {
         super();
@@ -48,8 +48,8 @@ export default class VortexImporter extends Importer {
     }
 
     /**
-     * @param {Object} object
-     * @return {VortexModeration[]}
+     * @param {object} object
+     * @returns {VortexModeration[]}
      */
     keyValueArray(object) {
         const result = [];
@@ -98,8 +98,8 @@ export default class VortexImporter extends Importer {
 
     /**
      * @param {VortexModeration} moderation
-     * @param {String} type
-     * @return {Moderation}
+     * @param {string} type
+     * @returns {Moderation}
      */
     _timedModeration(moderation, type) {
         return new Moderation({
@@ -107,14 +107,14 @@ export default class VortexImporter extends Importer {
             userid: moderation.id,
             action: type,
             expireTime: moderation.value,
-            reason: /** @type {String} */'Imported from Vortex',
+            reason: /** @type {string} */'Imported from Vortex',
             moderator: bot.client.user.id
         });
     }
 
     /**
      * @param {VortexModeration} moderation
-     * @return {Moderation}
+     * @returns {Moderation}
      * @private
      */
     _strike(moderation) {

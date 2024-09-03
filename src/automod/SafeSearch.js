@@ -5,6 +5,10 @@ import database from '../bot/Database.js';
 import logger from '../bot/Logger.js';
 import cloudVision from '../apis/CloudVision.js';
 
+/**
+ * @import {google} from '@google-cloud/vision';
+ */
+
 const CACHE_DURATION = 60 * 60 * 1000;
 
 export default class SafeSearch {
@@ -12,14 +16,14 @@ export default class SafeSearch {
 
     /**
      * A map of hashes to resolve functions that are currently waiting for a response from the api
-     * @type {Map<string, function[]>}
+     * @type {Map<string, Function[]>}
      */
     #requesting = new Map();
 
     /**
      * is safe search filtering enabled in this guild
      * @param {import('discord.js').Guild} guild
-     * @return {Promise<boolean>}
+     * @returns {Promise<boolean>}
      */
     async isEnabledInGuild(guild) {
         if (!cloudVision.isEnabled) {
@@ -33,7 +37,7 @@ export default class SafeSearch {
     /**
      * detect images in this message using the safe search api
      * @param {import('discord.js').Message} message
-     * @return {Promise<?{type: string, value: number}>}
+     * @returns {Promise<?{type: string, value: number}>}
      */
     async detect(message) {
         /** @type {import('discord.js').Collection<string, import('discord.js').Attachment>} */
@@ -63,7 +67,7 @@ export default class SafeSearch {
 
     /**
      * @param {import('discord.js').Attachment} image
-     * @return {Promise<google.cloud.vision.v1.ISafeSearchAnnotation>}
+     * @returns {Promise<google.cloud.vision.v1.ISafeSearchAnnotation>}
      */
     async request(image) {
         const hash = await new Request(image.proxyURL).getHash();
@@ -104,7 +108,7 @@ export default class SafeSearch {
 
     /**
      * @param {string} hash
-     * @return {Promise<google.cloud.vision.v1.ISafeSearchAnnotation>}
+     * @returns {Promise<google.cloud.vision.v1.ISafeSearchAnnotation>}
      */
     async #getFromDatabase(hash) {
         const result = await database.query('SELECT data FROM safeSearch WHERE hash = ?', hash);
@@ -117,7 +121,7 @@ export default class SafeSearch {
     /**
      * convert a likelihood to a number for easy comparison
      * @param {string} likelihood
-     * @return {number}
+     * @returns {number}
      */
     getLikelihoodAsNumber(likelihood) {
         switch (likelihood) {

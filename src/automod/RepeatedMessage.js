@@ -2,6 +2,10 @@ import {Collection, userMention} from 'discord.js';
 import {compareTwoStrings} from 'string-similarity';
 import bot from '../bot/Bot.js';
 
+/**
+ * @import {Message} from 'discord.js';
+ */
+
 export default class RepeatedMessage {
 
     /**
@@ -30,7 +34,7 @@ export default class RepeatedMessage {
     warned = false;
 
     /**
-     * @param {import('discord.js').Message} message
+     * @param {Message} message
      */
     constructor(message) {
         this.#key = this.constructor.getKey(message);
@@ -41,7 +45,7 @@ export default class RepeatedMessage {
      * Are these messages similar enough?
      * @param {Message} messageA
      * @param {Message} messageB
-     * @return {boolean}
+     * @returns {boolean}
      */
     similarEnough(messageA, messageB) {
         const similarity = compareTwoStrings(messageA.content, messageB.content);
@@ -50,7 +54,8 @@ export default class RepeatedMessage {
 
     /**
      * get count of similar messages
-     * @return {number}
+     * @param {Message} newMessage
+     * @returns {number}
      */
     getSimilarMessageCount(newMessage) {
         return this.getSimilarMessages(newMessage).length;
@@ -58,8 +63,8 @@ export default class RepeatedMessage {
 
     /**
      * get similar messages
-     * @param {import('discord.js')} newMessage
-     * @return {import('discord.js')[]}
+     * @param {Message} newMessage
+     * @returns {Message[]}
      */
     getSimilarMessages(newMessage) {
         let similarMessages = [];
@@ -73,7 +78,7 @@ export default class RepeatedMessage {
 
     /**
      *  how many messages are cached for this member?
-     *  @return {Number}
+     *  @returns {number}
      */
     getMessageCount() {
         return this.#messages.length;
@@ -94,7 +99,7 @@ export default class RepeatedMessage {
     }
 
     /**
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async deleteAll() {
         return this.delete(this.#messages, 'Fast message spam');
@@ -103,7 +108,7 @@ export default class RepeatedMessage {
     /**
      * delete similar messages
      * @param {Message} message
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async deleteSimilar(message) {
         return this.delete(this.getSimilarMessages(message), 'Repeated messages');
@@ -112,7 +117,7 @@ export default class RepeatedMessage {
     /**
      * delete an array of messages if possible
      * @param {import('discord.js').Message[]} messages
-     * @param {String} reason
+     * @param {string} reason
      * @returns {Promise<void>}
      */
     async delete(messages, reason) {
@@ -129,18 +134,10 @@ export default class RepeatedMessage {
     /**
      * get the key of this message
      * @param {Message} message
-     * @return {string}
+     * @returns {string}
      */
     static getKey(message) {
         return `${message.guild.id}-${message.author.id}`;
-    }
-
-    /**
-     * @param key
-     * @return {RepeatedMessage}
-     */
-    static get(key) {
-        return this.#members.get(key);
     }
 
     /**
@@ -162,9 +159,9 @@ export default class RepeatedMessage {
     /**
      * remove this message if it is fast message spam
      * @param {import('discord.js').Message} message
-     * @param {Number} count maximum allowed number of messages per minute
+     * @param {number} count maximum allowed number of messages per minute
      * @param {number} timeout reply timeout in ms
-     * @return {Promise<boolean>} was this message deleted
+     * @returns {Promise<boolean>} was this message deleted
      */
     static async checkSpam(message, count, timeout) {
         const cache = this.#members.get(this.getKey(message));
@@ -184,9 +181,9 @@ export default class RepeatedMessage {
     /**
      * remove this message if it is repeated
      * @param {import('discord.js').Message} message
-     * @param {Number} count maximum allowed number of similar messages per minute
+     * @param {number} count maximum allowed number of similar messages per minute
      * @param {number} timeout reply timeout in ms
-     * @return {Promise<boolean>} was this message deleted
+     * @returns {Promise<boolean>} was this message deleted
      */
     static async checkSimilar(message, count, timeout) {
         const cache = this.#members.get(this.getKey(message));

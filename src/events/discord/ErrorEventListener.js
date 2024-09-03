@@ -8,7 +8,7 @@ export default class ErrorEventListener extends EventListener {
 
     /**
      * @param {Error} error
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async execute(error) {
         await logger.error('The discord client experienced an error', error);

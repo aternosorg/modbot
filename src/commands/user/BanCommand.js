@@ -18,6 +18,10 @@ import DeleteMessageHistoryInput from '../../modals/inputs/DeleteMessageHistoryI
 import DurationInput from '../../modals/inputs/DurationInput.js';
 
 /**
+ * @import {DurationConfirmationData} from './UserCommand.js';
+ */
+
+/**
  * @typedef {DurationConfirmationData} BanConfirmationData
  * @property {?number} deleteMessageTime
  */
@@ -72,7 +76,7 @@ export default class BanCommand extends UserCommand {
      * @param {?string} comment
      * @param {?number} duration
      * @param {?number} deleteMessageTime
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async ban(interaction, member, reason, comment, duration, deleteMessageTime) {
         reason = reason || 'No reason provided';
@@ -127,7 +131,7 @@ export default class BanCommand extends UserCommand {
      * prompt user for ban reason, duration and more
      * @param {import('discord.js').Interaction} interaction
      * @param {?MemberWrapper} member
-     * @return {Promise<void>}
+     * @returns {Promise<void>}
      */
     async promptForData(interaction, member) {
         if (!member) {
