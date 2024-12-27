@@ -2,7 +2,8 @@ import bot from '../bot/Bot.js';
 import {
     ApplicationCommandType,
     hyperlink,
-    RESTJSONErrorCodes
+    REST,
+    RESTJSONErrorCodes, Routes
 } from 'discord.js';
 import {AUTOCOMPLETE_OPTIONS_LIMIT} from '../util/apiLimits.js';
 import Cache from '../bot/Cache.js';
@@ -41,10 +42,11 @@ import {replyOrFollowUp} from '../util/interaction.js';
 import logger from '../bot/Logger.js';
 import SafeSearchCommand from './settings/SafeSearchCommand.js';
 import SlashCommandPermissionManagers from '../discord/permissions/SlashCommandPermissionManagers.js';
+import config from '../bot/Config.js';
 
 /**
- * @import Command from './Command.js';
- * @import ExecutableCommand from './ExecutableCommand.js';
+ * @import {Command} from './Command.js';
+ * @import {ExecutableCommand} from './ExecutableCommand.js';
  */
 
 const cooldowns = new Cache();
@@ -103,17 +105,31 @@ export class CommandManager {
     }
 
     /**
-     * register all slash commands
+     * Register slash commands available in all guilds
      * @returns {Promise<void>}
      */
-    async register() {
+    async registerGlobalCommands() {
         const globalCommands = this.#commands.filter(command => command.isAvailableInAllGuilds());
-        for (const [id, command] of await bot.client.application.commands.set(this.buildCommands(globalCommands))) {
+        const rest = new REST().setToken(config.data.authToken);
+        /** @type {{id: import('discord.js').Snowflake}} */
+        const application = await rest.get(Routes.currentApplication());
+        /** @type {{id: import('discord.js').Snowflake, name: string, type: number}[]} */
+        const data = await rest.put(
+            Routes.applicationCommands(application.id),
+            { body: this.buildCommands(globalCommands) },
+        );
+        for (const command of data) {
             if (command.type === ApplicationCommandType.ChatInput) {
-                this.findCommand(command.name).id = id;
+                this.findCommand(command.name).id = command.id;
             }
         }
+    }
 
+    /**
+     * Update which commands are available in which guilds
+     * @returns {Promise<void>}
+     */
+    async updateGuildCommands() {
         for (const guild of bot.client.guilds.cache.values()) {
             await this.updateCommandsForGuild(guild);
         }
