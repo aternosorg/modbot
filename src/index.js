@@ -16,17 +16,19 @@ try {
     await commandManager.registerGlobalCommands();
 
     await logger.info('Spawning shards');
-    const manager = new ShardingManager( import.meta.dirname + '/shard.js', {
-        token: config.data.authToken,
-        totalShards: 2,
-    });
+    const manager = new ShardingManager(
+        import.meta.dirname + '/shard.js',
+        {
+            token: config.data.authToken,
+        }
+    );
 
     manager.on('shardCreate', async shard => {
         shard.args = [shard.id, manager.totalShards];
         await logger.notice(`Launched shard ${shard.id}`);
 
 
-        shard.on("ready", () => {
+        shard.on('ready', () => {
             logger.info(`Shard ${shard.id} connected to Discord's Gateway.`);
         });
     });
