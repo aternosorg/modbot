@@ -32,7 +32,9 @@ try {
             logger.info(`Shard ${shard.id} connected to Discord's Gateway.`);
         });
     });
-    await manager.spawn();
+
+    const shards = await manager.spawn();
+    await logger.info(`Launched ${shards.size} shards`);
 } catch (error) {
     try {
         await logger.critical('Shard Manager crashed', error);
