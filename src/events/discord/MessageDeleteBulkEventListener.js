@@ -36,7 +36,7 @@ export default class MessageDeleteBulkEventListener extends EventListener {
 
             let data = `${userMention(message.author.id)} (${message.id})`;
             if (attachmentCount) {
-                data += `${attachmentCount} file${attachmentCount === 1 ? '' : 's'}`;
+                data += ` ${attachmentCount} file${attachmentCount === 1 ? '' : 's'}`;
             }
             if (content) {
                 data += `: ${content}\n`;
