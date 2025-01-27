@@ -33,7 +33,7 @@ export default class MessageDeleteEmbed extends EmbedWrapper {
         }
 
         for (/** @type {import('discord.js').Attachment} */ const attachment of message.attachments.values()) {
-            this.#files.push(new AttachmentBuilder(got.stream(attachment.proxyURL))
+            this.#files.push(new AttachmentBuilder(got.stream(attachment.url))
                 .setDescription(attachment.description)
                 .setName(attachment.name)
                 .setSpoiler(true));
