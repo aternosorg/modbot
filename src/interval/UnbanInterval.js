@@ -40,11 +40,13 @@ export default class UnbanInterval extends Interval {
                             .setAuthor({name: user.displayName, iconURL: user.displayAvatarURL()})
                             .setFooter({text: user.id})
                             .toMessage(false));
+                        await logger.warn(`Missing permissions to unban user ${result.userid} in guild ${result.guildid}`);
+                    } else {
+                        throw e;
                     }
-                    throw e;
                 }
             } catch (e) {
-                await logger.error(`Failed to unmute user ${result.userid} in guild ${result.guildid}`, e);
+                await logger.error(`Failed to unban user ${result.userid} in guild ${result.guildid}`, e);
             }
         }
     }
