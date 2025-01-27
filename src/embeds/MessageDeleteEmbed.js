@@ -2,6 +2,7 @@ import EmbedWrapper from './EmbedWrapper.js';
 import colors from '../util/colors.js';
 import {AttachmentBuilder, escapeMarkdown} from 'discord.js';
 import {EMBED_DESCRIPTION_LIMIT} from '../util/apiLimits.js';
+import got from 'got';
 
 export default class MessageDeleteEmbed extends EmbedWrapper {
     #files = [];
@@ -31,8 +32,8 @@ export default class MessageDeleteEmbed extends EmbedWrapper {
             }
         }
 
-        for (const attachment of message.attachments.values()) {
-            this.#files.push(new AttachmentBuilder(attachment.attachment)
+        for (/** @type {import('discord.js').Attachment} */ const attachment of message.attachments.values()) {
+            this.#files.push(new AttachmentBuilder(got.stream(attachment.proxyURL))
                 .setDescription(attachment.description)
                 .setName(attachment.name)
                 .setSpoiler(true));
