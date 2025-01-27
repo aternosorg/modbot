@@ -98,7 +98,7 @@ export default class InfoCommand extends Command {
                 .addPairIf(COMMIT, 'Commit', hyperlink(COMMIT, `${GITHUB_REPOSITORY}/tree/${COMMIT}`, 'View on GitHub'))
                 .addPair('Uptime', formatTime(process.uptime()))
                 .addPair('Ping', bot.client.ws.ping + 'ms')
-                .addPairIf(bot.client.shard, 'Shard ID', bot.client.shard.ids.join(',') + ' (Count:' + bot.client.shard.count) + ')'
+                .addPairIf(bot.client.shard, 'Shard ID', bot.client.shard.ids.join(',') + ' (Count: ' + bot.client.shard.count + ')')
             ],
             components: [
                 /** @type {ActionRowBuilder} */
