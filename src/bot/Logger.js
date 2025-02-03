@@ -104,7 +104,7 @@ export class Logger {
                 type: 'global',
                 labels: {
                     project_id: this.config.projectId,
-                    shard_id: bot.client.shard?.ids[0],
+                    shard_id: bot.client.shard?.ids[0]?.toString() ?? "unknown",
                 }
             },
             severity
