@@ -94,7 +94,7 @@ export class Config {
         if (process.env.MODBOT_USE_ENV) {
             let googleCloudCredentials = process.env.MODBOT_GOOGLE_CLOUD_CREDENTIALS;
             if (googleCloudCredentials) {
-                googleCloudCredentials = JSON.parse((new Buffer(googleCloudCredentials, 'base64')).toString());
+                googleCloudCredentials = JSON.parse((Buffer.from(googleCloudCredentials, 'base64')).toString());
             }
             else {
                 googleCloudCredentials = {
