@@ -270,9 +270,25 @@ export class AutoModManager {
         return await this.#deleteAndWarn(message, 'Sending invite links', 'Invites are not allowed here!');
     }
 
+    /**
+     * Check if the message includes an invite link
+     * @param {string} string the message content
+     * @returns {boolean} does the string include an invite link
+     */
     includesInvite(string) {
-        return ['discord.gg', 'discord.com/invite', 'discordapp.com/invite', 'invite.gg', 'discord.me', 'top.gg/servers', 'dsc.gg']
-            .some(url => string.match(new RegExp(url + '/\\w+')));
+        for (let part of string.split(/(\s|:\/\/)/)) {
+            try {
+                part = decodeURI(part);
+            } catch { /* ignored */ }
+
+            for (let url of ['discord.gg', 'discord.com/invite', 'discordapp.com/invite', 'invite.gg', 'discord.me', 'top.gg/servers', 'dsc.gg']) {
+                if (part.match(new RegExp(url + '/\\w+'))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
