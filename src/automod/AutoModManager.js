@@ -81,7 +81,10 @@ export class AutoModManager {
                     try {
                         await message.member.timeout(30 * 1000);
                     } catch (e) {
-                        if (e.code !== RESTJSONErrorCodes.MissingPermissions) {
+                        if (![
+                            RESTJSONErrorCodes.MissingPermissions,
+                            RESTJSONErrorCodes.UnknownMember,
+                        ].includes(e.code)) {
                             throw e;
                         }
                     }
