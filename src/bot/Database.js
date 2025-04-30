@@ -79,17 +79,22 @@ export class Database {
 
     /**
      * Handle connection error
-     * @param {QueryError} err
+     * @param {import('mysql2').QueryError} err
      * @private
      */
     #handleFatalError(err) {
-        console.error('A fatal database error occurred', err);
-        logger.error('A fatal database error occurred', err)
-            .catch(console.error);
+        switch (err.code) {
+            case 'ER_ACCESS_DENIED_ERROR':
+                console.error('Access to database denied. Make sure your config and database are set up correctly!');
+                process.exit(1);
+                break;
 
-        if (err.code === 'ER_ACCESS_DENIED_ERROR') {
-            console.error('Access to database denied. Make sure your config and database are set up correctly!');
-            process.exit(1);
+            case 'ER_CLIENT_INTERACTION_TIMEOUT':
+                logger.info('Database connection timed out due to inactivity, reconnecting...', err).catch(console.error);
+                break;
+
+            default:
+                logger.error('A fatal database error occurred, reconnecting...', err).catch(console.error);
         }
 
         this.#connection = null;
