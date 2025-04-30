@@ -82,6 +82,10 @@ export class Bot {
             return null;
         }
 
+        // If the channel is not cached, discord.js refuses to delete the message and just throws an error
+        // instead of fetching the channel. This method does not make an API call if the channel is already cached.
+        await this.#client.channels.fetch(message.channelId);
+
         this.#deletedMessages.add(message.id);
         try {
             message = await retry(message.delete, message);
