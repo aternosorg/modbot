@@ -1,4 +1,4 @@
-import {Collection, userMention} from 'discord.js';
+import {Collection, userMention, RESTJSONErrorCodes} from 'discord.js';
 import {compareTwoStrings} from 'string-similarity';
 import bot from '../bot/Bot.js';
 
@@ -126,7 +126,13 @@ export default class RepeatedMessage {
         if (messages.length === 0) return;
 
         const channel = /** @type {import('discord.js').TextChannel} */ messages[0].channel;
-        await channel.bulkDelete(messages);
+        try {
+            await channel.bulkDelete(messages);
+        } catch (e) {
+            if (![RESTJSONErrorCodes.UnknownMessage].includes(e.code)) {
+                throw e;
+            }
+        }
 
         await Promise.all(messages.map(m => bot.logMessageDeletion(m, reason)));
     }
