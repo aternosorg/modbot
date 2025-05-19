@@ -46,7 +46,6 @@ export default class SettingsOverviewCommand extends SubCommand {
 
         return {
             components: [container],
-
             flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
         };
     }

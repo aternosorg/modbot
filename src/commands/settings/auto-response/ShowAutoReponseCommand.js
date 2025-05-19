@@ -1,6 +1,6 @@
 import AutoResponse from '../../../database/AutoResponse.js';
 import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js';
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags} from 'discord.js';
 import CompletingAutoResponseCommand from './CompletingAutoResponseCommand.js';
 
 export default class ShowAutoReponseCommand extends CompletingAutoResponseCommand {
@@ -26,7 +26,7 @@ export default class ShowAutoReponseCommand extends CompletingAutoResponseComman
         }
 
         await interaction.reply({
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
             embeds: [autoResponse.embed()],
             components: [
                 new ActionRowBuilder()

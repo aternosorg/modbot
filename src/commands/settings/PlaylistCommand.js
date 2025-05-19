@@ -6,6 +6,7 @@ import colors from '../../util/colors.js';
 import commandManager from '../CommandManager.js';
 import config from '../../bot/Config.js';
 import YouTubePlaylist from '../../apis/YouTubePlaylist.js';
+import {MessageFlags} from 'discord.js';
 
 const PLAYLIST_REGEX = /^(?:(?:https?:\/\/)?(?:www\.)?youtube\.com\/.*[&?]list=)?([a-zA-Z0-9\-_]+?)(?:&.*)?$/i;
 
@@ -21,7 +22,7 @@ export default class PlaylistCommand extends SubCommand {
     }
 
     async execute(interaction) {
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         const option = interaction.options.getString('playlist');
         const guildSettings = await GuildSettings.get(interaction.guildId);
 

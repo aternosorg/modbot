@@ -3,6 +3,7 @@ import Moderation from '../../database/Moderation.js';
 import {
     ButtonStyle,
     escapeMarkdown,
+    MessageFlags,
 } from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import database from '../../bot/Database.js';
@@ -23,10 +24,10 @@ export default class ModerationClearCommand extends SubCommand {
 
     async execute(interaction) {
         const user = interaction.options.getUser('user', true);
-        await interaction.deferReply({ephemeral: true});
+        await interaction.deferReply({flags: MessageFlags.Ephemeral});
         const moderationCount = (await Moderation.getAll(interaction.guildId, user.id)).length;
         if (moderationCount === 0) {
-            await interaction.reply({ephemeral: true, content: 'This user has no moderations.'});
+            await interaction.reply({flags: MessageFlags.Ephemeral, content: 'This user has no moderations.'});
             return;
         }
 

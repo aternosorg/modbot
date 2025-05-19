@@ -1,4 +1,4 @@
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js';
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags} from 'discord.js';
 import KeyValueEmbed from './KeyValueEmbed.js';
 import colors from '../util/colors.js';
 
@@ -18,7 +18,7 @@ export default class ConfirmationEmbed extends KeyValueEmbed {
 
     toMessage(ephemeral = true) {
         return {
-            ephemeral,
+            flags: ephemeral ? MessageFlags.Ephemeral : 0,
             embeds: [this],
             components: [new ActionRowBuilder()
                 .addComponents(/** @type {*} */ new ButtonBuilder()

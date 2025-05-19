@@ -1,5 +1,6 @@
 import Command from '../Command.js';
 import {
+    MessageFlags,
     ActionRowBuilder,
     ButtonStyle, hyperlink,
     PermissionFlagsBits,
@@ -78,7 +79,7 @@ export default class InfoCommand extends Command {
         ];
 
         await interaction.reply({
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
             embeds: [new KeyValueEmbed()
                 .setAuthor({name: 'ModBot by Aternos', iconURL: bot.client.user.displayAvatarURL()})
                 .addLine(

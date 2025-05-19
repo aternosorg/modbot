@@ -1,5 +1,5 @@
 import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js';
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags} from 'discord.js';
 import CompletingBadWordCommand from './CompletingBadWordCommand.js';
 import BadWord from '../../../database/BadWord.js';
 
@@ -26,7 +26,7 @@ export default class ShowBadWordCommand extends CompletingBadWordCommand {
         }
 
         await interaction.reply({
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
             embeds: [badWord.embed()],
             components: [
                 new ActionRowBuilder()

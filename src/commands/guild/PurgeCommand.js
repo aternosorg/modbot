@@ -1,5 +1,5 @@
 import Command from '../Command.js';
-import {inlineCode, PermissionFlagsBits, PermissionsBitField} from 'discord.js';
+import {inlineCode, MessageFlags, PermissionFlagsBits, PermissionsBitField} from 'discord.js';
 import ChannelWrapper from '../../discord/ChannelWrapper.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import PurgeLogEmbed from '../../embeds/PurgeLogEmbed.js';
@@ -50,7 +50,7 @@ export default class PurgeCommand extends Command {
     }
 
     async execute(interaction) {
-        await interaction.deferReply({ephemeral: true});
+        await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
         /** @type {PurgeFilter[]} */
         const filters = [

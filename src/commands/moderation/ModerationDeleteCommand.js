@@ -3,6 +3,7 @@ import ModerationEmbed from '../../embeds/ModerationEmbed.js';
 import colors from '../../util/colors.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 import CompletingModerationCommand from './CompletingModerationCommand.js';
+import {MessageFlags} from 'discord.js';
 
 export default class ModerationDeleteCommand extends CompletingModerationCommand {
 
@@ -31,7 +32,7 @@ export default class ModerationDeleteCommand extends CompletingModerationCommand
             .setTitle(`Deleted Moderation #${moderation.id} | ${moderation.action.toUpperCase()}`)
             .setColor(colors.RED);
         await interaction.reply({
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
             embeds: [embed]
         });
     }

@@ -3,6 +3,7 @@ import {
     ChannelSelectMenuBuilder,
     ChannelType,
     ModalBuilder,
+    MessageFlags,
     TextInputBuilder,
     TextInputStyle
 } from 'discord.js';
@@ -187,7 +188,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
             confirmation.expires = timeAfter('30 min');
 
             await interaction.reply({
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
                 content: 'Select channels for the bad-word',
                 components: [
                     /** @type {ActionRowBuilder} */

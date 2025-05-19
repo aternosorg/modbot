@@ -2,7 +2,7 @@ import SubCommand from '../SubCommand.js';
 import GuildSettings from '../../settings/GuildSettings.js';
 import EmbedWrapper from '../../embeds/EmbedWrapper.js';
 import colors from '../../util/colors.js';
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js';
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags} from 'discord.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 
 export default class CapsCommand extends SubCommand {
@@ -19,7 +19,8 @@ export default class CapsCommand extends SubCommand {
         const enabled = interaction.options.getBoolean('enabled', true);
 
         const options = await this.change(interaction, enabled);
-        options.ephemeral = true;
+        options.flags ??= 0;
+        options.flags |= MessageFlags.Ephemeral;
         await interaction.reply(options);
     }
 

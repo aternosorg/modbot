@@ -1,6 +1,6 @@
 import Command from '../Command.js';
 import Exporter from '../../database/export/Exporter.js';
-import {AttachmentBuilder, PermissionFlagsBits, PermissionsBitField} from 'discord.js';
+import {AttachmentBuilder, MessageFlags, PermissionFlagsBits, PermissionsBitField} from 'discord.js';
 import {FILE_UPLOAD_LIMITS} from '../../util/apiLimits.js';
 import {gzipSync} from 'zlib';
 
@@ -16,7 +16,7 @@ export default class ExportCommand extends Command {
     }
 
     async execute(interaction) {
-        await interaction.deferReply({ephemeral: true});
+        await interaction.deferReply({flags: MessageFlags.Ephemeral});
         const exporter = new Exporter(interaction.guild.id);
         let data = Buffer.from(await exporter.export());
 

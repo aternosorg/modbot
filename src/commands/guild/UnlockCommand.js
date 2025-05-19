@@ -1,6 +1,9 @@
 import Command from '../Command.js';
 import {
-    ActionRowBuilder, channelMention, EmbedBuilder,
+    ActionRowBuilder,
+    channelMention,
+    EmbedBuilder,
+    MessageFlags,
     ModalBuilder,
     PermissionFlagsBits,
     PermissionsBitField,
@@ -59,7 +62,7 @@ export default class UnlockCommand extends Command {
         }
         else {
             await interaction.reply({
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
                 content: 'Select which channels you want to unlock',
                 components: [
                     /** @type {ActionRowBuilder} */
@@ -109,7 +112,7 @@ export default class UnlockCommand extends Command {
             .setColor(colors.GREEN)
             .setDescription(message || null);
 
-        await interaction.deferReply({ephemeral: true});
+        await interaction.deferReply({flags: MessageFlags.Ephemeral});
         for (const channelId of channels) {
             const channel = /** @type {import('discord.js').TextChannel} */
                 await interaction.guild.channels.fetch(channelId);

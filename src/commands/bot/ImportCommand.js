@@ -1,5 +1,5 @@
 import Command from '../Command.js';
-import {PermissionFlagsBits, PermissionsBitField} from 'discord.js';
+import {MessageFlags, PermissionFlagsBits, PermissionsBitField} from 'discord.js';
 import got from 'got';
 import {promisify} from 'util';
 import {gunzip as gunzipCb} from 'zlib';
@@ -34,7 +34,7 @@ export default class ImportCommand extends Command {
     }
 
     async execute(interaction) {
-        await interaction.deferReply({ephemeral: true});
+        await interaction.deferReply({flags: MessageFlags.Ephemeral});
         const file = interaction.options.getAttachment('data', true);
 
         let fileName = file.name;

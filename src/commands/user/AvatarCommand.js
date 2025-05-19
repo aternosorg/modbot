@@ -1,5 +1,5 @@
 import Command from '../Command.js';
-import {ALLOWED_SIZES, EmbedBuilder, escapeMarkdown} from 'discord.js';
+import {ALLOWED_SIZES, EmbedBuilder, escapeMarkdown, MessageFlags} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 
@@ -52,7 +52,7 @@ export default class AvatarCommand extends Command {
      * @param {import('discord.js').User} user
      * @param {import('discord.js').Guild|null} guild
      * @param {boolean} useServerProfile
-     * @returns {Promise<{ephemeral: boolean, embeds: EmbedBuilder[]}>}
+     * @returns {Promise<{flags: number, embeds: EmbedBuilder[]}>}
      */
     async buildMessage(user, guild, useServerProfile = true) {
         let url = user.displayAvatarURL(IMAGE_OPTIONS);
@@ -68,7 +68,7 @@ export default class AvatarCommand extends Command {
                     .setTitle(`Avatar of ${escapeMarkdown(user.displayName)}`)
                     .setImage(url),
             ],
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
         };
     }
 

@@ -1,5 +1,5 @@
 import Command from '../Command.js';
-import {Collection, escapeMarkdown, PermissionFlagsBits, PermissionsBitField} from 'discord.js';
+import {Collection, escapeMarkdown, MessageFlags, PermissionFlagsBits, PermissionsBitField} from 'discord.js';
 import LineEmbed from '../../embeds/LineEmbed.js';
 import colors from '../../util/colors.js';
 import {FETCH_BAN_PAGE_SIZE} from '../../util/apiLimits.js';
@@ -30,7 +30,7 @@ export default class IDCommand extends Command {
     async execute(interaction) {
         const query = interaction.options.getString('query', true);
 
-        await interaction.deferReply({ephemeral: true});
+        await interaction.deferReply({flags: MessageFlags.Ephemeral});
 
         /** @type {Collection<import('discord.js').Snowflake, (import('discord.js').GuildMember|import('discord.js').GuildBan)>} */
         const users = await interaction.guild.members.fetch({query});

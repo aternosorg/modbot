@@ -2,7 +2,7 @@ import Command from '../Command.js';
 import {formatTime, parseTime, timeAfter} from '../../util/timeutils.js';
 import Confirmation from '../../database/Confirmation.js';
 import ConfirmationEmbed from '../../embeds/ConfirmationEmbed.js';
-import {ButtonStyle, PermissionFlagsBits, PermissionsBitField, RESTJSONErrorCodes} from 'discord.js';
+import {ButtonStyle, MessageFlags, PermissionFlagsBits, PermissionsBitField, RESTJSONErrorCodes} from 'discord.js';
 import config from '../../bot/Config.js';
 
 export default class PurgeInvitesCommand extends Command {
@@ -30,7 +30,7 @@ export default class PurgeInvitesCommand extends Command {
     }
 
     async execute(interaction) {
-        await interaction.deferReply({ephemeral: true});
+        await interaction.deferReply({flags: MessageFlags.Ephemeral});
         const minAge = parseTime(interaction.options.getString('minimum-age')) ?? parseTime('30d');
         const maxDate = Date.now() - (minAge * 1000);
         const maxUses = interaction.options.getInteger('max-uses') ?? 10;

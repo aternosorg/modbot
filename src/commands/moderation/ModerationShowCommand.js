@@ -2,7 +2,7 @@ import Moderation from '../../database/Moderation.js';
 import ModerationEmbed from '../../embeds/ModerationEmbed.js';
 import ErrorEmbed from '../../embeds/ErrorEmbed.js';
 import CompletingModerationCommand from './CompletingModerationCommand.js';
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle} from 'discord.js';
+import {ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags} from 'discord.js';
 
 export default class ModerationShowCommand extends CompletingModerationCommand {
 
@@ -27,7 +27,7 @@ export default class ModerationShowCommand extends CompletingModerationCommand {
 
         const user = await (await moderation.getMemberWrapper()).fetchMember() ?? await moderation.getUser();
         await interaction.reply({
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
             embeds: [new ModerationEmbed(moderation, user)],
             components: [
                 new ActionRowBuilder()

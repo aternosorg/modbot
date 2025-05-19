@@ -3,7 +3,15 @@ import Moderation from '../../database/Moderation.js';
 import ModerationListEmbed from '../../embeds/ModerationListEmbed.js';
 import {formatTime} from '../../util/timeutils.js';
 import {EMBED_FIELD_LIMIT, EMBED_TOTAL_LIMIT} from '../../util/apiLimits.js';
-import {ActionRowBuilder, ButtonBuilder, ButtonStyle, time, TimestampStyles, userMention} from 'discord.js';
+import {
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    MessageFlags,
+    time,
+    TimestampStyles,
+    userMention
+} from 'discord.js';
 import config from '../../bot/Config.js';
 import icons from '../../util/icons.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
@@ -63,7 +71,7 @@ export default class ModerationListCommand extends SubCommand {
      * @param {MemberWrapper} member
      * @param {Moderation[]} moderations
      * @param {number} page
-     * @returns {Promise<{ephemeral: boolean, embeds: EmbedWrapper[]}>}
+     * @returns {Promise<{flags: number, embeds: EmbedWrapper[]}>}
      */
     async generateMessage(member, moderations, page = 1) {
         const lastPage = Math.ceil(moderations.length / MODERATIONS_PER_PAGE);
@@ -142,7 +150,7 @@ export default class ModerationListCommand extends SubCommand {
         }
 
 
-        return { ephemeral: true, embeds: [embed], components: [actionRow] };
+        return { flags: MessageFlags.Ephemeral, embeds: [embed], components: [actionRow] };
     }
 
     getDescription() {

@@ -6,6 +6,7 @@ import {
     channelMention,
     ChannelSelectMenuBuilder, ChannelType,
     ModalBuilder,
+    MessageFlags,
     TextInputBuilder,
     TextInputStyle
 } from 'discord.js';
@@ -294,7 +295,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
             confirmation.expires = timeAfter('30 min');
 
             await interaction.reply({
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
                 content: `Select channels for the bad-word. Currently selected channels: ${
                     badWord.channels.map(c => channelMention(c)).join(', ')}`,
                 components: [

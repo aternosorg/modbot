@@ -3,6 +3,7 @@ import {
     ActionRowBuilder,
     ChannelSelectMenuBuilder,
     ChannelType,
+    MessageFlags,
     ModalBuilder,
     TextInputBuilder,
     TextInputStyle
@@ -129,7 +130,7 @@ export default class AddAutoResponseCommand extends SubCommand {
             confirmation.expires = timeAfter('30 min');
 
             await interaction.reply({
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
                 content: 'Select channels for the auto-response',
                 components: [
                     /** @type {ActionRowBuilder} */

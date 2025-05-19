@@ -1,3 +1,5 @@
+import {MessageFlags} from 'discord.js';
+
 /**
  * Reply to an interaction if it wasn't already deferred or replied. Follow up otherwise.
  * @param {import('discord.js').Interaction} interaction
@@ -36,6 +38,6 @@ export async function replyOrEdit(interaction, options) {
  */
 export async function deferReplyOnce(interaction, ephemeral = true) {
     if (!interaction.deferred && !interaction.replied) {
-        await interaction.deferReply( {ephemeral});
+        await interaction.deferReply( {flags: ephemeral ? MessageFlags.Ephemeral : 0});
     }
 }

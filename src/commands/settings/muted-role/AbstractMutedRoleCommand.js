@@ -1,7 +1,7 @@
 import SubCommand from '../../SubCommand.js';
 import GuildSettings from '../../../settings/GuildSettings.js';
 import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
-import {PermissionFlagsBits, PermissionsBitField, roleMention} from 'discord.js';
+import {MessageFlags, PermissionFlagsBits, PermissionsBitField, roleMention} from 'discord.js';
 import GuildWrapper from '../../../discord/GuildWrapper.js';
 import database from '../../../bot/Database.js';
 import EmbedWrapper from '../../../embeds/EmbedWrapper.js';
@@ -61,7 +61,7 @@ export default class AbstractMutedRoleCommand extends SubCommand {
      */
     async updatePermissionOverrides(interaction, role) {
         await interaction.reply({
-            ephemeral: true,
+            flags: MessageFlags.Ephemeral,
             content: 'Updating permission overrides...',
         });
 

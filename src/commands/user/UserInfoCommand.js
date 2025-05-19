@@ -1,5 +1,13 @@
 import Command from '../Command.js';
-import {ActionRowBuilder, ButtonStyle, PermissionFlagsBits, PermissionsBitField, time, TimestampStyles} from 'discord.js';
+import {
+    ActionRowBuilder,
+    ButtonStyle,
+    MessageFlags,
+    PermissionFlagsBits,
+    PermissionsBitField,
+    time,
+    TimestampStyles
+} from 'discord.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import UserWrapper from '../../discord/UserWrapper.js';
@@ -32,7 +40,8 @@ export default class UserInfoCommand extends Command {
     async execute(interaction) {
         const user = await interaction.options.getUser('user', true);
         const message = await this.generateUserMessage(user, interaction);
-        message.ephemeral = true;
+        message.flags ??= 0;
+        message.flags |= MessageFlags.Ephemeral;
 
         await interaction.reply(message);
     }
@@ -43,7 +52,8 @@ export default class UserInfoCommand extends Command {
 
     async executeUserMenu(interaction) {
         const message = await this.generateUserMessage(interaction.targetUser, interaction);
-        message.ephemeral = true;
+        message.flags ??= 0;
+        message.flags |= MessageFlags.Ephemeral;
         await interaction.reply(message);
     }
 

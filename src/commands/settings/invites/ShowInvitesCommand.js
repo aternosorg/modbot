@@ -27,7 +27,7 @@ function color(boolean) {
  * generate an invite embed
  * @param {import('discord.js').Snowflake} guildId
  * @param {?import('discord.js').Channel} channel
- * @returns {Promise<{ephemeral: boolean, embeds: EmbedWrapper[]}>}
+ * @returns {Promise<{flags: number, embeds: EmbedWrapper[]}>}
  */
 export async function getEmbed(guildId, channel = null) {
     const embed = new EmbedWrapper(),

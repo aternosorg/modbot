@@ -1,6 +1,9 @@
 import Command from '../Command.js';
 import {
-    ActionRowBuilder, channelMention, EmbedBuilder,
+    ActionRowBuilder,
+    channelMention,
+    EmbedBuilder,
+    MessageFlags,
     ModalBuilder,
     PermissionFlagsBits,
     PermissionsBitField,
@@ -52,7 +55,7 @@ export default class LockCommand extends Command {
         }
         else {
             await interaction.reply({
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
                 content: 'Select which channels you want to lock',
                 components: [
                     /** @type {ActionRowBuilder} */
@@ -103,7 +106,7 @@ export default class LockCommand extends Command {
             .setDescription(message || null)
             .setFooter({text: 'You are not muted, this channel is locked for everyone. Please don\'t DM people.'});
 
-        await interaction.deferReply({ephemeral: true});
+        await interaction.deferReply({flags: MessageFlags.Ephemeral});
         for (const channelId of channels) {
             const channel = /** @type {import('discord.js').TextChannel|import('discord.js').GuildChannel} */
                 await interaction.guild.channels.fetch(channelId);

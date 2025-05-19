@@ -6,6 +6,7 @@ import {
     channelMention,
     ChannelSelectMenuBuilder,
     ChannelType,
+    MessageFlags,
     ModalBuilder,
     TextInputBuilder,
     TextInputStyle
@@ -188,7 +189,7 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
             confirmation.expires = timeAfter('30 min');
 
             await interaction.reply({
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
                 content: `Select channels for the auto-response. Currently selected channels: ${
                     autoResponse.channels.map(c => channelMention(c)).join(', ')}`,
                 components: [
