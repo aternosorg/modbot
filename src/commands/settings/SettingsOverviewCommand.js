@@ -1,9 +1,14 @@
 import SubCommand from '../SubCommand.js';
 import GuildSettings from '../../settings/GuildSettings.js';
-import {ActionRowBuilder, ButtonStyle} from 'discord.js';
+import {
+    ButtonStyle,
+    ContainerBuilder,
+    MessageFlags, SeparatorSpacingSize,
+} from 'discord.js';
 import {componentEmojiIfExists} from '../../util/format.js';
 import icons from '../../util/icons.js';
 import BetterButtonBuilder from '../../embeds/BetterButtonBuilder.js';
+import Component from '../../components/Component.js';
 
 /**
  * @import {ButtonBuilder} from 'discord.js';
@@ -22,28 +27,27 @@ export default class SettingsOverviewCommand extends SubCommand {
     /**
      *
      * @param {import('discord.js').Interaction} interaction
-     * @returns {Promise<{components: ActionRowBuilder<ButtonBuilder>[], ephemeral: boolean, embeds: import('discord.js').EmbedBuilder[]}>}
+     * @returns {Promise<import('discord.js').MessageCreationOptions>}
      */
     async buildMessage(interaction) {
         const guildSettings = await GuildSettings.get(interaction.guildId);
+        const container = new ContainerBuilder()
+            .addTextDisplayComponents(Component.h1(`Settings for ${interaction.guild.name}`))
+            .addSeparatorComponents(Component.separator(false));
+
+        guildSettings.getSettings(container)
+            .addSeparatorComponents(Component.separator(false, SeparatorSpacingSize.Large))
+            .addActionRowComponents(Component.actionRow(new BetterButtonBuilder()
+                .setLabel('Refresh')
+                .setStyle(ButtonStyle.Secondary)
+                .setCustomId('settings:overview')
+                .setEmojiIfPresent(componentEmojiIfExists('refresh', icons.refresh))
+            ));
+
         return {
-            ephemeral: true,
-            embeds: [
-                guildSettings.getSettings()
-                    .setAuthor({name: `${interaction.guild.name}| Settings`, iconURL: interaction.guild.iconURL()})
-            ],
-            components: [
-                /** @type {ActionRowBuilder<import('discord.js').ButtonBuilder>}*/
-                new ActionRowBuilder()
-                    .addComponents(
-                        /** @type {*} */
-                        new BetterButtonBuilder()
-                            .setLabel('Refresh')
-                            .setStyle(ButtonStyle.Secondary)
-                            .setCustomId('settings:overview')
-                            .setEmojiIfPresent(componentEmojiIfExists('refresh', icons.refresh))
-                    )
-            ]
+            components: [container],
+
+            flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
         };
     }
 

@@ -1,14 +1,19 @@
 import Settings from './Settings.js';
 import TypeChecker from './TypeChecker.js';
-import {bold, channelMention, Collection, EmbedBuilder, roleMention} from 'discord.js';
+import {
+    bold,
+    channelMention,
+    Collection,
+    roleMention,
+    TextDisplayBuilder,
+} from 'discord.js';
 import Punishment, {PunishmentAction} from '../database/Punishment.js';
 import Zendesk from '../apis/Zendesk.js';
-import colors from '../util/colors.js';
 import {formatTime, parseTime} from '../util/timeutils.js';
 import YouTubePlaylist from '../apis/YouTubePlaylist.js';
-import {inlineEmojiIfExists} from '../util/format.js';
 import config from '../bot/Config.js';
 import {deepMerge} from '../util/util.js';
+import Component from '../components/Component.js';
 
 /**
  * @typedef {object} SafeSearchSettings
@@ -132,7 +137,7 @@ export default class GuildSettings extends Settings {
         }
 
         if (!(json.punishments instanceof Object) ||
-            !Object.values(json.punishments).every(punishment => ['ban','kick','mute','softban','strike'].includes(punishment.action))) {
+            !Object.values(json.punishments).every(punishment => ['ban', 'kick', 'mute', 'softban', 'strike'].includes(punishment.action))) {
             throw new TypeError('Invalid punishments');
         }
 
@@ -163,45 +168,62 @@ export default class GuildSettings extends Settings {
 
     /**
      * generate a settings embed
-     * @returns {EmbedBuilder}
+     * @param {import('discord.js').ContainerBuilder} container
+     * @returns {import('discord.js').ContainerBuilder}
      */
-    getSettings() {
-        return new EmbedBuilder()
-            .addFields(/** @type {*} */ [
-                {name: 'Moderation', value: this.getModerationSettings(), inline: false},
-                {name: 'Automod', value: this.getAutomodSettings(), inline: false},
-                {name: 'Connections', value: this.getConnectionsSettings(), inline: false}
-            ])
-            .setColor(colors.GREEN);
+    getSettings(container) {
+        return container
+            .addTextDisplayComponents(Component.h3('Moderation'))
+            .addTextDisplayComponents(this.getModerationSettings())
+            .addSeparatorComponents(Component.separator())
+            .addTextDisplayComponents(Component.h3('Protected Roles'))
+            .addTextDisplayComponents(this.getProtectedRoles())
+            .addSeparatorComponents(Component.separator())
+            .addTextDisplayComponents(Component.h3('Automod'))
+            .addTextDisplayComponents(this.getAutomodSettings())
+            .addSeparatorComponents(Component.separator())
+            .addTextDisplayComponents(Component.h3('Connections'))
+            .addTextDisplayComponents(this.getConnectionsSettings());
     }
 
     /**
      * generate an overview of moderation settings
-     * @returns {string}
+     * @returns {TextDisplayBuilder|*}
      */
     getModerationSettings() {
-        const protectedRoles = Array.from(this.protectedRoles).map(role => '- ' + roleMention(role)).join('\n') || 'None';
+        return Component.emojiList(
+            'channel', `Log: ${this.logChannel ? channelMention(this.logChannel) : 'disabled'}`,
+            'channel', `Message Log: ${this.messageLogChannel ? channelMention(this.messageLogChannel) : 'disabled'}`,
+            'channel', `Join Log: ${this.joinLogChannel ? channelMention(this.joinLogChannel) : 'disabled'}`,
+            'mute', `Muted role: ${this.mutedRole ? roleMention(this.mutedRole) : 'disabled'}`,
+        );
+    }
 
-        return `Log: ${this.logChannel ? channelMention(this.logChannel) : 'disabled'}\n` +
-            `Message Log: ${this.messageLogChannel ? channelMention(this.messageLogChannel) : 'disabled'}\n` +
-            `Join Log: ${this.joinLogChannel ? channelMention(this.joinLogChannel) : 'disabled'}\n` +
-            `Muted role: ${this.mutedRole ? roleMention(this.mutedRole) : 'disabled'}\n` +
-            `Protected roles: ${this.protectedRoles.size ? '\n' : ''}${protectedRoles}\n`;
+    /**
+     * @returns {TextDisplayBuilder|*}
+     */
+    getProtectedRoles() {
+        const roles = Array.from(this.protectedRoles);
+        if (!roles.length) {
+            return Component.text('None');
+        }
+        return Component.list(...roles.map(roleMention));
     }
 
     /**
      * generate an overview of connection settings
-     * @returns {string}
+     * @returns {TextDisplayBuilder|*}
      */
     getConnectionsSettings() {
-        //How can YouTube's link shortener *NOT* support playlists?
-        return inlineEmojiIfExists('youtube') + `Playlist: ${this.playlist ? this.getPlaylist().getFormattedUrl() : 'disabled'}\n` +
-            inlineEmojiIfExists('zendesk') + `Helpcenter: ${this.helpcenter ? `https://${this.helpcenter}.zendesk.com/` : 'disabled'}\n`;
+        return Component.emojiList(
+            'youtube', `Playlist: ${this.playlist ? this.getPlaylist().getFormattedUrl() : 'disabled'}`,
+            'zendesk', `Helpcenter: ${this.helpcenter ? `https://${this.helpcenter}.zendesk.com/` : 'disabled'}`,
+        );
     }
 
     /**
      * generate an overview of automod settings
-     * @returns {string}
+     * @returns {TextDisplayBuilder|*}
      */
     getAutomodSettings() {
         const lines = [
@@ -216,13 +238,12 @@ export default class GuildSettings extends Settings {
         if (this.isFeatureWhitelisted) {
             if (this.safeSearch.enabled) {
                 lines.push(`Safe search: enabled for images ${this.displayLikelihood()} nsfw content (${this.safeSearch.strikes} strikes)`);
-            }
-            else {
+            } else {
                 lines.push('Safe search: disabled');
             }
         }
 
-        return lines.join('\n');
+        return Component.list(...lines);
     }
 
     displayLikelihood() {
@@ -280,7 +301,7 @@ export default class GuildSettings extends Settings {
         let punishment;
         do {
             punishment = this.getPunishment(strikes);
-            strikes --;
+            strikes--;
         } while (!punishment && strikes > 0);
         return punishment;
     }
