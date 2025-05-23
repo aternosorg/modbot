@@ -11,7 +11,7 @@ import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
 import {inLimits} from '../../util/util.js';
-import EmbedWrapper from '../../embeds/EmbedWrapper.js';
+import EmbedWrapper from '../../formatting/embeds/EmbedWrapper.js';
 import {formatNumber, inlineEmojiIfExists} from '../../util/format.js';
 import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
 import ReasonInput from '../../modals/inputs/ReasonInput.js';

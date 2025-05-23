@@ -1,5 +1,5 @@
 import EmbedWrapper from './EmbedWrapper.js';
-import {EMBED_DESCRIPTION_LIMIT} from '../util/apiLimits.js';
+import {EMBED_DESCRIPTION_LIMIT} from '../../util/apiLimits.js';
 
 export default class LineEmbed extends EmbedWrapper {
     #lines = [];

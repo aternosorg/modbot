@@ -3,7 +3,7 @@ import TypeChecker from './TypeChecker.js';
 import {
     bold,
     channelMention,
-    Collection,
+    Collection, HeadingLevel,
     roleMention,
     TextDisplayBuilder,
 } from 'discord.js';
@@ -13,7 +13,6 @@ import {formatTime, parseTime} from '../util/timeutils.js';
 import YouTubePlaylist from '../apis/YouTubePlaylist.js';
 import config from '../bot/Config.js';
 import {deepMerge} from '../util/util.js';
-import Component from '../components/Component.js';
 
 /**
  * @typedef {object} SafeSearchSettings
@@ -168,57 +167,54 @@ export default class GuildSettings extends Settings {
 
     /**
      * generate a settings embed
-     * @param {import('discord.js').ContainerBuilder} container
-     * @returns {import('discord.js').ContainerBuilder}
+     * @param {MessageBuilder} message
+     * @returns {MessageBuilder}
      */
-    getSettings(container) {
-        return container
-            .addTextDisplayComponents(Component.h3('Moderation'))
-            .addTextDisplayComponents(this.getModerationSettings())
-            .addSeparatorComponents(Component.separator())
-            .addTextDisplayComponents(Component.h3('Protected Roles'))
-            .addTextDisplayComponents(this.getProtectedRoles())
-            .addSeparatorComponents(Component.separator())
-            .addTextDisplayComponents(Component.h3('Automod'))
-            .addTextDisplayComponents(this.getAutomodSettings())
-            .addSeparatorComponents(Component.separator())
-            .addTextDisplayComponents(Component.h3('Connections'))
-            .addTextDisplayComponents(this.getConnectionsSettings());
+    getSettings(message) {
+        return message
+            .heading('Moderation', HeadingLevel.Three)
+            .emojiList(...this.getModerationSettings())
+            .separator()
+            .heading('Protected Roles', HeadingLevel.Three)
+            .listOr('None', ...this.getProtectedRoles())
+            .separator()
+            .heading('Automod', HeadingLevel.Three)
+            .list(...this.getAutomodSettings())
+            .separator()
+            .heading('Connections', HeadingLevel.Three)
+            .emojiList(...this.getConnectionsSettings());
     }
 
     /**
      * generate an overview of moderation settings
-     * @returns {TextDisplayBuilder|*}
+     * @returns {string[]}
      */
     getModerationSettings() {
-        return Component.emojiList(
+        return [
             'channel', `Log: ${this.logChannel ? channelMention(this.logChannel) : 'disabled'}`,
             'channel', `Message Log: ${this.messageLogChannel ? channelMention(this.messageLogChannel) : 'disabled'}`,
             'channel', `Join Log: ${this.joinLogChannel ? channelMention(this.joinLogChannel) : 'disabled'}`,
             'mute', `Muted role: ${this.mutedRole ? roleMention(this.mutedRole) : 'disabled'}`,
-        );
+        ];
     }
 
     /**
-     * @returns {TextDisplayBuilder|*}
+     * Get the protected roles formatted as mentions
+     * @returns {string[]}
      */
     getProtectedRoles() {
-        const roles = Array.from(this.protectedRoles);
-        if (!roles.length) {
-            return Component.text('None');
-        }
-        return Component.list(...roles.map(roleMention));
+        return Array.from(this.protectedRoles).map(roleMention);
     }
 
     /**
      * generate an overview of connection settings
-     * @returns {TextDisplayBuilder|*}
+     * @returns {string[]}
      */
     getConnectionsSettings() {
-        return Component.emojiList(
+        return [
             'youtube', `Playlist: ${this.playlist ? this.getPlaylist().getFormattedUrl() : 'disabled'}`,
             'zendesk', `Helpcenter: ${this.helpcenter ? `https://${this.helpcenter}.zendesk.com/` : 'disabled'}`,
-        );
+        ];
     }
 
     /**
@@ -243,7 +239,7 @@ export default class GuildSettings extends Settings {
             }
         }
 
-        return Component.list(...lines);
+        return lines;
     }
 
     displayLikelihood() {

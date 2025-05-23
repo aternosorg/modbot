@@ -1,6 +1,6 @@
 import {Collection} from 'discord.js';
 import database from '../bot/Database.js';
-import LineEmbed from '../embeds/LineEmbed.js';
+import LineEmbed from '../formatting/embeds/LineEmbed.js';
 import {EMBED_DESCRIPTION_LIMIT} from '../util/apiLimits.js';
 import colors from '../util/colors.js';
 import Triggers from './triggers/Triggers.js';

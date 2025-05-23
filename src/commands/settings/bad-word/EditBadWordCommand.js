@@ -10,7 +10,7 @@ import {
     TextInputBuilder,
     TextInputStyle
 } from 'discord.js';
-import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../../formatting/embeds/ErrorEmbed.js';
 import colors from '../../../util/colors.js';
 import BadWord from '../../../database/BadWord.js';
 import Punishment from '../../../database/Punishment.js';

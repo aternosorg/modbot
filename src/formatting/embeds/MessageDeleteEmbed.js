@@ -1,7 +1,7 @@
 import EmbedWrapper from './EmbedWrapper.js';
-import colors from '../util/colors.js';
+import colors from '../../util/colors.js';
 import {AttachmentBuilder, escapeMarkdown} from 'discord.js';
-import {EMBED_DESCRIPTION_LIMIT} from '../util/apiLimits.js';
+import {EMBED_DESCRIPTION_LIMIT} from '../../util/apiLimits.js';
 import got from 'got';
 
 export default class MessageDeleteEmbed extends EmbedWrapper {

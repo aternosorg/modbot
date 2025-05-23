@@ -1,7 +1,7 @@
 import EventListener from '../EventListener.js';
 import bot from '../../bot/Bot.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
-import MessageDeleteEmbed from '../../embeds/MessageDeleteEmbed.js';
+import MessageDeleteEmbed from '../../formatting/embeds/MessageDeleteEmbed.js';
 
 export default class MessageDeleteEventListener extends EventListener {
     get name() {

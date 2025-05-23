@@ -2,7 +2,7 @@ import SubCommand from '../../SubCommand.js';
 import GuildSettings from '../../../settings/GuildSettings.js';
 import ChannelSettings from '../../../settings/ChannelSettings.js';
 import {getEmbed} from './ShowInvitesCommand.js';
-import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../../formatting/embeds/ErrorEmbed.js';
 
 export default class SetInvitesCommand extends SubCommand {
 

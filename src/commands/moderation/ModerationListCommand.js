@@ -1,6 +1,6 @@
 import SubCommand from '../SubCommand.js';
 import Moderation from '../../database/Moderation.js';
-import ModerationListEmbed from '../../embeds/ModerationListEmbed.js';
+import ModerationListEmbed from '../../formatting/embeds/ModerationListEmbed.js';
 import {formatTime} from '../../util/timeutils.js';
 import {EMBED_FIELD_LIMIT, EMBED_TOTAL_LIMIT} from '../../util/apiLimits.js';
 import {

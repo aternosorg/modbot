@@ -1,6 +1,6 @@
 import SubCommand from '../../SubCommand.js';
 import GuildSettings from '../../../settings/GuildSettings.js';
-import EmbedWrapper from '../../../embeds/EmbedWrapper.js';
+import EmbedWrapper from '../../../formatting/embeds/EmbedWrapper.js';
 import colors from '../../../util/colors.js';
 
 export default class DisableMutedRoleCommand extends SubCommand {

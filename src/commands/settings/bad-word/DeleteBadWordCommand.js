@@ -1,5 +1,5 @@
 import CompletingBadWordCommand from './CompletingBadWordCommand.js';
-import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../../formatting/embeds/ErrorEmbed.js';
 import colors from '../../../util/colors.js';
 import BadWord from '../../../database/BadWord.js';
 

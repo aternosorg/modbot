@@ -3,7 +3,7 @@ import TypeChecker from '../settings/TypeChecker.js';
 import {channelMention} from 'discord.js';
 import Punishment, {PunishmentAction} from './Punishment.js';
 import colors from '../util/colors.js';
-import ChatFeatureEmbed from '../embeds/ChatFeatureEmbed.js';
+import ChatFeatureEmbed from '../formatting/embeds/ChatFeatureEmbed.js';
 import {EMBED_FIELD_LIMIT} from '../util/apiLimits.js';
 
 /**

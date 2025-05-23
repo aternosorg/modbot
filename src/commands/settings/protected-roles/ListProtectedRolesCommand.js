@@ -1,6 +1,6 @@
 import SubCommand from '../../SubCommand.js';
 import GuildSettings from '../../../settings/GuildSettings.js';
-import LineEmbed from '../../../embeds/LineEmbed.js';
+import LineEmbed from '../../../formatting/embeds/LineEmbed.js';
 import {roleMention} from 'discord.js';
 import GuildWrapper from '../../../discord/GuildWrapper.js';
 

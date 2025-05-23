@@ -1,5 +1,5 @@
 import EventListener from '../EventListener.js';
-import KeyValueEmbed from '../../embeds/KeyValueEmbed.js';
+import KeyValueEmbed from '../../formatting/embeds/KeyValueEmbed.js';
 import {AuditLogEvent, userMention} from 'discord.js';
 import colors from '../../util/colors.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';

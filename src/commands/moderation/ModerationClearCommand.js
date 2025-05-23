@@ -9,7 +9,7 @@ import MemberWrapper from '../../discord/MemberWrapper.js';
 import database from '../../bot/Database.js';
 import Confirmation from '../../database/Confirmation.js';
 import {timeAfter} from '../../util/timeutils.js';
-import ConfirmationEmbed from '../../embeds/ConfirmationEmbed.js';
+import ConfirmationEmbed from '../../formatting/embeds/ConfirmationEmbed.js';
 
 export default class ModerationClearCommand extends SubCommand {
 

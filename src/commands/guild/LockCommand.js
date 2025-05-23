@@ -16,7 +16,7 @@ import ChannelSettings from '../../settings/ChannelSettings.js';
 import ChannelWrapper, {CHANNEL_LOCK_PERMISSIONS} from '../../discord/ChannelWrapper.js';
 import Confirmation from '../../database/Confirmation.js';
 import {timeAfter} from '../../util/timeutils.js';
-import ErrorEmbed from '../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../formatting/embeds/ErrorEmbed.js';
 
 export default class LockCommand extends Command {
 

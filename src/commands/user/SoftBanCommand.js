@@ -9,7 +9,7 @@ import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import UserCommand from './UserCommand.js';
 import Confirmation from '../../database/Confirmation.js';
-import UserActionEmbed from '../../embeds/UserActionEmbed.js';
+import UserActionEmbed from '../../formatting/embeds/UserActionEmbed.js';
 import config from '../../bot/Config.js';
 import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
 import ReasonInput from '../../modals/inputs/ReasonInput.js';

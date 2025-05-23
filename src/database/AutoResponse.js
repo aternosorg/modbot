@@ -2,7 +2,7 @@ import ChatTriggeredFeature from './ChatTriggeredFeature.js';
 import TypeChecker from '../settings/TypeChecker.js';
 import {channelMention} from 'discord.js';
 import colors from '../util/colors.js';
-import ChatFeatureEmbed from '../embeds/ChatFeatureEmbed.js';
+import ChatFeatureEmbed from '../formatting/embeds/ChatFeatureEmbed.js';
 
 /**
  * @import {Trigger} from './triggers/Trigger.js';

@@ -4,7 +4,7 @@ import bot from '../bot/Bot.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
 import MemberWrapper from '../discord/MemberWrapper.js';
 import {RESTJSONErrorCodes} from 'discord.js';
-import ErrorEmbed from '../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../formatting/embeds/ErrorEmbed.js';
 import logger from '../bot/Logger.js';
 
 export default class UnbanInterval extends Interval {

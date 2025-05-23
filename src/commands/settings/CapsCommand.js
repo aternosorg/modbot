@@ -1,9 +1,9 @@
 import SubCommand from '../SubCommand.js';
 import GuildSettings from '../../settings/GuildSettings.js';
-import EmbedWrapper from '../../embeds/EmbedWrapper.js';
+import EmbedWrapper from '../../formatting/embeds/EmbedWrapper.js';
 import colors from '../../util/colors.js';
 import {ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags} from 'discord.js';
-import ErrorEmbed from '../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../formatting/embeds/ErrorEmbed.js';
 
 export default class CapsCommand extends SubCommand {
 
@@ -28,7 +28,7 @@ export default class CapsCommand extends SubCommand {
      *
      * @param {import('discord.js').Interaction} interaction
      * @param {boolean} enabled
-     * @returns {Promise<{components: ActionRowBuilder<ButtonBuilder>[], embeds: EmbedWrapper[]}>}
+     * @returns {Promise<{formatting: ActionRowBuilder<ButtonBuilder>[], embeds: EmbedWrapper[]}>}
      */
     async change(interaction, enabled) {
         const guildSettings = await GuildSettings.get(interaction.guild.id);

@@ -1,6 +1,6 @@
 import {time, TimestampStyles, userMention} from 'discord.js';
-import {resolveColor} from '../util/colors.js';
-import {formatTime} from '../util/timeutils.js';
+import {resolveColor} from '../../util/colors.js';
+import {formatTime} from '../../util/timeutils.js';
 import KeyValueEmbed from './KeyValueEmbed.js';
 
 /**

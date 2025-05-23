@@ -1,6 +1,6 @@
 import Command from '../Command.js';
 import {time, TimestampStyles, userMention} from 'discord.js';
-import KeyValueEmbed from '../../embeds/KeyValueEmbed.js';
+import KeyValueEmbed from '../../formatting/embeds/KeyValueEmbed.js';
 import colors from '../../util/colors.js';
 import {yesNo} from '../../util/format.js';
 

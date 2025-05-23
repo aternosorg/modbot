@@ -1,5 +1,5 @@
 import KeyValueEmbed from './KeyValueEmbed.js';
-import colors from '../util/colors.js';
+import colors from '../../util/colors.js';
 import {bold, channelMention, codeBlock, userMention} from 'discord.js';
 
 export default class PurgeLogEmbed extends KeyValueEmbed {

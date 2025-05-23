@@ -1,7 +1,7 @@
 import SubCommand from '../SubCommand.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import {PermissionFlagsBits} from 'discord.js';
-import ErrorEmbed from '../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../formatting/embeds/ErrorEmbed.js';
 
 /**
  * @abstract

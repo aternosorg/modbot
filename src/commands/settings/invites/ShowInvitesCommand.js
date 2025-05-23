@@ -1,6 +1,6 @@
 import SubCommand from '../../SubCommand.js';
 import GuildSettings from '../../../settings/GuildSettings.js';
-import EmbedWrapper from '../../../embeds/EmbedWrapper.js';
+import EmbedWrapper from '../../../formatting/embeds/EmbedWrapper.js';
 import {channelMention} from 'discord.js';
 import colors from '../../../util/colors.js';
 import ChannelSettings from '../../../settings/ChannelSettings.js';

@@ -1,6 +1,6 @@
 import EmbedWrapper from './EmbedWrapper.js';
 import {bold, escapeMarkdown, formatEmoji} from 'discord.js';
-import {formatTime} from '../util/timeutils.js';
+import {formatTime} from '../../util/timeutils.js';
 
 export default class UserActionEmbed extends EmbedWrapper {
     /**

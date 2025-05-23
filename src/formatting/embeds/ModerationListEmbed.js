@@ -1,4 +1,4 @@
-import colors from '../util/colors.js';
+import colors from '../../util/colors.js';
 import KeyValueEmbed from './KeyValueEmbed.js';
 
 export default class ModerationListEmbed extends KeyValueEmbed {

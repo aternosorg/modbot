@@ -3,7 +3,7 @@ import GuildSettings from '../../settings/GuildSettings.js';
 import {SELECT_MENU_TITLE_LIMIT} from '../../util/apiLimits.js';
 import icons from '../../util/icons.js';
 import {ActionRowBuilder, StringSelectMenuBuilder, userMention} from 'discord.js';
-import ErrorEmbed from '../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../formatting/embeds/ErrorEmbed.js';
 import config from '../../bot/Config.js';
 import {componentEmojiIfExists} from '../../util/format.js';
 
@@ -92,7 +92,7 @@ export default class VideoCommand extends Command {
      * @param {import('discord.js').Snowflake} userId id of the user that executed this command
      * @param {number} [index]
      * @param {?import('discord.js').Snowflake} mention user to mention in the message
-     * @returns {{content: string, components: ActionRowBuilder[], fetchReply: boolean}}
+     * @returns {{content: string, formatting: ActionRowBuilder[], fetchReply: boolean}}
      */
     generateMessage(videos, userId, index = 0, mention = null) {
         for (const result of videos) {

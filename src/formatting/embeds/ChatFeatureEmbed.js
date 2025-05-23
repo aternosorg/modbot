@@ -1,12 +1,12 @@
 import KeyValueEmbed from './KeyValueEmbed.js';
-import {yesNo} from '../util/format.js';
+import {yesNo} from '../../util/format.js';
 import {channelMention} from 'discord.js';
-import cloudVision from '../apis/CloudVision.js';
-import {EMBED_FIELD_LIMIT} from '../util/apiLimits.js';
+import cloudVision from '../../apis/CloudVision.js';
+import {EMBED_FIELD_LIMIT} from '../../util/apiLimits.js';
 
 export default class ChatFeatureEmbed extends KeyValueEmbed {
     /**
-     * @param {import('../database/ChatTriggeredFeature.js')} feature
+     * @param {import('../../database/ChatTriggeredFeature.js')} feature
      * @param {string} title
      * @param {import('discord.js').ColorResolvable} color
      */

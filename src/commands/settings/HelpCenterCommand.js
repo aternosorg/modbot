@@ -1,10 +1,10 @@
 import SubCommand from '../SubCommand.js';
-import ErrorEmbed from '../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../formatting/embeds/ErrorEmbed.js';
 import {resolveCname} from 'dns/promises';
 import {inlineCode} from 'discord.js';
 import GuildSettings from '../../settings/GuildSettings.js';
 import Request from '../../bot/Request.js';
-import EmbedWrapper from '../../embeds/EmbedWrapper.js';
+import EmbedWrapper from '../../formatting/embeds/EmbedWrapper.js';
 import colors from '../../util/colors.js';
 import commandManager from '../CommandManager.js';
 

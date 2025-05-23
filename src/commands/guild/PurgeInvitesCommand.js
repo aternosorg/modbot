@@ -1,7 +1,7 @@
 import Command from '../Command.js';
 import {formatTime, parseTime, timeAfter} from '../../util/timeutils.js';
 import Confirmation from '../../database/Confirmation.js';
-import ConfirmationEmbed from '../../embeds/ConfirmationEmbed.js';
+import ConfirmationEmbed from '../../formatting/embeds/ConfirmationEmbed.js';
 import {ButtonStyle, MessageFlags, PermissionFlagsBits, PermissionsBitField, RESTJSONErrorCodes} from 'discord.js';
 import config from '../../bot/Config.js';
 

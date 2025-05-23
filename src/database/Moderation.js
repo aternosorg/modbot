@@ -2,7 +2,7 @@ import TypeChecker from '../settings/TypeChecker.js';
 import database from '../bot/Database.js';
 import UserWrapper from '../discord/UserWrapper.js';
 import WhereParameter from './WhereParameter.js';
-import KeyValueEmbed from '../embeds/KeyValueEmbed.js';
+import KeyValueEmbed from '../formatting/embeds/KeyValueEmbed.js';
 import {resolveColor} from '../util/colors.js';
 import {toTitleCase} from '../util/format.js';
 import {userMention} from 'discord.js';

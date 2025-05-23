@@ -9,7 +9,7 @@ import Confirmation from '../../database/Confirmation.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import ChannelWrapper from '../../discord/ChannelWrapper.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
-import PurgeLogEmbed from '../../embeds/PurgeLogEmbed.js';
+import PurgeLogEmbed from '../../formatting/embeds/PurgeLogEmbed.js';
 import {deferReplyOnce} from '../../util/interaction.js';
 import ReasonInput from '../../modals/inputs/ReasonInput.js';
 import CommentInput from '../../modals/inputs/CommentInput.js';

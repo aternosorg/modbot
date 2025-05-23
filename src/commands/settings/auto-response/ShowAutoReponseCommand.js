@@ -1,5 +1,5 @@
 import AutoResponse from '../../../database/AutoResponse.js';
-import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../../formatting/embeds/ErrorEmbed.js';
 import {ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags} from 'discord.js';
 import CompletingAutoResponseCommand from './CompletingAutoResponseCommand.js';
 

@@ -2,7 +2,7 @@ import SubCommand from '../../SubCommand.js';
 import GuildSettings from '../../../settings/GuildSettings.js';
 import {formatTime, parseTime} from '../../../util/timeutils.js';
 import colors from '../../../util/colors.js';
-import EmbedWrapper from '../../../embeds/EmbedWrapper.js';
+import EmbedWrapper from '../../../formatting/embeds/EmbedWrapper.js';
 import Punishment from '../../../database/Punishment.js';
 
 export default class SetPunishmentsCommand extends SubCommand {

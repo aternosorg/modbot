@@ -1,6 +1,6 @@
 import CompletingAutoResponseCommand from './CompletingAutoResponseCommand.js';
 import AutoResponse from '../../../database/AutoResponse.js';
-import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../../formatting/embeds/ErrorEmbed.js';
 import colors from '../../../util/colors.js';
 
 export default class DeleteAutoReponseCommand extends CompletingAutoResponseCommand {

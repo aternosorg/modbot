@@ -1,6 +1,6 @@
 import Command from '../Command.js';
 import {PermissionFlagsBits, time, TimestampStyles} from 'discord.js';
-import KeyValueEmbed from '../../embeds/KeyValueEmbed.js';
+import KeyValueEmbed from '../../formatting/embeds/KeyValueEmbed.js';
 
 export default class RoleInfoCommand extends Command {
 

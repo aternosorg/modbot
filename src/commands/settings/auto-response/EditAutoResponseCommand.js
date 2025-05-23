@@ -12,7 +12,7 @@ import {
     TextInputStyle
 } from 'discord.js';
 import AutoResponse from '../../../database/AutoResponse.js';
-import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../../formatting/embeds/ErrorEmbed.js';
 import colors from '../../../util/colors.js';
 import {SELECT_MENU_OPTIONS_LIMIT} from '../../../util/apiLimits.js';
 import config from '../../../bot/Config.js';

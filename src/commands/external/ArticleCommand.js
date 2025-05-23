@@ -16,7 +16,7 @@ import Turndown from 'turndown';
 import icons from '../../util/icons.js';
 import {SELECT_MENU_OPTIONS_LIMIT, SELECT_MENU_TITLE_LIMIT} from '../../util/apiLimits.js';
 import Cache from '../../bot/Cache.js';
-import ErrorEmbed from '../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../formatting/embeds/ErrorEmbed.js';
 
 /**
  * @import {ZendeskArticle} from '../../apis/Zendesk.js';
@@ -130,7 +130,7 @@ export default class ArticleCommand extends Command {
      * @param {import('discord.js').Snowflake} userId id of the user that executed the command
      * @param {number} [index]
      * @param {?import('discord.js').Snowflake} mention user to mention in the message
-     * @returns {{embeds: EmbedBuilder[], components: ActionRowBuilder[], fetchReply: boolean, content: ?string}}
+     * @returns {{embeds: EmbedBuilder[], formatting: ActionRowBuilder[], fetchReply: boolean, content: ?string}}
      */
     generateMessage(results, article, userId, index = 0, mention = null) {
         for (const result of results) {

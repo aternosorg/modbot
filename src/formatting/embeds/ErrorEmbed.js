@@ -1,5 +1,5 @@
 import EmbedWrapper from './EmbedWrapper.js';
-import colors from '../util/colors.js';
+import colors from '../../util/colors.js';
 
 export default class ErrorEmbed extends EmbedWrapper {
     /**

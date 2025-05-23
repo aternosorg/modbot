@@ -6,7 +6,7 @@ import GuildWrapper from './GuildWrapper.js';
 import {BAN_MESSAGE_DELETE_LIMIT, TIMEOUT_LIMIT} from '../util/apiLimits.js';
 import Moderation from '../database/Moderation.js';
 import UserWrapper from './UserWrapper.js';
-import ErrorEmbed from '../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../formatting/embeds/ErrorEmbed.js';
 
 /**
  * @import {User} from 'discord.js';

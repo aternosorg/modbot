@@ -1,6 +1,6 @@
 import {ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags} from 'discord.js';
 import KeyValueEmbed from './KeyValueEmbed.js';
-import colors from '../util/colors.js';
+import colors from '../../util/colors.js';
 
 export default class ConfirmationEmbed extends KeyValueEmbed {
     /**

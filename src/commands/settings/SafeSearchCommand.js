@@ -2,7 +2,7 @@ import Command from '../Command.js';
 import GuildSettings from '../../settings/GuildSettings.js';
 import config from '../../bot/Config.js';
 import colors from '../../util/colors.js';
-import LineEmbed from '../../embeds/LineEmbed.js';
+import LineEmbed from '../../formatting/embeds/LineEmbed.js';
 import {bold, PermissionsBitField, PermissionFlagsBits} from 'discord.js';
 
 export default class SafeSearchCommand extends Command {

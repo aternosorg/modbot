@@ -1,4 +1,4 @@
-import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../../formatting/embeds/ErrorEmbed.js';
 import {ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags} from 'discord.js';
 import CompletingBadWordCommand from './CompletingBadWordCommand.js';
 import BadWord from '../../../database/BadWord.js';

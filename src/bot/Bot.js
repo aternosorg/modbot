@@ -9,7 +9,7 @@ import {
 import {retry} from '../util/util.js';
 import config from './Config.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
-import MessageDeleteEmbed from '../embeds/MessageDeleteEmbed.js';
+import MessageDeleteEmbed from '../formatting/embeds/MessageDeleteEmbed.js';
 
 /**
  * @import {Message} from 'discord.js';

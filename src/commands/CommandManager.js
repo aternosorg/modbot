@@ -33,7 +33,7 @@ import IDCommand from './guild/IDCommand.js';
 import RoleInfoCommand from './guild/RoleInfoCommand.js';
 import GuildInfoCommand from './guild/GuildInfoCommand.js';
 import PurgeInvitesCommand from './guild/PurgeInvitesCommand.js';
-import ErrorEmbed from '../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../formatting/embeds/ErrorEmbed.js';
 import StrikePurgeCommand from './user/StrikePurgeCommand.js';
 import {asyncFilter} from '../util/util.js';
 import AutoResponseCommand from './settings/AutoResponseCommand.js';

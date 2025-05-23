@@ -1,7 +1,7 @@
 import Moderation from '../../database/Moderation.js';
-import ModerationEmbed from '../../embeds/ModerationEmbed.js';
+import ModerationEmbed from '../../formatting/embeds/ModerationEmbed.js';
 import colors from '../../util/colors.js';
-import ErrorEmbed from '../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../formatting/embeds/ErrorEmbed.js';
 import CompletingModerationCommand from './CompletingModerationCommand.js';
 import {MessageFlags} from 'discord.js';
 

@@ -1,6 +1,6 @@
 import SubCommand from '../../SubCommand.js';
 import GuildSettings from '../../../settings/GuildSettings.js';
-import KeyValueEmbed from '../../../embeds/KeyValueEmbed.js';
+import KeyValueEmbed from '../../../formatting/embeds/KeyValueEmbed.js';
 import {formatTime} from '../../../util/timeutils.js';
 import colors from '../../../util/colors.js';
 

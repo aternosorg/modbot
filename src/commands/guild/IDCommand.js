@@ -1,9 +1,9 @@
 import Command from '../Command.js';
 import {Collection, escapeMarkdown, MessageFlags, PermissionFlagsBits, PermissionsBitField} from 'discord.js';
-import LineEmbed from '../../embeds/LineEmbed.js';
+import LineEmbed from '../../formatting/embeds/LineEmbed.js';
 import colors from '../../util/colors.js';
 import {FETCH_BAN_PAGE_SIZE} from '../../util/apiLimits.js';
-import ErrorEmbed from '../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../formatting/embeds/ErrorEmbed.js';
 
 /**
  * @import {User} from 'discord.js';

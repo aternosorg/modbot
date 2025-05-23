@@ -1,7 +1,7 @@
 import Moderation from '../../database/Moderation.js';
 import {parseTime} from '../../util/timeutils.js';
-import ModerationEmbed from '../../embeds/ModerationEmbed.js';
-import ErrorEmbed from '../../embeds/ErrorEmbed.js';
+import ModerationEmbed from '../../formatting/embeds/ModerationEmbed.js';
+import ErrorEmbed from '../../formatting/embeds/ErrorEmbed.js';
 import CompletingModerationCommand from './CompletingModerationCommand.js';
 
 export default class ModerationEditCommand extends CompletingModerationCommand {

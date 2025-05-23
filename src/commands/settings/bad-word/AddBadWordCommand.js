@@ -9,7 +9,7 @@ import {
 } from 'discord.js';
 import Confirmation from '../../../database/Confirmation.js';
 import {parseTime, timeAfter} from '../../../util/timeutils.js';
-import ErrorEmbed from '../../../embeds/ErrorEmbed.js';
+import ErrorEmbed from '../../../formatting/embeds/ErrorEmbed.js';
 import colors from '../../../util/colors.js';
 import AddAutoResponseCommand from '../auto-response/AddAutoResponseCommand.js';
 import BadWord from '../../../database/BadWord.js';

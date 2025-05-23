@@ -6,8 +6,8 @@ import {
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
-import ErrorEmbed from '../../embeds/ErrorEmbed.js';
-import UserActionEmbed from '../../embeds/UserActionEmbed.js';
+import ErrorEmbed from '../../formatting/embeds/ErrorEmbed.js';
+import UserActionEmbed from '../../formatting/embeds/UserActionEmbed.js';
 import config from '../../bot/Config.js';
 import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
 import UserCommand from './UserCommand.js';

@@ -2,7 +2,7 @@ import Command from '../Command.js';
 import {inlineCode, MessageFlags, PermissionFlagsBits, PermissionsBitField} from 'discord.js';
 import ChannelWrapper from '../../discord/ChannelWrapper.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
-import PurgeLogEmbed from '../../embeds/PurgeLogEmbed.js';
+import PurgeLogEmbed from '../../formatting/embeds/PurgeLogEmbed.js';
 import PurgeContentFilter from '../../purge/PurgeContentFilter.js';
 import {PurgeUserFilter} from '../../purge/PurgeUserFilter.js';
 import PurgeRegexFilter from '../../purge/PurgeRegexFilter.js';

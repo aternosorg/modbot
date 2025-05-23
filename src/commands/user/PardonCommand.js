@@ -8,7 +8,7 @@ import MemberWrapper from '../../discord/MemberWrapper.js';
 import colors from '../../util/colors.js';
 import {MODAL_TITLE_LIMIT} from '../../util/apiLimits.js';
 import {inLimits} from '../../util/util.js';
-import EmbedWrapper from '../../embeds/EmbedWrapper.js';
+import EmbedWrapper from '../../formatting/embeds/EmbedWrapper.js';
 import {formatNumber, inlineEmojiIfExists} from '../../util/format.js';
 import {deferReplyOnce, replyOrEdit} from '../../util/interaction.js';
 import UserCommand from './UserCommand.js';

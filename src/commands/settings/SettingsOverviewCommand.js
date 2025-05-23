@@ -2,13 +2,13 @@ import SubCommand from '../SubCommand.js';
 import GuildSettings from '../../settings/GuildSettings.js';
 import {
     ButtonStyle,
-    ContainerBuilder,
-    MessageFlags, SeparatorSpacingSize,
+    MessageFlags,
+    SeparatorSpacingSize,
 } from 'discord.js';
 import {componentEmojiIfExists} from '../../util/format.js';
 import icons from '../../util/icons.js';
-import BetterButtonBuilder from '../../embeds/BetterButtonBuilder.js';
-import Component from '../../components/Component.js';
+import BetterButtonBuilder from '../../formatting/embeds/BetterButtonBuilder.js';
+import MessageBuilder from '../../formatting/MessageBuilder.js';
 
 /**
  * @import {ButtonBuilder} from 'discord.js';
@@ -31,21 +31,21 @@ export default class SettingsOverviewCommand extends SubCommand {
      */
     async buildMessage(interaction) {
         const guildSettings = await GuildSettings.get(interaction.guildId);
-        const container = new ContainerBuilder()
-            .addTextDisplayComponents(Component.h1(`Settings for ${interaction.guild.name}`))
-            .addSeparatorComponents(Component.separator(false));
+        const builder = new MessageBuilder()
+            .heading(`Settings for ${interaction.guild.name}`)
+            .separator(false);
 
-        guildSettings.getSettings(container)
-            .addSeparatorComponents(Component.separator(false, SeparatorSpacingSize.Large))
-            .addActionRowComponents(Component.actionRow(new BetterButtonBuilder()
+        guildSettings.getSettings(builder)
+            .separator(false, SeparatorSpacingSize.Large)
+            .button(new BetterButtonBuilder()
                 .setLabel('Refresh')
                 .setStyle(ButtonStyle.Secondary)
                 .setCustomId('settings:overview')
                 .setEmojiIfPresent(componentEmojiIfExists('refresh', icons.refresh))
-            ));
+            );
 
         return {
-            components: [container],
+            components: [builder.endComponent()],
             flags: MessageFlags.IsComponentsV2 | MessageFlags.Ephemeral,
         };
     }
