@@ -1,7 +1,13 @@
 import Command from '../Command.js';
-import {ALLOWED_SIZES, EmbedBuilder, escapeMarkdown, MessageFlags} from 'discord.js';
+import {
+    ALLOWED_SIZES,
+    escapeMarkdown,
+    MediaGalleryItemBuilder,
+    MessageFlags,
+} from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
+import MessageBuilder from '../../formatting/MessageBuilder.js';
 
 /**
  * @type {import('discord.js').ImageURLOptions}
@@ -52,7 +58,7 @@ export default class AvatarCommand extends Command {
      * @param {import('discord.js').User} user
      * @param {import('discord.js').Guild|null} guild
      * @param {boolean} useServerProfile
-     * @returns {Promise<{flags: number, embeds: EmbedBuilder[]}>}
+     * @returns {Promise<{flags: number, components: import('discord.js').ContainerBuilder[]}>}
      */
     async buildMessage(user, guild, useServerProfile = true) {
         let url = user.displayAvatarURL(IMAGE_OPTIONS);
@@ -62,13 +68,13 @@ export default class AvatarCommand extends Command {
             url = member.member.displayAvatarURL(IMAGE_OPTIONS);
         }
 
+        const message = new MessageBuilder()
+            .heading(`Avatar of ${escapeMarkdown(user.displayName)}`)
+            .image(new MediaGalleryItemBuilder().setURL(url));
+
         return {
-            embeds: [
-                new EmbedBuilder()
-                    .setTitle(`Avatar of ${escapeMarkdown(user.displayName)}`)
-                    .setImage(url),
-            ],
-            flags: MessageFlags.Ephemeral,
+            components: [message.endComponent()],
+            flags: MessageFlags.Ephemeral | MessageFlags.IsComponentsV2,
         };
     }
 

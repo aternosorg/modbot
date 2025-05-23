@@ -8,7 +8,10 @@ import {
     underline,
     ContainerBuilder,
     SeparatorSpacingSize,
-    ActionRowBuilder, TextDisplayBuilder, SeparatorBuilder,
+    ActionRowBuilder,
+    TextDisplayBuilder,
+    SeparatorBuilder,
+    MediaGalleryBuilder,
 } from 'discord.js';
 import {inlineEmojiIfExists} from '../util/format.js';
 
@@ -224,6 +227,16 @@ export default class MessageBuilder {
     button(...builder) {
         // noinspection JSCheckFunctionSignatures
         this.endComponent().addActionRowComponents(new ActionRowBuilder().addComponents(...builder));
+        return this;
+    }
+
+    /**
+     * @param {import('discord.js').MediaGalleryItemBuilder} builder
+     * @returns {MessageBuilder}
+     */
+    image(...builder) {
+        // noinspection JSCheckFunctionSignatures
+        this.endComponent().addMediaGalleryComponents(new MediaGalleryBuilder().addItems(...builder));
         return this;
     }
 }

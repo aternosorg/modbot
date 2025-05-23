@@ -73,7 +73,7 @@ export default class UserInfoCommand extends Command {
     }
 
     /**
-     * generate user message with embed and buttons
+     * generate a user message with embed and buttons
      * @param {import('discord.js').User} user
      * @param {import('discord.js').Interaction} interaction
      * @returns {Promise<{embeds: EmbedBuilder[], formatting: ActionRowBuilder[]}>}
