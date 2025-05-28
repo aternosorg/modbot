@@ -106,21 +106,23 @@ export class CommandManager {
 
     /**
      * Register slash commands available in all guilds
-     * @returns {Promise<void>}
+     * @returns {Promise<{id: import('discord.js').Snowflake, name: string, type: number}[]>}
      */
     async registerGlobalCommands() {
         const globalCommands = this.#commands.filter(command => command.isAvailableInAllGuilds());
         const rest = new REST().setToken(config.data.authToken);
         /** @type {{id: import('discord.js').Snowflake}} */
         const application = await rest.get(Routes.currentApplication());
-        /** @type {{id: import('discord.js').Snowflake, name: string, type: number}[]} */
-        const data = await rest.put(
+        return await rest.put(
             Routes.applicationCommands(application.id),
             { body: this.buildCommands(globalCommands) },
         );
-        for (const command of data) {
+    }
+
+    async updateCommandIds() {
+        for (const [id, command] of await bot.client.application.commands.fetch()) {
             if (command.type === ApplicationCommandType.ChatInput) {
-                this.findCommand(command.name).id = command.id;
+                this.findCommand(command.name).id = id;
             }
         }
     }

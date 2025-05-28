@@ -22,6 +22,7 @@ try {
     await logger.debug('Loading intervals');
     new IntervalManager().schedule();
     await logger.notice('Updating guild commands');
+    await commandManager.updateCommandIds();
     await commandManager.updateGuildCommands();
     await logger.info('Started');
 } catch (error) {

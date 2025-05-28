@@ -33,7 +33,6 @@ export default class SlashCommandPermissionManager {
         let overrides = [];
         try {
             overrides = await interaction.guild.commands.permissions.fetch({command: commandId});
-
         }
         catch (e) {
             if (e.code === RESTJSONErrorCodes.UnknownApplicationCommandPermissions) {
