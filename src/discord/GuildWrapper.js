@@ -1,4 +1,4 @@
-import {BaseGuildTextChannel, Collection, DiscordjsErrorCodes, RESTJSONErrorCodes} from 'discord.js';
+import {BaseGuildTextChannel, DiscordjsErrorCodes, RESTJSONErrorCodes} from 'discord.js';
 import RateLimiter from './RateLimiter.js';
 import bot from '../bot/Bot.js';
 import GuildSettings from '../settings/GuildSettings.js';
@@ -10,13 +10,6 @@ import logger from '../bot/Logger.js';
  */
 
 export default class GuildWrapper {
-
-    /**
-     * Guild Cache
-     * @type {Collection<import('discord.js').Snowflake, GuildWrapper>}
-     */
-    static #cache = new Collection();
-
     /**
      * Discord guild
      * @type {import('discord.js').Guild}
@@ -167,7 +160,7 @@ export default class GuildWrapper {
     /**
      * send a message to a channel
      * @param {import('discord.js').Snowflake} channelId
-     * @param {import('discord.js').MessagePayload|import('discord.js').MessageOptions} options
+     * @param {import('discord.js').MessagePayload|import('discord.js').MessageCreateOptions} options
      * @returns {Promise<?Message>} Discord message (if it was sent)
      */
     async sendMessageToChannel(channelId, options) {
@@ -240,21 +233,5 @@ export default class GuildWrapper {
             database.query('DELETE FROM badWords WHERE guildid = ?', this.guild.id),
             database.query('DELETE FROM moderations WHERE guildid = ?', this.guild.id)
         ]);
-    }
-
-    /**
-     * get a guild from cache or create a new one
-     * @param {Guild} guild
-     * @returns {GuildWrapper}
-     * @deprecated
-     */
-    static get(guild) {
-        if (this.#cache.has(guild.id))
-            return this.#cache.get(guild.id);
-        else {
-            const newGuild = new GuildWrapper(guild);
-            this.#cache.set(guild.id, newGuild);
-            return newGuild;
-        }
     }
 }
