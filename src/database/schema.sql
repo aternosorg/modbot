@@ -60,7 +60,8 @@ CREATE TABLE IF NOT EXISTS `moderations`
     `active`     BOOLEAN          DEFAULT TRUE,
     KEY `action_active_expireTime` (`action`, `active`, `expireTime`),
     KEY `guildid_userid_action_active` (`guildid`, `userid`, `action`, `active`),
-    KEY `moderator_guildid_action` (`moderator`, `guildid`, `action`)
+    KEY `moderator_guildid_action` (`moderator`, `guildid`, `action`),
+    KEY `guildid_created` (`guildid`, `created`)
 );
 
 CREATE TABLE IF NOT EXISTS `confirmations`

@@ -20,7 +20,11 @@ export default class RateLimiter {
     static async sendDM(guild, user, message) {
         let count = this.#modCountCache.get(guild.id);
         if (!count) {
-            count = await database.query(`SELECT COUNT(*) AS count FROM moderations WHERE guildid = ${guild.id} AND created >= ${Math.floor(Date.now()/1000) - 60*60*24}`);
+            count = await database.query(
+                `SELECT COUNT(*) AS count FROM moderations WHERE guildid = ? AND created >= ?`,
+                guild.id,
+                Math.floor(Date.now()/1000) - 60*60*24
+            );
             count = parseInt(count.count);
         }
 
