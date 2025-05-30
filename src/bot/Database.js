@@ -6,6 +6,7 @@ import {asyncFilter} from '../util/util.js';
 import BadWordVisionMigration from '../database/migrations/BadWordVisionMigration.js';
 import AutoResponseVisionMigration from '../database/migrations/AutoResponseVisionMigration.js';
 import DMMigration from '../database/migrations/DMMigration.js';
+import IndexMigration from '../database/migrations/IndexMigration.js';
 
 /**
  * @import {QueryError} from 'mysql2';
@@ -122,6 +123,8 @@ export class Database {
             new BadWordVisionMigration(this),
             new AutoResponseVisionMigration(this),
             new DMMigration(this),
+
+            new IndexMigration(this, 'channels', 'guildid', ['guildid']),
         ], async migration => await migration.check());
     }
 
