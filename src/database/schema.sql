@@ -26,7 +26,8 @@ CREATE TABLE IF NOT EXISTS `responses`
     `response`     TEXT        NOT NULL,
     `global`       BOOLEAN     NOT NULL,
     `channels`     TEXT        NULL DEFAULT NULL,
-    `enableVision` BOOLEAN          DEFAULT FALSE
+    `enableVision` BOOLEAN          DEFAULT FALSE,
+    KEY `guildid_global` (`guildid`, `global`)
 );
 
 CREATE TABLE IF NOT EXISTS `badWords`
@@ -40,7 +41,8 @@ CREATE TABLE IF NOT EXISTS `badWords`
     `channels`     TEXT        NULL DEFAULT NULL,
     `priority`     int         NULL,
     `dm`           TEXT        NULL DEFAULT NULL,
-    `enableVision` BOOLEAN          DEFAULT FALSE
+    `enableVision` BOOLEAN          DEFAULT FALSE,
+    KEY `guildid_global` (`guildid`, `global`)
 );
 
 CREATE TABLE IF NOT EXISTS `moderations`
@@ -55,14 +57,17 @@ CREATE TABLE IF NOT EXISTS `moderations`
     `reason`     TEXT,
     `comment`    TEXT        NULL DEFAULT NULL,
     `moderator`  VARCHAR(20) NULL DEFAULT NULL,
-    `active`     BOOLEAN          DEFAULT TRUE
+    `active`     BOOLEAN          DEFAULT TRUE,
+    KEY `action_active_expireTime` (`action`, `active`, `expireTime`),
+    KEY `guildid_userid_action_active` (`guildid`, `userid`, `action`, `active`)
 );
 
 CREATE TABLE IF NOT EXISTS `confirmations`
 (
     `id`      int PRIMARY KEY AUTO_INCREMENT,
     `data`    TEXT   NOT NULL,
-    `expires` bigint NOT NULL
+    `expires` bigint NOT NULL,
+    KEY `expires` (`expires`)
 );
 
 CREATE TABLE IF NOT EXISTS `safeSearch`
