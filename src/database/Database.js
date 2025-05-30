@@ -1,12 +1,13 @@
 import * as mysql from 'mysql2/promise';
-import logger from './Logger.js';
-import config from './Config.js';
-import CommentFieldMigration from '../database/migrations/CommentFieldMigration.js';
+import logger from '../bot/Logger.js';
+import config from '../bot/Config.js';
+import CommentFieldMigration from './migrations/CommentFieldMigration.js';
 import {asyncFilter} from '../util/util.js';
-import BadWordVisionMigration from '../database/migrations/BadWordVisionMigration.js';
-import AutoResponseVisionMigration from '../database/migrations/AutoResponseVisionMigration.js';
-import DMMigration from '../database/migrations/DMMigration.js';
-import IndexMigration from '../database/migrations/IndexMigration.js';
+import BadWordVisionMigration from './migrations/BadWordVisionMigration.js';
+import AutoResponseVisionMigration from './migrations/AutoResponseVisionMigration.js';
+import DMMigration from './migrations/DMMigration.js';
+import IndexMigration from './migrations/IndexMigration.js';
+import * as fs from 'node:fs/promises';
 
 /**
  * @import {QueryError} from 'mysql2';
@@ -35,6 +36,7 @@ export class Database {
         this.options.charset = 'utf8mb4';
         this.options.supportBigNumbers = true;
         this.options.bigNumberStrings = true;
+        this.options.multipleStatements = true;
         await this.#connect();
     }
 
@@ -107,14 +109,8 @@ export class Database {
      * @returns {Promise<void>}
      */
     async createTables() {
-        await this.query('CREATE TABLE IF NOT EXISTS `channels` (`id` VARCHAR(20) NOT NULL, `config` TEXT NOT NULL, PRIMARY KEY (`id`), `guildid` VARCHAR(20))');
-        await this.query('CREATE TABLE IF NOT EXISTS `guilds` (`id` VARCHAR(20) NOT NULL, `config` TEXT NOT NULL, PRIMARY KEY (`id`))');
-        await this.query('CREATE TABLE IF NOT EXISTS `users` (`id` VARCHAR(20) NOT NULL, `config` TEXT NOT NULL, PRIMARY KEY (`id`))');
-        await this.query('CREATE TABLE IF NOT EXISTS `responses` (`id` int PRIMARY KEY AUTO_INCREMENT, `guildid` VARCHAR(20) NOT NULL, `trigger` TEXT NOT NULL, `response` TEXT NOT NULL, `global` BOOLEAN NOT NULL, `channels` TEXT NULL DEFAULT NULL, `enableVision` BOOLEAN DEFAULT FALSE)');
-        await this.query('CREATE TABLE IF NOT EXISTS `badWords` (`id` int PRIMARY KEY AUTO_INCREMENT, `guildid` VARCHAR(20) NOT NULL, `trigger` TEXT NOT NULL, `punishment` TEXT NOT NULL, `response` TEXT NOT NULL, `global` BOOLEAN NOT NULL, `channels` TEXT NULL DEFAULT NULL, `priority` int NULL, `dm` TEXT NULL DEFAULT NULL, `enableVision` BOOLEAN DEFAULT FALSE)');
-        await this.query('CREATE TABLE IF NOT EXISTS `moderations` (`id` int PRIMARY KEY AUTO_INCREMENT, `guildid` VARCHAR(20) NOT NULL, `userid` VARCHAR(20) NOT NULL, `action` VARCHAR(10) NOT NULL, `created` bigint NOT NULL, `value` int DEFAULT 0, `expireTime` bigint NULL DEFAULT NULL, `reason` TEXT, `comment` TEXT NULL DEFAULT NULL, `moderator` VARCHAR(20) NULL DEFAULT NULL, `active` BOOLEAN DEFAULT TRUE)');
-        await this.query('CREATE TABLE IF NOT EXISTS `confirmations` (`id` int PRIMARY KEY AUTO_INCREMENT, `data` TEXT NOT NULL, `expires` bigint NOT NULL)');
-        await this.query('CREATE TABLE IF NOT EXISTS `safeSearch` (`hash` CHAR(64) PRIMARY KEY, `data` TEXT NOT NULL)');
+        const schema = await fs.readFile(import.meta.dirname + '/schema.sql', 'utf8');
+        await this.queryAll(schema.toString());
     }
 
     async getMigrations() {

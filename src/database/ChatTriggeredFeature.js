@@ -1,5 +1,5 @@
 import {Collection} from 'discord.js';
-import database from '../bot/Database.js';
+import database from './Database.js';
 import LineEmbed from '../formatting/embeds/LineEmbed.js';
 import {EMBED_DESCRIPTION_LIMIT} from '../util/apiLimits.js';
 import colors from '../util/colors.js';

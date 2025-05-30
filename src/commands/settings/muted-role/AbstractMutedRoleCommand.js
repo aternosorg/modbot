@@ -3,7 +3,7 @@ import GuildSettings from '../../../settings/GuildSettings.js';
 import ErrorEmbed from '../../../formatting/embeds/ErrorEmbed.js';
 import {MessageFlags, PermissionFlagsBits, PermissionsBitField, roleMention} from 'discord.js';
 import GuildWrapper from '../../../discord/GuildWrapper.js';
-import database from '../../../bot/Database.js';
+import database from '../../../database/Database.js';
 import EmbedWrapper from '../../../formatting/embeds/EmbedWrapper.js';
 import colors from '../../../util/colors.js';
 

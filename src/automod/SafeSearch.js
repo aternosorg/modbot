@@ -1,7 +1,7 @@
 import GuildSettings from '../settings/GuildSettings.js';
 import Cache from '../bot/Cache.js';
 import Request from '../bot/Request.js';
-import database from '../bot/Database.js';
+import database from '../database/Database.js';
 import logger from '../bot/Logger.js';
 import cloudVision from '../apis/CloudVision.js';
 

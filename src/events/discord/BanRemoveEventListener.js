@@ -1,6 +1,6 @@
 import EventListener from '../EventListener.js';
 import {escapeMarkdown} from 'discord.js';
-import database from '../../bot/Database.js';
+import database from '../../database/Database.js';
 import {formatTime} from '../../util/timeutils.js';
 import GuildWrapper from '../../discord/GuildWrapper.js';
 import KeyValueEmbed from '../../formatting/embeds/KeyValueEmbed.js';

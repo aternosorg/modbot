@@ -1,4 +1,4 @@
-import database from '../bot/Database.js';
+import database from './Database.js';
 
 /**
  * @template T

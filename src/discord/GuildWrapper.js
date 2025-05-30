@@ -2,7 +2,7 @@ import {BaseGuildTextChannel, DiscordjsErrorCodes, RESTJSONErrorCodes} from 'dis
 import RateLimiter from './RateLimiter.js';
 import bot from '../bot/Bot.js';
 import GuildSettings from '../settings/GuildSettings.js';
-import database from '../bot/Database.js';
+import database from '../database/Database.js';
 import logger from '../bot/Logger.js';
 
 /**

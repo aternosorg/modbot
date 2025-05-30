@@ -6,7 +6,7 @@ import {
     MessageFlags,
 } from 'discord.js';
 import MemberWrapper from '../../discord/MemberWrapper.js';
-import database from '../../bot/Database.js';
+import database from '../../database/Database.js';
 import Confirmation from '../../database/Confirmation.js';
 import {timeAfter} from '../../util/timeutils.js';
 import ConfirmationEmbed from '../../formatting/embeds/ConfirmationEmbed.js';

@@ -9,7 +9,7 @@ import UserWrapper from '../../discord/UserWrapper.js';
 import Confirmation from '../../database/Confirmation.js';
 import ConfirmationEmbed from '../../formatting/embeds/ConfirmationEmbed.js';
 import ErrorEmbed from '../../formatting/embeds/ErrorEmbed.js';
-import database from '../../bot/Database.js';
+import database from '../../database/Database.js';
 import {replyOrEdit} from '../../util/interaction.js';
 import {AUTOCOMPLETE_NAME_LIMIT} from '../../util/apiLimits.js';
 

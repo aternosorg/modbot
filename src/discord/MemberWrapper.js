@@ -1,7 +1,7 @@
 import GuildSettings from '../settings/GuildSettings.js';
 import {bold, Guild, RESTJSONErrorCodes} from 'discord.js';
 import {formatTime, parseTime} from '../util/timeutils.js';
-import database from '../bot/Database.js';
+import database from '../database/Database.js';
 import GuildWrapper from './GuildWrapper.js';
 import {BAN_MESSAGE_DELETE_LIMIT, TIMEOUT_LIMIT} from '../util/apiLimits.js';
 import Moderation from '../database/Moderation.js';

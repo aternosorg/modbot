@@ -1,5 +1,5 @@
 import {Collection} from 'discord.js';
-import database from '../bot/Database.js';
+import database from '../database/Database.js';
 
 /**
  * Config cache time (ms)

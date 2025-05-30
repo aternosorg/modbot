@@ -1,5 +1,5 @@
 import TypeChecker from '../settings/TypeChecker.js';
-import database from '../bot/Database.js';
+import database from './Database.js';
 import UserWrapper from '../discord/UserWrapper.js';
 import WhereParameter from './WhereParameter.js';
 import KeyValueEmbed from '../formatting/embeds/KeyValueEmbed.js';

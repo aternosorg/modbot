@@ -1,7 +1,7 @@
 import TypeChecker from './TypeChecker.js';
 import {RESTJSONErrorCodes} from 'discord.js';
 import Settings from './Settings.js';
-import database from '../bot/Database.js';
+import database from '../database/Database.js';
 import bot from '../bot/Bot.js';
 
 /**

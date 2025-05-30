@@ -1,5 +1,5 @@
 import Interval from './Interval.js';
-import database from '../bot/Database.js';
+import database from '../database/Database.js';
 import GuildWrapper from '../discord/GuildWrapper.js';
 import MemberWrapper from '../discord/MemberWrapper.js';
 import {PermissionFlagsBits} from 'discord.js';

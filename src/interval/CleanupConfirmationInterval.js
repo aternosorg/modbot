@@ -1,5 +1,5 @@
 import Interval from './Interval.js';
-import database from '../bot/Database.js';
+import database from '../database/Database.js';
 
 export default class CleanupConfirmationInterval extends Interval {
 

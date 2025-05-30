@@ -1,7 +1,7 @@
 import logger from './bot/Logger.js';
 import {ShardingManager} from 'discord.js';
 import config from './bot/Config.js';
-import database from './bot/Database.js';
+import database from './database/Database.js';
 import commandManager from './commands/CommandManager.js';
 
 try {

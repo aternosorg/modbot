@@ -1,6 +1,6 @@
 import logger from './bot/Logger.js';
 import config from './bot/Config.js';
-import database from './bot/Database.js';
+import database from './database/Database.js';
 import bot from './bot/Bot.js';
 import DiscordEventManager from './events/discord/DiscordEventManager.js';
 import RestEventManagerEventManager from './events/rest/RestEventManager.js';
