@@ -179,13 +179,19 @@ export default class UserCommand extends Command {
             return [];
         }
 
-        const options = await database.queryAll(
-            'SELECT value, COUNT(*) AS count FROM (' +
-                    `SELECT ${database.escapeId(column)} AS value FROM moderations ` +
-                    'WHERE moderator = ? AND guildid = ? AND action = ? ORDER BY created DESC LIMIT 500' +
-            ') AS results WHERE value LIKE CONCAT(\'%\', ?, \'%\') AND LENGTH(value) <= ? ' +
-            'GROUP BY value ORDER BY count DESC LIMIT 5;',
-            interaction.user.id, interaction.guild.id, this.getName(), focussed.value, AUTOCOMPLETE_NAME_LIMIT);
+        const options = await database.queryAll(`
+SELECT value, COUNT(*) AS count
+FROM (
+  SELECT ${database.escapeId(column)} AS value
+  FROM moderations
+  WHERE moderator = ? AND guildid = ? AND action = ?
+  ORDER BY created DESC
+  LIMIT 500
+) AS results
+WHERE value LIKE CONCAT('%', ?, '%') AND LENGTH(value) <= ?
+GROUP BY value
+ORDER BY count DESC
+LIMIT 5;`, interaction.user.id, interaction.guild.id, this.getName(), focussed.value, AUTOCOMPLETE_NAME_LIMIT);
         if (focussed.value) {
             options.unshift({value: focussed.value});
         }

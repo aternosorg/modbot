@@ -125,6 +125,7 @@ export class Database {
             new IndexMigration(this, 'badWords', 'guildid_global', ['guildid', 'global']),
             new IndexMigration(this, 'moderations', 'action_active_expireTime', ['action', 'active', 'expireTime']),
             new IndexMigration(this, 'moderations', 'guildid_userid_action_active', ['guildid', 'userid', 'action', 'active']),
+            new IndexMigration(this, 'moderations', 'moderator_guildid_action', ['moderator', 'guildid', 'action']),
             new IndexMigration(this, 'confirmations', 'expires', ['expires']),
         ], async migration => await migration.check());
     }
