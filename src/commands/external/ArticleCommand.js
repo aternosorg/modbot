@@ -181,6 +181,17 @@ export default class ArticleCommand extends Command {
                     if (!content) {
                         return '';
                     }
+
+                    // Check if the heading is inside a list
+                    let parent = node.parentNode;
+                    while (parent) {
+                        if (parent.nodeName === 'UL' || parent.nodeName === 'OL') {
+                            node.localName = "b";
+                            break;
+                        }
+                        parent = parent.parentNode;
+                    }
+
                     switch (node.localName) {
                         case 'h1':
                             return '# ' + content + '\n';
@@ -204,7 +215,7 @@ export default class ArticleCommand extends Command {
             })
             //remove unsupported tags
             .addRule('remove', {
-                filter: ['img', 'script'],
+                filter: ['img', 'script', 'youtube-video'],
                 replacement() {
                     return '';
                 }
