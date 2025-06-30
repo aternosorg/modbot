@@ -162,10 +162,10 @@ export default class Settings {
             const result = await this._select(id);
             if (!result) return this.empty(id);
 
-            cache.set(result.id, this.create(result));
+            cache.set(id, this.create(result));
         }
 
-        return this.getCache().get(id);
+        return cache.get(id);
     }
 
     /**
