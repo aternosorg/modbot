@@ -116,7 +116,7 @@ export default class ArticleCommand extends Command {
         const articles = (query ? await zendesk.getArticleSuggestions(query) : await zendesk.getPromotedArticles())
             .map(r => {
                 const title = r.title.replace(/<\/?[^>]+>/g, '');
-                return { name: title, value: title };
+                return {name: title, value: title};
             });
 
         completions.set(`${zendesk.identifier}:${query}`, articles, CACHE_DURATION);
@@ -202,9 +202,9 @@ export default class ArticleCommand extends Command {
                         .replace(/\\([*_~`>[\]])/g, '$1')); // unescape escaped markdown
                 }
             })
-            //remove img tags
-            .addRule('images', {
-                filter: ['img'],
+            //remove unsupported tags
+            .addRule('remove', {
+                filter: ['img', 'script'],
                 replacement() {
                     return '';
                 }
@@ -216,8 +216,7 @@ export default class ArticleCommand extends Command {
                     const result = url.match(/^\/\/(?:www\.)?youtube(?:-nocookie)?\.com\/embed\/(.*)/);
                     if (result) {
                         return 'https://youtu.be/' + result[1];
-                    }
-                    else {
+                    } else {
                         return '';
                     }
                 }
@@ -232,6 +231,11 @@ export default class ArticleCommand extends Command {
 
                     if (content.includes('https://') || content.includes('http://')) {
                         return href;
+                    }
+
+                    if (!/^https?:\/\//.test(href)) {
+                        // Remove non-http links and local links
+                        return content;
                     }
 
                     return hyperlink(content, href);
