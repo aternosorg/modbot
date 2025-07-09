@@ -67,7 +67,7 @@ docker run -e MODBOT_AUTH_TOKEN="<discord-auth-token>" -e MODBOT_DATABASE_HOST="
 ```
 
 #### Direct Installation
-Requirements: [Node.js](https://nodejs.org/en/download/) (v20+), a [MySQL](https://dev.mysql.com/downloads/mysql/) database
+Requirements: [Node.js](https://nodejs.org/en/download/) (v22+), a [MySQL](https://dev.mysql.com/downloads/mysql/) database
 1. Download the code and run `npm ci`
 2. Run `npm start` to start the bot
 
