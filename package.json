@@ -13,7 +13,7 @@
     "type": "git",
     "url": "git+https://github.com/aternosorg/modbot.git"
   },
-  "author": "",
+  "author": "Julian Vennen <julian@aternos.org>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/aternosorg/modbot/issues"
@@ -23,10 +23,10 @@
     "node": ">=22.0.0"
   },
   "dependencies": {
-    "@google-cloud/logging": "^11.0.0",
-    "@google-cloud/vision": "^5.1.0",
-    "@googleapis/youtube": "^25.0.0",
-    "diff": "^7.0.0",
+    "@google-cloud/logging": "^11.2.1",
+    "@google-cloud/vision": "^5.3.3",
+    "@googleapis/youtube": "^29.0.0",
+    "diff": "^8.0.2",
     "discord-api-types": "^0.38.1",
     "discord.js": "^14.16.1",
     "fuse.js": "^7.0.0",
