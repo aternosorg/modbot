@@ -144,12 +144,15 @@ export default class ArticleCommand extends Command {
             components: [
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {any} */ new StringSelectMenuBuilder()
+                            // eslint-disable-next-line jsdoc/reject-any-type
                             .setOptions(/** @type {any} */ results)
                             .setCustomId(`article:${userId}` + (mention ? `:${mention}` : ''))
                     ),
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {any} */ new ButtonBuilder()
                             .setStyle(ButtonStyle.Link)
                             .setURL(article.html_url)

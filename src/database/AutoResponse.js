@@ -72,7 +72,7 @@ export default class AutoResponse extends ChatTriggeredFeature {
 
     /**
      * serialize the response
-     * @returns {(*|string)[]}
+     * @returns {(unknown)[]}
      */
     serialize() {
         return [this.gid, JSON.stringify(this.trigger), this.response, this.global, this.channels.join(','), this.enableVision];

@@ -172,7 +172,7 @@ export default class UserCommand extends Command {
      * @param {import('discord.js').AutocompleteInteraction} interaction
      * @param {import('discord.js').AutocompleteFocusedOption} focussed
      * @param {string} column the database column name
-     * @returns {Promise<{name: *, value: *}[]|*[]>}
+     * @returns {Promise<{name: string, value: string}[]>}
      */
     async completeFromHistory(interaction, focussed, column) {
         if (focussed.value?.length > AUTOCOMPLETE_NAME_LIMIT) {

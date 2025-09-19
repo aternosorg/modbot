@@ -7,6 +7,7 @@ import cloudVision from '../apis/CloudVision.js';
 
 /**
  * @import {google} from '@google-cloud/vision';
+ * @import {IAnnotateImageResponse} from '@google-cloud/google/cloud/vision/v1';
  */
 
 const CACHE_DURATION = 60 * 60 * 1000;
@@ -16,7 +17,7 @@ export default class SafeSearch {
 
     /**
      * A map of hashes to resolve functions that are currently waiting for a response from the api
-     * @type {Map<string, Function[]>}
+     * @type {Map<string, ((IAnnotateImageResponse) => void)[]>}
      */
     #requesting = new Map();
 

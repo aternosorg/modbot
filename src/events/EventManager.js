@@ -23,8 +23,9 @@ export default class EventManager {
     }
 
     /**
-     * @param {EventListener} eventListener
-     * @param {*} args
+     * @template T
+     * @param {EventListener<T>} eventListener
+     * @param {T} args
      * @returns {Promise<void>}
      */
     async notifyEventListener(eventListener, ...args) {

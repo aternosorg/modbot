@@ -67,6 +67,7 @@ export default class UnlockCommand extends Command {
                 components: [
                     /** @type {ActionRowBuilder} */
                     new ActionRowBuilder()
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         .addComponents(/** @type {*} */
                             channelSelectMenu(channels).setCustomId('unlock')
                         )
@@ -81,8 +82,10 @@ export default class UnlockCommand extends Command {
             .setTitle(`Unlock ${interaction.values.length} channels`)
             .setCustomId(`unlock:${await confirmation.save()}`)
             .addComponents(
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder().addComponents(
+                    // eslint-disable-next-line jsdoc/reject-any-type
                     /** @type {*} */
                     new TextInputBuilder()
                         .setLabel('Unlock message')

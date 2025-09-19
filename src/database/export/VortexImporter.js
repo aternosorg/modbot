@@ -132,8 +132,11 @@ export default class VortexImporter extends Importer {
         return new EmbedBuilder()
             .setTitle('Imported Data')
             .addFields(
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {any} */ { name: 'Mutes', value: Object.keys(this.tempmutes).length.toString(), inline: true},
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {any} */ { name: 'Strikes', value: Object.keys(this.strikes).length.toString(), inline: true},
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {any} */ { name: 'Bans', value: Object.keys(this.tempbans).length.toString(), inline: true},
             );
     }

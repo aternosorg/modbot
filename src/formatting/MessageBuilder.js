@@ -111,7 +111,7 @@ export default class MessageBuilder {
     /**
      * Add a heading to the content.
      * @param {string} content
-     * @param {import('@discordjs/formatters').HeadingLevel} level
+     * @param {number} level
      * @param {boolean} newline
      * @returns {MessageBuilder}
      */
@@ -184,7 +184,7 @@ export default class MessageBuilder {
 
     /**
      * Add a key-value pair to the content if the condition is met
-     * @param {*} condition
+     * @param {unknown} condition
      * @param {string} key
      * @param {string} value
      * @returns {MessageBuilder}

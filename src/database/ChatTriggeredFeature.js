@@ -140,7 +140,7 @@ export default class ChatTriggeredFeature {
     /**
      * serialize this object
      * must return data in same order as the static columns array
-     * @returns {(*|string)[]}
+     * @returns {(unknown)[]}
      * @abstract
      */
     serialize() {

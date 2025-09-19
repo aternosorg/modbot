@@ -11,7 +11,7 @@ export function toTitleCase(s) {
 }
 
 /**
- * @param {*} bool
+ * @param {bool} bool
  * @returns {string}
  */
 export function yesNo(bool) {
@@ -37,7 +37,7 @@ export function inlineEmojiIfExists(configKey) {
  * Add s if number is not 1
  * @param {number} number
  * @param {string} name
- * @returns {*}
+ * @returns {string}
  */
 export function formatNumber(number, name) {
     if (number === 1) {

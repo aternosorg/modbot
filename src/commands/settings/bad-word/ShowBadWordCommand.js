@@ -31,11 +31,13 @@ export default class ShowBadWordCommand extends CompletingBadWordCommand {
             components: [
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new ButtonBuilder()
                             .setLabel('Delete')
                             .setStyle(ButtonStyle.Danger)
                             .setCustomId(`bad-word:delete:${badWord.id}`),
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new ButtonBuilder()
                             .setLabel('Edit')

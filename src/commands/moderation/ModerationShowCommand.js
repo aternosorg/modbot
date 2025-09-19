@@ -32,6 +32,7 @@ export default class ModerationShowCommand extends CompletingModerationCommand {
             components: [
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new ButtonBuilder()
                             .setLabel('Delete')

@@ -31,11 +31,13 @@ export default class ShowAutoReponseCommand extends CompletingAutoResponseComman
             components: [
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new ButtonBuilder()
                             .setLabel('Delete')
                             .setStyle(ButtonStyle.Danger)
                             .setCustomId(`auto-response:delete:${autoResponse.id}`),
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new ButtonBuilder()
                             .setLabel('Edit')

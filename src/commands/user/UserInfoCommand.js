@@ -76,7 +76,7 @@ export default class UserInfoCommand extends Command {
      * generate a user message with embed and buttons
      * @param {import('discord.js').User} user
      * @param {import('discord.js').Interaction} interaction
-     * @returns {Promise<{embeds: EmbedBuilder[], formatting: ActionRowBuilder[]}>}
+     * @returns {Promise<{embeds: EmbedBuilder[], components: ActionRowBuilder[]}>}
      */
     async generateUserMessage(user, interaction) {
         const memberWrapper = new MemberWrapper(user, new GuildWrapper(interaction.guild));
@@ -89,6 +89,7 @@ export default class UserInfoCommand extends Command {
         /** @type {ActionRowBuilder<ButtonBuilder>} */
         const actionRow = new ActionRowBuilder()
             .addComponents(
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */ new BetterButtonBuilder()
                     .setLabel('Strike')
                     .setCustomId(`strike:${user.id}`)
@@ -97,16 +98,19 @@ export default class UserInfoCommand extends Command {
             );
         const informationRow = new ActionRowBuilder()
             .addComponents(
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */ new BetterButtonBuilder()
                     .setLabel('Refresh')
                     .setCustomId(`user:refresh:${user.id}`)
                     .setStyle(ButtonStyle.Secondary)
                     .setEmojiIfPresent(componentEmojiIfExists('refresh')),
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */ new BetterButtonBuilder()
                     .setLabel('Avatar')
                     .setCustomId(`avatar:${user.id}`)
                     .setStyle(ButtonStyle.Secondary)
                     .setEmojiIfPresent(componentEmojiIfExists('avatar')),
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */ new BetterButtonBuilder()
                     .setLabel('Moderations')
                     .setCustomId(`moderation:list:${user.id}`)
@@ -117,6 +121,7 @@ export default class UserInfoCommand extends Command {
         if (member) {
             embed.addPair(inlineEmojiIfExists('userJoined') + 'Joined', time(member.joinedAt, TimestampStyles.LongDate));
             actionRow.addComponents(
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */ new BetterButtonBuilder()
                     .setLabel('Kick')
                     .setCustomId(`kick:${user.id}`)
@@ -131,6 +136,7 @@ export default class UserInfoCommand extends Command {
                 .addPair(inlineEmojiIfExists('strike') + ' Strike count', strikeCount);
             if (strikeCount) {
                 actionRow.addComponents(
+                    // eslint-disable-next-line jsdoc/reject-any-type
                     /** @type {*} */ new BetterButtonBuilder()
                         .setLabel('Pardon')
                         .setCustomId(`pardon:${user.id}`)
@@ -149,6 +155,7 @@ export default class UserInfoCommand extends Command {
                 }
                 embed.addPairIf(mute.comment, inlineEmojiIfExists('mute') + 'Mute comment', mute.comment);
                 actionRow.addComponents(
+                    // eslint-disable-next-line jsdoc/reject-any-type
                     /** @type {*} */ new BetterButtonBuilder()
                         .setLabel('Unmute')
                         .setCustomId(`unmute:${user.id}`)
@@ -159,6 +166,7 @@ export default class UserInfoCommand extends Command {
             }
             else {
                 actionRow.addComponents(
+                    // eslint-disable-next-line jsdoc/reject-any-type
                     /** @type {*} */ new BetterButtonBuilder()
                         .setLabel('Mute')
                         .setCustomId(`mute:${user.id}`)
@@ -177,6 +185,7 @@ export default class UserInfoCommand extends Command {
                 }
                 embed.addPairIf(ban.comment, inlineEmojiIfExists('ban') + 'Ban comment', ban.comment);
                 actionRow.addComponents(
+                    // eslint-disable-next-line jsdoc/reject-any-type
                     /** @type {*} */ new BetterButtonBuilder()
                         .setLabel('Unban')
                         .setCustomId(`unban:${user.id}`)
@@ -187,6 +196,7 @@ export default class UserInfoCommand extends Command {
             }
             else {
                 actionRow.addComponents(
+                    // eslint-disable-next-line jsdoc/reject-any-type
                     /** @type {*} */ new BetterButtonBuilder()
                         .setLabel('Ban')
                         .setCustomId(`ban:${user.id}`)

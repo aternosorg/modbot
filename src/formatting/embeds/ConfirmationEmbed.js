@@ -21,11 +21,13 @@ export default class ConfirmationEmbed extends KeyValueEmbed {
             flags: ephemeral ? MessageFlags.Ephemeral : 0,
             embeds: [this],
             components: [new ActionRowBuilder()
+                // eslint-disable-next-line jsdoc/reject-any-type
                 .addComponents(/** @type {*} */ new ButtonBuilder()
                     .setCustomId(`${this.command}:confirm:${this.confirmation}`)
                     .setStyle(this.confirmButtonStyle)
                     .setLabel('Confirm'),
                 )
+                // eslint-disable-next-line jsdoc/reject-any-type
                 .addComponents(/** @type {*} */ new ButtonBuilder()
                     .setCustomId(`confirmation:delete:${this.confirmation}`)
                     .setStyle(ButtonStyle.Secondary)

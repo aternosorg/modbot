@@ -1,4 +1,8 @@
 /**
+ * @import {EmbedBuilder} from "discord.js";
+ */
+
+/**
  * @class Importer
  * @classdesc Base class for importing data into the DB
  * @abstract
@@ -25,7 +29,7 @@ export default class Importer {
 
     /**
      * generate an embed showing an overview of imported data
-     * @returns {import('discord.js').EmbedBuilder}
+     * @returns {EmbedBuilder}
      * @abstract
      */
     generateEmbed() {

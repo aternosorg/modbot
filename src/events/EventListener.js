@@ -1,5 +1,6 @@
 /**
  * @class
+ * @template T arguments
  * @classdesc a task that's run repeatedly
  * @abstract
  */
@@ -16,8 +17,9 @@ export default class EventListener {
     /**
      * execute this event
      * @abstract
+     * @param {...T} args
      */
-    async execute() {
+    async execute(args) {
 
     }
 }

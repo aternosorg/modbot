@@ -44,7 +44,7 @@ export default class KeyValueEmbed extends LineEmbed {
     }
 
     /**
-     * @param {*} condition
+     * @param {unknown} condition
      * @param {string} name
      * @param {string|number} value
      * @returns {this}
@@ -64,12 +64,13 @@ export default class KeyValueEmbed extends LineEmbed {
      * @returns {KeyValueEmbed}
      */
     addField(name, value, inline = false) {
+        // eslint-disable-next-line jsdoc/reject-any-type
         return this.addFields(/** @type {*} */ {name, value, inline});
     }
 
     /**
      * Add a field if a condition is met
-     * @param {*} condition
+     * @param {unknown} condition
      * @param {string} name
      * @param {string} value
      * @param {boolean} inline

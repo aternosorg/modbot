@@ -1,5 +1,3 @@
-import {GuildPremiumTier} from 'discord.js';
-
 /**
  * maximum timeout duration in seconds
  * @type {number}

@@ -1,12 +1,20 @@
 /**
+ * @template T,V
+ * @callback RetryCallback
+ * @param {...T} args
+ * @returns {Promise<V>}
+ */
+
+/**
  * Retries a function if it fails
  * @async
- * @param {Function}  fn                function to retry
- * @param {object}    thisArg           object that should execute the function
- * @param {Array}     [args]         arguments to pass to the function
- * @param {number}    [maxRetries]    amount of retries before throwing an error
- * @param {Function}  [returnValMatch]  function to test the result on
- * @returns {*} result of fn
+ * @template T,V
+ * @param {RetryCallback<T, V>} fn                  function to retry
+ * @param {object}              thisArg             object that should execute the function
+ * @param {T}                   [args]              arguments to pass to the function
+ * @param {number}              [maxRetries]        amount of retries before throwing an error
+ * @param {(V) => boolean}      [returnValMatch]    function to test the result on
+ * @returns {V} result of fn
  */
 export async function retry(fn, thisArg, args = [], maxRetries = 5, returnValMatch = null) {
     let err;
@@ -28,19 +36,19 @@ export async function retry(fn, thisArg, args = [], maxRetries = 5, returnValMat
 }
 
 /**
- * @template T
+ * @template T,V
  * @callback AsyncFilterCallback
  * @param {T} element
- * @param {...*} args
+ * @param {...V} args
  * @returns {Promise<boolean>}
  */
 
 /**
  *
- * @template T
+ * @template T,V
  * @param {T[]} array
- * @param {AsyncFilterCallback<T>} filter
- * @param {*} args
+ * @param {AsyncFilterCallback<T, V>} filter
+ * @param {V} args
  * @returns {Promise<T[]>}
  */
 export async function asyncFilter(array, filter, ...args) {

@@ -111,6 +111,7 @@ export class Bot {
         const guild = new GuildWrapper(message.guild);
         const embed = new MessageDeleteEmbed(message);
         embed.addFields(
+            // eslint-disable-next-line jsdoc/reject-any-type
             /** @type {any}*/ {name: 'Reason', value: reason.substring(0, 1024)},
         );
 

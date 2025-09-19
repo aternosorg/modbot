@@ -29,7 +29,7 @@ export default class ModBotImporter extends Importer {
      * @type {Exporter}
      */
     data;
-    
+
     /**
      * @param {import('discord.js').Snowflake} guildID
      * @param {Exporter} data JSON exported data (modbot-1.0.0)
@@ -147,9 +147,13 @@ export default class ModBotImporter extends Importer {
         return new EmbedBuilder()
             .setTitle('Imported Data')
             .addFields(
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {any} */{ name: 'Channel Configs', value: this.data.channels.filter(c => c !== null).length.toString(), inline: true },
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {any} */{ name: 'Moderations', value: this.data.moderations.length.toString(), inline: true },
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {any} */{ name: 'Responses', value: this.data.responses.length.toString(), inline: true },
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {any} */{ name: 'BadWords', value: this.data.badWords.length.toString(), inline: true },
             );
     }

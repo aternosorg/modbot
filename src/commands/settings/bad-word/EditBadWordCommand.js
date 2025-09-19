@@ -155,9 +155,11 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
             .setTitle(`Edit Bad-word #${badWord.id}`)
             .setCustomId(`bad-word:edit:${await confirmation.save()}`)
             .addComponents(
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new TextInputBuilder()
                             .setRequired(true)
@@ -167,9 +169,11 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                             .setLabel('Trigger')
                             .setValue(trigger.asContentString()),
                     ),
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new TextInputBuilder()
                             .setRequired(false)
@@ -181,9 +185,11 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                             .setMinLength(1)
                             .setMaxLength(4000)
                     ),
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new TextInputBuilder()
                             .setRequired(false)
@@ -195,9 +201,11 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                             .setMinLength(1)
                             .setMaxLength(10)
                     ),
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new TextInputBuilder()
                             .setRequired(false)
@@ -212,9 +220,11 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
 
         if (['ban', 'mute'].includes(punishment)) {
             modal.addComponents(
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new TextInputBuilder()
                             .setRequired(false)
@@ -300,7 +310,9 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
                     badWord.channels.map(c => channelMention(c)).join(', ')}`,
                 components: [
                     /** @type {ActionRowBuilder} */
+                    // eslint-disable-next-line jsdoc/reject-any-type
                     new ActionRowBuilder().addComponents(/** @type {*} */new ChannelSelectMenuBuilder()
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         .addChannelTypes(/** @type {*} */[
                             ChannelType.GuildText,
                             ChannelType.GuildForum,
@@ -354,7 +366,7 @@ export default class EditBadWordCommand extends CompletingBadWordCommand {
      * @param {number} priority
      * @param {?string} dm
      * @param {?boolean} vision
-     * @returns {Promise<*>}
+     * @returns {Promise<void>}
      */
     async update(
         interaction,

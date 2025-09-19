@@ -118,6 +118,7 @@ export default class ModerationListCommand extends SubCommand {
                 : moderation.reason.slice(0, limit - 3) + '...';
             lines.push(`Reason: ${reason}`);
 
+            // eslint-disable-next-line jsdoc/reject-any-type
             embed.addFields(/** @type {*} */{
                 name: `${moderation.action.toUpperCase()} [#${moderation.id}] ${time(moderation.created, TimestampStyles.LongDate)}`,
                 value: lines.join('\n'),
@@ -146,6 +147,7 @@ export default class ModerationListCommand extends SubCommand {
                 button.setLabel(data.label);
             }
 
+            // eslint-disable-next-line jsdoc/reject-any-type
             actionRow.addComponents(/** @type {*} */ button);
         }
 

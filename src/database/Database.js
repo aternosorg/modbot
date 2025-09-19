@@ -20,7 +20,7 @@ export class Database {
     #connection = null;
 
     /**
-     * @type {{resolve: Function, reject: Function}[]}
+     * @type {{resolve: (unknown) => void, reject: (Error) => void}[]}
      */
     #waiting = [];
 
@@ -63,7 +63,7 @@ export class Database {
             this.#connection.on('error', this.#handleConnectionError.bind(this));
 
             for (let waiting of this.#waiting) {
-                waiting.resolve();
+                waiting.resolve(null);
             }
             this.#waiting = [];
         } catch (error) {
@@ -163,7 +163,7 @@ export class Database {
     /**
      * Execute query and return the first result
      * @param {string} sql
-     * @param {*} values
+     * @param {unknown} values
      * @returns {Promise<object|null>}
      */
     async query(sql, ...values) {

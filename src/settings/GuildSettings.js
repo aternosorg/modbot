@@ -5,7 +5,6 @@ import {
     channelMention,
     Collection, HeadingLevel,
     roleMention,
-    TextDisplayBuilder,
 } from 'discord.js';
 import Punishment, {PunishmentAction} from '../database/Punishment.js';
 import Zendesk from '../apis/Zendesk.js';
@@ -13,6 +12,7 @@ import {formatTime, parseTime} from '../util/timeutils.js';
 import YouTubePlaylist from '../apis/YouTubePlaylist.js';
 import config from '../bot/Config.js';
 import {deepMerge} from '../util/util.js';
+import MessageBuilder from '../formatting/MessageBuilder.js';
 
 /**
  * @typedef {object} SafeSearchSettings
@@ -179,7 +179,7 @@ export default class GuildSettings extends Settings {
             .listOr('None', ...this.getProtectedRoles())
             .separator()
             .heading('Automod', HeadingLevel.Three)
-            .list(...this.getAutomodSettings())
+            .list(...this.getAutoModSettings())
             .separator()
             .heading('Connections', HeadingLevel.Three)
             .emojiList(...this.getConnectionsSettings());
@@ -219,9 +219,9 @@ export default class GuildSettings extends Settings {
 
     /**
      * generate an overview of automod settings
-     * @returns {TextDisplayBuilder|*}
+     * @returns {string[]}
      */
-    getAutomodSettings() {
+    getAutoModSettings() {
         const lines = [
             `Invites: ${this.invites ? 'allowed' : 'forbidden'}`,
             `Link cooldown: ${this.linkCooldown !== -1 ? formatTime(this.linkCooldown) : 'disabled'}`,

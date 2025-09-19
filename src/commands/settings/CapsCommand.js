@@ -56,6 +56,7 @@ export default class CapsCommand extends SubCommand {
             components: [
                 /** @type {ActionRowBuilder<ButtonBuilder>} */
                 new ActionRowBuilder()
+                    // eslint-disable-next-line jsdoc/reject-any-type
                     .addComponents(/** @type {*} */ button)
             ]
         };

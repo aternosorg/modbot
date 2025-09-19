@@ -116,9 +116,11 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
             .setTitle(`Edit Auto-response #${autoResponse.id}`)
             .setCustomId(`auto-response:edit:${await confirmation.save()}`)
             .addComponents(
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new TextInputBuilder()
                             .setRequired(true)
@@ -128,9 +130,11 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
                             .setLabel('Trigger')
                             .setValue(trigger.asContentString()),
                     ),
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new TextInputBuilder()
                             .setRequired(true)
@@ -194,7 +198,9 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
                     autoResponse.channels.map(c => channelMention(c)).join(', ')}`,
                 components: [
                     /** @type {ActionRowBuilder} */
+                    // eslint-disable-next-line jsdoc/reject-any-type
                     new ActionRowBuilder().addComponents(/** @type {*} */new ChannelSelectMenuBuilder()
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         .addChannelTypes(/** @type {*} */[
                             ChannelType.GuildText,
                             ChannelType.GuildForum,
@@ -241,7 +247,7 @@ export default class EditAutoResponseCommand extends CompletingAutoResponseComma
      * @param {string} trigger
      * @param {string} response
      * @param {?boolean} vision
-     * @returns {Promise<*>}
+     * @returns {Promise<void>}
      */
     async update(
         interaction,

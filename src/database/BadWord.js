@@ -106,7 +106,7 @@ export default class BadWord extends ChatTriggeredFeature {
 
     /**
      * serialize the bad word
-     * @returns {(*|string)[]}
+     * @returns {unknown[]}
      */
     serialize() {
         return [
@@ -143,7 +143,7 @@ export default class BadWord extends ChatTriggeredFeature {
      * @param {import('discord.js').Snowflake[]|null} channels
      * @param {string} triggerType
      * @param {string} triggerContent
-     * @param {string} [response] response to bad-word
+     * @param {?string} [response] response to bad-word
      * @param {?string} punishment
      * @param {?number} duration
      * @param {?number} priority

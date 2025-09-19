@@ -60,6 +60,7 @@ export default class LockCommand extends Command {
                 components: [
                     /** @type {ActionRowBuilder} */
                     new ActionRowBuilder()
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         .addComponents(/** @type {*} */
                             channelSelectMenu(channels).setCustomId('lock')
                         )
@@ -74,8 +75,10 @@ export default class LockCommand extends Command {
             .setTitle(`Lock ${interaction.values.length} channels`)
             .setCustomId(`lock:${await confirmation.save()}`)
             .addComponents(
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder().addComponents(
+                    // eslint-disable-next-line jsdoc/reject-any-type
                     /** @type {*} */
                     new TextInputBuilder()
                         .setLabel('Lock message')

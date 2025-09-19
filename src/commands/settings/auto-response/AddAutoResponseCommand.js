@@ -63,9 +63,11 @@ export default class AddAutoResponseCommand extends SubCommand {
             .setTitle(`Create new Auto-response of type ${type}`)
             .setCustomId(`auto-response:add:${await confirmation.save()}`)
             .addComponents(
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new TextInputBuilder()
                             .setRequired(true)
@@ -76,9 +78,11 @@ export default class AddAutoResponseCommand extends SubCommand {
                             .setMinLength(1)
                             .setMaxLength(4000),
                     ),
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new TextInputBuilder()
                             .setRequired(true)
@@ -134,7 +138,9 @@ export default class AddAutoResponseCommand extends SubCommand {
                 content: 'Select channels for the auto-response',
                 components: [
                     /** @type {ActionRowBuilder} */
+                    // eslint-disable-next-line jsdoc/reject-any-type
                     new ActionRowBuilder().addComponents(/** @type {*} */new ChannelSelectMenuBuilder()
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         .addChannelTypes(/** @type {*} */[
                             ChannelType.GuildText,
                             ChannelType.GuildForum,
@@ -179,7 +185,7 @@ export default class AddAutoResponseCommand extends SubCommand {
      * @param {string} trigger
      * @param {string} response
      * @param {?boolean} enableVision
-     * @returns {Promise<*>}
+     * @returns {Promise<void>}
      */
     async create(
         interaction,
@@ -200,7 +206,8 @@ export default class AddAutoResponseCommand extends SubCommand {
             enableVision,
         );
         if (!result.success) {
-            return interaction.reply(ErrorEmbed.message(result.message));
+            await interaction.reply(ErrorEmbed.message(result.message));
+            return;
         }
 
         await interaction.reply(result.response

@@ -1,7 +1,7 @@
 export default class TypeChecker {
     /**
      * check if value has correct type, otherwise throw a type error
-     * @param {*} value
+     * @param {unknown} value
      * @param {("undefined"|"object"|"boolean"|"number"|"string"|"function"|"symbol"|"bigint")[]} types
      * @param {string} name
      * @param {boolean} [allowNull]
@@ -18,7 +18,7 @@ export default class TypeChecker {
 
     /**
      * check if value is a number or undefined
-     * @param {*} value
+     * @param {unknown} value
      * @param {string} name
      */
     static assertNumberUndefinedOrNull(value, name) {
@@ -27,7 +27,7 @@ export default class TypeChecker {
 
     /**
      * check if value is a number
-     * @param {*} value
+     * @param {unknown} value
      * @param {string} name
      */
     static assertNumber(value, name) {
@@ -36,7 +36,7 @@ export default class TypeChecker {
 
     /**
      * check if value is a string or undefined
-     * @param {*} value
+     * @param {unknown} value
      * @param {string} name
      */
     static assertStringUndefinedOrNull(value, name) {
@@ -46,7 +46,7 @@ export default class TypeChecker {
 
     /**
      * check if value is a string
-     * @param {*} value
+     * @param {unknown} value
      * @param {string} name
      */
     static assertString(value, name) {

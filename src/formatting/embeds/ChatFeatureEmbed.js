@@ -19,6 +19,7 @@ export default class ChatFeatureEmbed extends KeyValueEmbed {
             .addPairIf(!feature.global, 'Channels', feature.channels.map(channelMention).join(', '))
             .addPairIf(cloudVision.isEnabled, 'Detect images', yesNo(feature.enableVision))
             .addFields(
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {any} */
                 {
                     name: 'Response',

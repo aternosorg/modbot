@@ -111,7 +111,9 @@ export default class VideoCommand extends Command {
             components: [
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {any} */ new StringSelectMenuBuilder()
+                            // eslint-disable-next-line jsdoc/reject-any-type
                             .setOptions(/** @type {any} */ videos)
                             .setCustomId(`video:${userId}` + (mention ? `:${mention}` : ''))
                     ),

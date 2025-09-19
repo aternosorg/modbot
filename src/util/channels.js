@@ -9,6 +9,7 @@ import {SELECT_MENU_OPTIONS_LIMIT} from './apiLimits.js';
 export function channelSelectMenu(channels, defaultChannels = []) {
     return new StringSelectMenuBuilder()
         .setOptions(
+            // eslint-disable-next-line jsdoc/reject-any-type
             /** @type {*} */
             channels
                 .sort((a,b) => {

@@ -22,7 +22,8 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
         builder.addStringOption(option => option
             .setName('punishment')
             .setDescription('Punishment Type')
-            .setChoices(
+            // eslint-disable-next-line jsdoc/reject-any-type
+            .setChoices(/** @type {*} */[
                 {
                     name: 'None [default]',
                     value: 'none'
@@ -42,7 +43,7 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                     name: 'Strike user',
                     value: 'strike'
                 }
-            )
+            ])
         );
         return builder;
     }
@@ -58,9 +59,11 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
             .setTitle(`Create new Bad-word of type ${type}`)
             .setCustomId(`bad-word:add:${await confirmation.save()}`)
             .addComponents(
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new TextInputBuilder()
                             .setRequired(true)
@@ -71,9 +74,11 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                             .setMinLength(1)
                             .setMaxLength(4000),
                     ),
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new TextInputBuilder()
                             .setRequired(false)
@@ -84,9 +89,11 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                             .setMinLength(1)
                             .setMaxLength(4000)
                     ),
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new TextInputBuilder()
                             .setRequired(false)
@@ -97,9 +104,11 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                             .setMinLength(1)
                             .setMaxLength(10)
                     ),
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new TextInputBuilder()
                             .setRequired(false)
@@ -114,9 +123,11 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
 
         if (['ban', 'mute'].includes(punishment)) {
             modal.addComponents(
+                // eslint-disable-next-line jsdoc/reject-any-type
                 /** @type {*} */
                 new ActionRowBuilder()
                     .addComponents(
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         /** @type {*} */
                         new TextInputBuilder()
                             .setRequired(false)
@@ -192,7 +203,9 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
                 content: 'Select channels for the bad-word',
                 components: [
                     /** @type {ActionRowBuilder} */
+                    // eslint-disable-next-line jsdoc/reject-any-type
                     new ActionRowBuilder().addComponents(/** @type {*} */new ChannelSelectMenuBuilder()
+                        // eslint-disable-next-line jsdoc/reject-any-type
                         .addChannelTypes(/** @type {*} */[
                             ChannelType.GuildText,
                             ChannelType.GuildForum,
@@ -240,13 +253,13 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
      * @param {import('discord.js').Snowflake[]} channels
      * @param {string} type
      * @param {string} trigger
-     * @param {string} response
+     * @param {?string} response
      * @param {?string} punishment
      * @param {?number} duration
      * @param {?number} priority
      * @param {?string} dm
      * @param {?boolean} enableVision
-     * @returns {Promise<*>}
+     * @returns {Promise<void>}
      */
     async create(
         interaction,
@@ -275,7 +288,8 @@ export default class AddBadWordCommand extends AddAutoResponseCommand {
             enableVision,
         );
         if (!result.success) {
-            return interaction.reply(ErrorEmbed.message(result.message));
+            await interaction.reply(ErrorEmbed.message(result.message));
+            return;
         }
 
         await interaction.reply(result.badWord
