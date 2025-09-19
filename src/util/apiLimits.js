@@ -43,16 +43,6 @@ export const SELECT_MENU_TITLE_LIMIT = 100;
 export const SELECT_MENU_VALUE_LIMIT = 100;
 
 /**
- * upload limits for guilds in byte
- * @type {Map<import('discord.js').GuildPremiumTier, number>}
- */
-export const FILE_UPLOAD_LIMITS = new Map()
-    .set(GuildPremiumTier.None, 25 * 1024 * 1024)
-    .set(GuildPremiumTier.Tier1, 25 * 1024 * 1024)
-    .set(GuildPremiumTier.Tier2, 50 * 1024 * 1024)
-    .set(GuildPremiumTier.Tier3, 100 * 1024 * 1024);
-
-/**
  * maximum number of autocomplete options
  * @type {number}
  */

@@ -1,7 +1,6 @@
 import Command from '../Command.js';
 import Exporter from '../../database/export/Exporter.js';
 import {AttachmentBuilder, MessageFlags, PermissionFlagsBits, PermissionsBitField} from 'discord.js';
-import {FILE_UPLOAD_LIMITS} from '../../util/apiLimits.js';
 import {gzipSync} from 'zlib';
 
 export default class ExportCommand extends Command {
@@ -20,12 +19,12 @@ export default class ExportCommand extends Command {
         const exporter = new Exporter(interaction.guild.id);
         let data = Buffer.from(await exporter.export());
 
-        let gzip = data.byteLength > FILE_UPLOAD_LIMITS.get(interaction.guild.premiumTier);
+        let gzip = data.byteLength > interaction.attachmentSizeLimit;
         if (gzip) {
             data = gzipSync(data);
         }
 
-        if (data.byteLength > FILE_UPLOAD_LIMITS.get(interaction.guild.premiumTier)) {
+        if (data.byteLength > interaction.attachmentSizeLimit) {
             await interaction.editReply('Unable to upload exported data (file too large)!');
             return;
         }
