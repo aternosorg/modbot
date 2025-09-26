@@ -55,6 +55,14 @@ export default class ChannelSettings extends Settings {
     }
 
     /**
+     * @param {import('discord.js').Snowflake} userid
+     * @returns {Promise<ChannelSettings>}
+     */
+    static async get(userid) {
+        return super.get(userid);
+    }
+
+    /**
      * get the guildID of this channel
      * @returns {Promise<null|string>}
      */
