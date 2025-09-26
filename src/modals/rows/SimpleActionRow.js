@@ -6,6 +6,6 @@ export default class SimpleActionRow extends ActionRowBuilder {
      */
     constructor(input) {
         super();
-        this.addComponents(...input);
+        this.addComponents(input);
     }
 }
