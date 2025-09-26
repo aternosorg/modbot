@@ -15,6 +15,11 @@ import * as fs from 'node:fs/promises';
 
 export class Database {
     /**
+     * @type {import('mysql2').ConnectionOptions}
+     */
+    options;
+
+    /**
      * @type {import('mysql2').Connection}
      */
     #connection = null;
