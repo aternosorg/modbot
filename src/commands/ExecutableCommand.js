@@ -57,7 +57,7 @@ export default class ExecutableCommand {
      * execute a slash command
      * @abstract
      * @param {import('discord.js').ChatInputCommandInteraction} interaction
-     * @returns {Promise<void>}
+     * @returns {Promise<unknown>}
      */
     async execute(interaction) {
 
@@ -66,7 +66,7 @@ export default class ExecutableCommand {
     /**
      * handle a button press
      * @param {import('discord.js').ButtonInteraction} interaction
-     * @returns {Promise<void>}
+     * @returns {Promise<unknown>}
      */
     async executeButton(interaction) {
 
@@ -75,7 +75,7 @@ export default class ExecutableCommand {
     /**
      * handle data submitted from a modal
      * @param {import('discord.js').ModalSubmitInteraction} interaction
-     * @returns {Promise<void>}
+     * @returns {Promise<unknown>}
      */
     async executeModal(interaction) {
 
@@ -84,7 +84,7 @@ export default class ExecutableCommand {
     /**
      * handle data submitted from a modal
      * @param {import('discord.js').AnySelectMenuInteraction} interaction
-     * @returns {Promise<void>}
+     * @returns {Promise<unknown>}
      */
     async executeSelectMenu(interaction) {
 
