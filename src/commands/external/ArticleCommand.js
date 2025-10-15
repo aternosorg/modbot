@@ -175,7 +175,8 @@ export default class ArticleCommand extends Command {
 
         //set up turndown
         const turndown = new Turndown({
-            bulletListMarker: '-'
+            bulletListMarker: '-',
+            hr: '',
         })
             //convert headings to bold
             .addRule('headings', {
