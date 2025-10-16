@@ -52,7 +52,7 @@ export default class SlashCommandPermissionOverrides {
     }
 
     /**
-     * get the overrides for the @everyone role
+     * get the overrides for the \@everyone role
      * @returns {?import('discord.js').ApplicationCommandPermissions}
      */
     get everyoneOverride() {

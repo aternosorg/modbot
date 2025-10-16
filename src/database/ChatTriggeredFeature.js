@@ -24,7 +24,7 @@ export default class ChatTriggeredFeature {
 
     /**
      * Cache for all chat triggered features by tableName
-     * @type {{}}
+     * @type {object}
      */
     static cache = {};
 

@@ -27,6 +27,7 @@
     "@google-cloud/vision": "^5.3.3",
     "@googleapis/youtube": "^29.0.0",
     "diff": "^8.0.2",
+    "discord-api-types": "^0.38.30",
     "discord.js": "^14.23.2",
     "fuse.js": "^7.0.0",
     "got": "^14.4.2",
@@ -37,7 +38,7 @@
   "devDependencies": {
     "@types/node": "^22.5.2",
     "eslint": "^9.9.1",
-    "eslint-plugin-jsdoc": "^59.0.2",
+    "eslint-plugin-jsdoc": "^61.1.4",
     "eslint-plugin-json": "^4.0.1",
     "nodemon": "^3.1.10"
   },

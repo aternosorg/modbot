@@ -11,7 +11,7 @@ export function toTitleCase(s) {
 }
 
 /**
- * @param {bool} bool
+ * @param {boolean} bool
  * @returns {string}
  */
 export function yesNo(bool) {

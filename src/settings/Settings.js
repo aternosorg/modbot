@@ -14,7 +14,7 @@ export default class Settings {
 
     /**
      * Cache for all configs by tableName
-     * @type {{}}
+     * @type {object}
      */
     static cache = {};
 
