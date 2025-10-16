@@ -257,7 +257,8 @@ export default class ArticleCommand extends Command {
                 }
             });
         //convert string
-        let string = turndown.turndown(body);
+        let string = turndown.turndown(body)
+            .replaceAll(/\n\n+/g, '\n');
         if (string.length > ARTICLE_EMBED_PREVIEW_LENGTH) {
             string = string.substring(0, ARTICLE_EMBED_PREVIEW_LENGTH);
             string = string.replace(/\.?\n+.*$/, '');
