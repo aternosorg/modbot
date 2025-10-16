@@ -1,5 +1,5 @@
 import {
-    EmbedBuilder,
+    EmbedBuilder, PermissionFlagsBits,
 } from 'discord.js';
 import colors from '../../util/colors.js';
 import ChannelSettings from '../../settings/ChannelSettings.js';
@@ -51,7 +51,9 @@ export default class UnlockCommand extends BaseLockCommand {
         channelSettings.lock = {};
         await channelSettings.save();
 
-        await wrapper.tryToSend({embeds: [embed]});
+        if (channel.permissionsFor(everyone).has(PermissionFlagsBits.SendMessages)) {
+            await wrapper.tryToSend({embeds: [embed]});
+        }
     }
 
     getDescription() {

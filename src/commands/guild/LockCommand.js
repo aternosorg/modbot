@@ -1,5 +1,5 @@
 import {
-    EmbedBuilder,
+    EmbedBuilder, PermissionFlagsBits,
 } from 'discord.js';
 import colors from '../../util/colors.js';
 import ChannelWrapper, {CHANNEL_LOCK_PERMISSIONS} from '../../discord/ChannelWrapper.js';
@@ -36,7 +36,9 @@ export default class LockCommand extends BaseLockCommand {
     }
 
     async performAction(channel, wrapper, channelSettings, everyone, embed) {
-        await wrapper.tryToSend({embeds: [embed]});
+        if (channel.permissionsFor(everyone).has(PermissionFlagsBits.SendMessages)) {
+            await wrapper.tryToSend({embeds: [embed]});
+        }
 
         const permissionEditOptions = {};
         for (const permission of CHANNEL_LOCK_PERMISSIONS) {
