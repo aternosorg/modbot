@@ -219,7 +219,7 @@ export default class ArticleCommand extends Command {
             })
             //remove unsupported tags
             .addRule('remove', {
-                filter: ['img', 'script', 'youtube-video'],
+                filter: ['img', 'script', 'youtube-video', 'minecraft-edition', 'highlight-box'],
                 replacement() {
                     return '';
                 }
