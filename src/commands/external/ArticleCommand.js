@@ -198,13 +198,13 @@ export default class ArticleCommand extends Command {
 
                     switch (node.localName) {
                         case 'h1':
-                            return '# ' + content + '\n';
+                            return '\n# ' + content + '\n';
                         case 'h2':
-                            return '## ' + content + '\n';
+                            return '\n## ' + content + '\n';
                         case 'h3':
-                            return '### ' + content + '\n';
+                            return '\n### ' + content + '\n';
                         default:
-                            return bold(escapeBold(content)) + '\n';
+                            return '\n' + bold(escapeBold(content)) + '\n';
                     }
                 }
             })
