@@ -92,7 +92,7 @@ export default class VideoCommand extends Command {
      * @param {import('discord.js').Snowflake} userId id of the user that executed this command
      * @param {number} [index]
      * @param {?import('discord.js').Snowflake} mention user to mention in the message
-     * @returns {{content: string, formatting: ActionRowBuilder[], fetchReply: boolean}}
+     * @returns {import('discord.js').InteractionReplyOptions}
      */
     generateMessage(videos, userId, index = 0, mention = null) {
         for (const result of videos) {
@@ -116,9 +116,9 @@ export default class VideoCommand extends Command {
                             // eslint-disable-next-line jsdoc/reject-any-type
                             .setOptions(/** @type {any} */ videos)
                             .setCustomId(`video:${userId}` + (mention ? `:${mention}` : ''))
-                    ),
+                    )
+                    .toJSON(),
             ],
-            fetchReply: true,
         };
     }
 

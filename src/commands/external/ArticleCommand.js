@@ -130,7 +130,7 @@ export default class ArticleCommand extends Command {
      * @param {import('discord.js').Snowflake} userId id of the user that executed the command
      * @param {number} [index]
      * @param {?import('discord.js').Snowflake} mention user to mention in the message
-     * @returns {{embeds: EmbedBuilder[], formatting: ActionRowBuilder[], fetchReply: boolean, content: ?string}}
+     * @returns {import('discord.js').InteractionReplyOptions}
      */
     generateMessage(results, article, userId, index = 0, mention = null) {
         for (const result of results) {
@@ -138,8 +138,8 @@ export default class ArticleCommand extends Command {
         }
         results[index].default = true;
 
-        return {
-            content: mention ? `${userMention(mention)} this article from our help center might help you:` : null,
+        /** @type {import('discord.js').InteractionReplyOptions} */
+        const message = {
             embeds: [this.createEmbed(results[index], article.body)],
             components: [
                 new ActionRowBuilder()
@@ -149,7 +149,8 @@ export default class ArticleCommand extends Command {
                             // eslint-disable-next-line jsdoc/reject-any-type
                             .setOptions(/** @type {any} */ results)
                             .setCustomId(`article:${userId}` + (mention ? `:${mention}` : ''))
-                    ),
+                    )
+                    .toJSON(),
                 new ActionRowBuilder()
                     .addComponents(
                         // eslint-disable-next-line jsdoc/reject-any-type
@@ -157,10 +158,16 @@ export default class ArticleCommand extends Command {
                             .setStyle(ButtonStyle.Link)
                             .setURL(article.html_url)
                             .setLabel('View Article')
-                    ),
-            ],
-            fetchReply: true,
+                    )
+                    .toJSON(),
+            ]
         };
+
+        if (mention) {
+            message.content = `${userMention(mention)} this article from our help center might help you:`;
+        }
+
+        return message;
     }
 
     /**
