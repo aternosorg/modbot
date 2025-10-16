@@ -1,142 +1,57 @@
-import Command from '../Command.js';
 import {
-    ActionRowBuilder,
-    channelMention,
     EmbedBuilder,
-    MessageFlags,
-    ModalBuilder,
-    PermissionFlagsBits,
-    PermissionsBitField,
-    TextInputBuilder,
-    TextInputStyle
 } from 'discord.js';
-import {channelSelectMenu} from '../../util/channels.js';
 import colors from '../../util/colors.js';
 import ChannelSettings from '../../settings/ChannelSettings.js';
 import ChannelWrapper from '../../discord/ChannelWrapper.js';
-import Confirmation from '../../database/Confirmation.js';
-import {timeAfter} from '../../util/timeutils.js';
-import ErrorEmbed from '../../formatting/embeds/ErrorEmbed.js';
 import {toTitleCase} from '../../util/format.js';
+import BaseLockCommand from './BaseLockCommand.js';
 
-export default class UnlockCommand extends Command {
-
-    getDefaultMemberPermissions() {
-        return new PermissionsBitField()
-            .add(PermissionFlagsBits.ManageChannels);
+export default class UnlockCommand extends BaseLockCommand {
+    getStrings() {
+        return {
+            'options_global_description': 'Unlock all locked channels',
+            'message_no_channels': 'There are no locked channels.',
+            'modal_title': 'Unlock channels',
+            'modal_channels_description': 'Select which channels you want to unlock',
+            'modal_message_description': 'Optional message to send in the unlocked channels',
+            'message_success': 'Successfully unlocked channels: ',
+        };
     }
 
-    getRequiredBotPermissions() {
-        return new PermissionsBitField()
-            .add(PermissionFlagsBits.ManageChannels)
-            .add(PermissionFlagsBits.ManageRoles);
-    }
-
-    buildOptions(builder) {
-        builder.addBooleanOption(option => option
-            .setName('global')
-            .setDescription('Unlock all locked channels')
-            .setRequired(false));
-        return super.buildOptions(builder);
-    }
-
-    async execute(interaction) {
+    /**
+     * @param {import('discord.js').BaseInteraction} interaction
+     * @returns {Promise<ChannelWrapper[]>}
+     */
+    async getChannels(interaction) {
         /** @type {ChannelWrapper[]} */
         const channels = [];
-
         for (const [id, channel] of (await interaction.guild.channels.fetch()).entries()) {
             const channelSettings = await ChannelSettings.get(id);
             if (Object.keys(channelSettings.lock).length) {
                 channels.push(new ChannelWrapper(channel));
             }
         }
-
-        if (!channels.length) {
-            await interaction.reply(ErrorEmbed.message('There are no locked channels.'));
-            return;
-        }
-
-        if (interaction.options.getBoolean('global')) {
-            interaction.values = channels.map(c => c.channel.id);
-            await this.executeSelectMenu(interaction);
-        }
-        else {
-            await interaction.reply({
-                flags: MessageFlags.Ephemeral,
-                content: 'Select which channels you want to unlock',
-                components: [
-                    /** @type {ActionRowBuilder} */
-                    new ActionRowBuilder()
-                        // eslint-disable-next-line jsdoc/reject-any-type
-                        .addComponents(/** @type {*} */
-                            channelSelectMenu(channels).setCustomId('unlock')
-                        )
-                ]
-            });
-        }
+        return channels;
     }
 
-    async executeSelectMenu(interaction) {
-        const confirmation = new Confirmation({channels: interaction.values}, timeAfter('15 minutes'));
-        await interaction.showModal(new ModalBuilder()
-            .setTitle(`Unlock ${interaction.values.length} channels`)
-            .setCustomId(`unlock:${await confirmation.save()}`)
-            .addComponents(
-                // eslint-disable-next-line jsdoc/reject-any-type
-                /** @type {*} */
-                new ActionRowBuilder().addComponents(
-                    // eslint-disable-next-line jsdoc/reject-any-type
-                    /** @type {*} */
-                    new TextInputBuilder()
-                        .setLabel('Unlock message')
-                        .setCustomId('message')
-                        .setStyle(TextInputStyle.Paragraph)
-                        .setRequired(false)
-                        .setMaxLength(4000)
-                )
-            ));
-    }
-
-    async executeModal(interaction) {
-        const confirmationId = interaction.customId.split(':')[1];
-        const confirmation = await Confirmation.get(confirmationId);
-
-        if (!confirmation) {
-            await interaction.reply(ErrorEmbed.message('This confirmation has expired.'));
-            return;
-        }
-
-        const channels = confirmation.data.channels;
-        const message = interaction.components[0].components[0].value;
-        const everyone = interaction.guild.roles.everyone.id;
-
-        const embed = new EmbedBuilder()
+    getChannelMessageEmbed(message) {
+        return new EmbedBuilder()
             .setTitle('This channel has been unlocked')
             .setColor(colors.GREEN)
-            .setDescription(message || null);
+            .setDescription(message);
+    }
 
-        await interaction.deferReply({flags: MessageFlags.Ephemeral});
-        for (const channelId of channels) {
-            const channel = /** @type {import('discord.js').TextChannel} */
-                await interaction.guild.channels.fetch(channelId);
-            const wrapper = new ChannelWrapper(channel);
+    async performAction(channel, wrapper, channelSettings, everyone, embed) {
+        // convert old database entries using previous flag names (e.g. SEND_MESSAGES -> SendMessages)
+        const unlockPerms = Object.fromEntries(Object.entries(channelSettings.lock ?? {})
+            .map(([key, value]) => ([key.split('_').map(toTitleCase).join(''), value])));
 
-            const channelSettings = await ChannelSettings.get(channelId);
+        await channel.permissionOverwrites.edit(everyone, unlockPerms);
+        channelSettings.lock = {};
+        await channelSettings.save();
 
-            // convert old database entries using previous flag names (e.g. SEND_MESSAGES -> SendMessages)
-            const unlockPerms = Object.fromEntries(Object.entries(channelSettings.lock ?? {})
-                .map(([key, value]) => ([key.split('_').map(toTitleCase).join(''), value])));
-
-            await channel.permissionOverwrites.edit(everyone, unlockPerms);
-            channelSettings.lock = {};
-            await channelSettings.save();
-
-            await wrapper.tryToSend({embeds: [embed]});
-        }
-
-        await interaction.editReply({
-            content: `Successfully unlocked channels: ${channels.map(channelMention)}`,
-        });
+        await wrapper.tryToSend({embeds: [embed]});
     }
 
     getDescription() {
