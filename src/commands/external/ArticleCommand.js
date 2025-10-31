@@ -207,6 +207,7 @@ export default class ArticleCommand extends Command {
             string = string.substring(0, ARTICLE_EMBED_PREVIEW_LENGTH);
             message.text(string.replace(/\.?\n+.*$/, ''))
                 .newLine()
+                .newLine()
                 .subtext('To read more, click \'View Article\' below.');
         } else {
             message.text(string);
