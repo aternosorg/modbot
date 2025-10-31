@@ -2,21 +2,18 @@ import Command from '../Command.js';
 import GuildSettings from '../../settings/GuildSettings.js';
 import {
     ActionRowBuilder,
-    bold,
     ButtonBuilder,
     ButtonStyle,
-    codeBlock,
-    EmbedBuilder,
-    escapeBold,
+    MessageFlags,
     StringSelectMenuBuilder,
-    userMention,
-    hyperlink
+    userMention
 } from 'discord.js';
-import Turndown from 'turndown';
 import icons from '../../util/icons.js';
 import {SELECT_MENU_OPTIONS_LIMIT, SELECT_MENU_TITLE_LIMIT} from '../../util/apiLimits.js';
 import Cache from '../../bot/Cache.js';
 import ErrorEmbed from '../../formatting/embeds/ErrorEmbed.js';
+import MessageBuilder from '../../formatting/MessageBuilder.js';
+import MarkdownConverter from '../../formatting/markdown/MarkdownConverter.js';
 
 /**
  * @import {ZendeskArticle} from '../../apis/Zendesk.js';
@@ -25,9 +22,10 @@ import ErrorEmbed from '../../formatting/embeds/ErrorEmbed.js';
 
 const completions = new Cache();
 const CACHE_DURATION = 60 * 60 * 1000;
-const ARTICLE_EMBED_PREVIEW_LENGTH = 1000;
+const ARTICLE_EMBED_PREVIEW_LENGTH = 1300;
 
 export default class ArticleCommand extends Command {
+    #markdownConverter = new MarkdownConverter();
 
     getName() {
         return 'article';
@@ -91,13 +89,40 @@ export default class ArticleCommand extends Command {
             return;
         }
 
+        // TODO: Update this
         const selectMenu = /** @type {import('discord.js').SelectMenuComponent} */
-            interaction.message.components[0].components[0];
+            this.findComponentWithCustomIdPrefix(interaction.message.components, 'article:');
         const index = selectMenu.options
             .findIndex(option => option.value === interaction.values[0]);
         const article = await (await GuildSettings.get(interaction.guildId)).getZendesk()
             .getArticle(selectMenu.options[index].value);
         await interaction.update(this.generateMessage(selectMenu.options, article, interaction.user.id, index, mentionedUser));
+    }
+
+    /**
+     * Find a component with a specific custom id
+     * @param {import('discord.js').AnyComponent} components
+     * @param {string} customId
+     * @returns {import('discord.js').AnyComponent|null}
+     */
+    findComponentWithCustomIdPrefix(components, customId) {
+        for (const component of components) {
+            if ('customId' in component && component.customId?.startsWith(customId)) {
+                return component;
+            }
+
+            if ('components' in component) {
+                const found = this.findComponentWithCustomIdPrefix(component.components, customId);
+                if (found) {
+                    return found;
+                }
+            }
+
+            if ('component' in component && component.component?.customId?.startsWith(customId)) {
+                return component.component;
+            }
+        }
+        return null;
     }
 
     async complete(interaction) {
@@ -138,143 +163,56 @@ export default class ArticleCommand extends Command {
         }
         results[index].default = true;
 
-        /** @type {import('discord.js').InteractionReplyOptions} */
-        const message = {
-            embeds: [this.createEmbed(results[index], article.body)],
-            components: [
-                new ActionRowBuilder()
-                    .addComponents(
-                        // eslint-disable-next-line jsdoc/reject-any-type
-                        /** @type {any} */ new StringSelectMenuBuilder()
-                            // eslint-disable-next-line jsdoc/reject-any-type
-                            .setOptions(/** @type {any} */ results)
-                            .setCustomId(`article:${userId}` + (mention ? `:${mention}` : ''))
-                    )
-                    .toJSON(),
-                new ActionRowBuilder()
-                    .addComponents(
-                        // eslint-disable-next-line jsdoc/reject-any-type
-                        /** @type {any} */ new ButtonBuilder()
-                            .setStyle(ButtonStyle.Link)
-                            .setURL(article.html_url)
-                            .setLabel('View Article')
-                    )
-                    .toJSON(),
-            ]
-        };
+        const message = new MessageBuilder();
 
         if (mention) {
             message.content = `${userMention(mention)} this article from our help center might help you:`;
         }
 
-        return message;
+        const container = this.appendContent(message, results[index], article.body)
+            .endComponent()
+            .addSeparatorComponents()
+            .addActionRowComponents(
+                new ActionRowBuilder().addComponents(
+                    new StringSelectMenuBuilder()
+                        .setOptions(results)
+                        .setCustomId(`article:${userId}` + (mention ? `:${mention}` : ''))
+                ),
+                new ActionRowBuilder().addComponents(
+                    new ButtonBuilder()
+                        .setStyle(ButtonStyle.Link)
+                        .setURL(article.html_url)
+                        .setLabel('View Article')
+                ),
+            )
+            .toJSON();
+
+        return {
+            components: [container],
+            flags: MessageFlags.IsComponentsV2,
+        };
     }
 
     /**
      * get a description from the HTML body of an article
+     * @param {MessageBuilder} message
      * @param {import('discord.js').APISelectMenuOption} result
      * @param {string} body website body
-     * @returns {EmbedBuilder}
+     * @returns {MessageBuilder}
      */
-    createEmbed(result, body) {
-        const embed = new EmbedBuilder()
-            .setTitle(result.label);
+    appendContent(message, result, body) {
+        message.heading(result.label);
 
-        //set up turndown
-        const turndown = new Turndown({
-            bulletListMarker: '-',
-            hr: '',
-        })
-            //convert headings to bold
-            .addRule('headings', {
-                filter: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
-                replacement(content, node) {
-                    if (!content) {
-                        return '';
-                    }
-
-                    // Check if the heading is inside a list
-                    let parent = node.parentNode;
-                    while (parent) {
-                        if (parent.nodeName === 'UL' || parent.nodeName === 'OL') {
-                            node.localName = "b";
-                            break;
-                        }
-                        parent = parent.parentNode;
-                    }
-
-                    switch (node.localName) {
-                        case 'h1':
-                            return '\n# ' + content + '\n';
-                        case 'h2':
-                            return '\n## ' + content + '\n';
-                        case 'h3':
-                            return '\n### ' + content + '\n';
-                        default:
-                            return '\n' + bold(escapeBold(content)) + '\n';
-                    }
-                }
-            })
-            //ignore pre tags
-            .addRule('codeblocks', {
-                filter: ['pre'],
-                replacement(content) {
-                    return codeBlock(content
-                        .replace(/(?<!\\)[*_~`]+/g, '') // remove unescaped markdown
-                        .replace(/\\([*_~`>[\]])/g, '$1')); // unescape escaped markdown
-                }
-            })
-            //remove unsupported tags
-            .addRule('remove', {
-                filter: ['img', 'script', 'youtube-video', 'minecraft-edition', 'highlight-box'],
-                replacement() {
-                    return '';
-                }
-            })
-            .addRule('iframes', {
-                filter: ['iframe'],
-                replacement(content, node) {
-                    const url = node._attrsByQName.src.data;
-                    const result = url.match(/^\/\/(?:www\.)?youtube(?:-nocookie)?\.com\/embed\/(.*)/);
-                    if (result) {
-                        return 'https://youtu.be/' + result[1];
-                    } else {
-                        return '';
-                    }
-                }
-            })
-            .addRule('links', {
-                filter: ['a'],
-                replacement(content, node) {
-                    const href = node._attrsByQName.href.data;
-                    if (href === content) {
-                        return href;
-                    }
-
-                    if (content.includes('https://') || content.includes('http://')) {
-                        return href;
-                    }
-
-                    if (!/^https?:\/\//.test(href)) {
-                        // Remove non-http links and local links
-                        return content;
-                    }
-
-                    return hyperlink(content, href);
-                }
-            });
-        //convert string
-        let string = turndown.turndown(body)
-            .replaceAll(/\n\n+/g, '\n');
+        let string = this.#markdownConverter.generate(body);
         if (string.length > ARTICLE_EMBED_PREVIEW_LENGTH) {
             string = string.substring(0, ARTICLE_EMBED_PREVIEW_LENGTH);
-            string = string.replace(/\.?\n+.*$/, '');
-            embed.setFooter({
-                text: 'To read more, click \'View Article\' below.',
-            });
+            message.text(string.replace(/\.?\n+.*$/, ''))
+                .newLine()
+                .subtext('To read more, click \'View Article\' below.');
+        } else {
+            message.text(string);
         }
 
-        embed.setDescription(string);
-        return embed;
+        return message;
     }
 }

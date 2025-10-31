@@ -11,7 +11,7 @@ import {
     ActionRowBuilder,
     TextDisplayBuilder,
     SeparatorBuilder,
-    MediaGalleryBuilder,
+    MediaGalleryBuilder, subtext,
 } from 'discord.js';
 import {inlineEmojiIfExists} from '../util/format.js';
 
@@ -127,6 +127,15 @@ export default class MessageBuilder {
     }
 
     /**
+     * Add subtext to the content.
+     * @param {string} content
+     * @returns {MessageBuilder}
+     */
+    subtext(content) {
+        return this.text(subtext(content));
+    }
+
+    /**
      * Add items as a list
      * @param {string} items
      * @returns {MessageBuilder}
@@ -176,7 +185,7 @@ export default class MessageBuilder {
      */
     pair(key, value) {
         return this.bold(key)
-            .text(":")
+            .text(':')
             .space()
             .text(value)
             .newLine();
