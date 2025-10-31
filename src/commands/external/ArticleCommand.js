@@ -89,7 +89,6 @@ export default class ArticleCommand extends Command {
             return;
         }
 
-        // TODO: Update this
         const selectMenu = /** @type {import('discord.js').SelectMenuComponent} */
             this.findComponentWithCustomIdPrefix(interaction.message.components, 'article:');
         const index = selectMenu.options
