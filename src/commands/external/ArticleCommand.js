@@ -1,7 +1,6 @@
 import Command from '../Command.js';
 import GuildSettings from '../../settings/GuildSettings.js';
 import {
-    ActionRowBuilder,
     ButtonBuilder,
     ButtonStyle,
     MessageFlags,
@@ -165,54 +164,41 @@ export default class ArticleCommand extends Command {
         const message = new MessageBuilder();
 
         if (mention) {
-            message.content = `${userMention(mention)} this article from our help center might help you:`;
+            message.text(`${userMention(mention)} this article from our help center might help you:`)
+                .separator(false);
         }
 
-        const container = this.appendContent(message, results[index], article.body)
-            .endComponent()
-            .addSeparatorComponents()
-            .addActionRowComponents(
-                new ActionRowBuilder().addComponents(
-                    new StringSelectMenuBuilder()
-                        .setOptions(results)
-                        .setCustomId(`article:${userId}` + (mention ? `:${mention}` : ''))
-                ),
-                new ActionRowBuilder().addComponents(
-                    new ButtonBuilder()
-                        .setStyle(ButtonStyle.Link)
-                        .setURL(article.html_url)
-                        .setLabel('View Article')
-                ),
+        let string = this.#markdownConverter.generate(article.body);
+        let shorten = string.length > ARTICLE_EMBED_PREVIEW_LENGTH;
+        if (shorten) {
+            string = string.substring(0, ARTICLE_EMBED_PREVIEW_LENGTH)
+                .replace(/\n+[^\n]*$/, '');
+        }
+
+        message
+            .heading(article.title)
+            .text(string)
+            .separator()
+            .select(new StringSelectMenuBuilder()
+                .setOptions(results)
+                .setCustomId(`article:${userId}` + (mention ? `:${mention}` : ''))
             )
-            .toJSON();
+            .separator();
+
+
+        if (shorten) {
+            message.subtext('This is only a short preview of the article, Click \'View Article\' to read more.');
+        }
+
+        message.button(new ButtonBuilder()
+            .setStyle(ButtonStyle.Link)
+            .setURL(article.html_url)
+            .setLabel('View Article')
+        );
 
         return {
-            components: [container],
+            components: [message.endComponent()],
             flags: MessageFlags.IsComponentsV2,
         };
-    }
-
-    /**
-     * get a description from the HTML body of an article
-     * @param {MessageBuilder} message
-     * @param {import('discord.js').APISelectMenuOption} result
-     * @param {string} body website body
-     * @returns {MessageBuilder}
-     */
-    appendContent(message, result, body) {
-        message.heading(result.label);
-
-        let string = this.#markdownConverter.generate(body);
-        if (string.length > ARTICLE_EMBED_PREVIEW_LENGTH) {
-            string = string.substring(0, ARTICLE_EMBED_PREVIEW_LENGTH);
-            message.text(string.replace(/\.?\n+.*$/, ''))
-                .newLine()
-                .newLine()
-                .subtext('To read more, click \'View Article\' below.');
-        } else {
-            message.text(string);
-        }
-
-        return message;
     }
 }

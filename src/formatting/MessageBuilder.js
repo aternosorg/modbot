@@ -211,7 +211,6 @@ export default class MessageBuilder {
      */
     endComponent() {
         if (this.#content) {
-            // noinspection JSCheckFunctionSignatures
             this.#container.addTextDisplayComponents(new TextDisplayBuilder().setContent(this.#content));
             this.#content = '';
         }
@@ -224,7 +223,6 @@ export default class MessageBuilder {
      * @returns {MessageBuilder}
      */
     separator(divider = true, spacing = SeparatorSpacingSize.Small) {
-        // noinspection JSCheckFunctionSignatures
         this.endComponent().addSeparatorComponents(new SeparatorBuilder().setDivider(divider).setSpacing(spacing));
         return this;
     }
@@ -234,7 +232,15 @@ export default class MessageBuilder {
      * @returns {MessageBuilder}
      */
     button(...builder) {
-        // noinspection JSCheckFunctionSignatures
+        this.endComponent().addActionRowComponents(new ActionRowBuilder().addComponents(...builder));
+        return this;
+    }
+
+    /**
+     * @param {import('discord.js').SelectMenuBuilder} builder
+     * @returns {MessageBuilder}
+     */
+    select(...builder) {
         this.endComponent().addActionRowComponents(new ActionRowBuilder().addComponents(...builder));
         return this;
     }
@@ -244,7 +250,6 @@ export default class MessageBuilder {
      * @returns {MessageBuilder}
      */
     image(...builder) {
-        // noinspection JSCheckFunctionSignatures
         this.endComponent().addMediaGalleryComponents(new MediaGalleryBuilder().addItems(...builder));
         return this;
     }
