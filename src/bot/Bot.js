@@ -40,7 +40,7 @@ export class Bot {
                     AllowedMentionsTypes.User
                 ]
             },
-            presence: { status: 'dnd', activities: [{ type: ActivityType.Watching, name: 'you' }] },
+            presence: { status: 'dnd', activities: [{ type: ActivityType.Custom, name: 'Watching you' }] },
             partials: [
                 Partials.GuildMember,
                 Partials.Channel,
