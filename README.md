@@ -52,8 +52,8 @@ If you want to host the bot yourself you can use our pre-built docker image or i
 In both cases you will need a [MySQL](https://dev.mysql.com/downloads/mysql/) database and a 
 [Discord application](https://discord.com/developers/applications/):
 
-1. Create a [Discord application](https://discord.com/developers/applications/) and enable the SERVER MEMBERS intent.
-   The bot needs this to reassign the muted role when a muted user joins your server
+1. Create a [Discord application](https://discord.com/developers/applications/) and enable the SERVER MEMBERS and 
+MESSAGE CONTENT intents.
 2. Add a bot to the application and copy the auth token
 3. Configure the bot (see [CONFIGURATION.md](./CONFIGURATION.md))
 4. To invite the bot to your server replace `ID` with the client ID of your application
