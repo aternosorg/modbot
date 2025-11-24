@@ -26,7 +26,7 @@ export default class SpamCommand extends SubCommand {
                 .setColor(colors.GREEN);
         }
         else {
-            embed.setDescription(`Set spam protection to a maximum of ${count} messages per second.`)
+            embed.setDescription(`Set spam protection to a maximum of ${count} messages per minute.`)
                 .setColor(colors.RED);
         }
 

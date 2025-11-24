@@ -26,7 +26,7 @@ export default class SimilarMessagesCommand extends SubCommand {
                 .setColor(colors.GREEN);
         }
         else {
-            embed.setDescription(`Set repeated message protection to a maximum of ${count} similar messages per second.`)
+            embed.setDescription(`Set repeated message protection to a maximum of ${count} similar messages per minute.`)
                 .setColor(colors.RED);
         }
 
