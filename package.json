@@ -26,7 +26,7 @@
     "@google-cloud/logging": "^11.2.1",
     "@google-cloud/vision": "^5.3.3",
     "@googleapis/youtube": "^29.0.0",
-    "diff": "^8.0.2",
+    "diff": "^8.0.3",
     "discord-api-types": "^0.38.30",
     "discord.js": "^14.23.2",
     "fuse.js": "^7.0.0",
