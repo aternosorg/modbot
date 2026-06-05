@@ -65,10 +65,10 @@ export class Bot {
 
     /**
      * delete - deletes a message and ignores it in message logs
-     * @param {import('discord.js').Message} message
+     * @param {import('discord.js').Message<true>} message
      * @param {?string} reason if null don't send in message log
      * @param {?number} [timeout]
-     * @returns {Promise<?Message>} deleted message
+     * @returns {Promise<?import('discord.js').Message<true>>} deleted message
      */
     async delete(message, reason, timeout = null) {
         if (!message.deletable) {
@@ -109,7 +109,7 @@ export class Bot {
      */
     async logMessageDeletion(message, reason) {
         const guild = new GuildWrapper(message.guild);
-        const embed = new MessageDeleteEmbed(message);
+        const embed = await MessageDeleteEmbed.create(message);
         embed.addFields(
             // eslint-disable-next-line jsdoc/reject-any-type
             /** @type {any}*/ {name: 'Reason', value: reason.substring(0, 1024)},

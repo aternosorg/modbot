@@ -7,6 +7,11 @@ import got from 'got';
 export default class MessageDeleteEmbed extends EmbedWrapper {
     #files = [];
 
+    /**
+     * Use {@link MessageDeleteEmbed.create} instead.
+     * @protected
+     * @param {import('discord.js').Message<true>} message
+     */
     constructor(message) {
         super();
         this.setColor(colors.RED);
@@ -31,13 +36,30 @@ export default class MessageDeleteEmbed extends EmbedWrapper {
                 this.setDescription(message.content.substring(0, EMBED_DESCRIPTION_LIMIT));
             }
         }
+    }
 
+    /**
+     * @param {import('discord.js').Message<true>} message
+     * @returns {Promise<MessageDeleteEmbed>}
+     */
+    static async create(message) {
+        const embed = new MessageDeleteEmbed(message);
+        let missingAttachments = 0;
         for (/** @type {import('discord.js').Attachment} */ const attachment of message.attachments.values()) {
-            this.#files.push(new AttachmentBuilder(got.stream(attachment.url))
-                .setDescription(attachment.description)
-                .setName(attachment.name)
-                .setSpoiler(true));
+            try {
+                const {rawBody} = await got.get(attachment.url, {responseType: 'buffer'});
+                embed.#files.push(new AttachmentBuilder(Buffer.from(rawBody))
+                    .setDescription(attachment.description)
+                    .setName(attachment.name)
+                    .setSpoiler(true));
+            }
+            catch {
+                // attachment URL has expired or is unavailable
+                missingAttachments++;
+            }
         }
+        embed.setFooter({text: embed.data.footer.text + "\n" + `Missing Attachments: ${missingAttachments}`});
+        return embed;
     }
 
     toMessage(ephemeral = true) {

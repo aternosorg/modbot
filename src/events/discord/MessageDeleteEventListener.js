@@ -9,7 +9,7 @@ export default class MessageDeleteEventListener extends EventListener {
     }
 
     /**
-     * @param {import('discord.js').Message} message
+     * @param {import('discord.js').Message<boolean>} message
      * @returns {Promise<void>}
      */
     async execute(message) {
@@ -22,7 +22,7 @@ export default class MessageDeleteEventListener extends EventListener {
             return;
         }
 
-        const embed = new MessageDeleteEmbed(message);
+        const embed = await MessageDeleteEmbed.create(message);
 
         const guild = new GuildWrapper(message.guild);
         await guild.logMessage(embed.toMessage());
