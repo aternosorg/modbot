@@ -45,7 +45,7 @@ export default class UnbanCommand extends UserCommand {
         await deferReplyOnce(interaction);
 
         if (!await member.isBanned()) {
-            await interaction.reply(ErrorEmbed.message('This member isn\'t banned!'));
+            await replyOrEdit(interaction, ErrorEmbed.message('This member isn\'t banned!'));
             return;
         }
 
