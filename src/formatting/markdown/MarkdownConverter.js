@@ -6,7 +6,7 @@ import Turndown from 'turndown';
 import HeadingsRule from './HeadingRule.js';
 import CodeblockRule from './CodeblockRule.js';
 import LinkRule from './LinkRule.js';
-import TableRule from './TableRule.js';
+import UnsupportedContentRule from './UnsupportedContentRule.js';
 import RemoveRule from './RemoveRule.js';
 
 /**
@@ -24,7 +24,7 @@ export default class MarkdownConverter {
             .addRule('headings', new HeadingsRule())
             .addRule('codeblocks', new CodeblockRule())
             .addRule('links', new LinkRule())
-            .addRule('tables', new TableRule());
+            .addRule('unsupported', new UnsupportedContentRule());
     }
 
     /**

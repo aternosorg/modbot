@@ -1,8 +1,8 @@
 import TurndownRule from './TurndownRule.js';
 import {codeBlock} from 'discord.js';
 
-export default class TableRule extends TurndownRule {
-    filter = ['table'];
+export default class UnsupportedContentRule extends TurndownRule {
+    filter = ['table', 'svg'];
 
     /**
      * @param {string} content
@@ -10,6 +10,6 @@ export default class TableRule extends TurndownRule {
      * @returns {string}
      */
     replacement(content, node) {
-        return codeBlock("Please click the 'View Article' button below to view this table.");
+        return codeBlock("Please click the 'View Article' below to view this content.");
     };
 }
